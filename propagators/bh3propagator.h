@@ -13,6 +13,7 @@ class ComplexGrid;
 class Bh3Propagator {
 	protected:
 		std::vector<ComplexGrid> rgrid;
+		
         
         PathOptions options;
 		double current_time;

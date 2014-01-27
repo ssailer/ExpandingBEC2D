@@ -2,6 +2,7 @@
 #define BENCH_TIME_H__
 
 #include <sys/times.h>
+#include <unistd.h>
 
 inline void bench_time(double &utime, double &stime)
 {

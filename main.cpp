@@ -13,6 +13,7 @@
 #include <averageclass.h>
 // #include <bh3cudapropagator.h>
 #include <bh3propagator.h>
+#include <bh3cpupropagator.h>
 #include <complexgrid.h>
 #include <bh3defaultgrid.h>
 #include <bh3binaryfile.h>
@@ -52,7 +53,8 @@ int main( int argc, char** argv)
 	ComplexGrid::set_fft_planning_rigorosity(FFTW_MEASURE);
 
 	init_random();
-
+	
+	
 	stringstream dstr;
 	dstr << "bh3cuda_TS"; /*<< opt.timestepsize
          << "_G" << opt.grid[0] << "_" << opt.grid[1] << "_" << opt.grid[2]
@@ -61,11 +63,14 @@ int main( int argc, char** argv)
 	     << "_KL" << opt.klength[0] << "_" << opt.klength[1] << "_" << opt.klength[2];*/
     
 	string dirname = dstr.str();
-    initialize_binary_dir(dirname, opt);
+	
+		
+	initialize_binary_dir(dirname, opt);
 	mkdir((dirname + "/temp").c_str(), 0755);
 	
 	AverageClass<Bh3Evaluation::Averages> *av =  new AverageClass<Bh3Evaluation::Averages> [snapshot_times.size()];
 	
+		
 	for(int k = 0; k < PATHS; k++)
 	{
       
@@ -90,14 +95,16 @@ int main( int argc, char** argv)
         
 
             // opt.timestepsize = 0.2;
-            cp = new Bh3Propagator(opt, *start);
+            cp = new Bh3CPUPropagator(opt, *start);
 
             delete start;
 
             for(int j = 0; j < snapshot_times.size(); j++)
 			{
                 cout << "propagating...." << omp_get_thread_num() << endl;
+	    
                 cp->propagateToTime(snapshot_times[j]);
+		
 							
                 cout << "evaluating ..." << omp_get_thread_num() << endl;
                                                         
