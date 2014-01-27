@@ -1,0 +1,4 @@
+[Project]
+Name=main
+Manager=KDevCMakeManager
+VersionControl=kdevgit

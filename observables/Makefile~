@@ -1,0 +1,32 @@
+include ../Makefile.inc 
+
+OBJLIBS	= ../libbh3observables.a ../libbh3observables1D.a ../libbh3observablesFD.a
+OBJS	= bh3observables.o
+
+CXXFLAGS	= $(PRJCXXFLAGS) -I../utilities -I../propagators -I../startgrids -I.
+CUFLAGS		= $(PRJCUFLAGS) -I../utilities -I../propagators -I../startgrids -I.
+
+all: $(OBJLIBS)
+
+../libbh3observables.a: $(OBJS)
+	$(ECHO) $(AR) $(ARFLAGS) rv ../libbh3observables.a $?
+	$(AR) $(ARFLAGS) rv ../libbh3observables.a $?
+	$(ECHO) $(RANLIB) ../libbh3observables.a
+	$(RANLIB) ../libbh3observables.a
+
+../libbh3observables1D.a: $(OBJS)
+	$(ECHO) $(AR) $(ARFLAGS) rv ../libbh3observables.a $?
+	$(AR) $(ARFLAGS) rv ../libbh3observables.a $?
+	$(ECHO) $(RANLIB) ../libbh3observables.a
+	$(RANLIB) ../libbh3observables.a
+
+../libbh3observablesFD.a: $(OBJS)
+	$(ECHO) $(AR) $(ARFLAGS) rv ../libbh3observablesFD.a $?
+	$(AR) $(ARFLAGS) rv ../libbh3observablesFD.a $?
+	$(ECHO) $(RANLIB) ../libbh3observablesFD.a
+	$(RANLIB) ../libbh3observablesFD.a
+
+clean:
+	$(ECHO) cleaning up in bh3observables
+	-$(RM) -f $(OBJS)
+

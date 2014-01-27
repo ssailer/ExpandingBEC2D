@@ -1,0 +1,18 @@
+#ifndef BH3DEFAULTGRID_H__
+#define BH3DEFAULTGRID_H__
+
+#include <bh3binaryfile.h>
+int mypow2(int x, int y);
+ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, int rows_y, int columns_x, int Q) ;
+ComplexGrid *create_Vortex_start_Grid(const PathOptions &opt,int Vortexnumber);// Vortex Startgitter
+ComplexGrid *create_no_noise_Start_Grid(const PathOptions &opt, int d = -1);
+ComplexGrid *create_Default_Start_Grid(const PathOptions &opt, int d = -1);
+ComplexGrid *create_noise_Start_Grid(const PathOptions &opt);
+ComplexGrid *create_test2_Start_Grid(const PathOptions &opt, int d = -1);
+ComplexGrid *create_oszi_test_Start_Grid(const PathOptions &opt, int d = -1); //n =2 harm oszi eigenstate
+ComplexGrid *create_vortex(const PathOptions &opt, int d = -1); //bright soliton solution, so only for U < 0!
+ComplexGrid *create_Energy_Start_Grid(const PathOptions &opt, int d);
+ComplexGrid *create_inverse_Start_Grid(const PathOptions &opt, ComplexGrid *start1);
+ComplexGrid *create_flowing_Start_Grid(const PathOptions &opt, double v_rel = 0.0, double fraction = 1.0);
+
+#endif // BH3DEFAULTGRID_H__

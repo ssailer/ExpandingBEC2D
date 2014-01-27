@@ -1,0 +1,615 @@
+/*
+ * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
+ *
+ * NVIDIA Corporation and its licensors retain all intellectual property and 
+ * proprietary rights in and to this software and related documentation. 
+ * Any use, reproduction, disclosure, or distribution of this software 
+ * and related documentation without an express license agreement from
+ * NVIDIA Corporation is strictly prohibited.
+ *
+ * Please refer to the applicable NVIDIA end user license agreement (EULA) 
+ * associated with this source code for terms and conditions that govern 
+ * your use of this NVIDIA software.
+ * 
+ */
+
+/* Template project which demonstrates the basics on how to setup a project 
+* example application.
+* Host code.
+*/
+
+// includes, system
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <fstream>
+#include <iostream>
+#include <omp.h>
+#include <cuda_runtime.h>
+#include <curand.h>
+
+
+// includes, kernels
+#include "bh3cuda1Dpropagator.h"
+#include "complexgrid.h"
+#include "realgrid.h"
+#include <wrapped_cuda_functions.h>
+#include "gauss_random.h"
+
+#define RBLOCK_1D_LENGTH 128
+#define KBLOCK_1D_LENGTH 1024
+#define GAMMA 0.05
+
+// Kernels for r- and k-propagation
+#include <cuComplex.h>
+
+using namespace std;
+
+typedef struct {
+	double inv_grid;
+	double klength;
+	uint32_t grid;
+    double g_matrix[3];
+    double fft_factor, timestepsize;
+	double U;
+	uint32_t internal;
+    double N;
+    
+} ConstKernelOptions1D;
+
+__constant__ __device__ ConstKernelOptions1D dev_options;
+//__device__ double* dev_rprop;
+
+__device__ static __inline__ double cuCabs2 (cuDoubleComplex x)
+{
+	return cuCreal(x)*cuCreal(x) + cuCimag(x)*cuCimag(x);
+}
+
+
+__global__ void init_kprop(cuDoubleComplex *kprop)
+{
+	// the coordinates for this thread
+	const unsigned int x = blockDim.x * blockIdx.x + threadIdx.x;
+	
+	// calculate the propagator
+	double T = 0.0;
+	double k = 0.0;
+	
+	k = x * dev_options.inv_grid;
+	k = sin(k);
+	k *= dev_options.klength;
+	k *= k;
+	T -= k;
+	T *= dev_options.timestepsize;
+	kprop[x] = make_cuDoubleComplex(cos(T) * dev_options.fft_factor,
+										sin(T) * dev_options.fft_factor);
+}
+
+__global__ void init_kprop_sgpe(cuDoubleComplex *kprop)
+{
+	// the coordinates for this thread
+	const unsigned int x = blockDim.x * blockIdx.x + threadIdx.x;
+	
+	// calculate the propagator
+	double T = 0.0;
+	double k = 0.0;
+	
+	k = x * dev_options.inv_grid;
+	k = sin(k);
+	k *= dev_options.klength;
+	k *= k;
+	T -= k;
+	T *= dev_options.timestepsize;
+    k = exp(GAMMA*T);
+    kprop[x] = make_cuDoubleComplex(cos(T) * dev_options.fft_factor * k,
+										sin(T) * dev_options.fft_factor * k);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//! propagator in k-space
+//! @param g_idata  input data in global memory
+//! @param g_odata  output data in global memory
+////////////////////////////////////////////////////////////////////////////////
+__global__ void kpropagate(cuDoubleComplex *grid1, cuDoubleComplex *grid2, cuDoubleComplex *kprop)
+{
+	// the coordinates for this thread
+	//const unsigned int x = blockDim.x * blockIdx.x + threadIdx.x;
+	//const unsigned int y = blockDim.y * blockIdx.y + threadIdx.y;
+	//const unsigned int z = blockDim.z * blockIdx.z + threadIdx.z;
+    const unsigned int x = ((blockDim.x * blockIdx.x + threadIdx.x)%dev_options.grid);
+    const unsigned int index = blockDim.x * blockIdx.x + threadIdx.x;
+    	
+	// propagate this k-point
+	cuDoubleComplex value1 = grid1[index];
+    cuDoubleComplex value2 = grid2[index];
+	cuDoubleComplex p = kprop[x];
+
+	grid1[index] = cuCmul(p, value1);
+    grid2[index] = cuCmul(p, value2);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//! propagator in r-space
+//! @param g_idata  input data in global memory
+//! @param g_odata  output data in global memory
+////////////////////////////////////////////////////////////////////////////////
+__global__ void rpropagate(cuDoubleComplex *grid1, cuDoubleComplex *grid2, double devOmega_t) 
+{
+	const unsigned int index = blockDim.x * blockIdx.x + threadIdx.x;
+	
+	// calculate the propagator and propagate
+	cuDoubleComplex value1 = grid1[index];
+	cuDoubleComplex value2 = grid2[index];
+    
+	
+	double sum = -dev_options.timestepsize*0.5*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) + dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2));
+	double diff = dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) - dev_options.g_matrix[1]*cuCabs2(value1) - dev_options.g_matrix[2]*cuCabs2(value2));
+	double delta = diff*diff + 4*devOmega_t*devOmega_t;
+	delta = sqrt(delta);
+
+	
+	cuDoubleComplex prop;
+	sincos(-0.5*dev_options.timestepsize*delta, &prop.y, &prop.x);
+	
+	cuDoubleComplex result1;
+	cuDoubleComplex result2;
+	result1 = make_cuDoubleComplex(delta*prop.x, diff*prop.y);
+	result2 = make_cuDoubleComplex(0.0, -2.0*devOmega_t*prop.y);
+	
+	cuDoubleComplex final1 = cuCadd(cuCmul(result1, value1), cuCmul(result2, value2));
+	
+	result1 = make_cuDoubleComplex(delta*prop.x, -diff*prop.y);
+	
+	cuDoubleComplex final2 = cuCadd(cuCmul(result2, value1), cuCmul(result1, value2));
+	
+	sincos(sum, &prop.y, &prop.x);
+	result1.x = prop.x/delta;
+	result1.y = prop.y/delta;
+	
+	grid1[index] = cuCmul(result1, final1);
+	grid2[index] = cuCmul(result1, final2);
+}
+
+
+__global__ void rpropagate_sgpe(cuDoubleComplex *grid1, cuDoubleComplex *grid2, double devOmega_t) 
+{
+	const unsigned int index = blockDim.x * blockIdx.x + threadIdx.x;
+	
+	// calculate the propagator and propagate
+	cuDoubleComplex value1 = grid1[index];
+	cuDoubleComplex value2 = grid2[index];
+    
+	
+	double sum = -dev_options.timestepsize/2.*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) + dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2) - 2.*(dev_options.g_matrix[0]+dev_options.g_matrix[1])*dev_options.N*dev_options.fft_factor + 2.*devOmega_t/dev_options.U);
+	double diff = dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) - dev_options.g_matrix[1]*cuCabs2(value1) - dev_options.g_matrix[2]*cuCabs2(value2));
+	double delta = diff*diff + 4*devOmega_t*devOmega_t;
+	delta = sqrt(delta);
+
+	
+	cuDoubleComplex prop;
+    double expo;
+    expo = exp(-GAMMA*dev_options.timestepsize*delta/2.);
+    sincos(-dev_options.timestepsize*delta/2., &prop.y, &prop.x);
+	
+	cuDoubleComplex result1;
+	cuDoubleComplex result2;
+    cuDoubleComplex result3;
+    
+	result1 = make_cuDoubleComplex(delta*prop.x*(expo+1./expo),delta*prop.y*(expo-1./expo));
+    result3 = make_cuDoubleComplex(prop.x*(expo-1./expo), prop.y*(expo+1./expo));
+
+	result2.x = -2.0*devOmega_t*result3.x;
+    result2.y = -2.0*devOmega_t*result3.y;
+    
+    result1.x += result3.x*diff;
+    result1.y += result3.y*diff;
+    
+	cuDoubleComplex final1 = cuCadd(cuCmul(result1, value1), cuCmul(result2, value2));
+	
+	result1.x -= 2.*result3.x*diff;
+    result1.y -= 2.*result3.y*diff;
+    	
+	cuDoubleComplex final2 = cuCadd(cuCmul(result2, value1), cuCmul(result1, value2));
+	
+	sincos(sum, &prop.y, &prop.x);
+    expo = exp(GAMMA*sum);
+    result1.x = expo*prop.x/delta/2.;
+	result1.y = expo*prop.y/delta/2.;
+	
+	grid1[index] = cuCmul(result1, final1);
+	grid2[index] = cuCmul(result1, final2);
+}
+
+
+__global__ void rpropagate_transverse(cuDoubleComplex *grid1, cuDoubleComplex *grid2, double devOmega_t) 
+{
+	const unsigned int index = blockDim.x * blockIdx.x + threadIdx.x;
+	
+	// calculate the propagator and propagate
+	cuDoubleComplex value1 = grid1[index];
+	cuDoubleComplex value2 = grid2[index];
+    
+	
+	double sum = -dev_options.timestepsize*0.5*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) + dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2));
+	double diff = dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) - dev_options.g_matrix[1]*cuCabs2(value1) - dev_options.g_matrix[2]*cuCabs2(value2));
+	double delta = diff*diff + 4*devOmega_t*devOmega_t;
+	delta = sqrt(delta);
+
+	
+	cuDoubleComplex prop;
+	sincos(-0.5*dev_options.timestepsize*delta, &prop.y, &prop.x);
+	
+	cuDoubleComplex result1;
+	cuDoubleComplex result2;
+	result1 = make_cuDoubleComplex(delta*prop.x, diff*prop.y);
+	result2 = make_cuDoubleComplex(-2.0*devOmega_t*prop.y, 0.0);
+	
+	cuDoubleComplex final1 = cuCadd(cuCmul(result1, value1), cuCmul(result2, value2));
+	
+	result1 = make_cuDoubleComplex(delta*prop.x, -diff*prop.y);
+	result2.x *= -1;
+        
+	cuDoubleComplex final2 = cuCadd(cuCmul(result2, value1), cuCmul(result1, value2));
+	
+	sincos(sum, &prop.y, &prop.x);
+	result1.x = prop.x/delta;
+	result1.y = prop.y/delta;
+	
+	grid1[index] = cuCmul(result1, final1);
+	grid2[index] = cuCmul(result1, final2);
+}
+
+__global__ void rpropagate_no_mix(cuDoubleComplex *grid1, cuDoubleComplex *grid2) 
+{
+	const unsigned int index = blockDim.x * blockIdx.x + threadIdx.x;
+	
+	// calculate the propagator and propagate
+	cuDoubleComplex value1 = grid1[index];
+	cuDoubleComplex value2 = grid2[index];
+	
+	double a = -dev_options.timestepsize*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2));
+	double b = -dev_options.timestepsize*dev_options.U*(dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2));
+	
+	cuDoubleComplex prop;
+	
+	sincos(a, &prop.y, &prop.x);
+	cuDoubleComplex result1 = cuCmul(prop, value1);
+	
+	sincos(b, &prop.y, &prop.x);
+	cuDoubleComplex result2 = cuCmul(prop, value2);
+	
+	grid1[index] = result1;
+	grid2[index] = result2;
+}
+
+__global__ void rpropagate_no_mix_sgpe(cuDoubleComplex *grid1, cuDoubleComplex *grid2) 
+{
+	const unsigned int index = blockDim.x * blockIdx.x + threadIdx.x;
+	
+	// calculate the propagator and propagate
+	cuDoubleComplex value1 = grid1[index];
+	cuDoubleComplex value2 = grid2[index];
+	
+	double a = -dev_options.timestepsize*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) - (dev_options.g_matrix[0]+dev_options.g_matrix[1])*dev_options.N*dev_options.fft_factor);
+	double b = -dev_options.timestepsize*dev_options.U*(dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2) - (dev_options.g_matrix[2]+dev_options.g_matrix[1])*dev_options.N*dev_options.fft_factor);
+	
+	cuDoubleComplex prop;
+	
+	sincos(a, &prop.y, &prop.x);
+	cuDoubleComplex result1 = cuCmul(prop, value1);
+	
+	sincos(b, &prop.y, &prop.x);
+	cuDoubleComplex result2 = cuCmul(prop, value2);
+
+    prop.x = exp(GAMMA*a);
+    prop.y = exp(GAMMA*b);
+    
+    result1.x *= prop.x;
+    result1.y *= prop.x;
+    
+    result2.x *= prop.y;
+    result2.y *= prop.y;
+        
+	grid1[index] = result1;
+	grid2[index] = result2;
+}
+
+__global__ void update_grid(cuDoubleComplex *grid1, cuDoubleComplex *grid2, cuDoubleComplex *rand)
+{
+    const unsigned int index = blockDim.x * blockIdx.x + threadIdx.x;
+    const unsigned int index2 = blockDim.x * blockIdx.x + threadIdx.x + dev_options.grid*dev_options.internal;
+    
+    cuDoubleComplex rand1 = rand[index];
+    cuDoubleComplex rand2 = rand[index2];
+    
+    rand1.x *= dev_options.timestepsize;
+    rand1.y *= dev_options.timestepsize;
+    rand2.x *= dev_options.timestepsize;
+    rand2.y *= dev_options.timestepsize;
+    
+    grid1[index] = cuCadd(grid1[index], rand1);
+    grid2[index] = cuCadd(grid2[index], rand2);
+}
+
+
+// Bh3CudaPropagator - Class implementation
+
+
+Bh3Cuda1DPropagator::Bh3Cuda1DPropagator(const PathOptions &opt, const ComplexGrid &start1, const ComplexGrid &start2, const runmode m, double (*quench_scd)(const PathOptions &, double)) :
+Bh3Propagator(opt, start1), get_omega(quench_scd)
+{
+    rm = m;
+    
+    if(rm == SGPE1D)
+    {
+#ifdef CULEGACY
+        curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_XORWOW);
+#else
+        curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MTGP32);
+#endif
+        curandSetPseudoRandomGeneratorSeed(gen, time(NULL));
+    }
+    
+    
+ 
+    rgrid1.resize(opt.delta_t.size()+1);
+    rgrid2.resize(opt.delta_t.size()+1);
+
+    
+    rgrid1[0] = start1;
+    rgrid2[0] = start2;
+    
+ 
+    if(opt.grid[2] > 1 || opt.grid[3] > 1)
+    {
+        cout << "WARNING: I am a 1D propagator. My behaviour is undefiend for the given grid configuration." << endl;
+    }
+    if(opt.grid[1]%RBLOCK_1D_LENGTH != 0 && opt.grid[1] > RBLOCK_1D_LENGTH)
+    {
+        cout << "Grid length must be < or a multiple of " << RBLOCK_1D_LENGTH << endl;
+    }
+	
+	dev_grid1 = new CudaComplexGrid(opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
+    dev_grid2 = new CudaComplexGrid(opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
+
+    if(rm == SGPE1D)
+        randGrid = new CudaComplexGrid(opt.grid[0], 2*opt.grid[1], opt.grid[2], opt.grid[3]);
+    else
+        randGrid = NULL;
+    
+	dev_kprop = new CudaComplexGrid(1, opt.grid[1], opt.grid[2], opt.grid[3]);
+	
+	double fft_factor = 1.0 / (double) (options.grid[1]*options.grid[2]*options.grid[3]);
+	
+	//initialize path options on constant device memory
+	ConstKernelOptions1D o;
+	
+	o.fft_factor = fft_factor;
+	o.timestepsize = options.timestepsize;
+	o.U = options.U;
+
+    o.inv_grid = M_PI / (double) options.grid[1];
+    o.grid = options.grid[1];
+    o.klength = options.klength[0];
+
+	o.internal = options.grid[0];
+
+    o.g_matrix[0] = options.g[0];
+    o.g_matrix[1] = options.g[1];
+    o.g_matrix[2] = options.g[2];
+
+    o.N = (double) options.N;
+
+   	memcpy_host_to_symbol(dev_options, &o, 
+							sizeof(ConstKernelOptions1D), 0);
+    
+    dim3 dimBlock (KBLOCK_1D_LENGTH, 1, 1);
+    dim3 dimGrid (options.grid[1]/KBLOCK_1D_LENGTH, 1, 1);
+    
+	//calculate kspace propagator
+    if(rm == SGPE1D)
+        init_kprop_sgpe<<<dimGrid, dimBlock>>>(dev_kprop->getDevicePointer());
+    else
+        init_kprop<<<dimGrid, dimBlock>>>(dev_kprop->getDevicePointer());
+	
+	//initialise grid in device memory
+	*dev_grid1 = rgrid1[0];
+    *dev_grid2 = rgrid2[0];
+}
+
+
+Bh3Cuda1DPropagator::~Bh3Cuda1DPropagator()
+{
+    if(dev_grid1)
+        delete dev_grid1;
+    if(dev_grid2)
+        delete dev_grid2;
+    if(randGrid)
+        delete randGrid;
+    if(dev_kprop)
+        delete dev_kprop;
+    if(rm == SGPE1D)
+        curandDestroyGenerator(gen);
+}
+
+bool Bh3Cuda1DPropagator::propagate1(double Omega)
+{
+    dim3 RdimBlock(RBLOCK_1D_LENGTH, 1, 1); //threads per block
+	dim3 RdimGrid(options.grid[0]*options.grid[1] / RBLOCK_1D_LENGTH, 1 , 1); //blocks on grid
+    dim3 KdimBlock(KBLOCK_1D_LENGTH,1,1);
+    dim3 KdimGrid(options.grid[0]*options.grid[1] / KBLOCK_1D_LENGTH, 1, 1);
+ 	
+
+//##################################### K propagation #######################################################################
+	thread_synchronize("before r->k");
+
+	if(!CudaComplexGrid::fft(*dev_grid1, *dev_grid1, CUFFT_FORWARD))
+		return false;
+	if(!CudaComplexGrid::fft(*dev_grid2, *dev_grid2, CUFFT_FORWARD))
+		return false;
+	
+	thread_synchronize("after r->k");
+
+ 	kpropagate<<<KdimGrid,KdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer(), dev_kprop->getDevicePointer());
+ 
+// //####################################### R propagation #####################################################################
+	thread_synchronize("after kprop");
+
+	if(!CudaComplexGrid::fft(*dev_grid1, *dev_grid1, CUFFT_INVERSE))
+		return false;
+	thread_synchronize("after k->r");
+	if(!CudaComplexGrid::fft(*dev_grid2, *dev_grid2, CUFFT_INVERSE))
+		return false;
+
+	thread_synchronize("after k->r");
+	
+    if(rm == SGPE1D)
+    {
+        if(Omega !=  0.)
+            rpropagate_sgpe<<<RdimGrid,RdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer(), Omega);
+
+        else
+            rpropagate_no_mix_sgpe<<<RdimGrid,RdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer());
+
+        thread_synchronize("after sgpe rpropagate");
+        
+        curandGenerateNormalDouble(gen, (double *)randGrid->getDevicePointer(), 4*options.grid[1]*options.grid[0], 0., sqrt(GAMMA*0.1));
+        thread_synchronize("after RNG generation");
+        
+        update_grid<<<KdimGrid, KdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer(), randGrid->getDevicePointer());
+        
+            
+    }
+    else
+    {
+        if(Omega < 0.)
+            rpropagate_transverse<<<RdimGrid,RdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer(), Omega);
+        else if(Omega > 0.)
+        {
+            
+            rpropagate<<<RdimGrid,RdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer(), Omega);
+        
+        }
+        
+
+        else
+            rpropagate_no_mix<<<RdimGrid,RdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer());
+    }
+    
+
+ 	thread_synchronize("after rpropagator");
+	
+    current_time += options.timestepsize;
+    
+	return true;
+}
+
+bool Bh3Cuda1DPropagator::propagate1()
+{
+ 	dim3 RdimBlock(RBLOCK_1D_LENGTH, 1, 1); //threads per block
+	dim3 RdimGrid(options.grid[0]*options.grid[1] / RBLOCK_1D_LENGTH, 1 , 1); //blocks on grid
+    dim3 KdimBlock(KBLOCK_1D_LENGTH,1,1);
+    dim3 KdimGrid(options.grid[0]*options.grid[1] / KBLOCK_1D_LENGTH, 1, 1);
+    
+
+
+//##################################### K propagation #######################################################################
+	thread_synchronize("before r->k");
+
+	if(!CudaComplexGrid::fft(*dev_grid1, *dev_grid1, CUFFT_FORWARD))
+		return false;
+	if(!CudaComplexGrid::fft(*dev_grid2, *dev_grid2, CUFFT_FORWARD))
+		return false;
+	
+	thread_synchronize("after r->k");
+
+ 	kpropagate<<<KdimGrid,KdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer(), dev_kprop->getDevicePointer());
+ 
+// //####################################### R propagation #####################################################################
+	thread_synchronize("after kprop");
+
+	if(!CudaComplexGrid::fft(*dev_grid1, *dev_grid1, CUFFT_INVERSE))
+		return false;
+	thread_synchronize("after k->r");
+	if(!CudaComplexGrid::fft(*dev_grid2, *dev_grid2, CUFFT_INVERSE))
+		return false;
+
+	thread_synchronize("after k->r");
+
+    if(rm == SGPE1D)
+    {
+        
+        rpropagate_no_mix_sgpe<<<RdimGrid,RdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer());
+
+        thread_synchronize("after sgpe rpropagate");
+        
+        curandGenerateNormalDouble(gen, (double *)randGrid->getDevicePointer(), 4*options.grid[1]*options.grid[0], 0., sqrt(GAMMA*0.1));
+        thread_synchronize("after RNG generation");
+        
+        update_grid<<<KdimGrid, KdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer(), randGrid->getDevicePointer());
+    }
+    else
+    {
+        rpropagate_no_mix<<<RdimGrid,RdimBlock>>>(dev_grid1->getDevicePointer(), dev_grid2->getDevicePointer());
+    }
+        
+ 	thread_synchronize("after rpropagator");
+    
+    current_time += options.timestepsize;
+    	
+	return true;
+}
+
+bool Bh3Cuda1DPropagator::propagateN(int N)
+{
+	int steps = N;
+	for(int n = delta_N.size() - 1; n >= 0; n--)
+	{
+		steps -= delta_N[n];
+		if(steps < 0)
+			steps = 0;
+		for(int i = 0; i < steps; i++)
+		{
+            if(get_omega == NULL)
+            {
+                if(!propagate1())
+                    return false;
+            }
+            else
+            {
+                if(!propagate1((*get_omega)(options, current_time)))
+                    return false;
+            }
+            
+        }
+
+		rgrid1[n] = *dev_grid1;
+        rgrid2[n] = *dev_grid2;
+        
+
+		N = steps = N - steps;
+	}
+	return true;
+}
+
+bool Bh3Cuda1DPropagator::start(const std::vector<double> &snapshots, const string &filename)
+{
+	Bh3BinaryFile file(filename, options, Bh3BinaryFile::out);
+
+	for(std::vector<double>::const_iterator it = snapshots.begin(); it != snapshots.end(); ++it)
+	{
+		//cout << "Thread " << omp_get_thread_num() << ": Propagation to " << *it << "." << endl;
+		if(!propagateToTime(*it))
+			return false;
+		
+        file.append_snapshot(*it, rgrid1);
+		file.append_snapshot(*it, rgrid2);
+    }
+	return true;
+}
+
+
+
+
+

@@ -1,0 +1,22 @@
+#ifndef BH2CUDAPROPAGATOR_H__
+#define BH2CUDAPROPAGATOR_H__
+
+#include "cudacomplexgrid.h"
+#include "bh3propagator.h"
+
+class Bh3CudaPropagator : public Bh3Propagator {
+	protected:
+		CudaComplexGrid *dev_rgrid;
+		CudaComplexGrid *dev_kgrid;
+		CudaComplexGrid *dev_kprop;
+	public:
+		Bh3CudaPropagator(const PathOptions &opt, const ComplexGrid &start);
+		virtual ~Bh3CudaPropagator();
+		
+	protected:
+		bool propagateN(int N);
+		bool propagate1();
+};
+
+#endif
+ 
