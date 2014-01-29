@@ -51,13 +51,13 @@ int main( int argc, char** argv)
 			
 				stringstream filename;
 				filename << dirname << "Bh3" << "Path" << p+PATHNUMBER/NUM_THREADS*thread << ".bin";
-				Bh3CudaPropagator *cp, *cp_imag;
+				Bh3CPUPropagator *cp, *cp_imag;
 			
 				time_t timer = time(NULL);
 				ComplexGrid *start =create_Vortex_start_Grid2(opt,2,2,1,2);
 
                 opt.timestepsize = 0.015;
-                cp_imag = new Bh3CudaPropagator(opt, *start, Bh3CudaPropagator::imag);
+                cp_imag = new Bh3CPUPropagator(opt, *start, Bh3CPUPropagator::imag);
                 cp_imag -> propagateToTime(opt.timestepsize*2000.);
                 cp_imag -> renoise();
         
@@ -66,7 +66,7 @@ int main( int argc, char** argv)
                 delete cp_imag;
 
                 opt.timestepsize = 0.2;
-                cp = new Bh3CudaPropagator(opt, *start, Bh3CudaPropagator::diss);
+                cp = new Bh3CPUPropagator(opt, *start, Bh3CPUPropagator::diss);
 
                 delete start;
 

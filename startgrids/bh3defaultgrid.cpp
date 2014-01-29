@@ -183,6 +183,7 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
                     if(i==0)
                     {
                         g->at(j,x,y,0)= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+			
                     }
                     else if(i==Vortexnumber-1)
                     {

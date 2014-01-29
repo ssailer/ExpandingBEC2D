@@ -8,7 +8,7 @@
 #include "bh3propagator.h"
 
 
-class Bh3CudaPropagator : public Bh3Propagator {
+class Bh3CPUPropagator : public Bh3Propagator {
     
   public:
     enum runmode {imag, normal, diss, drivdiss};
@@ -22,8 +22,8 @@ class Bh3CudaPropagator : public Bh3Propagator {
 
 		
   public:
-    Bh3CudaPropagator(const PathOptions &opt, const ComplexGrid &start, const runmode rm);
-    virtual ~Bh3CudaPropagator();
+    Bh3CPUPropagator(const PathOptions &opt, const ComplexGrid &start, const runmode rm);
+    virtual ~Bh3CPUPropagator();
     
     bool renoise();
     bool renoise_phase();

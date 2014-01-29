@@ -12,6 +12,7 @@ Bh3Propagator::Bh3Propagator(const PathOptions &opt, const ComplexGrid &start)
 {
 	options = opt;
 	rgrid.resize(options.delta_t.size() + 1);
+	kgrid.resize(options.delta_t.size() + 1);
 
 	// start-grid kopieren
 	rgrid[0] = start;

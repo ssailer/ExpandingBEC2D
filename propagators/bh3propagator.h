@@ -13,6 +13,7 @@ class ComplexGrid;
 class Bh3Propagator {
 	protected:
 		std::vector<ComplexGrid> rgrid;
+		std::vector<ComplexGrid> kgrid;
 		
         
         PathOptions options;

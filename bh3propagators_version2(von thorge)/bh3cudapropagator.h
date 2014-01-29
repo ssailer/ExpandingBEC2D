@@ -4,7 +4,7 @@
 #include "cudacomplexgrid.h"
 #include "bh3propagator.h"
 
-class Bh3CudaPropagator : public Bh3Propagator {
+class Bh3CPUPropagator : public Bh3Propagator {
 	protected:
 		CudaComplexGrid *dev_rgrid1;
 		CudaComplexGrid *dev_rgrid2;
@@ -16,8 +16,8 @@ class Bh3CudaPropagator : public Bh3Propagator {
 		double tau_q;
 
 	public:
-		Bh3CudaPropagator(const PathOptions &opt, const ComplexGrid &start1, const ComplexGrid &start2, const double t_q);
-		virtual ~Bh3CudaPropagator();
+		Bh3CPUPropagator(const PathOptions &opt, const ComplexGrid &start1, const ComplexGrid &start2, const double t_q);
+		virtual ~Bh3CPUPropagator();
               
 		
 	protected:

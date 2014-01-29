@@ -8,20 +8,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 #include <averageclass.h>
-#include <bh3cudapropagator.h>
+// #include <bh3cudapropagator.h>
+#include <bh3propagator.h>
+#include <bh3cpupropagator.h>
+// #include <bh3fastcpupropagator.h>
 #include <complexgrid.h>
 #include <bh3defaultgrid.h>
 #include <bh3binaryfile.h>
 #include <gauss_random.h>
 #include <bh3observables.h>
 #include <omp.h>
-#include <wrapped_cuda_functions.h>
+// #include <wrapped_cuda_functions.h>
 
 #define FRAME_DURATION 10
 #define WAIT_AFTER 200
@@ -30,7 +30,10 @@
 #define PNG_HEIGHT 480
 #define FIELD_WIDTH 6
 #define PATHS 50
+
+
 using namespace std;
+
 
 void init_bh3(int argc, char** argv, PathOptions &opt, vector<double> &snapshot_times);
 void plot(const string &dirname, const PathOptions& opt, vector<double> &snapshot_times, AverageClass<Bh3Evaluation::Averages> *av);
@@ -38,6 +41,7 @@ void plot(const string &dirname, const PathOptions& opt, vector<double> &snapsho
 ////////////////////////////////////////////////////////////////////////////////
 // Program main
 ////////////////////////////////////////////////////////////////////////////////
+
 int main( int argc, char** argv) 
 {
 	PathOptions opt;
@@ -50,7 +54,8 @@ int main( int argc, char** argv)
 	ComplexGrid::set_fft_planning_rigorosity(FFTW_MEASURE);
 
 	init_random();
-
+	
+	
 	stringstream dstr;
 	dstr << "bh3cuda_TS"; /*<< opt.timestepsize
          << "_G" << opt.grid[0] << "_" << opt.grid[1] << "_" << opt.grid[2]
@@ -59,26 +64,29 @@ int main( int argc, char** argv)
 	     << "_KL" << opt.klength[0] << "_" << opt.klength[1] << "_" << opt.klength[2];*/
     
 	string dirname = dstr.str();
-    initialize_binary_dir(dirname, opt);
+	
+		
+	initialize_binary_dir(dirname, opt);
 	mkdir((dirname + "/temp").c_str(), 0755);
 	
 	AverageClass<Bh3Evaluation::Averages> *av =  new AverageClass<Bh3Evaluation::Averages> [snapshot_times.size()];
 	
+		
 	for(int k = 0; k < PATHS; k++)
 	{
-        if(init_cuda_device(0))
-		{
+      
+		
             time_t timer = time(NULL);
 			
 			ComplexGrid *start;
-			Bh3CPUPropagator *cp, *cp_imag;
+			Bh3Propagator *cp, *cp_imag;
 			
                 //start = create_Vortex_start_Grid2(opt,16,4,4,4);
 
             start = new ComplexGrid (opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
             
             // opt.timestepsize = 0.015;
-            // cp_imag = new Bh3CPUPropagator(opt, *start, Bh3CPUPropagator::imag);
+            // cp_imag = new Bh3CudaPropagator(opt, *start, Bh3CudaPropagator::imag);
             // cp_imag -> propagateToTime(opt.timestepsize*2000.);
             // cp_imag -> renoise();
         
@@ -88,14 +96,16 @@ int main( int argc, char** argv)
         
 
             // opt.timestepsize = 0.2;
-            cp = new Bh3CPUPropagator(opt, *start, Bh3CPUPropagator::drivdiss);
+            cp = new Bh3CPUPropagator(opt, *start);
 
             delete start;
 
             for(int j = 0; j < snapshot_times.size(); j++)
 			{
                 cout << "propagating...." << omp_get_thread_num() << endl;
+	    
                 cp->propagateToTime(snapshot_times[j]);
+		
 							
                 cout << "evaluating ..." << omp_get_thread_num() << endl;
                                                         
@@ -112,8 +122,8 @@ int main( int argc, char** argv)
 			delete cp;
 			
 			cout << "Path CUDA took " << time(NULL) - timer << "seconds" << endl;
-		}		// if init_cuda_device
-        cudaThreadExit();
+			
+       
                 
 		if(k%5 == 0)
 		{
@@ -242,35 +252,5 @@ void plot(const string &dirname, const PathOptions& opt, vector<double> &snapsho
 	
 	plotfile.close();
 }
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

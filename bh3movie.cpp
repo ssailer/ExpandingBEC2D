@@ -51,7 +51,7 @@ int main( int argc, char** argv)
 		time_t timer = time(NULL);
 		
 		ComplexGrid *start;
-		Bh3CudaPropagator *cp1, *cp2;
+		Bh3CPUPropagator *cp1, *cp2;
 				
             //start = create_Vortex_start_Grid2(opt, 16,4,4,4);
             //start = create_Default_Start_Grid(opt,1);
@@ -59,7 +59,7 @@ int main( int argc, char** argv)
         
 
 /*        opt.timestepsize = 0.015;
-        cp_imag = new Bh3CudaPropagator(opt, *start, Bh3CudaPropagator::imag);
+        cp_imag = new Bh3CPUPropagator(opt, *start, Bh3CPUPropagator::imag);
         cp_imag -> propagateToTime(opt.timestepsize*2000.);
         cp_imag -> renoise();
         
@@ -71,14 +71,14 @@ int main( int argc, char** argv)
         opt.timestepsize = 0.2;*/
         
         
-/*        cp1 = new Bh3CudaPropagator(opt, *start, Bh3CudaPropagator::drivdiss);
+/*        cp1 = new Bh3CPUPropagator(opt, *start, Bh3CPUPropagator::drivdiss);
         cp1->propagateToTime(15000.);
         *start = cp1->getRGrid()[0];
 
         delete cp1;
         
         opt.g[0] = 1./100.;*/
-        cp2 = new Bh3CudaPropagator(opt, *start, Bh3CudaPropagator::drivdiss);
+        cp2 = new Bh3CPUPropagator(opt, *start, Bh3CPUPropagator::drivdiss);
 
 		delete start;
 		
