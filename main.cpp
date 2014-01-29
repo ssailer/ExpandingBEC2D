@@ -9,18 +9,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <averageclass.h>
-// #include <bh3cudapropagator.h>
-#include <bh3propagator.h>
-#include <bh3cpupropagator.h>
-#include <complexgrid.h>
-#include <bh3defaultgrid.h>
-#include <bh3binaryfile.h>
-#include <gauss_random.h>
-#include <bh3observables.h>
 #include <omp.h>
-// #include <wrapped_cuda_functions.h>
+
+#include <complexgrid.h>
+#include <bh3binaryfile.h>
+#include <bh3defaultgrid.h>
+#include <bh3cpupropagator.h>
+#include <averageclass.h>
+#include <bh3observables.h>
+#include <gauss_random.h>
 
 #define FRAME_DURATION 10
 #define WAIT_AFTER 200
@@ -28,11 +25,10 @@
 #define PNG_WIDTH 640 
 #define PNG_HEIGHT 480
 #define FIELD_WIDTH 6
-#define PATHS 50
+#define PATHS 1
 
 
 using namespace std;
-
 
 void init_bh3(int argc, char** argv, PathOptions &opt, vector<double> &snapshot_times);
 void plot(const string &dirname, const PathOptions& opt, vector<double> &snapshot_times, AverageClass<Bh3Evaluation::Averages> *av);
@@ -43,68 +39,47 @@ void plot(const string &dirname, const PathOptions& opt, vector<double> &snapsho
 
 int main( int argc, char** argv) 
 {
+	/// Load init_bh3, options and snapshot_times
 	PathOptions opt;
 	vector<double> snapshot_times;
+	init_bh3(argc, argv, opt, snapshot_times);
+	/// Finished loading
+	
 	
 	string rm = "rm ";
 	
-	init_bh3(argc, argv, opt, snapshot_times);
-
-	ComplexGrid::set_fft_planning_rigorosity(FFTW_MEASURE);
-
-	init_random();
 	
-	
+
+	// ComplexGrid::set_fft_planning_rigorosity(FFTW_MEASURE);
+
 	stringstream dstr;
-	dstr << "bh3cuda_TS"; /*<< opt.timestepsize
-         << "_G" << opt.grid[0] << "_" << opt.grid[1] << "_" << opt.grid[2]
-         << "_N" << opt.N
-         << "_U" << opt.U
-	     << "_KL" << opt.klength[0] << "_" << opt.klength[1] << "_" << opt.klength[2];*/
-    
+	dstr << "bh3cuda_TS"; 
+	    
 	string dirname = dstr.str();
-	
-		
 	initialize_binary_dir(dirname, opt);
-	mkdir((dirname + "/temp").c_str(), 0755);
+	mkdir((dirname + "/temp").c_str(), 0755);	
 	
 	AverageClass<Bh3Evaluation::Averages> *av =  new AverageClass<Bh3Evaluation::Averages> [snapshot_times.size()];
 	
-		
 	for(int k = 0; k < PATHS; k++)
 	{
-      
-		
-            time_t timer = time(NULL);
-			
-			ComplexGrid *start;
-			Bh3Propagator *cp, *cp_imag;
-			
-                //start = create_Vortex_start_Grid2(opt,16,4,4,4);
+	
+	ComplexGrid *start;
+	// Bh3CPUPropagator *cp, *cp_imag;
+	
+	start = create_Vortex_start_Grid2(opt,16,4,4,4);
+	cout << start->at(0,1,1,0) << endl;;
 
-            start = new ComplexGrid (opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
-            
-            // opt.timestepsize = 0.015;
-            // cp_imag = new Bh3CudaPropagator(opt, *start, Bh3CudaPropagator::imag);
-            // cp_imag -> propagateToTime(opt.timestepsize*2000.);
-            // cp_imag -> renoise();
-        
-            // *start = cp_imag -> getRGrid()[0];
-        
-            // delete cp_imag;
-        
+        // start = new ComplexGrid (opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
+         
+        // cp = new Bh3CPUPropagator(opt, *start);
 
-            // opt.timestepsize = 0.2;
-            cp = new Bh3CPUPropagator(opt, *start);
-
-            delete start;
-
-            for(int j = 0; j < snapshot_times.size(); j++)
-			{
+        delete start;
+	/*
+        for(int j = 0; j < snapshot_times.size(); j++)
+		{
                 cout << "propagating...." << omp_get_thread_num() << endl;
-	    
                 cp->propagateToTime(snapshot_times[j]);
-		
 							
                 cout << "evaluating ..." << omp_get_thread_num() << endl;
                                                         
@@ -116,30 +91,35 @@ int main( int argc, char** argv)
                 ev.calc_radial_averages(); 
                 
                 av[j].average(ev.get_averageable_results());
-			}
+		}
+	*/
 
-			delete cp;
-			
-			cout << "Path CUDA took " << time(NULL) - timer << "seconds" << endl;
-			
+	// delete cp;
        
-                
+       /*
 		if(k%5 == 0)
 		{
             plot(dirname, opt, snapshot_times, av);
             cout<< "run " << k << " done" << endl;
 		}
+	
+
+                
+		
 	}
 		 
-    plot(dirname, opt, snapshot_times, av);
-    delete [] av;
+	plot(dirname, opt, snapshot_times, av);
+	delete [] av;
     
 	stringstream rm_command;                     
 	rm_command << "rm -r " << dirname << "/temp";
-    system(rm_command.str().c_str());
-	
+	system(rm_command.str().c_str());
+	*/
+	}
 	return 0;
+  
 }
+
 
 void init_bh3(int argc, char** argv, PathOptions &opt, vector<double> &snapshot_times)
 {
@@ -151,25 +131,25 @@ void init_bh3(int argc, char** argv, PathOptions &opt, vector<double> &snapshot_
 
 	opt.N = 3.2e9;  //normed for 512*512 N=64*50000
 	
-    opt.grid[0] = 1;
-    opt.grid[1] = 1024;
+	opt.grid[0] = 1;
+	opt.grid[1] = 1024;
 	opt.grid[2] = 1024;
 	opt.grid[3] = 1;
 	opt.U = 3e-5;
 	
-    opt.g.resize(1);
-    opt.g[0] = 1./4.;
+	opt.g.resize(1);
+	opt.g[0] = 1./4.;
     	
-	opt.klength[0] = 2.0;
-	opt.klength[1] = 2.0;
-	opt.klength[2] = 2.0;
+	opt.klength[0] = 3.0;
+	opt.klength[1] = 3.0;
+	opt.klength[2] = 3.0;
 	
-    snapshot_times.resize(5);
-    snapshot_times[0] =5000;
-    snapshot_times[1] =10000;
-    snapshot_times[2] =15000;
-    snapshot_times[3] =20000;
-    snapshot_times[4] =25000;
+	snapshot_times.resize(5);
+	snapshot_times[0] =5000;
+	snapshot_times[1] =10000;
+	snapshot_times[2] =15000;
+	snapshot_times[3] =20000;
+	snapshot_times[4] =25000;
           // snapshot_times[6] =17000;
           // snapshot_times[7] =20000;
           // snapshot_times[8] =30000;
@@ -206,17 +186,7 @@ void init_bh3(int argc, char** argv, PathOptions &opt, vector<double> &snapshot_
           // snapshot_times[39]=1700000;
           // snapshot_times[40]=1800000;
           // snapshot_times[41]=1900000;*/
-      
-		
 
-        /*		for(int i = 0; i < snapshot_times.size(); i++)///////////////////////was passiert hier/????????////====warum die snapshot zeit veraendern???========?????
-                {
-                int time_res = 1000;
-                snapshot_times[i] = (int) (500.*pow(10,((double)i/10.)));
-                    //cout<<snapshot_times[i]<<endl;
-                        //snapshot_times[i] = i*time_res + 25000;
-                        }*/
-	
 }
 
 
@@ -251,5 +221,9 @@ void plot(const string &dirname, const PathOptions& opt, vector<double> &snapsho
 	
 	plotfile.close();
 }
+
+
+
+
 
 
