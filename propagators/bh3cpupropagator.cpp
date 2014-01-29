@@ -23,13 +23,13 @@ Bh3CPUPropagator::Bh3CPUPropagator(const PathOptions &opt, const ComplexGrid &st
 		{
 			for(int z = 0; z < kprop->depth(); z++)
 			{
-				double k[4];
-				k[1] = opt.klength[1] * sin(M_PI * x / (double) opt.grid[1]);
-				k[2] = opt.klength[2] * sin(M_PI * y / (double) opt.grid[2]);
-				k[3] = opt.klength[3] * sin(M_PI * z / (double) opt.grid[3]);
+				double k[1];
+				k[0] = opt.klength[1] * sin(M_PI * x / (double) opt.grid[1]);
+				k[1] = opt.klength[2] * sin(M_PI * y / (double) opt.grid[2]);
+				k[2] = opt.klength[3] * sin(M_PI * z / (double) opt.grid[3]);
 				
-				double T = - (k[1] * k[1] + k[2] * k[2] + k[3] * k[3]) * opt.timestepsize;
-				kprop->at(1,x,y,z) = exp(complex<double>(0,T)) / (double) (options.grid[1]*options.grid[2]*options.grid[3]);
+				double T = - (k[0] * k[0] + k[1] * k[1] + k[2] * k[2]) * opt.timestepsize;
+				kprop->at(0,x,y,z) = exp(complex<double>(0,T)) / (double) (options.grid[1]*options.grid[2]*options.grid[3]);
 			}
 		}
 	}
@@ -62,7 +62,7 @@ bool Bh3CPUPropagator::propagate1()
 		{
 			for(int y = 0; y < kgrid[0].height(); y++)
 			{
-				kgrid[0](1,x,y,z) = kprop->at(1,x,y,z) * kgrid[0](1,x,y,z);
+				kgrid[0](0,x,y,z) = kprop->at(0,x,y,z) * kgrid[0](0,x,y,z);
 			}
 		}
 	}
@@ -84,9 +84,9 @@ bool Bh3CPUPropagator::propagate1()
 		{
 			for(int y = 0; y < rgrid[0].height(); y++)
 			{
-				complex<double> value = rgrid[0](1,x,y,z);
+				complex<double> value = rgrid[0](0,x,y,z);
 				double V = abs2(value) * factor;
-				rgrid[0](1,x,y,z) = complex<double>(cos(V), sin(V)) * value;
+				rgrid[0](0,x,y,z) = complex<double>(cos(V), sin(V)) * value;
 			}
 		}
 	}	

@@ -50,7 +50,7 @@ int main( int argc, char** argv)
 	
 	
 
-	// ComplexGrid::set_fft_planning_rigorosity(FFTW_MEASURE);
+	ComplexGrid::set_fft_planning_rigorosity(FFTW_MEASURE);
 
 	stringstream dstr;
 	dstr << "bh3cuda_TS"; 
@@ -65,22 +65,23 @@ int main( int argc, char** argv)
 	{
 	
 	ComplexGrid *start;
-	// Bh3CPUPropagator *cp, *cp_imag;
+	Bh3CPUPropagator *cp, *cp_imag;
 	
 	start = create_Vortex_start_Grid2(opt,16,4,4,4);
-	cout << start->at(0,1,1,0) << endl;;
+	// cout << start->at(0,1,1,0) << endl;;
 
         // start = new ComplexGrid (opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
          
-        // cp = new Bh3CPUPropagator(opt, *start);
+	cp = new Bh3CPUPropagator(opt, *start);
 
-        delete start;
-	/*
+       delete start;
+	
         for(int j = 0; j < snapshot_times.size(); j++)
 		{
                 cout << "propagating...." << omp_get_thread_num() << endl;
                 cp->propagateToTime(snapshot_times[j]);
-							
+				
+		/*
                 cout << "evaluating ..." << omp_get_thread_num() << endl;
                                                         
                 Bh3Evaluation ev(opt);
@@ -91,12 +92,13 @@ int main( int argc, char** argv)
                 ev.calc_radial_averages(); 
                 
                 av[j].average(ev.get_averageable_results());
+                */
 		}
-	*/
+	
 
-	// delete cp;
+	delete cp;
        
-       /*
+       
 		if(k%5 == 0)
 		{
             plot(dirname, opt, snapshot_times, av);
@@ -114,8 +116,8 @@ int main( int argc, char** argv)
 	stringstream rm_command;                     
 	rm_command << "rm -r " << dirname << "/temp";
 	system(rm_command.str().c_str());
-	*/
-	}
+	
+	
 	return 0;
   
 }
@@ -132,8 +134,8 @@ void init_bh3(int argc, char** argv, PathOptions &opt, vector<double> &snapshot_
 	opt.N = 3.2e9;  //normed for 512*512 N=64*50000
 	
 	opt.grid[0] = 1;
-	opt.grid[1] = 1024;
-	opt.grid[2] = 1024;
+	opt.grid[1] = 256;
+	opt.grid[2] = 256;
 	opt.grid[3] = 1;
 	opt.U = 3e-5;
 	
@@ -144,12 +146,12 @@ void init_bh3(int argc, char** argv, PathOptions &opt, vector<double> &snapshot_
 	opt.klength[1] = 3.0;
 	opt.klength[2] = 3.0;
 	
-	snapshot_times.resize(5);
+	snapshot_times.resize(1);
 	snapshot_times[0] =5000;
-	snapshot_times[1] =10000;
-	snapshot_times[2] =15000;
-	snapshot_times[3] =20000;
-	snapshot_times[4] =25000;
+	//snapshot_times[1] =10000;
+	//snapshot_times[2] =15000;
+	//snapshot_times[3] =20000;
+	//snapshot_times[4] =25000;
           // snapshot_times[6] =17000;
           // snapshot_times[7] =20000;
           // snapshot_times[8] =30000;
@@ -204,6 +206,7 @@ void plot(const string &dirname, const PathOptions& opt, vector<double> &snapsho
 	for (int i = 0; i < snapshot_times.size(); i++)
 	{
         Bh3Evaluation::Averages means = av[i].av();
+	
         
         for (int r = 0; r < means.number.size(); r++)             
 		{
