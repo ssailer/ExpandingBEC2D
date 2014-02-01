@@ -40,6 +40,9 @@ void plot(const string &dirname, const PathOptions& opt, vector<double> &snapsho
 ////////////////////////////////////////////////////////////////////////////////
 int main( int argc, char** argv) 
 {
+  
+	
+  
 	PathOptions opt;
 	vector<double> snapshot_times;
 	

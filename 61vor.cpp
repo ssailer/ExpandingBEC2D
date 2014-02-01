@@ -164,7 +164,7 @@ double phase_save(int a,int b) //Definition of phase
 	else{ return arg(psi[a][b]); }
 }
 
-void add_vortex()
+void add_vortex() // computes the phasefield by adding all vortices together and saves the final psi to use for timeevolution
 {
    	for(i=0;i<n_x;i++)
 	{
@@ -180,7 +180,7 @@ void add_vortex()
 			  /*Ring 4*/
 			  +vortex(i,j,x_38,y_38)+vortex(i,j,x_39,y_39)+vortex(i,j,x_40,y_40)+vortex(i,j,x_41,y_41)+vortex(i,j,x_42,y_42)+vortex(i,j,x_43,y_43)+vortex(i,j,x_44,y_44)+vortex(i,j,x_45,y_45)+vortex(i,j,x_46,y_46)+vortex(i,j,x_47,y_47)+vortex(i,j,x_48,y_48)+vortex(i,j,x_49,y_49)+vortex(i,j,x_50,y_50)+vortex(i,j,x_51,y_51)+vortex(i,j,x_52,y_52)+vortex(i,j,x_53,y_53)+vortex(i,j,x_54,y_54)+vortex(i,j,x_55,y_55)+vortex(i,j,x_56,y_56)+vortex(i,j,x_57,y_57)+vortex(i,j,x_58,y_58)+vortex(i,j,x_59,y_59)+vortex(i,j,x_60,y_60)+vortex(i,j,x_61,y_61)
 ;
-			psi[i][j]=polar(abs(psi_copy[i][j]),phase[i][j]);
+			psi[i][j]=polar(abs(psi_copy[i][j]),phase[i][j]); // compute psi by using the initial psi^2 and adding the phase 
 			psi_copy[i][j]=psi[i][j];
       		}
    	}
@@ -212,9 +212,9 @@ int main()
 	{
 		for(j=0;j<n_y;j++)
 		{
-		        psi[i][j]=complex<double>(gauss(x_axis[i],y_axis[j]),0);
+		        psi[i][j]=complex<double>(gauss(x_axis[i],y_axis[j]),0); // Initialize with gaussian
 			psi_copy[i][j]=psi[i][j];
-			phase[i][j]=0;
+			phase[i][j]=0; 
 		}	
 	}
        
