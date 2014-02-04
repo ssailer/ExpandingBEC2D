@@ -10,42 +10,33 @@ Website: www.bartholomewandrews.com
 #include <complex>
 #include <complexgrid.h>
 #include <exp_RK4_tools.h>
+// #include <2dexpan.h>
+
 
 
 using namespace std;
 
 //*****Parameter Initialisation*****
 
-const double ITP_step=0.000001; //Time-step for the ITP (0.000001)
-const double RTE_step=0.00001; //Time-step for the RTE (0.00001)
-const int n_x=128,n_y=128; //Lattice size (1500x1500)  
+// const double ITP_step=0.000001; //Time-step for the ITP (0.000001)
+// const double RTE_step=0.00001; //Time-step for the RTE (0.00001)
+// const int n_x=128,n_y=128; //Lattice size (1500x1500)  lo
 
 const int vortex_start=8000; //ITP iterations before the phase disturbances are added (8000<n_it_ITP) 
-//const int n_save_ITP=1000; //Save ITP after every n_save_ITP iterations (initial state is auto saved)
+const int n_save_ITP=1000; //Save ITP after every n_save_ITP iterations (initial state is auto saved)
 const int n_it_ITP=10000; //Number of iterations for ITP (10000)
 const int n_save_RTE=100; //Save RTE after every n_save_RTE iterations - intial state is auto saved (500)
 const int n_it_RTE=101; //Number of iterations for RTE (2501) 
-const int name=1; //Name of output (must be an integer)
+// const int name=1; //Name of output (must be an integer)
 
 //*****Variable Declarations*****
 
-int i,j,k,l,m; //Declare the loop variables
 int counter_ITP=0, counter_RTE=0; //Initialise the variables for the percentage loading
 
-// complex<double> h_x(((2.*min_x)/n_x),0),h_y(((2.*min_y)/n_y),0); //Lattice constants (chosen for symmetric initial axis ranges)
-// complex<double> psi[n_x][n_y],psi_copy[n_x][n_y]; //Wavefunction (and copy for the RK4 algorithm)
-//complex<double> k1[n_x][n_y],k2[n_x][n_y],k3[n_x][n_y],k4[n_x][n_y]; //Runge-Kutta coefficients
-;
-double phase[n_x][n_y]; //Sum of all phases (used in the add_vortex() function) 
-
-complex<double> scale_factor(0,0); //Scale factor
-complex<double> t_abs(0,0); //Absolute time 
-complex<double> exp_factor(1,0); //Expansion factor
-complex<double> Integral(0,0);
-complex<double> Integral_aux(0,0); //Result of the integral function
+// double phase[opt.grid[1]][opt.grid[2]]; //Sum of all phases (used in the add_vortex() function) 
 
 //*****Vortex Initial Coordinates*****
-
+/*
 //Spacing (6% across and 3% up relative to the lattice grid size)
 const int across=6,up=3;
 int half_across=across/2;
@@ -68,12 +59,12 @@ int y_20=n_y/2,y_21=(100+up)*n_y/200,y_22=(100+2*up)*n_y/200,y_23=(100+3*up)*n_y
 
 //Ring 4
 int x_38=(100-4*across)*n_x/200,x_39=(100-3*across-half_across)*n_x/200,x_40=(100-3*across)*n_x/200,x_41=(100-2*across-half_across)*n_x/200,x_42=(100-2*across)*n_x/200,x_43=(100-across)*n_x/200,x_44=n_x/2,x_45=(100+across)*n_x/200,x_46=(100+2*across)*n_x/200,x_47=(100+2*across+half_across)*n_x/200,x_48=(100+3*across)*n_x/200,x_49=(100+3*across+half_across)*n_x/200,x_50=(100+4*across)*n_x/200,x_51=(100+3*across+half_across)*n_x/200,x_52=(100+3*across)*n_x/200,x_53=(100+2*across+half_across)*n_x/200,x_54=(100+2*across)*n_x/200,x_55=(100+across)*n_x/200,x_56=n_x/2,x_57=(100-across)*n_x/200,x_58=(100-2*across)*n_x/200,x_59=(100-2*across-half_across)*n_x/200,x_60=(100-3*across)*n_x/200,x_61=(100-3*across-half_across)*n_x/200;
-int y_38=n_y/2,y_39=(100+up)*n_y/200,y_40=(100+2*up)*n_y/200,y_41=(100+3*up)*n_y/200,y_42=(100+4*up)*n_y/200,y_43=(100+4*up)*n_y/200,y_44=(100+4*up)*n_y/200,y_45=(100+4*up)*n_y/200,y_46=(100+4*up)*n_y/200,y_47=(100+3*up)*n_y/200,y_48=(100+2*up)*n_y/200,y_49=(100+up)*n_y/200,y_50=n_y/2,y_51=(100-up)*n_y/200,y_52=(100-2*up)*n_y/200,y_53=(100-3*up)*n_y/200,y_54=(100-4*up)*n_y/200,y_55=(100-4*up)*n_y/200,y_56=(100-4*up)*n_y/200,y_57=(100-4*up)*n_y/200,y_58=(100-4*up)*n_y/200,y_59=(100-3*up)*n_y/200,y_60=(100-2*up)*n_y/200,y_61=(100-up)*n_y/200;
+int y_38=n_y/2,y_39=(100+up)*n_y/200,y_40=(100+2*up)*n_y/200,y_41=(100+3*up)*n_y/200,y_42=(100+4*up)*n_y/200,y_43=(100+4*up)*n_y/200,y_44=(100+4*up)*n_y/200,y_45=(100+4*up)*n_y/200,y_46=(100+4*up)*n_y/200,y_47=(100+3*up)*n_y/200,y_48=(100+2*up)*n_y/200,y_49=(100+up)*n_y/200,y_50=n_y/2,y_51=(100-up)*n_y/200,y_52=(100-2*up)*n_y/200,y_53=(100-3*up)*n_y/200,y_54=(100-4*up)*n_y/200,y_55=(100-4*up)*n_y/200,y_56=(100-4*up)*n_y/200,y_57=(100-4*up)*n_y/200,y_58=(100-4*up)*n_y/200,y_59=(100-3*up)*n_y/200,y_60=(100-2*up)*n_y/200,y_61=(100-up)*n_y/200;*/
 
 
 //*****Function Definitions*****
 
-double gauss(double x,double y){return (exp(-x*x-y*y));} //A simple Gaussian
+// double gauss(double x,double y){return (exp(-x*x-y*y));} //A simple Gaussian
 
 
 	
@@ -83,29 +74,21 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 //>>>>>Main Program<<<<< 
 
 int main( int argc, char** argv) 
-{
+{	
+
 	Options opt;
 	vector<double> snapshot_times;
 	init_bh3(argc, argv, opt, snapshot_times);
 // 	complex<double> h_x(((2.*min_x)/opt.grid[1]),0),h_y(((2.*min_y)/opt.grid[2]),0); //Lattice constants (chosen for symmetric initial axis ranges)
 // 	
-// 	openDataFiles_obdm(1,name); //Open file with name (1,name)
+// 	
 // 	
 // 	ComplexGrid * pPsi;
 // 	pPsi = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 // 		
 // 	
 // 		
-// 	for(i=0;i<opt.grid[1];i++) //Initialise the wavefunction
-// 	{
-// 		for(j=0;j<opt.grid[2];j++)
-// 		{
-// 			complex<double> factor (gauss(x_axis[i],y_axis[j]),0);
-// 			
-// 		        pPsi->at(0,i,j,0) = factor;
-// 			phase[i][j]=0; 
-// 		}	
-// 	}
+
 // 	
 // 	ComplexGridPtr pPsiCopy(pPsi);
 // 	
@@ -122,21 +105,36 @@ int main( int argc, char** argv)
 	
 	// initialize_psi(n_x,n_y,h_x,h_y);
 
-	
-	/*
-	//====> Imaginary Time Propagation (ITP)
-
-	complex<double> t_ITP(ITP_step,0); //Time-step size for ITP (the equations already assume imaginary time so a real t_ITP should be used)				
-
-	for(k=0;k<n_it_ITP;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
+	ComplexGrid* startgrid;
+	startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	RK4* run;
+	run = new RK4(startgrid,opt);
+// 	cout << run->pPsi->at(0,1,2,0) << "HIER" << endl;
+	delete startgrid;
+	for(int i=0;i<opt.grid[1];i++) //Initialise the wavefunction
 	{
-		ITP(opt.grid[1],opt.grid[2],t_ITP);		
-		
-		rescale();
+		for(int j=0;j<opt.grid[2];j++)
+		{
+			complex<double> factor (run->gauss(run->x_axis[i],run->y_axis[j]),0);
+			
+		        run->pPsi->at(0,i,j,0) = factor;
+// 			run->pPhase->at(0,i,j,0) = (0,0); //!!!! Check if this should be double, and not complexdouble !!!!
+			 
+		}	
+	}
+	
+	
+	//====> Imaginary Time Propagation (ITP)
+	
+	for(int k=0;k<n_it_ITP;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
+	{
+		run->ITP(run->pPsi,opt);
+	
 
-		if(k==vortex_start){add_vortex();} //Add the vortex near the end of the imaginary time propagation 
+
+// 		if(k==vortex_start){add_vortex();} //Add the vortex near the end of the imaginary time propagation 
 		
-	       	//if(k>0 && k%n_save_ITP==0){save_2D();} //New block every multiple of n_save_ITP
+	       	if(k>0 && k%n_save_ITP==0){run->save_2D(run->pPsi,opt);} //New block every multiple of n_save_ITP
   
 		counter_ITP+=1; //Loading counter for ITP
    		if(counter_ITP%(n_it_ITP/100)==0){cout<<"ITP "<<(counter_ITP/(n_it_ITP/100))<<"%"<<endl;}
@@ -144,25 +142,20 @@ int main( int argc, char** argv)
 	
 	//====> Real Time Expansion (RTE)
 
-	complex<double> t_RTE(RTE_step,0); //Time-step size for RTE				
-
-	for(k=0;k<n_it_RTE;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
+	for(int k=0;k<n_it_RTE;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
 	{
-		RTE(opt.grid[1],opt.grid[2],t_RTE);		
-		
-		//if(real(Integral) < 3495 || real(Integral) > 3505){rescale();}
-		//rescale();
+		run->RTE(run->pPsi,opt);
 
-		if(k>=0 && k%n_save_RTE==0){save_2D();} //New block every multiple of n_save_RTE
+		if(k>=0 && k%n_save_RTE==0){run->save_2D(run->pPsi,opt);} //New block every multiple of n_save_RTE
   
-		t_abs+=t_RTE; //Increment absolute time by the time-step t_RTE
+		opt.t_abs.real()+=opt.RTE_step; //Increment absolute time by the time-step t_RTE
 
 		counter_RTE+=1; //Loading counter for RTE
    		if(counter_RTE%(n_it_RTE/100)==0){cout<<"RTE "<<(counter_RTE/(n_it_RTE/100))<<"%"<<endl;}
 	}
-	*/
+	
 
-	closeDataFiles_obdm(); //Close the file
+// 	 //Close the file
 	return 0;
 }
 
@@ -190,10 +183,14 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.scale_factor = (0,0); //Scale factor
 	opt.t_abs = (0,0); //Absolute time 
 	opt.exp_factor = (1,0); //Expansion factor
+	opt.name = 1; // Must be an Integer
     	
 // 	opt.klength[0] = 2.0;
 // 	opt.klength[1] = 2.0;
 // 	opt.klength[2] = 2.0;
+	
+	opt.ITP_step=0.000001; //Time-step for the ITP (0.000001)
+	opt.RTE_step=0.00001; //Time-step for the RTE (0.00001)
 	
 	snapshot_times.resize(5);
 	snapshot_times[0] =5000;
@@ -201,7 +198,7 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	snapshot_times[2] =15000;
 	snapshot_times[3] =20000;
 	snapshot_times[4] =25000;
-          // snapshot_times[6] =17000;
+//         snapshot_times[6] =17000;
           // snapshot_times[7] =20000;
           // snapshot_times[8] =30000;
           // snapshot_times[9] =50000;

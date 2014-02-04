@@ -6,9 +6,6 @@
 #include <math.h>
 #include <complexgrid.h>
 #include <bh3binaryfile.h>
-#include <2dexpan.h>
-
-
 
 
 
@@ -22,6 +19,8 @@ typedef struct : PathOptions {
   complex<double> t_abs; //Absolute time 
   complex<double> exp_factor; //Expansion factor
   double g;
+  double ITP_step, RTE_step;
+  int name;
 	
 } Options;
 
@@ -29,19 +28,50 @@ class RK4
 {
   public:
     RK4();
-    RK4(ComplexGrid* &c,Options &opt);
-    
+    RK4(ComplexGrid* &c,Options &opt);    
     ~RK4();
     
-    void ITP(ComplexGrid* & pPsi, Options &opt, complex<double> & t_ITP);
-    void RTE(const int & n_x, const int & n_y, complex<double> & t_RTE);
+    // Propagatoren
+    void ITP(ComplexGrid* & pPsi,Options &opt);
+    void RTE(ComplexGrid* & pPsi,Options &opt);
     
     
     // Hilfsfunktionen
-//     complex<double> laplacian_x(complex<double> a, complex<double> b, complex<double> c);
-//     complex<double> laplacian_y(complex<double> a, complex<double> b, complex<double> c);
-//     complex<double> potential(double x,double y, Options &opt);
-//     complex<double> interaction(complex<double> a);
+    double gauss(double x,double y);
+  
+  
+    double vortex(int a, int b, int x, int y);
+    double phase_save(ComplexGrid* & pPsi,int a,int b);
+//     void add_vortex(ComplexGrid* & pPsi,Options &opt);
+    
+    // save the Grid to file
+    void save_2D(ComplexGrid* & pPsi,Options &opt);
+   
+    // StorageObjects for the wavefunction and its phase
+    ComplexGrid* pPsi;
+//     ComplexGrid* pPhase;
+    
+    // Coordinates
+    double x_axis[],y_axis[];
+    
+    
+  
+         
+
+  private:
+    
+   
+    // Scaling of Wavefunction after every timestep in ITP and RTE
+    void rescale(ComplexGrid* & pPsi,ComplexGrid* & pPsiCopy, Options &opt);
+    
+    // Hilfsfunktionen fuer ITP
+    void computeK(ComplexGrid* & pPsiCopy,ComplexGrid* & pPsi, ComplexGrid** k,Options & opt,complex<double> & t_ITP, int d);
+    complex<double> T(ComplexGrid* & pPsiCopy,int i, int j);
+    complex<double> V(ComplexGrid* & pPsicopy,int i, int j,Options &opt);   
+    
+    // Hilfsfunktionen fuer RTE
+    complex<double> function_RTE(ComplexGrid* & pPsiCopy,int i, int j, complex<double> t,Options &opt);
+    complex<double> interaction(complex<double> a,Options &opt);
     complex<double> grad_x(complex<double> a, complex<double> b);
     complex<double> grad_y(complex<double> a, complex<double> b);
     complex<double> lambda_x(complex<double> t, Options &opt);
@@ -50,41 +80,19 @@ class RK4
     complex<double> lambda_y_dot(complex<double> t, Options &opt);
     complex<double> x_expand(complex<double> a, complex<double> t, Options &opt);
     complex<double> y_expand(complex<double> a, complex<double> t, Options &opt);
-    complex<double> integral(ComplexGrid* & pPsi,Options &opt);
-    complex<double> rescale(ComplexGrid* & pPsi,ComplexGrid* & pPsiCopy, Options &opt);
-    double vortex(int a, int b, int x, int y);
-    double phase_save(ComplexGrid* & pPsi,int a,int b);
-//    void add_vortex(ComplexGrid* & pPsi,Options &opt);
-    void save_2D(ComplexGrid* & pPsi,Options &opt);
-//     complex<double> function_RTE(int i, int j, complex<double> t);
-//     complex<double> function_ITP(int i,int j);
-//     complex<double> function_ITP_BC(int i,int j);
-    double gauss(double x,double y);
-
-         
-
-  private:
-    void computeK(ComplexGrid* & pPsiCopy,ComplexGrid* & pPsi, ComplexGrid** k,Options & opt,complex<double> & t_ITP, int d);
-    complex<double> T(ComplexGrid* & pPsiCopy,int i, int j);
-    complex<double> V(ComplexGrid* & pPsicopy,int i, int j,Options &opt);    
+    
+    // Hilfsvariablen
     complex<double> h_x, h_y;
-    double x_axis[],y_axis[];
+    complex<double> integral(ComplexGrid* & pPsi,Options &opt);
     complex<double> Integral;
     complex<double> Integral_aux;
+    
     
     // some used constants
     
     static const double pi; //acos(-1.0L);
     static const complex<double>  zero,half,one,two,four,six,i_unit;
-    
-    
-
-    // const complex<double> N(1000,0); //Particle number (1000)
-    // const complex<double> g(15,0); //Interaction constant (15)
-    // const complex<double> omega_x(100,0),omega_y(150,0); //Trap frequency (100,150)
-    // const double min_x=4,min_y=4; //Symmetric axis ranges start from -min_x and -min_y (6,6)
-    
-   
+      
 
   
 };

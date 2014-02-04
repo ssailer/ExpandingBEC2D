@@ -1,13 +1,14 @@
-#ifndef SAVING_H
-#define SAVING_H
+#ifndef SAVING_H__
+#define SAVING_H__
 
 #include <fstream>
 
 using namespace std;
-ofstream fileobdm;   
+ 
 
 int openDataFiles_obdm(int iterate, double time) //This function can be used for sequential file generation, which is useful when producing movies 
-{
+{	
+	ofstream fileobdm;  
         char ding[1024]; 
         if(iterate<10)
         snprintf(ding,1024,"OBDM0000%d,%f.dat",iterate,time);
@@ -25,13 +26,15 @@ int openDataFiles_obdm(int iterate, double time) //This function can be used for
 }
 
 int closeDataFiles_obdm(void)
-{
+{	
+	ofstream fileobdm;  
         fileobdm.close();
         return 0;
 }
 
 int save_obdm(double x_axis, double y_axis, double density, double phase) //Used in the save_2D() function
-{
+{	
+	ofstream fileobdm;  
         fileobdm.precision(16);
         fileobdm.width(24);
         fileobdm<<x_axis;
@@ -50,7 +53,8 @@ int save_obdm(double x_axis, double y_axis, double density, double phase) //Used
 }
 
 int save_r(int k, double ratio) //Used in the Aspect_Ratio() function 
-{
+{	
+	ofstream fileobdm;  
         fileobdm.precision(16);
         fileobdm.width(24);
         fileobdm<<k;  
@@ -63,7 +67,8 @@ int save_r(int k, double ratio) //Used in the Aspect_Ratio() function
 }
 
 int save_track (double x_axis, double y_axis, double timestuff, double density) //Used in track() function
-{
+{	
+	ofstream fileobdm;  
         fileobdm.precision(16);
         fileobdm.width(24);
         fileobdm << x_axis;
@@ -82,16 +87,18 @@ int save_track (double x_axis, double y_axis, double timestuff, double density) 
 }
 
 int blank_line(void) //Note that Gnuplot blocks need to be separated by two blank lines
-{
+{	
+	ofstream fileobdm;  
         fileobdm<<endl;
         return 0;
 }
 
 int two_blank_lines(void) //Note that Gnuplot blocks need to be separated by two blank lines
-{
+{	
+	ofstream fileobdm;  
         fileobdm<<endl;
         fileobdm<<endl;
         return 0;
 }
 
-#endif
+#endif // SAVING_H__
