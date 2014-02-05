@@ -6,7 +6,7 @@
 #include <math.h>
 #include <complexgrid.h>
 #include <bh3binaryfile.h>
-
+#include <vector>
 
 
 using namespace std;
@@ -37,7 +37,7 @@ class RK4
     
     
     // Hilfsfunktionen
-    double gauss(double x,double y);
+
   
   
     double vortex(int a, int b, int x, int y);
@@ -52,7 +52,7 @@ class RK4
 //     ComplexGrid* pPhase;
     
     // Coordinates
-    double x_axis[],y_axis[];
+    vector<double> x_axis,y_axis;
     
     
   
@@ -65,7 +65,7 @@ class RK4
     void rescale(ComplexGrid* & pPsi,ComplexGrid* & pPsiCopy, Options &opt);
     
     // Hilfsfunktionen fuer ITP
-    void computeK(ComplexGrid* & pPsiCopy,ComplexGrid* & pPsi, ComplexGrid** k,Options & opt,complex<double> & t_ITP, int d);
+    void computeK(ComplexGrid* & pPsiCopy,ComplexGrid* & pPsi, vector<ComplexGrid*> & k,Options & opt,complex<double> & t_ITP, int d);
     complex<double> T(ComplexGrid* & pPsiCopy,int i, int j);
     complex<double> V(ComplexGrid* & pPsicopy,int i, int j,Options &opt);   
     

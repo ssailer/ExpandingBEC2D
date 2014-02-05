@@ -72,6 +72,8 @@ int y_38=n_y/2,y_39=(100+up)*n_y/200,y_40=(100+2*up)*n_y/200,y_41=(100+3*up)*n_y
 void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times);	
 	
 //>>>>>Main Program<<<<< 
+double gauss(double & x,double & y)
+{return (exp(-x*x-y*y));} //A simple Gaussian
 
 int main( int argc, char** argv) 
 {	
@@ -104,25 +106,35 @@ int main( int argc, char** argv)
 	
 	
 	// initialize_psi(n_x,n_y,h_x,h_y);
-
+	cout << "Starting Grid now" << endl;
 	ComplexGrid* startgrid;
 	startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	RK4* run;
 	run = new RK4(startgrid,opt);
-// 	cout << run->pPsi->at(0,1,2,0) << "HIER" << endl;
-	delete startgrid;
+	cout << "Initializing Grid now" << endl;
+// 	delete startgrid;
 	for(int i=0;i<opt.grid[1];i++) //Initialise the wavefunction
 	{
 		for(int j=0;j<opt.grid[2];j++)
 		{
-			complex<double> factor (run->gauss(run->x_axis[i],run->y_axis[j]),0);
+			double x;
+			double y;
+			x = run->x_axis[i];
+			y = run->y_axis[j];
+			double xfactor;
+			xfactor = gauss(x,y);
+			
+			complex<double> factor (xfactor,0);
 			
 		        run->pPsi->at(0,i,j,0) = factor;
 // 			run->pPhase->at(0,i,j,0) = (0,0); //!!!! Check if this should be double, and not complexdouble !!!!
 			 
 		}	
 	}
-	
+	cout << "Grid initialized" << endl;
+	complex<double> ausgabe;
+	ausgabe = run->pPsi->at(0,2,3,0);
+	cout << ausgabe << endl;
 	
 	//====> Imaginary Time Propagation (ITP)
 	
@@ -175,7 +187,7 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.grid[3] = 1;
 // 	opt.U = 3e-5;
 	
-	//opt.g.resize(1);
+// 	opt.g.resize(1);
 	opt.g = 15;
 	
 	opt.omega_x = (100,0);
