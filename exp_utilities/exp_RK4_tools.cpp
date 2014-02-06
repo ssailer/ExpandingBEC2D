@@ -18,14 +18,14 @@ RK4::RK4()
 RK4::RK4(ComplexGrid* &c,Options &opt)
 {
   pPsi = c;  
-  h_x = (((2.*opt.min_x)/opt.grid[1]),0);
-  h_y = (((2.*opt.min_y)/opt.grid[2]),0);
-  RK4::x_axis.resize(opt.grid[1]);
-  RK4::y_axis.resize(opt.grid[2]);
-  for(int i=0;i<opt.grid[1];i++){x_axis[i]=-opt.min_x+i*real(h_x);} //Initialisation of the x-axis from -min_x to +min_x
-  for(int j=0;j<opt.grid[2];j++){y_axis[j]=-opt.min_y+j*real(h_y);} //Initialisation of the y-axis from -min_y to +min_y
+  real(h_x) = 2.*opt.min_x/opt.grid[1]; 
+  real(h_y) = 2.*opt.min_y/opt.grid[2]; 
+  x_axis.resize(opt.grid[1]);
+  y_axis.resize(opt.grid[2]);
+  for(int i=0;i<opt.grid[1];i++){x_axis[i]=-opt.min_x+i*real(h_x); /*cout << "x_axis["<<i<<"] = "<< x_axis[i] << endl;*/} //Initialisation of the x-axis from -min_x to +min_x
+  for(int j=0;j<opt.grid[2];j++){y_axis[j]=-opt.min_y+j*real(h_y); /*cout << "y_axis["<<j<<"] = "<< y_axis[j] << endl;*/} //Initialisation of the y-axis from -min_y to +min_y
 }
-
+RK4::~RK4(){};
 
 
 complex<double> RK4::interaction(complex<double> a,Options &opt)
@@ -129,6 +129,7 @@ void RK4::save_2D(ComplexGrid* & pPsi,Options &opt) //Function to save the data 
 			x = x_axis[i];
 			y = y_axis[j];
 		        save_obdm(x*real(lambda_x(opt.t_abs,opt)),y*real(lambda_y(opt.t_abs,opt)),norm(pPsi->at(0,i,j,0)),phase_save(pPsi,i,j));
+			cout << x*real(lambda_x(opt.t_abs,opt)) << "  " << y*real(lambda_y(opt.t_abs,opt))  << "  " << norm(pPsi->at(0,i,j,0)) << "  " << phase_save(pPsi,i,j);
 	        }
                 blank_line();
         }
@@ -223,11 +224,27 @@ void RK4::RTE(ComplexGrid* & pPsi,Options &opt)
 	complex<double> t_RTE(opt.RTE_step,0); //Time-step size for RTE
 	pPsiCopy = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	vector<ComplexGrid*> k(4);
-	for(int i;i<4;i++){k[i] = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);}
+	
+	for(int i=0;i<4;i++){
+	  k[i] = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	  
+	}
 	
         //Fixed (Dirichlet) boundary conditions for the RTE
-        for(int l=0;l<opt.grid[1];l++){ pPsi->at(0,l,0,0)=zero; pPsiCopy->at(0,l,0,0)=zero; pPsi->at(0,l,opt.grid[2]-1,0)=zero; pPsiCopy->at(0,l,opt.grid[2]-1,0)=zero; }
-        for(int m=0;m<opt.grid[2];m++){ pPsi->at(0,0,m,0)=zero; pPsiCopy->at(0,0,m,0)=zero; pPsi->at(0,opt.grid[1]-1,m,0)=zero; pPsiCopy->at(0,opt.grid[1]-1,m,0)=zero; }
+        for(int l=0;l<opt.grid[1];l++){ 
+	  pPsi->at(0,l,0,0)=zero;
+	  pPsiCopy->at(0,l,0,0)=zero;
+	  pPsi->at(0,l,opt.grid[2]-1,0)=zero;
+	  pPsiCopy->at(0,l,opt.grid[2]-1,0)=zero;
+	  
+	}
+        for(int m=0;m<opt.grid[2];m++){
+	  pPsi->at(0,0,m,0)=zero;
+	  pPsiCopy->at(0,0,m,0)=zero;
+	  pPsi->at(0,opt.grid[1]-1,m,0)=zero;
+	  pPsiCopy->at(0,opt.grid[1]-1,m,0)=zero;
+	  
+	}
         
 		//k1		
 	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[0]->at(0,i,j,0)=function_RTE(pPsiCopy,i,j,opt.t_abs,opt) ;}}
@@ -251,9 +268,15 @@ void RK4::RTE(ComplexGrid* & pPsi,Options &opt)
 		for(int j=0;j<opt.grid[2];j++)		
 		{
 			pPsi->at(0,i,j,0)+=(t_RTE/six)*(k[0]->at(0,i,j,0)+two*k[1]->at(0,i,j,0)+two*k[2]->at(0,i,j,0)+k[3]->at(0,i,j,0));
-			pPsiCopy->at(0,i,j,0)=pPsi->at(0,i,j,0);
+// 			pPsiCopy->at(0,i,j,0)=pPsi->at(0,i,j,0);
 		}
 	}
+	delete pPsiCopy;
+	for(int i=0;i<4;i++){
+	  delete k[i];
+	  
+	}
+	
 	}
 
 const double RK4::pi = M_PI; //acos(-1.0L);

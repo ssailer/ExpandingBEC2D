@@ -72,8 +72,7 @@ int y_38=n_y/2,y_39=(100+up)*n_y/200,y_40=(100+2*up)*n_y/200,y_41=(100+3*up)*n_y
 void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times);	
 	
 //>>>>>Main Program<<<<< 
-double gauss(double & x,double & y)
-{return (exp(-x*x-y*y));} //A simple Gaussian
+inline double gauss(double & x,double & y){return (exp(-x*x-y*y));} //A simple Gaussian
 
 int main( int argc, char** argv) 
 {	
@@ -117,16 +116,20 @@ int main( int argc, char** argv)
 	{
 		for(int j=0;j<opt.grid[2];j++)
 		{
-			double x;
-			double y;
-			x = run->x_axis[i];
-			y = run->y_axis[j];
+// 			double x;
+// 			double y;
+// 			x = run->x_axis[i];
+// 			cout << run->x_axis[i] << "   ";
+// 			y = run->y_axis[j];
+// 			cout << run->y_axis[j] << "   ";
 			double xfactor;
-			xfactor = gauss(x,y);
+			xfactor = gauss(run->x_axis[i],run->y_axis[j]);
 			
 			complex<double> factor (xfactor,0);
+// 			cout << factor << "   ";
 			
 		        run->pPsi->at(0,i,j,0) = factor;
+// 			cout << run->pPsi->at(0,i,j,0) << endl;;
 // 			run->pPhase->at(0,i,j,0) = (0,0); //!!!! Check if this should be double, and not complexdouble !!!!
 			 
 		}	
@@ -165,7 +168,8 @@ int main( int argc, char** argv)
 		counter_RTE+=1; //Loading counter for RTE
    		if(counter_RTE%(n_it_RTE/100)==0){cout<<"RTE "<<(counter_RTE/(n_it_RTE/100))<<"%"<<endl;}
 	}
-	
+	delete startgrid;
+	delete run;
 
 // 	 //Close the file
 	return 0;
@@ -181,6 +185,9 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 
 	opt.N = 1000;  //normed for 512*512 N=64*50000
 	
+	opt.min_x = 4;
+	opt.min_y = 4;
+	
 	opt.grid[0] = 1;
 	opt.grid[1] = 32;
 	opt.grid[2] = 32;
@@ -194,7 +201,7 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.omega_y = (150,0);
 	opt.scale_factor = (0,0); //Scale factor
 	opt.t_abs = (0,0); //Absolute time 
-	opt.exp_factor = (1,0); //Expansion factor
+	opt.exp_factor = (1.5,0); //Expansion factor
 	opt.name = 1; // Must be an Integer
     	
 // 	opt.klength[0] = 2.0;
