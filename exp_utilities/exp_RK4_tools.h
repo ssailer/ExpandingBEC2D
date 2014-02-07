@@ -24,6 +24,8 @@ typedef struct : PathOptions {
 	
 } Options;
 
+
+
 class RK4
 {
   public:
@@ -49,7 +51,7 @@ class RK4
    
     // StorageObjects for the wavefunction and its phase
     ComplexGrid* pPsi;
-//     ComplexGrid* pPhase;
+    ComplexGrid* pPhase;
     
     // Coordinates
     vector<double> x_axis,y_axis;
@@ -90,8 +92,8 @@ class RK4
     
     // some used constants
     
-    static const double pi; //acos(-1.0L);
-    static const complex<double>  zero,half,one,two,four,six,i_unit;
+    double pi; //acos(-1.0L);
+    complex<double>  zero,half,one,two,four,six,i_unit;
       
 
   

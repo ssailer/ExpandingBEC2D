@@ -129,20 +129,22 @@ int main( int argc, char** argv)
 // 			cout << factor << "   ";
 			
 		        run->pPsi->at(0,i,j,0) = factor;
+// 			cout << norm(run->pPsi->at(0,i,j,0)) << endl;
 // 			cout << run->pPsi->at(0,i,j,0) << endl;;
 // 			run->pPhase->at(0,i,j,0) = (0,0); //!!!! Check if this should be double, and not complexdouble !!!!
 			 
 		}	
 	}
 	cout << "Grid initialized" << endl;
-	complex<double> ausgabe;
-	ausgabe = run->pPsi->at(0,2,3,0);
-	cout << ausgabe << endl;
+// 	complex<double> ausgabe;
+// 	ausgabe = run->pPsi->at(0,2,3,0);
+// 	cout << ausgabe << endl;
 	
 	//====> Imaginary Time Propagation (ITP)
 	
 	for(int k=0;k<n_it_ITP;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
 	{
+		
 		run->ITP(run->pPsi,opt);
 	
 
@@ -152,7 +154,9 @@ int main( int argc, char** argv)
 	       	if(k>0 && k%n_save_ITP==0){run->save_2D(run->pPsi,opt);} //New block every multiple of n_save_ITP
   
 		counter_ITP+=1; //Loading counter for ITP
-   		if(counter_ITP%(n_it_ITP/100)==0){cout<<"ITP "<<(counter_ITP/(n_it_ITP/100))<<"%"<<endl;}
+   		if(counter_ITP%(n_it_ITP/100)==0){cout<<"ITP "<<(counter_ITP/(n_it_ITP/100))<<"%"<<endl;
+		 opt.name = counter_ITP;
+		}
 	}
 	
 	//====> Real Time Expansion (RTE)
@@ -166,7 +170,9 @@ int main( int argc, char** argv)
 		opt.t_abs.real()+=opt.RTE_step; //Increment absolute time by the time-step t_RTE
 
 		counter_RTE+=1; //Loading counter for RTE
-   		if(counter_RTE%(n_it_RTE/100)==0){cout<<"RTE "<<(counter_RTE/(n_it_RTE/100))<<"%"<<endl;}
+   		if(counter_RTE%(n_it_RTE/100)==0){cout<<"RTE "<<(counter_RTE/(n_it_RTE/100))<<"%"<<endl;
+		  opt.name = counter_RTE;
+		}
 	}
 	delete startgrid;
 	delete run;
@@ -183,14 +189,14 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
         //opt.delta_t[0]=0.2;
         //opt.delta_t[1]=0.4;
 
-	opt.N = 1000;  //normed for 512*512 N=64*50000
+	opt.N = 10;  //normed for 512*512 N=64*50000
 	
 	opt.min_x = 4;
 	opt.min_y = 4;
 	
 	opt.grid[0] = 1;
-	opt.grid[1] = 32;
-	opt.grid[2] = 32;
+	opt.grid[1] = 512;
+	opt.grid[2] = 512;
 	opt.grid[3] = 1;
 // 	opt.U = 3e-5;
 	
@@ -201,7 +207,7 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.omega_y = (150,0);
 	opt.scale_factor = (0,0); //Scale factor
 	opt.t_abs = (0,0); //Absolute time 
-	opt.exp_factor = (1.5,0); //Expansion factor
+	opt.exp_factor = (1,0); //Expansion factor
 	opt.name = 1; // Must be an Integer
     	
 // 	opt.klength[0] = 2.0;
