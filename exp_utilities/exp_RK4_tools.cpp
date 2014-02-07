@@ -87,7 +87,7 @@ void RK4::rescale(ComplexGrid* & pPsi,ComplexGrid* & pPsiCopy, Options &opt)
 		for(int j=0;j<opt.grid[2];j++)
 		{
 		  pPsi->at(0,i,j,0)*=sqrt(opt.scale_factor);
-		  pPsiCopy->at(0,i,j,0)*=sqrt(opt.scale_factor);
+// 		  pPsiCopy->at(0,i,j,0)*=sqrt(opt.scale_factor);
 		}
 	}
 }
@@ -152,10 +152,8 @@ void RK4::save_2D(ComplexGrid* & pPsi,Options &opt) //Function to save the data 
 
 complex<double> RK4::T(ComplexGrid* & pPsiCopy,int i, int j){return half*((pPsiCopy->at(0,i+1,j,0)-(two*pPsiCopy->at(0,i,j,0))+pPsiCopy->at(0,i-1,j,0))/(h_x*h_x))+half*((pPsiCopy->at(0,i,j+1,0)-(two*pPsiCopy->at(0,i,j,0))+pPsiCopy->at(0,i,j-1,0))/(h_x*h_x)); }
 complex<double> RK4::V(ComplexGrid* & pPsiCopy,int i, int j,Options & opt){ 
-  complex<double> xvalue;
-  complex<double> yvalue;
-  xvalue = (x_axis[i],0);
-  yvalue = (y_axis[j],0);
+  complex<double> xvalue = complex<double>(x_axis[i],0);
+  complex<double> yvalue = complex<double>(y_axis[j],0);
   
   return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+opt.g*norm(pPsiCopy->at(0,i,j,0)))*pPsiCopy->at(0,i,j,0);} 
 
@@ -228,6 +226,12 @@ void RK4::ITP(ComplexGrid* & pPsi, Options &opt)
 	
 	
 	rescale(pPsi,pPsiCopy,opt);
+	
+	// delete used variables, memory usage too high!
+// 	delete pPsiCopy;
+// 	for(int i=0;i<4;i++){
+// 	delete k[i];
+// 	}
 	
 }
 
