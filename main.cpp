@@ -10,6 +10,7 @@ Website: www.bartholomewandrews.com
 #include <complex>
 #include <complexgrid.h>
 #include <exp_RK4_tools.h>
+#include <bh3defaultgrid.h>
 // #include <2dexpan.h>
 
 
@@ -26,7 +27,7 @@ const int vortex_start=8000; //ITP iterations before the phase disturbances are 
 const int n_save_ITP=1000; //Save ITP after every n_save_ITP iterations (initial state is auto saved)
 const int n_it_ITP=10000; //Number of iterations for ITP (10000)
 const int n_save_RTE=100; //Save RTE after every n_save_RTE iterations - intial state is auto saved (500)
-const int n_it_RTE=101; //Number of iterations for RTE (2501) 
+const int n_it_RTE=1000; //Number of iterations for RTE (2501) 
 // const int name=1; //Name of output (must be an integer)
 
 //*****Variable Declarations*****
@@ -72,7 +73,7 @@ int y_38=n_y/2,y_39=(100+up)*n_y/200,y_40=(100+2*up)*n_y/200,y_41=(100+3*up)*n_y
 void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times);	
 	
 //>>>>>Main Program<<<<< 
-inline double gauss(double & x,double & y){return (exp(-x*x-y*y));} //A simple Gaussian
+// inline double gauss(double & x,double & y){return (exp(-x*x-y*y));} //A simple Gaussian
 
 int main( int argc, char** argv) 
 {	
@@ -103,45 +104,56 @@ int main( int argc, char** argv)
 //         }
 //         blank_line();
 	
+		int cV = 4;
+        int rV = 4;
+        int Q = 1;
 	
 	// initialize_psi(n_x,n_y,h_x,h_y);
-	cout << "Starting Grid now" << endl;
-	ComplexGrid* startgrid;
-	startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	RK4* run;
-	run = new RK4(startgrid,opt);
-	cout << "Initializing Grid now" << endl;
+//	cout << "Starting Grid now" << endl;
+	
+	ComplexGrid* startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	startgrid = create_Vortex_start_Grid2(opt,16,cV,rV,Q);
+
+	RK4* run = new RK4(startgrid,opt);
+	cout << "Run initialized." << endl;
+
+
+	opt.name = "INIT";
+	run->save_2D(run->pPsi,opt);
+	cout << "Initial grid saved." << endl;
+ 	
+//	cout << "Initializing Grid now" << endl;
 // 	delete startgrid;
-	for(int i=0;i<opt.grid[1];i++) //Initialise the wavefunction
-	{
-		for(int j=0;j<opt.grid[2];j++)
-		{
-// 			double x;
-// 			double y;
-// 			x = run->x_axis[i];
-// 			cout << run->x_axis[i] << "   ";
-// 			y = run->y_axis[j];
-// 			cout << run->y_axis[j] << "   ";
-			double xfactor;
-			xfactor = gauss(run->x_axis[i],run->y_axis[j]);
-			
-			complex<double> factor (xfactor,0);
-// 			cout << factor << "   ";
-			
-		        run->pPsi->at(0,i,j,0) = factor;
-// 			cout << norm(run->pPsi->at(0,i,j,0)) << endl;
-// 			cout << run->pPsi->at(0,i,j,0) << endl;;
-// 			run->pPhase->at(0,i,j,0) = (0,0); //!!!! Check if this should be double, and not complexdouble !!!!
-			 
-		}	
-	}
-	cout << "Grid initialized" << endl;
+// 	for(int i=0;i<opt.grid[1];i++) //Initialise the wavefunction
+// 	{
+// 		for(int j=0;j<opt.grid[2];j++)
+// 		{
+// // 			double x;
+// // 			double y;
+// // 			x = run->x_axis[i];
+// // 			cout << run->x_axis[i] << "   ";
+// // 			y = run->y_axis[j];
+// // 			cout << run->y_axis[j] << "   ";
+// 			double xfactor;
+// 			xfactor = gauss(run->x_axis[i],run->y_axis[j]);
+// 			
+// 			complex<double> factor (xfactor,0);
+// // 			cout << factor << "   ";
+// 			
+// 		        run->pPsi->at(0,i,j,0) = factor;
+// // 			cout << norm(run->pPsi->at(0,i,j,0)) << endl;
+// // 			cout << run->pPsi->at(0,i,j,0) << endl;;
+// // 			run->pPhase->at(0,i,j,0) = (0,0); //!!!! Check if this should be double, and not complexdouble !!!!
+// 			 
+// 		}	
+// 	}
+//	cout << "Grid initialized" << endl;
 // 	complex<double> ausgabe;
 // 	ausgabe = run->pPsi->at(0,2,3,0);
 // 	cout << ausgabe << endl;
 	
 	//====> Imaginary Time Propagation (ITP)
-	
+	opt.name = "ITP";
 	for(int k=0;k<n_it_ITP;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
 	{
 		
@@ -154,13 +166,18 @@ int main( int argc, char** argv)
 	       	if(k>0 && k%n_save_ITP==0){run->save_2D(run->pPsi,opt);} //New block every multiple of n_save_ITP
   
 		counter_ITP+=1; //Loading counter for ITP
-   		if(counter_ITP%(n_it_ITP/100)==0){cout<<"ITP "<<(counter_ITP/(n_it_ITP/100))<<"%"<<endl;
-		 opt.name = counter_ITP;
-		}
+
+		// if(k==0){cout << "ITP started." << flush;}
+   		if(counter_ITP%(n_it_ITP/100)==0){cout << "ITP "<<(counter_ITP/(n_it_ITP/100))<< "%" << flush << "\r";
+		 opt.times = counter_ITP;
+		 }
+	
 	}
+	cout << "\n";
 	
 	//====> Real Time Expansion (RTE)
 
+	opt.name = "RTE";
 	for(int k=0;k<n_it_RTE;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
 	{
 		run->RTE(run->pPsi,opt);
@@ -170,14 +187,140 @@ int main( int argc, char** argv)
 		opt.t_abs.real()+=opt.RTE_step; //Increment absolute time by the time-step t_RTE
 
 		counter_RTE+=1; //Loading counter for RTE
-   		if(counter_RTE%(n_it_RTE/100)==0){cout<<"RTE "<<(counter_RTE/(n_it_RTE/100))<<"%"<<endl;
-		  opt.name = counter_RTE;
+   		if(counter_RTE%(n_it_RTE/100)==0){cout << "RTE "<<(counter_RTE/(n_it_RTE/100))<<"%" << flush << "\r";
+		  opt.times = counter_RTE;
 		}
 	}
-	delete startgrid;
-	delete run;
+	cout << endl;
+	
+	
+	//Python Plot
+/*
+	
+		for(int i=0;i<snapshot_times.size(); i++)
+  {
 
-// 	 //Close the file
+	ofstream fs;
+	fs.open((dir+string("Spectrum.py")).c_str(), ios_base::trunc | ios_base::out);
+
+
+	  
+
+        fs << "#!/usr/bin/python" << endl;
+	fs << "# -*- coding: utf-8 -*-" << endl;
+
+	fs << "from matplotlib import use" << endl;
+	fs << "use('Agg')" << endl;
+	fs << "from matplotlib import rc" << endl;
+        fs << "import scipy, pylab" << endl;
+        fs << "import scipy.optimize" << endl;
+	fs << "import sys" << endl;
+        fs << "import matplotlib.colors " << endl;
+	fs << "import pylab as p "<< endl;
+	fs << "import numpy as np" << endl;
+	fs << "import matplotlib.pyplot as plt" << endl;
+        fs << "from matplotlib.ticker import ScalarFormatter, FormatStrFormatter, MultipleLocator" << endl;
+        fs << "from matplotlib.ticker import FixedFormatter" << endl;
+	fs << "from mpl_toolkits.axes_grid1 import make_axes_locatable" << endl;
+	fs << "import math as m" << endl;
+	
+	fs << "def main():" << endl;
+        
+	
+	fs << "\tpath = '" << dirname << "Spectrum" << "_Path_"  << snapshot_times[i] <<"time"<<".png'" << endl;	
+	fs << "\tfig = plt.figure(figsize=(8.3,5.7), dpi=100)" << endl;	
+	fs << "\tdata = np.loadtxt('"<< (dir + string("radial_avgs.dat")).c_str() << "', delimiter='\\t', unpack=True, usecols = (0,1,2,3,4,5))" << endl;
+	fs << "\ttime=" << snapshot_times[i] << endl;
+        fs << "\tdim ="  << meansFD[i].ares_1.number.size() << endl;
+	fs << "\tsnapshot=" << i << endl;
+
+        fs << "\tstart=" << ((meansFD[i].ares_1.number.size())*i)+1 << endl;
+	fs << "\tend=" << (meansFD[i].ares_1.number.size())*(i+1) << endl;
+
+        fs << "\tstart2=" << ((meansFD[i].ares_1.k.size())*i)+1 << endl;
+	fs << "\tend2=" << (meansFD[i].ares_1.k.size())*(i+1) << endl;
+
+        fs << "\tHealing_k=" << sqrt((opt.N/(opt.grid[0]*opt.grid[1]*opt.grid[2]))*opt.U) << endl;
+	
+
+	  fs << "\tfig.subplots_adjust(hspace = 0.10, wspace = 0.40, right  = 0.85, left=0.15, bottom = 0.10, top = 0.90)" << endl;
+
+      	  fs << "\txfit=np.arange(0.03,0.25,0.01)" << endl;
+	  fs << "\tyfit=(pow(xfit,(-6))*0.1)  "<< endl;
+
+	  //fs << "\txfit2=np.arange(0.25,2.8,0.01)" << endl;
+	  //fs << "\tyfit2=(pow(xfit2,(-2))*20)  "<< endl;
+
+	  // fs << "\txfit3=np.arange(0.03,2.8,0.01)" << endl;
+	  // fs << "\tyfit3=(pow(xfit3,(-4))*20)  "<< endl;
+       
+
+          //fs << "\txfit4=np.arange(0.03,0.3,0.01)" << endl;
+	  //fs << "\tyfit4=(pow(xfit4,(-4.6666666666666666666666666666666666666666))*1)  "<< endl;
+       
+
+
+	//fs << "\tn1=data[2]" << endl;
+        //fs << "\tn2=data[1]" << endl;
+
+
+          fs << "\tn1=data[1]" << endl;
+	  fs << "\tn2=data[2]" << endl;
+        
+	  fs << "\tn_q=data[3]" << endl;
+	  fs << "\tn_i=data[4]" << endl;
+	  fs << "\tn_c=data[5]" << endl;
+
+      
+
+
+
+
+
+       
+	  fs << "\tn4=n2[start:end]" << endl;
+	  fs << "\tn3=n1[start2:end2]" << endl;
+
+	  fs << "\tn_qneu=n_q[start:end]" << endl;
+	  fs << "\tn_ineu=n_i[start:end]" << endl;
+	  fs << "\tn_cneu=n_c[start:end]" << endl;	
+	
+	   fs << "\tax = fig.add_subplot(111)" << endl;	
+	   fs << "\tim=plt.plot(n3, n4,'b.',n3,n_ineu,'y.',n3, n_qneu,'r.',n3,n_cneu,'g.')" << endl;
+
+	  
+
+	   fs << "\tplt.setp(im, 'markersize', 3)" << endl; 
+	   fs << "\tplt.xlim(0.02,3.2)" << endl;
+
+
+           
+	   fs << "\tax.set_title('Time: $"<< snapshot_times[i]<<","<<"Particles:" <<meansFD[i].ares_1.particle_count/opt.N<<"$ ') " << endl;
+	   fs << "\tax.set_yscale('log')" << endl;
+	   fs << "\tax.set_xscale('log')" << endl; 
+           
+           fs << "\tax.set_xticks([0.1, 0.3, 1, 2, 3, Healing_k])" << endl;
+           fs << "\tax.set_xticklabels(['0.1', '0.3','1', '2', '3','H'])" << endl;
+	   fs << "\tax.set_xlabel('$k$')" << endl;
+	   fs << "\tax.set_ylabel('$n(k)$')" << endl;
+	   fs << "\tax.yaxis.label.set_size(15) " << endl;
+	   fs << "\tax.xaxis.label.set_size(15) " << endl;
+     
+	fs << "\tfig.savefig(path, dpi=100)" << endl;
+        fs << "\tsys.exit(3)" << endl;
+        fs << "if __name__=='__main__':" << endl;
+
+        fs << "\tmain()" << endl;
+
+  
+
+        fs.close();
+	
+       system((string("python ") + dir + string("Spectrum.py")).c_str());
+       }	
+       */
+    delete startgrid;
+	delete run;
 	return 0;
 }
 
@@ -189,14 +332,14 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
         //opt.delta_t[0]=0.2;
         //opt.delta_t[1]=0.4;
 
-	opt.N = 10;  //normed for 512*512 N=64*50000
+	opt.N = 100;  //normed for 512*512 N=64*50000
 	
 	opt.min_x = 4;
 	opt.min_y = 4;
 	
 	opt.grid[0] = 1;
-	opt.grid[1] = 512;
-	opt.grid[2] = 512;
+	opt.grid[1] = 32;
+	opt.grid[2] = 32;
 	opt.grid[3] = 1;
 // 	opt.U = 3e-5;
 	
@@ -208,7 +351,8 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.scale_factor = (0,0); //Scale factor
 	opt.t_abs = (0,0); //Absolute time 
 	opt.exp_factor = (1,0); //Expansion factor
-	opt.name = 1; // Must be an Integer
+	opt.times = 1;
+	opt.name = "run"; // Must be an Integer
     	
 // 	opt.klength[0] = 2.0;
 // 	opt.klength[1] = 2.0;

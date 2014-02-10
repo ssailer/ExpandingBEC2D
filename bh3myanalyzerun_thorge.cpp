@@ -553,7 +553,7 @@ plotfile7.open((dir + string("energies_int.dat")).c_str(), ios::out | ios::trunc
 
 
 
-	/*	for(int i=0;i<snapshot_times.size(); i++)
+	for(int i=0;i<snapshot_times.size(); i++)
   {
 
 	ofstream fs;

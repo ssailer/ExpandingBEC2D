@@ -20,7 +20,8 @@ typedef struct : PathOptions {
   complex<double> exp_factor; //Expansion factor
   double g;
   double ITP_step, RTE_step;
-  int name;
+  int times;
+  string name;
 	
 } Options;
 
@@ -30,6 +31,7 @@ class RK4
 {
   public:
     RK4();
+    // RK4(Options &opt);
     RK4(ComplexGrid* &c,Options &opt);    
     ~RK4();
     
@@ -61,18 +63,19 @@ class RK4
          
 
   private:
-    
+
+    double gauss(double x,double y); //A simple Gaussian
    
     // Scaling of Wavefunction after every timestep in ITP and RTE
-    void rescale(ComplexGrid* & pPsi,ComplexGrid* & pPsiCopy, Options &opt);
+    void rescale(ComplexGrid* & pPsi, Options &opt);
     
     // Hilfsfunktionen fuer ITP
-    void computeK(ComplexGrid* & pPsiCopy,ComplexGrid* & pPsi, vector<ComplexGrid*> & k,Options & opt,complex<double> & t_ITP, int d);
-    complex<double> T(ComplexGrid* & pPsiCopy,int i, int j);
-    complex<double> V(ComplexGrid* & pPsicopy,int i, int j,Options &opt);   
+    void computeK(ComplexGrid & pPsiCopy,ComplexGrid* & pPsi, vector<ComplexGrid> & k,Options & opt,complex<double> & t_ITP, int d);
+    complex<double> T(ComplexGrid & pPsiCopy,int i, int j);
+    complex<double> V(ComplexGrid & pPsicopy,int i, int j,Options &opt);   
     
     // Hilfsfunktionen fuer RTE
-    complex<double> function_RTE(ComplexGrid* & pPsiCopy,int i, int j, complex<double> t,Options &opt);
+    complex<double> function_RTE(ComplexGrid & pPsiCopy,int i, int j, complex<double> t,Options &opt);
     complex<double> interaction(complex<double> a,Options &opt);
     complex<double> grad_x(complex<double> a, complex<double> b);
     complex<double> grad_y(complex<double> a, complex<double> b);

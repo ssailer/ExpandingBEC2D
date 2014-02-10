@@ -6,20 +6,20 @@
 using namespace std; 
 ofstream fileobdm;  
 
-int openDataFiles_obdm(int iterate, int time) //This function can be used for sequential file generation, which is useful when producing movies 
+int openDataFiles_obdm(string name, int iterate, int time) //This function can be used for sequential file generation, which is useful when producing movies 
 {	
 
         char ding[1024]; 
         if(iterate<10)
-        snprintf(ding,1024,"OBDM0000%d,%d.dat",iterate,time);
+        snprintf(ding,1024,"OBDM_%s_0000%d,%d.dat",name.c_str(),iterate,time);
         if(iterate>9 && iterate<100)
-        snprintf(ding,1024,"OBDM000%d,%d.dat",iterate,time);
+        snprintf(ding,1024,"OBDM_%s_000%d,%d.dat",name.c_str(),iterate,time);
         if(iterate>99 && iterate<1000)
-        snprintf(ding,1024,"OBDM00%d,%d.dat",iterate,time);
+        snprintf(ding,1024,"OBDM_%s_00%d,%d.dat",name.c_str(),iterate,time);
         if(iterate>999 && iterate<10000)
-        snprintf(ding,1024,"OBDM0%d,%d.dat",iterate,time);
+        snprintf(ding,1024,"OBDM_%s_0%d,%d.dat",name.c_str(),iterate,time);
         if(iterate>9999)
-        snprintf(ding,1024,"OBDM%d,%d.dat",iterate,time);
+        snprintf(ding,1024,"OBDM_%s_%d,%d.dat",name.c_str(),iterate,time);
   
         fileobdm.open(ding);
         fileobdm.setf(ios_base::scientific);
