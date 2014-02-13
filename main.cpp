@@ -13,12 +13,8 @@ Website: www.bartholomewandrews.com
 #include <exp_RK4_tools.h>
 #include <bh3defaultgrid.h>
 #include <omp.h>
-// #include <2dexpan.h>
-
-
 
 using namespace std;
-
 
 namespace // namespace for program options
 { 
@@ -28,24 +24,10 @@ namespace // namespace for program options
  
 }
 
-//*****Parameter Initialisation*****
-
-// const double ITP_step=0.000001; //Time-step for the ITP (0.000001)
-// const double RTE_step=0.00001; //Time-step for the RTE (0.00001)
-// const int n_x=128,n_y=128; //Lattice size (1500x1500)  lo
-
 const int vortex_start=8000; //ITP iterations before the phase disturbances are added (8000<n_it_ITP) 
-// const int n_save_ITP=5000; //Save ITP after every n_save_ITP iterations (initial state is auto saved)
-// const int n_it_ITP=15000; //Number of iterations for ITP (10000)
-// const int n_save_RTE=500; //Save RTE after every n_save_RTE iterations - intial state is auto saved (500)
-// const int n_it_RTE=2501; //Number of iterations for RTE (2501) 
-// const int name=1; //Name of output (must be an integer)
+Options opt;
+vector<double> snapshot_times;
 
-//*****Variable Declarations*****
-
-// int counter_ITP=0, counter_RTE=0; //Initialise the variables for the percentage loading
-
-// double phase[opt.grid[1]][opt.grid[2]]; //Sum of all phases (used in the add_vortex() function) 
 
 //*****Vortex Initial Coordinates*****
 /*
@@ -73,31 +55,35 @@ int y_20=n_y/2,y_21=(100+up)*n_y/200,y_22=(100+2*up)*n_y/200,y_23=(100+3*up)*n_y
 int x_38=(100-4*across)*n_x/200,x_39=(100-3*across-half_across)*n_x/200,x_40=(100-3*across)*n_x/200,x_41=(100-2*across-half_across)*n_x/200,x_42=(100-2*across)*n_x/200,x_43=(100-across)*n_x/200,x_44=n_x/2,x_45=(100+across)*n_x/200,x_46=(100+2*across)*n_x/200,x_47=(100+2*across+half_across)*n_x/200,x_48=(100+3*across)*n_x/200,x_49=(100+3*across+half_across)*n_x/200,x_50=(100+4*across)*n_x/200,x_51=(100+3*across+half_across)*n_x/200,x_52=(100+3*across)*n_x/200,x_53=(100+2*across+half_across)*n_x/200,x_54=(100+2*across)*n_x/200,x_55=(100+across)*n_x/200,x_56=n_x/2,x_57=(100-across)*n_x/200,x_58=(100-2*across)*n_x/200,x_59=(100-2*across-half_across)*n_x/200,x_60=(100-3*across)*n_x/200,x_61=(100-3*across-half_across)*n_x/200;
 int y_38=n_y/2,y_39=(100+up)*n_y/200,y_40=(100+2*up)*n_y/200,y_41=(100+3*up)*n_y/200,y_42=(100+4*up)*n_y/200,y_43=(100+4*up)*n_y/200,y_44=(100+4*up)*n_y/200,y_45=(100+4*up)*n_y/200,y_46=(100+4*up)*n_y/200,y_47=(100+3*up)*n_y/200,y_48=(100+2*up)*n_y/200,y_49=(100+up)*n_y/200,y_50=n_y/2,y_51=(100-up)*n_y/200,y_52=(100-2*up)*n_y/200,y_53=(100-3*up)*n_y/200,y_54=(100-4*up)*n_y/200,y_55=(100-4*up)*n_y/200,y_56=(100-4*up)*n_y/200,y_57=(100-4*up)*n_y/200,y_58=(100-4*up)*n_y/200,y_59=(100-3*up)*n_y/200,y_60=(100-2*up)*n_y/200,y_61=(100-up)*n_y/200;*/
 
-
-//*****Function Definitions*****
-
-// double gauss(double x,double y){return (exp(-x*x-y*y));} //A simple Gaussian
-
-
-	
+// Helper functions
 
 void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times);	
 	
-//>>>>>Main Program<<<<< 
 inline double gauss(double & x,double & y){return (exp(-x*x-y*y));} //A simple Gaussian
+
+inline void printInitVar()
+	{
+		std::cout 	<< "Initial Values of this run:"<< endl
+					<< "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x << endl
+			  		<< "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y << endl
+			  		<< "Expansion Factor: " << opt.exp_factor << "\t" << "Number of particles: " << opt.N << endl
+					<< "Total time of the ITP-Step: " << opt.n_it_ITP << endl
+					<< "Total time of the RTE-Step: " << opt.n_it_RTE << endl << endl;
+	}
+
+
+//>>>>>main program<<<<< 
 
 int main( int argc, char** argv) 
 {	
-	//////////////// ALL NEED VARIABLES HERE ///////
 
-	Options opt;
-	vector<double> snapshot_times;
+	// Initialize all option variables
 	init_bh3(argc, argv, opt, snapshot_times);
 	
-	///////////////// PROGRAM OPTIONS ///////////
 
-	try 
-  { 
+	// Beginning of the options block
+try 
+{ 
     /** Define and parse the program options 
      */ 
     namespace po = boost::program_options; 
@@ -106,12 +92,12 @@ int main( int argc, char** argv)
       ("help,h", "Print help messages.") 
       ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
       ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
-      // ("name,n",po::value<string>(&opt.name),"Used in naming the data files.") // opt.name is the wrong variable for this purpose, CHANGE THIS!!
+      ("gauss",po::value<bool>(&opt.startgrid[0]),"Initial Grid has gaussian form.")
+      ("vortices",po::value<bool>(&opt.startgrid[1]),"Add Vortices to the grid.")
       ("itp",po::value<int>(&opt.n_it_ITP),"Total runtime of the ITP-Step.")
       ("rte",po::value<int>(&opt.n_it_RTE),"Total runtime of the RTE-Step.")
+      ("number,N",po::value<double>(&opt.N),"Number of particles.")
       ("expansion,e",po::value<complex<double> >(&opt.exp_factor),"Expansion Factor");
-      //("add", "additional options") 
-      //("like", "this"); 
 
 	po::positional_options_description positionalOptions; 
 	positionalOptions.add("xgrid", 1); 
@@ -124,8 +110,6 @@ int main( int argc, char** argv)
 		po::store(po::command_line_parser(argc, argv).options(desc)
 					.positional(positionalOptions).run(), 
           			vm); 
-      //po::store(po::parse_command_line(argc, argv, desc),  
-      //          vm); // can throw 
  
       /** --help option 
        */ 
@@ -149,28 +133,22 @@ int main( int argc, char** argv)
       return ERROR_IN_COMMAND_LINE; 
     } 
 
-////////////////////////////////////////////////
-/////////////// PROGRAM MAIN ///////////////////
-////////////////////////////////////////////////
+// Beginning of the main program block
 
-    std::cout << "Initial Values of this run:"<< endl
-			  << "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x << endl
-			  << "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y << endl
-			  << "Expansion Factor: " << opt.exp_factor << endl
-			  << "Total time of the ITP-Step: " << opt.n_it_ITP << endl
-			  << "Total time of the RTE-Step: " << opt.n_it_RTE << endl << endl;
+    // print the initial values of the run to the console
 
+    printInitVar(); 
+		
+	// Initialize the needed grid object and run object
 
-	
-	int cV = 2;
-    int rV = 2;
-    int Q = 1;
-	
 	ComplexGrid* startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	RK4* run = new RK4(startgrid,opt);
-	// cout << "Run initialized with Grid: "<<opt.grid[1]<<"x"<<opt.grid[2]<< endl;
 
-	for(int i=0;i<opt.grid[1];i++) //Initialise the wavefunction as gaussian by default with default_gridsize
+	// if the given value is true, initialize the startgrid with a gaussian distribution
+
+	if(opt.startgrid[0]==true) 
+	{
+	for(int i=0;i<opt.grid[1];i++)
     {
         for(int j=0;j<opt.grid[2];j++)
         {
@@ -181,12 +159,25 @@ int main( int argc, char** argv)
             run->pPsi->at(0,i,j,0) = factor;                       
         }   
     }
+	}
+
+	// if the given value is true, add vortices to the startgrid
+
+    if(opt.startgrid[1]==true)
+    {
+	int cV = 2;
+    int rV = 2;
+    int Q = 1;
 
     startgrid = create_Vortex_start_Grid3(startgrid,opt,4,cV,rV,Q);
+	}
+
+	// set the datafile identifier name and save the initial grid
 
     opt.name = "INIT";
 	run->save_2D(run->pPsi,opt);
 	
+	// runtime checker
 	double start,end[2];
 	start = omp_get_wtime();
 
@@ -202,6 +193,8 @@ int main( int argc, char** argv)
 	end[1] = omp_get_wtime();
 	cout << "RTE took " << end[1] - start << " seconds." << endl;
 	cout << "Run finished." << endl;
+
+	// Everything finished here, plots and cleanup remaining
 
 	
 	//Python Plot
@@ -331,14 +324,10 @@ int main( int argc, char** argv)
        */
     delete startgrid;
 	delete run;
-
-////////////////////////////////////////////////
-/////////////// PROGRAM END ////////////////////
-////////////////////////////////////////////////
-
  
  
   } 
+  // options menu exception catcher
   catch(std::exception& e) 
   { 
     std::cerr << "Unhandled Exception reached the top of main: " 
@@ -359,7 +348,7 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
     //opt.delta_t[0]=0.2;
     //opt.delta_t[1]=0.4;
 
-	opt.N = 1000;  //normed for 512*512 N=64*50000
+	opt.N = 75;  //normed for 512*512 N=64*50000
 	
 	opt.min_x = 4;
 	opt.min_y = 4;
@@ -384,7 +373,9 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.n_save_ITP = 10000;
 	opt.times = 1;
 	opt.name = "run"; // Must be an Integer
-    	
+	opt.startgrid[0] = true; // gaussian packet
+    opt.startgrid[1] = true; // add vortices
+
 // 	opt.klength[0] = 2.0;
 // 	opt.klength[1] = 2.0;
 // 	opt.klength[2] = 2.0;

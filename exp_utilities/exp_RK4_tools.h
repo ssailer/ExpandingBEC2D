@@ -19,14 +19,15 @@ typedef struct : PathOptions {
   complex<double> scale_factor; //Scale factor
   complex<double> t_abs; //Absolute time 
   complex<double> exp_factor; //Expansion factor
-  double g;
-  double ITP_step, RTE_step;
-  int n_it_ITP;
-  int n_it_RTE;
-  int n_save_RTE;
-  int n_save_ITP;  
-  int times;
-  string name;
+  double g; // coupling constant
+  double ITP_step, RTE_step; // stepsize for the timeiteration
+  int n_it_ITP; // number of timesteps
+  int n_it_RTE; // number of timesteps
+  int n_save_RTE; // times, when to save the process 
+  int n_save_ITP; // replace with snapshot_times
+  int times; // naming of the datafile - time of the snapshot
+  string name; // naming of the datafile
+  bool startgrid[2];
 	
 } Options;
 
@@ -77,21 +78,23 @@ class RK4
     void rescale(ComplexGrid* & pPsi, Options &opt);
     
     // Hilfsfunktionen fuer ITP
-    void computeK(ComplexGrid & pPsiCopy,ComplexGrid* & pPsi, vector<ComplexGrid> & k,Options & opt,complex<double> & t_ITP, int d);
+    void computeK_ITP(ComplexGrid &PsiCopy,ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_ITP, int d);
+    void computeK_RTE(ComplexGrid &PsiCopy,ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE);
+
     complex<double> T(ComplexGrid & pPsiCopy,int i, int j);
     complex<double> V(ComplexGrid & pPsicopy,int i, int j,Options &opt);   
     
     // Hilfsfunktionen fuer RTE
-    complex<double> function_RTE(ComplexGrid & pPsiCopy,int i, int j, complex<double> t,Options &opt);
+    complex<double> function_RTE(ComplexGrid & pPsiCopy,int i, int j,Options &opt);
     complex<double> interaction(complex<double> a,Options &opt);
     complex<double> grad_x(complex<double> a, complex<double> b);
     complex<double> grad_y(complex<double> a, complex<double> b);
-    complex<double> lambda_x(complex<double> t, Options &opt);
-    complex<double> lambda_x_dot(complex<double> t, Options &opt);
-    complex<double> lambda_y(complex<double> t, Options &opt);
-    complex<double> lambda_y_dot(complex<double> t, Options &opt);
-    complex<double> x_expand(complex<double> a, complex<double> t, Options &opt);
-    complex<double> y_expand(complex<double> a, complex<double> t, Options &opt);
+    complex<double> lambda_x(Options &opt);
+    complex<double> lambda_x_dot(Options &opt);
+    complex<double> lambda_y(Options &opt);
+    complex<double> lambda_y_dot(Options &opt);
+    complex<double> x_expand(complex<double> a,Options &opt);
+    complex<double> y_expand(complex<double> a,Options &opt);
     
     // Hilfsvariablen
     complex<double> h_x, h_y;
