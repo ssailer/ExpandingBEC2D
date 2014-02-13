@@ -7,6 +7,7 @@
 #include <complexgrid.h>
 #include <bh3binaryfile.h>
 #include <vector>
+#include <omp.h>
 
 
 using namespace std;
@@ -20,6 +21,10 @@ typedef struct : PathOptions {
   complex<double> exp_factor; //Expansion factor
   double g;
   double ITP_step, RTE_step;
+  int n_it_ITP;
+  int n_it_RTE;
+  int n_save_RTE;
+  int n_save_ITP;  
   int times;
   string name;
 	
@@ -36,6 +41,8 @@ class RK4
     ~RK4();
     
     // Propagatoren
+    void itpToTime(Options &opt);
+    void rteToTime(Options &opt);
     void ITP(ComplexGrid* & pPsi,Options &opt);
     void RTE(ComplexGrid* & pPsi,Options &opt);
     
@@ -64,7 +71,7 @@ class RK4
 
   private:
 
-    double gauss(double x,double y); //A simple Gaussian
+    // double gauss(double x,double y); //A simple Gaussian
    
     // Scaling of Wavefunction after every timestep in ITP and RTE
     void rescale(ComplexGrid* & pPsi, Options &opt);

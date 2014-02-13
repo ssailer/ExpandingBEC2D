@@ -4,18 +4,29 @@ Author: Bartholomew Andrews
 Last Update: 22/07/13
 Website: www.bartholomewandrews.com
 **************************************************************************/
-
+#include <boost/program_options.hpp>
 #include <iostream>
+#include <string>
 #include <cmath>
 #include <complex>
 #include <complexgrid.h>
 #include <exp_RK4_tools.h>
 #include <bh3defaultgrid.h>
+#include <omp.h>
 // #include <2dexpan.h>
 
 
 
 using namespace std;
+
+
+namespace // namespace for program options
+{ 
+  const size_t ERROR_IN_COMMAND_LINE = 1; 
+  const size_t SUCCESS = 0; 
+  const size_t ERROR_UNHANDLED_EXCEPTION = 2; 
+ 
+}
 
 //*****Parameter Initialisation*****
 
@@ -24,15 +35,15 @@ using namespace std;
 // const int n_x=128,n_y=128; //Lattice size (1500x1500)  lo
 
 const int vortex_start=8000; //ITP iterations before the phase disturbances are added (8000<n_it_ITP) 
-const int n_save_ITP=1000; //Save ITP after every n_save_ITP iterations (initial state is auto saved)
-const int n_it_ITP=10000; //Number of iterations for ITP (10000)
-const int n_save_RTE=100; //Save RTE after every n_save_RTE iterations - intial state is auto saved (500)
-const int n_it_RTE=1000; //Number of iterations for RTE (2501) 
+// const int n_save_ITP=5000; //Save ITP after every n_save_ITP iterations (initial state is auto saved)
+// const int n_it_ITP=15000; //Number of iterations for ITP (10000)
+// const int n_save_RTE=500; //Save RTE after every n_save_RTE iterations - intial state is auto saved (500)
+// const int n_it_RTE=2501; //Number of iterations for RTE (2501) 
 // const int name=1; //Name of output (must be an integer)
 
 //*****Variable Declarations*****
 
-int counter_ITP=0, counter_RTE=0; //Initialise the variables for the percentage loading
+// int counter_ITP=0, counter_RTE=0; //Initialise the variables for the percentage loading
 
 // double phase[opt.grid[1]][opt.grid[2]]; //Sum of all phases (used in the add_vortex() function) 
 
@@ -73,126 +84,125 @@ int y_38=n_y/2,y_39=(100+up)*n_y/200,y_40=(100+2*up)*n_y/200,y_41=(100+3*up)*n_y
 void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times);	
 	
 //>>>>>Main Program<<<<< 
-// inline double gauss(double & x,double & y){return (exp(-x*x-y*y));} //A simple Gaussian
+inline double gauss(double & x,double & y){return (exp(-x*x-y*y));} //A simple Gaussian
 
 int main( int argc, char** argv) 
 {	
+	//////////////// ALL NEED VARIABLES HERE ///////
 
 	Options opt;
 	vector<double> snapshot_times;
 	init_bh3(argc, argv, opt, snapshot_times);
-// 	complex<double> h_x(((2.*min_x)/opt.grid[1]),0),h_y(((2.*min_y)/opt.grid[2]),0); //Lattice constants (chosen for symmetric initial axis ranges)
-// 	
-// 	
-// 	
-// 	ComplexGrid * pPsi;
-// 	pPsi = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-// 		
-// 	
-// 		
+	
+	///////////////// PROGRAM OPTIONS ///////////
 
-// 	
-// 	ComplexGridPtr pPsiCopy(pPsi);
-// 	
-// 	  for(i=0;i<opt.grid[1];i++)
-//         {
-// 	        for(j=0;j<opt.grid[2];j++)
-// 	        {
-// 		        save_obdm(x_axis[i]*real(lambda_x(t_abs)),y_axis[j]*real(lambda_y(t_abs)),norm(pPsiCopy->at(0,i,j,0)),phase_save(i,j));
-// 	        }
-//                 blank_line();
-//         }
-//         blank_line();
+	try 
+  { 
+    /** Define and parse the program options 
+     */ 
+    namespace po = boost::program_options; 
+    po::options_description desc("Options"); 
+    desc.add_options() 
+      ("help,h", "Print help messages.") 
+      ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
+      ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
+      // ("name,n",po::value<string>(&opt.name),"Used in naming the data files.") // opt.name is the wrong variable for this purpose, CHANGE THIS!!
+      ("itp",po::value<int>(&opt.n_it_ITP),"Total runtime of the ITP-Step.")
+      ("rte",po::value<int>(&opt.n_it_RTE),"Total runtime of the RTE-Step.")
+      ("expansion,e",po::value<complex<double> >(&opt.exp_factor),"Expansion Factor");
+      //("add", "additional options") 
+      //("like", "this"); 
+
+	po::positional_options_description positionalOptions; 
+	positionalOptions.add("xgrid", 1); 
+	positionalOptions.add("ygrid", 1);   
+ 
+    po::variables_map vm; 
+    try 
+    { 
+
+		po::store(po::command_line_parser(argc, argv).options(desc)
+					.positional(positionalOptions).run(), 
+          			vm); 
+      //po::store(po::parse_command_line(argc, argv, desc),  
+      //          vm); // can throw 
+ 
+      /** --help option 
+       */ 
+      if ( vm.count("help")  ) 
+      { 
+        std::cout << "This is a program to simulate the expansion of a BEC with Vortices in 2D" << endl
+        		  << "after a harmonic trap has been turned off. The expansion is simulated by" << endl
+        		  << "an expanding coordinate system.The implemented algorithm to solve the GPE" << endl
+        		  << "is a 4-th order Runge-Kutta Integration because of this." << std::endl 
+                  << desc << std::endl; 
+        return SUCCESS; 
+      } 
+ 
+      po::notify(vm); // throws on error, so do after help in case 
+                      // there are any problems 
+    } 
+    catch(po::error& e) 
+    { 
+      std::cerr << "ERROR: " << e.what() << std::endl << std::endl; 
+      std::cerr << desc << std::endl; 
+      return ERROR_IN_COMMAND_LINE; 
+    } 
+
+////////////////////////////////////////////////
+/////////////// PROGRAM MAIN ///////////////////
+////////////////////////////////////////////////
+
+    std::cout << "Initial Values of this run:"<< endl
+			  << "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x << endl
+			  << "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y << endl
+			  << "Expansion Factor: " << opt.exp_factor << endl
+			  << "Total time of the ITP-Step: " << opt.n_it_ITP << endl
+			  << "Total time of the RTE-Step: " << opt.n_it_RTE << endl << endl;
+
+
 	
-		int cV = 4;
-        int rV = 4;
-        int Q = 1;
-	
-	// initialize_psi(n_x,n_y,h_x,h_y);
-//	cout << "Starting Grid now" << endl;
+	int cV = 2;
+    int rV = 2;
+    int Q = 1;
 	
 	ComplexGrid* startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	startgrid = create_Vortex_start_Grid2(opt,16,cV,rV,Q);
-
 	RK4* run = new RK4(startgrid,opt);
-	cout << "Run initialized." << endl;
+	// cout << "Run initialized with Grid: "<<opt.grid[1]<<"x"<<opt.grid[2]<< endl;
 
+	for(int i=0;i<opt.grid[1];i++) //Initialise the wavefunction as gaussian by default with default_gridsize
+    {
+        for(int j=0;j<opt.grid[2];j++)
+        {
+                        
+            double xfactor;
+            xfactor = gauss(run->x_axis[i],run->y_axis[j]);           
+            complex<double> factor (xfactor,0);             
+            run->pPsi->at(0,i,j,0) = factor;                       
+        }   
+    }
 
-	opt.name = "INIT";
+    startgrid = create_Vortex_start_Grid3(startgrid,opt,4,cV,rV,Q);
+
+    opt.name = "INIT";
 	run->save_2D(run->pPsi,opt);
-	cout << "Initial grid saved." << endl;
- 	
-//	cout << "Initializing Grid now" << endl;
-// 	delete startgrid;
-// 	for(int i=0;i<opt.grid[1];i++) //Initialise the wavefunction
-// 	{
-// 		for(int j=0;j<opt.grid[2];j++)
-// 		{
-// // 			double x;
-// // 			double y;
-// // 			x = run->x_axis[i];
-// // 			cout << run->x_axis[i] << "   ";
-// // 			y = run->y_axis[j];
-// // 			cout << run->y_axis[j] << "   ";
-// 			double xfactor;
-// 			xfactor = gauss(run->x_axis[i],run->y_axis[j]);
-// 			
-// 			complex<double> factor (xfactor,0);
-// // 			cout << factor << "   ";
-// 			
-// 		        run->pPsi->at(0,i,j,0) = factor;
-// // 			cout << norm(run->pPsi->at(0,i,j,0)) << endl;
-// // 			cout << run->pPsi->at(0,i,j,0) << endl;;
-// // 			run->pPhase->at(0,i,j,0) = (0,0); //!!!! Check if this should be double, and not complexdouble !!!!
-// 			 
-// 		}	
-// 	}
-//	cout << "Grid initialized" << endl;
-// 	complex<double> ausgabe;
-// 	ausgabe = run->pPsi->at(0,2,3,0);
-// 	cout << ausgabe << endl;
 	
+	double start,end[2];
+	start = omp_get_wtime();
+
 	//====> Imaginary Time Propagation (ITP)
-	opt.name = "ITP";
-	for(int k=0;k<n_it_ITP;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
-	{
-		
-		run->ITP(run->pPsi,opt);
-	
+	run->itpToTime(opt);
 
+	end[0] = omp_get_wtime();
+	cout << "ITP took " << end[0] - start << " seconds." << endl << endl;
 
-// 		if(k==vortex_start){add_vortex();} //Add the vortex near the end of the imaginary time propagation 
-		
-	       	if(k>0 && k%n_save_ITP==0){run->save_2D(run->pPsi,opt);} //New block every multiple of n_save_ITP
-  
-		counter_ITP+=1; //Loading counter for ITP
-
-		// if(k==0){cout << "ITP started." << flush;}
-   		if(counter_ITP%(n_it_ITP/100)==0){cout << "ITP "<<(counter_ITP/(n_it_ITP/100))<< "%" << flush << "\r";
-		 opt.times = counter_ITP;
-		 }
-	
-	}
-	cout << "\n";
-	
 	//====> Real Time Expansion (RTE)
+	run->rteToTime(opt);
 
-	opt.name = "RTE";
-	for(int k=0;k<n_it_RTE;k++)	//Time-evolution given by the 4th-order Runge-Kutta iteration			
-	{
-		run->RTE(run->pPsi,opt);
+	end[1] = omp_get_wtime();
+	cout << "RTE took " << end[1] - start << " seconds." << endl;
+	cout << "Run finished." << endl;
 
-		if(k>=0 && k%n_save_RTE==0){run->save_2D(run->pPsi,opt);} //New block every multiple of n_save_RTE
-  
-		opt.t_abs.real()+=opt.RTE_step; //Increment absolute time by the time-step t_RTE
-
-		counter_RTE+=1; //Loading counter for RTE
-   		if(counter_RTE%(n_it_RTE/100)==0){cout << "RTE "<<(counter_RTE/(n_it_RTE/100))<<"%" << flush << "\r";
-		  opt.times = counter_RTE;
-		}
-	}
-	cout << endl;
-	
 	
 	//Python Plot
 /*
@@ -321,36 +331,57 @@ int main( int argc, char** argv)
        */
     delete startgrid;
 	delete run;
-	return 0;
+
+////////////////////////////////////////////////
+/////////////// PROGRAM END ////////////////////
+////////////////////////////////////////////////
+
+ 
+ 
+  } 
+  catch(std::exception& e) 
+  { 
+    std::cerr << "Unhandled Exception reached the top of main: " 
+              << e.what() << ", application will now exit" << std::endl; 
+    return ERROR_UNHANDLED_EXCEPTION; 
+ 
+  } 
+ 
+  return SUCCESS; 
+	
 }
 
 void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times)
 {
         // Parameter setzen
-// 	opt.timestepsize = 0.2;
-// 	opt.delta_t.resize(0);   
-        //opt.delta_t[0]=0.2;
-        //opt.delta_t[1]=0.4;
+	//opt.timestepsize = 0.2;
+	//opt.delta_t.resize(0);   
+    //opt.delta_t[0]=0.2;
+    //opt.delta_t[1]=0.4;
 
-	opt.N = 100;  //normed for 512*512 N=64*50000
+	opt.N = 1000;  //normed for 512*512 N=64*50000
 	
 	opt.min_x = 4;
 	opt.min_y = 4;
 	
 	opt.grid[0] = 1;
-	opt.grid[1] = 32;
-	opt.grid[2] = 32;
+	opt.grid[1] = 256;
+	opt.grid[2] = 256;
 	opt.grid[3] = 1;
 // 	opt.U = 3e-5;
 	
 // 	opt.g.resize(1);
 	opt.g = 15;
 	
-	opt.omega_x = (100,0);
-	opt.omega_y = (150,0);
-	opt.scale_factor = (0,0); //Scale factor
-	opt.t_abs = (0,0); //Absolute time 
-	opt.exp_factor = (1,0); //Expansion factor
+	opt.omega_x = complex<double>(100,0);
+	opt.omega_y = complex<double>(150,0);
+	opt.scale_factor = complex<double>(0,0); //Scale factor
+	opt.t_abs = complex<double>(0,0); //Absolute time 
+	opt.exp_factor = complex<double>(2.0,0); //Expansion factor
+	opt.n_it_RTE = 1001;
+	opt.n_it_ITP = 10001;
+	opt.n_save_RTE = 1000;
+	opt.n_save_ITP = 10000;
 	opt.times = 1;
 	opt.name = "run"; // Must be an Integer
     	

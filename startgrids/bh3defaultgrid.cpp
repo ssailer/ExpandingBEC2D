@@ -198,6 +198,8 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
             }
         } 
     }
+
+
  
 //truncated Wigner noise; 
 /*    ComplexGrid::fft (*g, *g, false);
@@ -223,6 +225,117 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
     
     return g;  
     	                                                                     
+}
+
+
+ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g, const Options &opt,int Vortexnumber, int rows_y, int columns_x, int Q) 
+{
+    if(rows_y*columns_x!=Vortexnumber)
+    {
+        std::cout<< "Invalid Columnsize or Rowsize" <<std::endl;
+        exit(1);
+    }
+
+    if((Vortexnumber % 2)!=0)
+    {
+        std::cout<< "!!!!!!!!!Be careful momentum is entering in the starting conditions!!!!!!!!!" <<std::endl;
+    }
+
+
+
+    double rho=opt.N/(opt.grid[1]*opt.grid[2]*opt.grid[3]);
+  
+    int V_dim_x[2*Vortexnumber];
+    int V_dim_y[2*Vortexnumber];
+
+    int V_y[Vortexnumber];
+    int V_x[Vortexnumber]; 
+
+    int Setting_x=(int)(opt.grid[1]/(columns_x*2));
+    int Setting_y=(int)(opt.grid[2]/(rows_y*2));
+      
+    for(int i = 0; i < Vortexnumber; i++)
+    {
+        if(((i%columns_x)==0))
+        {
+            V_x[i]=Setting_x;
+            V_dim_x[i]=Setting_x;
+            V_dim_x[i+Vortexnumber]=Setting_x-1;
+        }
+        else if((i%(columns_x))==(columns_x-1))
+        {
+            V_x[i]=2*Setting_x+V_x[i-1];
+            V_dim_x[i]=Setting_x;
+            V_dim_x[i+Vortexnumber]=opt.grid[0]-V_x[i]-1;
+        }
+        else 
+        {
+            V_x[i]=2*Setting_x+V_x[i-1];
+            V_dim_x[i]=Setting_x;
+            V_dim_x[i+Vortexnumber]=Setting_x-1;
+        }
+             
+    }
+           
+    for(int i = 0; i < Vortexnumber; i++)
+    {
+        if(i<columns_x)
+        {
+            V_y[i]=Setting_y;
+            V_dim_y[i]=Setting_y;
+            V_dim_y[i+Vortexnumber]=Setting_y-1;
+        }
+        else if(i>=(columns_x*(rows_y-1)))
+        {
+            V_y[i]=2*Setting_y+V_y[i-columns_x];
+            V_dim_y[i]=Setting_y;
+            V_dim_y[i+Vortexnumber]=opt.grid[1]-V_y[i]-1;
+        }
+        else 
+        {
+            V_y[i]=2*Setting_y+V_y[i-columns_x];
+            V_dim_y[i]=Setting_y;
+            V_dim_y[i+Vortexnumber]=Setting_y-1;
+        }
+    }
+
+    
+    for(int j = 0; j < opt.grid[0]; j++)
+    {
+        int r = 0; 
+        for(int i = 0; i < Vortexnumber; i++)
+        {
+            if((columns_x % 2)==0 && (i % columns_x)==0)
+            {    
+                r++;
+            }          
+                  
+            for(int y = 0; y < opt.grid[2]; y++)
+            {
+                for(int x = 0; x < opt.grid[1]; x++)
+                {
+
+                    g->at(j,x,y,0) *= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+                    /*
+                    if(i==0)
+                    {
+                        g->at(j,x,y,0)= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+            
+                    }
+                    else if(i==Vortexnumber-1)
+                    {
+                        g->at(j,x,y,0)*= sqrt(rho)*polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+                    }
+                    else
+                    {
+                        g->at(j,x,y,0)*= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+                    }
+                    */
+                }
+            }
+        } 
+    }
+    return g;
 }
 
 //////////////neus Startgitter fuer vortices2//////////////////////////////////////////////////////////////////////////////////////////////

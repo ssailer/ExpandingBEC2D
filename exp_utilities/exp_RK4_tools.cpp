@@ -67,7 +67,7 @@ RK4::RK4(ComplexGrid* &c,Options &opt)
 
 RK4::~RK4(){};
 
-double RK4::gauss(double x,double y){return (exp(-x*x-y*y));}
+// double RK4::gauss(double x,double y){return (exp(-x*x-y*y));}
 
 complex<double> RK4::interaction(complex<double> a,Options &opt)
 {return (opt.g*norm(a));} //Interaction term in the GPE Hamiltonian   
@@ -326,6 +326,66 @@ void RK4::RTE(ComplexGrid* & pPsi,Options &opt)
 		}
 	}
 
+	opt.t_abs = t_RTE;
+	rescale(pPsi,opt);
+
 }
 
+// Propagation Wrapper Functions
 
+void RK4::itpToTime(Options &opt)
+{
+	int counter_ITP = 0;
+	opt.name = "ITP";
+
+	for(int k=0;k<opt.n_it_ITP;k++)
+	{ 
+		ITP(pPsi,opt);
+
+		if(k>0 && k%opt.n_save_ITP==0)
+			{
+				save_2D(pPsi,opt);
+			}
+
+  		counter_ITP+=1;
+
+		if(counter_ITP%(opt.n_it_ITP/100)==0)
+			{
+				cout << "ITP " << (counter_ITP/(opt.n_it_ITP/100)) << "%" << flush << "\r";
+				opt.times = counter_ITP;
+			}
+	
+	}
+
+	// 		if(k==vortex_start){add_vortex();} //Add the vortex near the end of the imaginary time propagation 
+
+	cout << "\n";
+	
+}
+
+void RK4::rteToTime(Options &opt)
+{
+	int counter_RTE = 0;
+	opt.name = "RTE";
+
+	for(int k=0;k<opt.n_it_RTE;k++)
+	{
+		RTE(pPsi,opt);
+
+
+		if(k>0 && k%opt.n_save_RTE==0)
+			{
+				save_2D(pPsi,opt);
+			}
+
+  		counter_RTE+=1;
+
+		if(counter_RTE%(opt.n_it_RTE/100)==0)
+			{
+				cout << "RTE " << (counter_RTE/(opt.n_it_RTE/100)) << "%" << flush << "\r";
+				opt.times = counter_RTE;
+			}
+	}
+
+	cout << "\n";
+}
