@@ -78,8 +78,11 @@ class RK4
     void rescale(ComplexGrid* & pPsi, Options &opt);
     
     // Hilfsfunktionen fuer ITP
-    void computeK_ITP(ComplexGrid &PsiCopy,ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_ITP, int d);
-    void computeK_RTE(ComplexGrid &PsiCopy,ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE);
+    void computeK_ITP(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_ITP);
+    void computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE);
+    void TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,complex<double> &t);
+    void Neumann(ComplexGrid &k,ComplexGrid &PsiCopy,Options &opt);
+    void Dirichlet(ComplexGrid* &pPsi,Options &opt);
 
     complex<double> T(ComplexGrid & pPsiCopy,int i, int j);
     complex<double> V(ComplexGrid & pPsicopy,int i, int j,Options &opt);   

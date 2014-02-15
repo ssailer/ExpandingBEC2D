@@ -348,14 +348,14 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
     //opt.delta_t[0]=0.2;
     //opt.delta_t[1]=0.4;
 
-	opt.N = 75;  //normed for 512*512 N=64*50000
+	opt.N = 1000;  //normed for 512*512 N=64*50000
 	
 	opt.min_x = 4;
 	opt.min_y = 4;
 	
 	opt.grid[0] = 1;
-	opt.grid[1] = 256;
-	opt.grid[2] = 256;
+	opt.grid[1] = 1500;
+	opt.grid[2] = 1500;
 	opt.grid[3] = 1;
 // 	opt.U = 3e-5;
 	
@@ -366,15 +366,15 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.omega_y = complex<double>(150,0);
 	opt.scale_factor = complex<double>(0,0); //Scale factor
 	opt.t_abs = complex<double>(0,0); //Absolute time 
-	opt.exp_factor = complex<double>(2.0,0); //Expansion factor
-	opt.n_it_RTE = 1001;
-	opt.n_it_ITP = 10001;
-	opt.n_save_RTE = 1000;
-	opt.n_save_ITP = 10000;
+	opt.exp_factor = complex<double>(1.0,0); //Expansion factor
+	opt.n_it_RTE = 101;
+	opt.n_save_RTE = 10;
+	opt.n_it_ITP = 10000;
+	opt.n_save_ITP = 1000;
 	opt.times = 1;
 	opt.name = "run"; // Must be an Integer
 	opt.startgrid[0] = true; // gaussian packet
-    opt.startgrid[1] = true; // add vortices
+    opt.startgrid[1] = false; // add vortices
 
 // 	opt.klength[0] = 2.0;
 // 	opt.klength[1] = 2.0;

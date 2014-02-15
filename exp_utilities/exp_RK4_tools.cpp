@@ -111,8 +111,9 @@ complex<double> RK4::integral(ComplexGrid* & pPsi,Options &opt)
 void RK4::rescale(ComplexGrid* & pPsi, Options &opt)
 {	
 	Integral=integral(pPsi,opt);
-	opt.scale_factor=opt.N/Integral;
-// 	cout  << "opt.scale_factor " << opt.scale_factor<< "   Integral : " <<  Integral << endl;
+	opt.scale_factor=complex<double>(opt.N,0)/Integral;
+	// cout << "Particle Number: " << opt.N << endl;
+ 	// cout  << "opt.scale_factor " << opt.scale_factor<< "   Integral : " <<  Integral << endl;
 	
 	for(int i=0;i<opt.grid[1];i++)
 	{
@@ -181,58 +182,72 @@ void RK4::save_2D(ComplexGrid* &pPsi,Options &opt) //Function to save the data t
 }
 
 
-complex<double> RK4::T(ComplexGrid &pPsiCopy,int i, int j)
+complex<double> RK4::T(ComplexGrid &PsiCopy,int i, int j)
 {
-	return half*((pPsiCopy.at(0,i+1,j,0)-(two*pPsiCopy.at(0,i,j,0))+pPsiCopy.at(0,i-1,j,0))/(h_x*h_x))+half*((pPsiCopy.at(0,i,j+1,0)-(two*pPsiCopy.at(0,i,j,0))+pPsiCopy.at(0,i,j-1,0))/(h_x*h_x)); 
+	return half*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x))+half*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_x*h_x)); 
 }
 
-complex<double> RK4::V(ComplexGrid & pPsiCopy,int i, int j,Options & opt)
+complex<double> RK4::V(ComplexGrid & PsiCopy,int i, int j,Options & opt)
 { 
 	complex<double> xvalue = complex<double>(x_axis[i],0);
 	complex<double> yvalue = complex<double>(y_axis[j],0);
   
-	return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+opt.g*norm(pPsiCopy.at(0,i,j,0)))*pPsiCopy.at(0,i,j,0);
-} 
+	return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+complex<double>(opt.g,0)*norm(PsiCopy(0,i,j,0)))*PsiCopy(0,i,j,0);
+}
 
-void RK4::computeK_ITP(ComplexGrid &PsiCopy,ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_ITP, int d){ 
+void RK4::TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,complex<double> &t)
+{
+	for(int i=0;i<opt.grid[1];i++){
+	  for(int j=0;j<opt.grid[2];j++){
+	    pPsi->at(0,i,j,0)+=(t/six)*(k[0](0,i,j,0)+two*k[1](0,i,j,0)+two*k[2](0,i,j,0)+k[3](0,i,j,0));
+	   }
+	}
+}	
+
+void RK4::Neumann(ComplexGrid &k,ComplexGrid &PsiCopy,Options &opt){
+      //Fixed derivative (Neumann) boundary conditions for the ITP
+      for(int i=0;i<opt.grid[1];i++) 
+      { 
+		k(0,i,0,0)=V(PsiCopy,i,0,opt);
+		k(0,i,opt.grid[1]-1,0)=V(PsiCopy,i,opt.grid[1]-1,opt);
+      }
+      for(int j=0;j<opt.grid[2];j++)
+      { 
+		k(0,0,j,0)=V(PsiCopy,0,j,opt);
+		k(0,opt.grid[2]-1,j,0)=V(PsiCopy,opt.grid[2]-1,j,opt);
+      }
+  	}
+
+
+void RK4::computeK_ITP(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_ITP){ 
 	
+	ComplexGrid PsiCopy = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	PsiCopy = *pPsi;
+
+	for(int d=1; d<=4; d++){
+
   // The k's have to be computed differently, this is decided by int d
-    if (d == 1){
-      
-      PsiCopy = *pPsi;
-    }
-    else if ( d== 2){
-      	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy.at(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_ITP*k[d-2].at(0,i,j,0) ;}}    
-    }
-    else if (d == 3){
-      	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy.at(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_ITP*k[d-2].at(0,i,j,0) ;}}
+    if (d == 2 || d == 3){
+      	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_ITP*k[d-2](0,i,j,0) ;}}
     }
     else if (d == 4){
-    	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy.at(0,i,j,0)=pPsi->at(0,i,j,0)+t_ITP*k[d-2].at(0,i,j,0) ;}}	
+    	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+t_ITP*k[d-2](0,i,j,0) ;}}	
 	}
    
     // Compute all k[1]..k[4] for the RK4
     for(int i=1;i<opt.grid[1]-1;i++) {
 	for(int j=1;j<opt.grid[2]-1;j++) {
 // 	   cout << "PsiCopy = " << PsiCopy->at(0,i,j,0) << endl;
-	   k[d-1].at(0,i,j,0) = T(PsiCopy,i,j)+V(PsiCopy,i,j,opt); 
+	   k[d-1](0,i,j,0) = T(PsiCopy,i,j)+V(PsiCopy,i,j,opt); 
 // 	   cout << "k[" << d-1 << "] = " << k[d-1]->at(0,i,j,0) << endl;
 	 }}
-      
-      //Fixed derivative (Neumann) boundary conditions for the ITP
-      for(int i=0;i<opt.grid[1];i++) 
-      { 
-		k[d-1].at(0,i,0,0)=V(PsiCopy,i,0,opt);
-		k[d-1].at(0,i,opt.grid[1]-1,0)=V(PsiCopy,i,opt.grid[1]-1,opt);
-      }
-      for(int j=0;j<opt.grid[2];j++)
-      { 
-		k[d-1].at(0,0,j,0)=V(PsiCopy,0,j,opt);
-		k[d-1].at(0,opt.grid[2]-1,j,0)=V(PsiCopy,opt.grid[2]-1,j,opt);
-      }
-   
+    
+    Neumann(k[d-1],PsiCopy,opt);
+
+	}
   
 }
+
 
 
 void RK4::ITP(ComplexGrid* & pPsi, Options &opt)
@@ -240,96 +255,78 @@ void RK4::ITP(ComplexGrid* & pPsi, Options &opt)
 	vector<ComplexGrid> k(4);
 	complex<double> t_ITP(opt.ITP_step,0); //Timetep size for ITP (the equations already assume imaginary time so a real t_ITP should be used)
 	
-	ComplexGrid PsiCopy = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	for ( int i=0;i<4;i++){k[i] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);}
 	
-	// Compute all the k's for the RK4
+	// Compute all the k's for the RK4	
+
+	computeK_ITP(pPsi,k,opt,t_ITP);
 	
-	for(int d=1; d<=4; d++){
-	computeK_ITP(PsiCopy,pPsi,k,opt,t_ITP,d);
-	}
+	// Use the k's of RK4 to timestep Psi	
+
+	TimeStepRK4(pPsi,k,opt,t_ITP);
 	
-	// Use RK4 to timestep Psi
+	// rescale Psi to conserve number of particles
 	
-	for(int i=0;i<opt.grid[1];i++){
-	  for(int j=0;j<opt.grid[2];j++){
-	    pPsi->at(0,i,j,0)+=(t_ITP)*(k[0].at(0,i,j,0)+two*k[1].at(0,i,j,0)+two*k[2].at(0,i,j,0)+k[3].at(0,i,j,0));
-// 	    cout << "final Psi of computeK: " << pPsi->at(0,i,j,0) << endl;
-	   }
-	}
-	
-	
-	rescale(pPsi,opt);
-	
+	rescale(pPsi,opt); 
 }
 
 
 complex<double> RK4::function_RTE(ComplexGrid &PsiCopy,int i, int j,Options &opt) //Function used for the RTE Runge-Kutta evolution (expanding frame)
 {
 	return 
- ((i_unit*((PsiCopy.at(0,i+1,j,0)-(two*PsiCopy.at(0,i,j,0))+PsiCopy.at(0,i-1,j,0))/(h_x*h_x)))/(two*lambda_x(opt)*lambda_x(opt)))
-+((i_unit*((PsiCopy.at(0,i,j+1,0)-(two*PsiCopy.at(0,i,j,0))+PsiCopy.at(0,i,j-1,0))/(h_y*h_y)))/(two*lambda_y(opt)*lambda_y(opt)))
--(i_unit*(opt.g*norm((PsiCopy.at(0,i,j,0))))*PsiCopy.at(0,i,j,0))
-+((lambda_x_dot(opt)*real(x_expand(i,opt))*((PsiCopy.at(0,i+1,j,0)-PsiCopy.at(0,i-1,j,0))/(two*h_x)))/lambda_x(opt))
-+((lambda_y_dot(opt)*real(y_expand(j,opt))*((PsiCopy.at(0,i,j+1,0)-PsiCopy.at(0,i,j-1,0))/(two*h_y)))/lambda_y(opt));
+ ((i_unit*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x)))/(two*lambda_x(opt)*lambda_x(opt)))
++((i_unit*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_y*h_y)))/(two*lambda_y(opt)*lambda_y(opt)))
+-(i_unit*(complex<double>(opt.g,0)*norm((PsiCopy(0,i,j,0))))*PsiCopy(0,i,j,0))
++((lambda_x_dot(opt)*real(x_expand(i,opt))*((PsiCopy(0,i+1,j,0)-PsiCopy(0,i-1,j,0))/(two*h_x)))/lambda_x(opt))
++((lambda_y_dot(opt)*real(y_expand(j,opt))*((PsiCopy(0,i,j+1,0)-PsiCopy(0,i,j-1,0))/(two*h_y)))/lambda_y(opt));
 }
 
-void RK4::computeK_RTE(ComplexGrid &PsiCopy,ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
-
-	PsiCopy = *pPsi;
+void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 
         //Fixed (Dirichlet) boundary conditions for the RTE
         for(int l=0;l<opt.grid[1];l++){ 
 	  pPsi->at(0,l,0,0)=zero;
-	  PsiCopy.at(0,l,0,0)=zero;
 	  pPsi->at(0,l,opt.grid[2]-1,0)=zero;
-	  PsiCopy.at(0,l,opt.grid[2]-1,0)=zero;
-	  
 	}
         for(int m=0;m<opt.grid[2];m++){
 	  pPsi->at(0,0,m,0)=zero;
-	  PsiCopy.at(0,0,m,0)=zero;
 	  pPsi->at(0,opt.grid[1]-1,m,0)=zero;
-	  PsiCopy.at(0,opt.grid[1]-1,m,0)=zero;
-	  
 	}
-        
-		//k1		
-	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[0].at(0,i,j,0)=function_RTE(PsiCopy,i,j,opt) ;}}
-		//k2
-	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy.at(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[1].at(0,i,j,0) ;}}		
+}
+
+void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
+
+	ComplexGrid PsiCopy = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+	Dirichlet(pPsi,opt);
+	PsiCopy = *pPsi;
+      
+      for(int d=1;d<=4;d++)
+	{  
+	if(d==2){
 	opt.t_abs += half*t_RTE;
-	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[1].at(0,i,j,0)=function_RTE(PsiCopy,i,j,opt) ;}}
-		//k3		
-	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy.at(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[2].at(0,i,j,0) ;}}
-	
-	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[2].at(0,i,j,0)=function_RTE(PsiCopy,i,j,opt) ;}}
-		//k4		
-	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy.at(0,i,j,0)=pPsi->at(0,i,j,0)+t_RTE*k[3].at(0,i,j,0) ;}}
+	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}		
+	}else if(d ==3){	
+	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}
+	} else if (d==4){
 	opt.t_abs += half*t_RTE;
-	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[3].at(0,i,j,0)=function_RTE(PsiCopy,i,j,opt) ;}}
-	// opt.t_abs -= t_RTE;
-	
-		//Time-step psi		
-	for(int i=0;i<opt.grid[1];i++)
-	{		
-		for(int j=0;j<opt.grid[2];j++)		
-		{
-			pPsi->at(0,i,j,0)+=(t_RTE/six)*(k[0].at(0,i,j,0)+two*k[1].at(0,i,j,0)+two*k[2].at(0,i,j,0)+k[3].at(0,i,j,0));
-		}
+	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+t_RTE*k[d-1](0,i,j,0) ;}}
 	}
+	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[d-1](0,i,j,0)=function_RTE(PsiCopy,i,j,opt) ;}}
+	}
+
 }
 
 void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 {	
 	complex<double> t_RTE(opt.RTE_step,0); //Time-step size for RTE
-	ComplexGrid PsiCopy = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	vector<ComplexGrid> k(4);
 	
 	for(int i=0;i<4;i++){k[i] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);}
 	
-	computeK_RTE(PsiCopy,pPsi,k,opt,t_RTE);
-	rescale(pPsi,opt);
+	computeK_RTE(pPsi,k,opt,t_RTE);
+
+	TimeStepRK4(pPsi,k,opt,t_RTE);
 
 }
 
@@ -343,6 +340,8 @@ void RK4::itpToTime(Options &opt)
 	for(int k=0;k<opt.n_it_ITP;k++)
 	{ 
 		ITP(pPsi,opt);
+
+		// if(k==vortex_start){add_vortex();} //Add vortex at ~80% of the ITP
 
 		if(k>0 && k%opt.n_save_ITP==0)
 			{
