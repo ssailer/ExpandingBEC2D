@@ -28,6 +28,11 @@ typedef struct : PathOptions {
   int times; // naming of the datafile - time of the snapshot
   string name; // naming of the datafile
   bool startgrid[2];
+  int threads;
+  //Vortex Positions and winding Number
+  int cV;
+  int rV;
+  int Q;
 	
 } Options;
 
@@ -48,13 +53,9 @@ class RK4
     void RTE(ComplexGrid* & pPsi,Options &opt);
     
     
-    // Hilfsfunktionen
-
+    // Hilfsfunktionen  
   
-  
-    double vortex(int a, int b, int x, int y);
     double phase_save(ComplexGrid* & pPsi,int a,int b);
-//     void add_vortex(ComplexGrid* & pPsi,Options &opt);
     
     // save the Grid to file
     void save_2D(ComplexGrid* & pPsi,Options &opt);

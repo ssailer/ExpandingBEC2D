@@ -6,6 +6,7 @@ Website: www.bartholomewandrews.com
 **************************************************************************/
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <cstdlib>
 #include <string>
 #include <cmath>
 #include <complex>
@@ -13,8 +14,12 @@ Website: www.bartholomewandrews.com
 #include <exp_RK4_tools.h>
 #include <bh3defaultgrid.h>
 #include <omp.h>
+#include <libconfig.h++>
+// #include <vortexcoordinates.h>
+
 
 using namespace std;
+using namespace libconfig;
 
 namespace // namespace for program options
 { 
@@ -24,38 +29,19 @@ namespace // namespace for program options
  
 }
 
-const int vortex_start=8000; //ITP iterations before the phase disturbances are added (8000<n_it_ITP) 
+// const int vortex_start=8000; //ITP iterations before the phase disturbances are added (8000<n_it_ITP) 
 Options opt;
 vector<double> snapshot_times;
 
 
-//*****Vortex Initial Coordinates*****
-/*
-//Spacing (6% across and 3% up relative to the lattice grid size)
-const int across=6,up=3;
-int half_across=across/2;
-
-//Central Vortex (at the origin)
-int x_1=n_x/2;
-int y_1=n_y/2; 
-
-//Ring 1 
-int x_2=(100-across)*n_x/200,x_3=(100+across)*n_x/200,x_4=(100+half_across)*n_x/200,x_5=(100-half_across)*n_x/200,x_6=(100-half_across)*n_x/200,x_7=(100+half_across)*n_x/200;
-int y_2=n_y/2,y_3=n_y/2,y_4=(100+up)*n_y/200,y_5=(100+up)*n_y/200,y_6=(100-up)*n_y/200,y_7=(100-up)*n_y/200; 
-
-//Ring 2
-int x_8=(100-2*across)*n_x/200,x_9=(100-across-half_across)*n_x/200,x_10=(100-across)*n_x/200,x_11=n_x/2,x_12=(100+across)*n_x/200,x_13=(100+across+half_across)*n_x/200,x_14=(100+2*across)*n_x/200,x_15=(100+across+half_across)*n_x/200,x_16=(100+across)*n_x/200,x_17=n_x/2,x_18=(100-across)*n_x/200,x_19=(100-across-half_across)*n_x/200;
-int y_8=n_y/2,y_9=(100+up)*n_y/200,y_10=(100+2*up)*n_y/200,y_11=(100+2*up)*n_y/200,y_12=(100+2*up)*n_x/200,y_13=(100+up)*n_y/200,y_14=n_y/2,y_15=(100-up)*n_y/200,y_16=(100-2*up)*n_y/200,y_17=(100-2*up)*n_y/200,y_18=(100-2*up)*n_y/200,y_19=(100-up)*n_y/200;
-
-//Ring 3
-int x_20=(100-3*across)*n_x/200,x_21=(100-2*across-half_across)*n_x/200,x_22=(100-2*across)*n_x/200,x_23=(100-across-half_across)*n_x/200,x_24=(100-half_across)*n_x/200,x_25=(100+half_across)*n_x/200,x_26=(100+across+half_across)*n_x/200,x_27=(100+2*across)*n_x/200,x_28=(100+2*across+half_across)*n_x/200,x_29=(100+3*across)*n_x/200,x_30=(100+2*across+half_across)*n_x/200,x_31=(100+2*across)*n_x/200,x_32=(100+across+half_across)*n_x/200,x_33=(100+half_across)*n_x/200,x_34=(100-half_across)*n_x/200,x_35=(100-across-half_across)*n_x/200,x_36=(100-2*across)*n_x/200,x_37=(100-2*across-half_across)*n_x/200;
-int y_20=n_y/2,y_21=(100+up)*n_y/200,y_22=(100+2*up)*n_y/200,y_23=(100+3*up)*n_y/200,y_24=(100+3*up)*n_y/200,y_25=(100+3*up)*n_y/200,y_26=(100+3*up)*n_y/200,y_27=(100+2*up)*n_y/200,y_28=(100+up)*n_y/200,y_29=n_y/2,y_30=(100-up)*n_y/200,y_31=(100-2*up)*n_y/200,y_32=(100-3*up)*n_y/200,y_33=(100-3*up)*n_y/200,y_34=(100-3*up)*n_y/200,y_35=(100-3*up)*n_y/200,y_36=(100-2*up)*n_y/200,y_37=(100-up)*n_y/200;  
-
-//Ring 4
-int x_38=(100-4*across)*n_x/200,x_39=(100-3*across-half_across)*n_x/200,x_40=(100-3*across)*n_x/200,x_41=(100-2*across-half_across)*n_x/200,x_42=(100-2*across)*n_x/200,x_43=(100-across)*n_x/200,x_44=n_x/2,x_45=(100+across)*n_x/200,x_46=(100+2*across)*n_x/200,x_47=(100+2*across+half_across)*n_x/200,x_48=(100+3*across)*n_x/200,x_49=(100+3*across+half_across)*n_x/200,x_50=(100+4*across)*n_x/200,x_51=(100+3*across+half_across)*n_x/200,x_52=(100+3*across)*n_x/200,x_53=(100+2*across+half_across)*n_x/200,x_54=(100+2*across)*n_x/200,x_55=(100+across)*n_x/200,x_56=n_x/2,x_57=(100-across)*n_x/200,x_58=(100-2*across)*n_x/200,x_59=(100-2*across-half_across)*n_x/200,x_60=(100-3*across)*n_x/200,x_61=(100-3*across-half_across)*n_x/200;
-int y_38=n_y/2,y_39=(100+up)*n_y/200,y_40=(100+2*up)*n_y/200,y_41=(100+3*up)*n_y/200,y_42=(100+4*up)*n_y/200,y_43=(100+4*up)*n_y/200,y_44=(100+4*up)*n_y/200,y_45=(100+4*up)*n_y/200,y_46=(100+4*up)*n_y/200,y_47=(100+3*up)*n_y/200,y_48=(100+2*up)*n_y/200,y_49=(100+up)*n_y/200,y_50=n_y/2,y_51=(100-up)*n_y/200,y_52=(100-2*up)*n_y/200,y_53=(100-3*up)*n_y/200,y_54=(100-4*up)*n_y/200,y_55=(100-4*up)*n_y/200,y_56=(100-4*up)*n_y/200,y_57=(100-4*up)*n_y/200,y_58=(100-4*up)*n_y/200,y_59=(100-3*up)*n_y/200,y_60=(100-2*up)*n_y/200,y_61=(100-up)*n_y/200;*/
 
 // Helper functions
+
+ double vortex(int a, int b, int x, int y) //Vortex with phase [0,2*pi)          
+{
+        if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
+	else{ return atan2(b-y,a-x); }        
+}
 
 void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times);	
 	
@@ -66,7 +52,7 @@ inline void printInitVar()
 		std::cout 	<< "Initial Values of this run:"<< endl
 					<< "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x << endl
 			  		<< "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y << endl
-			  		<< "Expansion Factor: " << opt.exp_factor << "\t" << "Number of particles: " << opt.N << endl
+			  		<< "Expansion Factor: " << opt.exp_factor << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant: " << opt.g << endl
 					<< "Total time of the ITP-Step: " << opt.n_it_ITP << endl
 					<< "Total time of the RTE-Step: " << opt.n_it_RTE << endl << endl;
 	}
@@ -78,6 +64,7 @@ int main( int argc, char** argv)
 {	
 
 	// Initialize all option variables
+
 	init_bh3(argc, argv, opt, snapshot_times);
 	
 
@@ -98,6 +85,7 @@ try
       ("rte",po::value<int>(&opt.n_it_RTE),"Total runtime of the RTE-Step.")
       ("number,N",po::value<double>(&opt.N),"Number of particles.")
       ("expansion,e",po::value<complex<double> >(&opt.exp_factor),"Expansion Factor");
+      ("interaction,g",po::value<double> (&opt.g),"Interaction Constant");
 
 	po::positional_options_description positionalOptions; 
 	positionalOptions.add("xgrid", 1); 
@@ -161,16 +149,6 @@ try
     }
 	}
 
-	// if the given value is true, add vortices to the startgrid
-
-    if(opt.startgrid[1]==true)
-    {
-	int cV = 2;
-    int rV = 2;
-    int Q = 1;
-
-    startgrid = create_Vortex_start_Grid3(startgrid,opt,4,cV,rV,Q);
-	}
 
 	// set the datafile identifier name and save the initial grid
 
@@ -182,146 +160,98 @@ try
 	start = omp_get_wtime();
 
 	//====> Imaginary Time Propagation (ITP)
+	opt.name = "ITP1";
+	opt.n_it_ITP = 8001;
+	run->itpToTime(opt);
+
+//////////// VORTICES ////////////////
+
+// 	//*****Vortex Initial Coordinates*****
+
+// //Spacing (6% across and 3% up relative to the lattice grid size)
+// const int across=6,up=3;
+// int half_across=across/2;
+
+// //Central Vortex (at the origin)
+// int x_1=opt.grid[1]/2;
+// int y_1=opt.grid[2]/2; 
+
+// //Ring 1 
+// // int x_2=(100-across)*opt.grid[1]/200,x_3=(100+across)*opt.grid[1]/200,x_4=(100+half_across)*opt.grid[1]/200,x_5=(100-half_across)*opt.grid[1]/200,x_6=(100-half_across)*opt.grid[1]/200,x_7=(100+half_across)*opt.grid[1]/200;
+// // int y_2=opt.grid[2]/2,y_3=opt.grid[2]/2,y_4=(100+up)*opt.grid[2]/200,y_5=(100+up)*opt.grid[2]/200,y_6=(100-up)*opt.grid[2]/200,y_7=(100-up)*opt.grid[2]/200; 
+
+// //Ring 2
+// // int x_8=(100-2*across)*opt.grid[1]/200,x_9=(100-across-half_across)*opt.grid[1]/200,x_10=(100-across)*opt.grid[1]/200,x_11=opt.grid[1]/2,x_12=(100+across)*opt.grid[1]/200,x_13=(100+across+half_across)*opt.grid[1]/200,x_14=(100+2*across)*opt.grid[1]/200,x_15=(100+across+half_across)*opt.grid[1]/200,x_16=(100+across)*opt.grid[1]/200,x_17=opt.grid[1]/2,x_18=(100-across)*opt.grid[1]/200,x_19=(100-across-half_across)*opt.grid[1]/200;
+// // int y_8=opt.grid[2]/2,y_9=(100+up)*opt.grid[2]/200,y_10=(100+2*up)*opt.grid[2]/200,y_11=(100+2*up)*opt.grid[2]/200,y_12=(100+2*up)*opt.grid[1]/200,y_13=(100+up)*opt.grid[2]/200,y_14=opt.grid[2]/2,y_15=(100-up)*opt.grid[2]/200,y_16=(100-2*up)*opt.grid[2]/200,y_17=(100-2*up)*opt.grid[2]/200,y_18=(100-2*up)*opt.grid[2]/200,y_19=(100-up)*opt.grid[2]/200;
+
+// //Ring 3
+// // int x_20=(100-3*across)*opt.grid[1]/200,x_21=(100-2*across-half_across)*opt.grid[1]/200,x_22=(100-2*across)*opt.grid[1]/200,x_23=(100-across-half_across)*opt.grid[1]/200,x_24=(100-half_across)*opt.grid[1]/200,x_25=(100+half_across)*opt.grid[1]/200,x_26=(100+across+half_across)*opt.grid[1]/200,x_27=(100+2*across)*opt.grid[1]/200,x_28=(100+2*across+half_across)*opt.grid[1]/200,x_29=(100+3*across)*opt.grid[1]/200,x_30=(100+2*across+half_across)*opt.grid[1]/200,x_31=(100+2*across)*opt.grid[1]/200,x_32=(100+across+half_across)*opt.grid[1]/200,x_33=(100+half_across)*opt.grid[1]/200,x_34=(100-half_across)*opt.grid[1]/200,x_35=(100-across-half_across)*opt.grid[1]/200,x_36=(100-2*across)*opt.grid[1]/200,x_37=(100-2*across-half_across)*opt.grid[1]/200;
+// // int y_20=opt.grid[2]/2,y_21=(100+up)*opt.grid[2]/200,y_22=(100+2*up)*opt.grid[2]/200,y_23=(100+3*up)*opt.grid[2]/200,y_24=(100+3*up)*opt.grid[2]/200,y_25=(100+3*up)*opt.grid[2]/200,y_26=(100+3*up)*opt.grid[2]/200,y_27=(100+2*up)*opt.grid[2]/200,y_28=(100+up)*opt.grid[2]/200,y_29=opt.grid[2]/2,y_30=(100-up)*opt.grid[2]/200,y_31=(100-2*up)*opt.grid[2]/200,y_32=(100-3*up)*opt.grid[2]/200,y_33=(100-3*up)*opt.grid[2]/200,y_34=(100-3*up)*opt.grid[2]/200,y_35=(100-3*up)*opt.grid[2]/200,y_36=(100-2*up)*opt.grid[2]/200,y_37=(100-up)*opt.grid[2]/200;  
+
+// //Ring 4
+// // int x_38=(100-4*across)*opt.grid[1]/200,x_39=(100-3*across-half_across)*opt.grid[1]/200,x_40=(100-3*across)*opt.grid[1]/200,x_41=(100-2*across-half_across)*opt.grid[1]/200,x_42=(100-2*across)*opt.grid[1]/200,x_43=(100-across)*opt.grid[1]/200,x_44=opt.grid[1]/2,x_45=(100+across)*opt.grid[1]/200,x_46=(100+2*across)*opt.grid[1]/200,x_47=(100+2*across+half_across)*opt.grid[1]/200,x_48=(100+3*across)*opt.grid[1]/200,x_49=(100+3*across+half_across)*opt.grid[1]/200,x_50=(100+4*across)*opt.grid[1]/200,x_51=(100+3*across+half_across)*opt.grid[1]/200,x_52=(100+3*across)*opt.grid[1]/200,x_53=(100+2*across+half_across)*opt.grid[1]/200,x_54=(100+2*across)*opt.grid[1]/200,x_55=(100+across)*opt.grid[1]/200,x_56=opt.grid[1]/2,x_57=(100-across)*opt.grid[1]/200,x_58=(100-2*across)*opt.grid[1]/200,x_59=(100-2*across-half_across)*opt.grid[1]/200,x_60=(100-3*across)*opt.grid[1]/200,x_61=(100-3*across-half_across)*opt.grid[1]/200;
+// // int y_38=opt.grid[2]/2,y_39=(100+up)*opt.grid[2]/200,y_40=(100+2*up)*opt.grid[2]/200,y_41=(100+3*up)*opt.grid[2]/200,y_42=(100+4*up)*opt.grid[2]/200,y_43=(100+4*up)*opt.grid[2]/200,y_44=(100+4*up)*opt.grid[2]/200,y_45=(100+4*up)*opt.grid[2]/200,y_46=(100+4*up)*opt.grid[2]/200,y_47=(100+3*up)*opt.grid[2]/200,y_48=(100+2*up)*opt.grid[2]/200,y_49=(100+up)*opt.grid[2]/200,y_50=opt.grid[2]/2,y_51=(100-up)*opt.grid[2]/200,y_52=(100-2*up)*opt.grid[2]/200,y_53=(100-3*up)*opt.grid[2]/200,y_54=(100-4*up)*opt.grid[2]/200,y_55=(100-4*up)*opt.grid[2]/200,y_56=(100-4*up)*opt.grid[2]/200,y_57=(100-4*up)*opt.grid[2]/200,y_58=(100-4*up)*opt.grid[2]/200,y_59=(100-3*up)*opt.grid[2]/200,y_60=(100-2*up)*opt.grid[2]/200,y_61=(100-up)*opt.grid[2]/200;
+
+
+
+
+// 	double Phase[opt.grid[1]][opt.grid[2]];	
+// 	ComplexGrid c = ComplexGrid(opt.grid[0],opt.grid[2],opt.grid[2],opt.grid[3]);
+
+//    	for(int i=0;i<opt.grid[1];i++)
+//  	{
+//       		for(int j=0;j<opt.grid[2];j++)
+//        		{
+//  		        Phase[i][j] = run->phase_save(run->pPsi,i,j)+vortex(i,j,x_1,y_1);
+// 			  /*Ring 1*/
+// 				// +vortex(i,j,x_2,y_2)+vortex(i,j,x_3,y_3)+vortex(i,j,x_4,y_4)+vortex(i,j,x_5,y_5)+vortex(i,j,x_6,y_6)+vortex(i,j,x_7,y_7)
+//  			  /*Ring 2*/
+//  				// +vortex(i,j,x_8,y_8)+vortex(i,j,x_9,y_9)+vortex(i,j,x_10,y_10)+vortex(i,j,x_11,y_11)+vortex(i,j,x_12,y_12)+vortex(i,j,x_13,y_13)+vortex(i,j,x_14,y_14)+vortex(i,j,x_15,y_15)+vortex(i,j,x_16,y_16)+vortex(i,j,x_17,y_17)+vortex(i,j,x_18,y_18)+vortex(i,j,x_19,y_19)
+//  			  /*Ring 3*/
+//  				// +vortex(i,j,x_20,y_20)+vortex(i,j,x_21,y_21)+vortex(i,j,x_22,y_22)+vortex(i,j,x_23,y_23)+vortex(i,j,x_24,y_24)+vortex(i,j,x_25,y_25)+vortex(i,j,x_26,y_26)+vortex(i,j,x_27,y_27)+vortex(i,j,x_28,y_28)+vortex(i,j,x_29,y_29)+vortex(i,j,x_30,y_30)+vortex(i,j,x_31,y_31)+vortex(i,j,x_32,y_32)+vortex(i,j,x_33,y_33)+vortex(i,j,x_34,y_34)+vortex(i,j,x_35,y_35)+vortex(i,j,x_36,y_36)+vortex(i,j,x_37,y_37) 
+//  			  /*Ring 4*/
+//  			  	// +vortex(i,j,x_38,y_38)+vortex(i,j,x_39,y_39)+vortex(i,j,x_40,y_40)+vortex(i,j,x_41,y_41)+vortex(i,j,x_42,y_42)+vortex(i,j,x_43,y_43)+vortex(i,j,x_44,y_44)+vortex(i,j,x_45,y_45)+vortex(i,j,x_46,y_46)+vortex(i,j,x_47,y_47)+vortex(i,j,x_48,y_48)+vortex(i,j,x_49,y_49)+vortex(i,j,x_50,y_50)+vortex(i,j,x_51,y_51)+vortex(i,j,x_52,y_52)+vortex(i,j,x_53,y_53)+vortex(i,j,x_54,y_54)+vortex(i,j,x_55,y_55)+vortex(i,j,x_56,y_56)+vortex(i,j,x_57,y_57)+vortex(i,j,x_58,y_58)+vortex(i,j,x_59,y_59)+vortex(i,j,x_60,y_60)+vortex(i,j,x_61,y_61);
+
+//  			 // compute psi by using the initial psi^2 and adding the phase 
+
+//        		}
+//     	}
+
+//     for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ c(0,i,j,0)=polar(abs(run->pPsi->at(0,i,j,0)),Phase[i][i]);} }
+
+//     for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ run->pPsi->at(0,i,j,0) = c(0,i,j,0); } }
+
+
+	// if the given value is true, add vortices to the startgrid
+	if(opt.startgrid[1]==true)
+    {
+    run->pPsi = create_Vortex_start_Grid3(run->pPsi,opt,opt.cV*opt.rV,opt.cV,opt.rV,opt.Q);
+   	cout << "Vortices added." << endl;
+   	opt.name = "VORT";
+   	run->save_2D(run->pPsi,opt);
+	}
+
+////// END VORTICES //////////
+
+
+    opt.name = "ITP2";
+	opt.n_it_ITP = 2001;
 	run->itpToTime(opt);
 
 	end[0] = omp_get_wtime();
 	cout << "ITP took " << end[0] - start << " seconds." << endl << endl;
 
+
 	//====> Real Time Expansion (RTE)
+	opt.name = "RTE";
 	run->rteToTime(opt);
 
 	end[1] = omp_get_wtime();
 	cout << "RTE took " << end[1] - start << " seconds." << endl;
 	cout << "Run finished." << endl;
 
-	// Everything finished here, plots and cleanup remaining
+	// Everything finished here, plots and cleanup remaining	
 
-	
-	//Python Plot
-/*
-	
-		for(int i=0;i<snapshot_times.size(); i++)
-  {
-
-	ofstream fs;
-	fs.open((dir+string("Spectrum.py")).c_str(), ios_base::trunc | ios_base::out);
-
-
-	  
-
-        fs << "#!/usr/bin/python" << endl;
-	fs << "# -*- coding: utf-8 -*-" << endl;
-
-	fs << "from matplotlib import use" << endl;
-	fs << "use('Agg')" << endl;
-	fs << "from matplotlib import rc" << endl;
-        fs << "import scipy, pylab" << endl;
-        fs << "import scipy.optimize" << endl;
-	fs << "import sys" << endl;
-        fs << "import matplotlib.colors " << endl;
-	fs << "import pylab as p "<< endl;
-	fs << "import numpy as np" << endl;
-	fs << "import matplotlib.pyplot as plt" << endl;
-        fs << "from matplotlib.ticker import ScalarFormatter, FormatStrFormatter, MultipleLocator" << endl;
-        fs << "from matplotlib.ticker import FixedFormatter" << endl;
-	fs << "from mpl_toolkits.axes_grid1 import make_axes_locatable" << endl;
-	fs << "import math as m" << endl;
-	
-	fs << "def main():" << endl;
-        
-	
-	fs << "\tpath = '" << dirname << "Spectrum" << "_Path_"  << snapshot_times[i] <<"time"<<".png'" << endl;	
-	fs << "\tfig = plt.figure(figsize=(8.3,5.7), dpi=100)" << endl;	
-	fs << "\tdata = np.loadtxt('"<< (dir + string("radial_avgs.dat")).c_str() << "', delimiter='\\t', unpack=True, usecols = (0,1,2,3,4,5))" << endl;
-	fs << "\ttime=" << snapshot_times[i] << endl;
-        fs << "\tdim ="  << meansFD[i].ares_1.number.size() << endl;
-	fs << "\tsnapshot=" << i << endl;
-
-        fs << "\tstart=" << ((meansFD[i].ares_1.number.size())*i)+1 << endl;
-	fs << "\tend=" << (meansFD[i].ares_1.number.size())*(i+1) << endl;
-
-        fs << "\tstart2=" << ((meansFD[i].ares_1.k.size())*i)+1 << endl;
-	fs << "\tend2=" << (meansFD[i].ares_1.k.size())*(i+1) << endl;
-
-        fs << "\tHealing_k=" << sqrt((opt.N/(opt.grid[0]*opt.grid[1]*opt.grid[2]))*opt.U) << endl;
-	
-
-	  fs << "\tfig.subplots_adjust(hspace = 0.10, wspace = 0.40, right  = 0.85, left=0.15, bottom = 0.10, top = 0.90)" << endl;
-
-      	  fs << "\txfit=np.arange(0.03,0.25,0.01)" << endl;
-	  fs << "\tyfit=(pow(xfit,(-6))*0.1)  "<< endl;
-
-	  //fs << "\txfit2=np.arange(0.25,2.8,0.01)" << endl;
-	  //fs << "\tyfit2=(pow(xfit2,(-2))*20)  "<< endl;
-
-	  // fs << "\txfit3=np.arange(0.03,2.8,0.01)" << endl;
-	  // fs << "\tyfit3=(pow(xfit3,(-4))*20)  "<< endl;
-       
-
-          //fs << "\txfit4=np.arange(0.03,0.3,0.01)" << endl;
-	  //fs << "\tyfit4=(pow(xfit4,(-4.6666666666666666666666666666666666666666))*1)  "<< endl;
-       
-
-
-	//fs << "\tn1=data[2]" << endl;
-        //fs << "\tn2=data[1]" << endl;
-
-
-          fs << "\tn1=data[1]" << endl;
-	  fs << "\tn2=data[2]" << endl;
-        
-	  fs << "\tn_q=data[3]" << endl;
-	  fs << "\tn_i=data[4]" << endl;
-	  fs << "\tn_c=data[5]" << endl;
-
-      
-
-
-
-
-
-       
-	  fs << "\tn4=n2[start:end]" << endl;
-	  fs << "\tn3=n1[start2:end2]" << endl;
-
-	  fs << "\tn_qneu=n_q[start:end]" << endl;
-	  fs << "\tn_ineu=n_i[start:end]" << endl;
-	  fs << "\tn_cneu=n_c[start:end]" << endl;	
-	
-	   fs << "\tax = fig.add_subplot(111)" << endl;	
-	   fs << "\tim=plt.plot(n3, n4,'b.',n3,n_ineu,'y.',n3, n_qneu,'r.',n3,n_cneu,'g.')" << endl;
-
-	  
-
-	   fs << "\tplt.setp(im, 'markersize', 3)" << endl; 
-	   fs << "\tplt.xlim(0.02,3.2)" << endl;
-
-
-           
-	   fs << "\tax.set_title('Time: $"<< snapshot_times[i]<<","<<"Particles:" <<meansFD[i].ares_1.particle_count/opt.N<<"$ ') " << endl;
-	   fs << "\tax.set_yscale('log')" << endl;
-	   fs << "\tax.set_xscale('log')" << endl; 
-           
-           fs << "\tax.set_xticks([0.1, 0.3, 1, 2, 3, Healing_k])" << endl;
-           fs << "\tax.set_xticklabels(['0.1', '0.3','1', '2', '3','H'])" << endl;
-	   fs << "\tax.set_xlabel('$k$')" << endl;
-	   fs << "\tax.set_ylabel('$n(k)$')" << endl;
-	   fs << "\tax.yaxis.label.set_size(15) " << endl;
-	   fs << "\tax.xaxis.label.set_size(15) " << endl;
-     
-	fs << "\tfig.savefig(path, dpi=100)" << endl;
-        fs << "\tsys.exit(3)" << endl;
-        fs << "if __name__=='__main__':" << endl;
-
-        fs << "\tmain()" << endl;
-
-  
-
-        fs.close();
-	
-       system((string("python ") + dir + string("Spectrum.py")).c_str());
-       }	
-       */
     delete startgrid;
 	delete run;
  
@@ -342,46 +272,114 @@ try
 
 void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times)
 {
-        // Parameter setzen
+	libconfig::Config cfg;
+
+	  // Read the file. If there is an error, report it and exit.
+	  try
+	  {
+	    cfg.readFile("run.cfg");
+	  }
+	  catch(const libconfig::FileIOException &fioex)
+	  {
+	    std::cerr << "I/O error while reading file." << std::endl;
+	  }
+	  catch(const libconfig::ParseException &pex)
+	  {
+	    std::cerr << "Parse error at " << pex.getFile() << ":" << pex.getLine()
+	              << " - " << pex.getError() << std::endl;
+	  }
+
+	const libconfig::Setting & root = cfg.getRoot();
+
+	 opt.N          = root["RunOptions"]["N"];
+	 opt.min_x      = root["RunOptions"]["min_x"]; 					
+	 opt.min_y      = root["RunOptions"]["min_y"]; 					
+	 opt.grid[0]    = root["RunOptions"]["grid0"];				
+	 opt.grid[1]    = root["RunOptions"]["grid1"];				
+	 opt.grid[2]    = root["RunOptions"]["grid2"];	   			
+	 opt.grid[3]    = root["RunOptions"]["grid3"];				
+	 opt.g          = root["RunOptions"]["g"]; 						
+	 opt.n_it_RTE   = root["RunOptions"]["n_it_RTE"]; 				
+	 opt.n_save_RTE = root["RunOptions"]["n_save_RTE"]; 			
+	 opt.n_it_ITP   = root["RunOptions"]["n_it_ITP"];				
+	 opt.n_save_ITP = root["RunOptions"]["n_save_ITP"]; 			
+	 // auto test1       = root["opt"]["name"];
+	 // cout << root["opt"]["name"]; << endl;
+	 opt.times      = root["RunOptions"]["times"]; 	    			
+	 opt.ITP_step   = root["RunOptions"]["ITP_step"]; 				
+	 opt.RTE_step   = root["RunOptions"]["RTE_step"]; 				
+	 opt.cV         = root["RunOptions"]["cV"]; 		   	   		
+	 opt.rV         = root["RunOptions"]["rV"]; 			   		
+	 opt.Q          = root["RunOptions"]["Q"];
+	 // opt.startgrid[0] = root["RunOptions"]["startgrid0"];
+  	 // opt.startgrid[1] = root["RunOptions"]["startgrid1"];
+
+  	   try
+	  {
+	    string fufufu2 = root["RunOptions"]["name"].c_str();
+	    cout << "Store name: " << fufufu2 << endl << endl;
+	  }
+	  catch(const SettingNotFoundException &nfex)
+	  {
+	    cerr << "No 'name' setting in configuration file." << endl;
+	  }
+
+	  try
+	  {
+	  	int fufufu3 = cfg.lookup("cV");
+	  	cout << "test read of cV: " << fufufu3 << endl << endl;
+	  }
+	  catch(const SettingNotFoundException &nfex)
+	  {
+	  	cerr << "No cV setting found in config file." << endl;
+	  }
+
+
+
+    // Set Parameters manually (default values)
 	//opt.timestepsize = 0.2;
 	//opt.delta_t.resize(0);   
     //opt.delta_t[0]=0.2;
     //opt.delta_t[1]=0.4;
+ 
+	// opt.N = 1000;  //normed for 512*512 N=64*50000
+	
+	// opt.min_x = 2;
+	// opt.min_y = 2;
+	
+	// opt.grid[0] = 1;
+	// opt.grid[1] = 600;
+	// opt.grid[2] = 600;
+	// opt.grid[3] = 1;
+	// opt.U = 3e-5;
+	
+	// opt.g.resize(1);
+	// opt.g = 1;
 
-	opt.N = 1000;  //normed for 512*512 N=64*50000
-	
-	opt.min_x = 4;
-	opt.min_y = 4;
-	
-	opt.grid[0] = 1;
-	opt.grid[1] = 1500;
-	opt.grid[2] = 1500;
-	opt.grid[3] = 1;
-// 	opt.U = 3e-5;
-	
-// 	opt.g.resize(1);
-	opt.g = 15;
+	// opt.cV = 2;
+    // opt.rV = 2;
+    // opt.Q = 1;
 	
 	opt.omega_x = complex<double>(100,0);
 	opt.omega_y = complex<double>(150,0);
 	opt.scale_factor = complex<double>(0,0); //Scale factor
 	opt.t_abs = complex<double>(0,0); //Absolute time 
-	opt.exp_factor = complex<double>(1.0,0); //Expansion factor
-	opt.n_it_RTE = 101;
-	opt.n_save_RTE = 10;
-	opt.n_it_ITP = 10000;
-	opt.n_save_ITP = 1000;
-	opt.times = 1;
+	opt.exp_factor = complex<double>(1.2,0); //Expansion factor
+	// opt.n_it_RTE = 101;
+	// opt.n_save_RTE = 50;
+	// opt.n_it_ITP = 10000;
+	// opt.n_save_ITP = 1000;
+	// opt.times = 1;
 	opt.name = "run"; // Must be an Integer
 	opt.startgrid[0] = true; // gaussian packet
     opt.startgrid[1] = false; // add vortices
 
-// 	opt.klength[0] = 2.0;
-// 	opt.klength[1] = 2.0;
-// 	opt.klength[2] = 2.0;
+	// 	opt.klength[0] = 2.0;
+	// 	opt.klength[1] = 2.0;
+	// 	opt.klength[2] = 2.0;
 	
-	opt.ITP_step=0.000001; //Time-step for the ITP (0.000001)
-	opt.RTE_step=0.00001; //Time-step for the RTE (0.00001)
+	// opt.ITP_step=0.000001; //Time-step for the ITP (0.000001)
+	// opt.RTE_step=0.00001; //Time-step for the RTE (0.00001)
 	
 	snapshot_times.resize(5);
 	snapshot_times[0] =5000;
@@ -424,7 +422,7 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
           // snapshot_times[38]=1600000;
           // snapshot_times[39]=1700000;
           // snapshot_times[40]=1800000;
-          // snapshot_times[41]=1900000;*/
+          // snapshot_times[41]=1900000;
       
 		
 
