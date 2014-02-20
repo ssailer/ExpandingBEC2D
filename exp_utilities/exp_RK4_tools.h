@@ -8,6 +8,7 @@
 #include <bh3binaryfile.h>
 #include <vector>
 #include <omp.h>
+#include <cstring>
 
 
 using namespace std;
@@ -26,7 +27,8 @@ typedef struct : PathOptions {
   int n_save_RTE; // times, when to save the process 
   int n_save_ITP; // replace with snapshot_times
   int times; // naming of the datafile - time of the snapshot
-  string name; // naming of the datafile
+  std::string name; // naming of the datafile
+  std::string config; // name of the config file
   bool startgrid[2];
   int threads;
   //Vortex Positions and winding Number

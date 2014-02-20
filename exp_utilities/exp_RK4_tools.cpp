@@ -256,6 +256,9 @@ void RK4::ITP(ComplexGrid* & pPsi, Options &opt)
 void RK4::itpToTime(Options &opt)
 {
 	int counter_ITP = 0;
+	double start, end;
+
+	start = omp_get_wtime();
 	
 
 	for(int k=0;k<opt.n_it_ITP;k++)
@@ -272,17 +275,14 @@ void RK4::itpToTime(Options &opt)
   		counter_ITP+=1;
 
 		if(counter_ITP%(opt.n_it_ITP/100)==0)
-			{
-				cout << opt.name << " " << (counter_ITP/(opt.n_it_ITP/100)) << "%" << flush << "\r";
+			{	
+				end = omp_get_wtime();
+				cout << "    " << opt.name << " " << (counter_ITP/(opt.n_it_ITP/100)) << "%   " << end - start << "s        \r" << flush;
 				opt.times = counter_ITP;
 			}
 	
 	}
-
-	
-
-	cout << "\n";
-	
+	cout << "\n";	
 }
 
 
@@ -363,6 +363,9 @@ void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 void RK4::rteToTime(Options &opt)
 {
 	int counter_RTE = 0;
+	double start, end;
+
+	start = omp_get_wtime();
 	
 
 	for(int k=0;k<opt.n_it_RTE;k++)
@@ -379,10 +382,11 @@ void RK4::rteToTime(Options &opt)
 
 		if(counter_RTE%(opt.n_it_RTE/100)==0)
 			{
-				cout << opt.name << " " << (counter_RTE/(opt.n_it_RTE/100)) << "%" << flush << "\r";
+				end = omp_get_wtime();
+				cout << "    " << opt.name << " " << (counter_RTE/(opt.n_it_RTE/100)) << "%   " << end - start << "s        \r" << flush;
 				opt.times = counter_RTE;
 			}
 	}
 
 	cout << "\n";
-}
+}	
