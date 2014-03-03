@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int mypow2(int x, int y)
+int mypow2(int x, int y) //x^y, x hoch y
 {
 	int z=1;
 	
@@ -245,14 +245,20 @@ ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g, const Options &opt,int V
 
     double rho=opt.N/(opt.grid[1]*opt.grid[2]*opt.grid[3]);
   
-    int V_dim_x[2*Vortexnumber];
-    int V_dim_y[2*Vortexnumber];
+    int V_dim_x[2*Vortexnumber]; // this variable
+    int V_dim_y[2*Vortexnumber]; //  has no use in this function
 
     int V_y[Vortexnumber];
     int V_x[Vortexnumber]; 
 
     int Setting_x=(int)(opt.grid[1]/(columns_x*2));
     int Setting_y=(int)(opt.grid[2]/(rows_y*2));
+    
+    // What to do: get (x,y) of vortices from polar coordinates x = r * cos(alpha) and y = r * sin(alpha)
+    // increment alpha by 60 Degrees, remember alpha = degrees * PI / 180
+    // r should be of order of full width at half maximum of the underlying gaussian, think about this, and test. 
+    // Build the gaussian into this function, down below, when g is set, in polar function, instead of 1.0 use the gaussian.
+    //  think about rotations of the vortices and the winding number Q
       
     for(int i = 0; i < Vortexnumber; i++)
     {

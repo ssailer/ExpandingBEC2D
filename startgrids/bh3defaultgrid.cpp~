@@ -3,12 +3,11 @@
 #include <gauss_random.h>
 #include <bh3propagator.h>
 #include <coordinate.h>
-#include <phasegrid.h>
 #include <stdlib.h>
 
 using namespace std;
 
-int mypow2(int x, int y)
+int mypow2(int x, int y) //x^y, x hoch y
 {
 	int z=1;
 	
@@ -109,8 +108,6 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
     }
 
     ComplexGrid *g  = new ComplexGrid(opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
-    ComplexGrid *s  = new ComplexGrid(opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
-    ComplexGrid *m  = new ComplexGrid(opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
 
     double rho=opt.N/(opt.grid[1]*opt.grid[2]*opt.grid[3]);
   
@@ -168,12 +165,10 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
         }
     }
 
-    int r = 0; 
-    vector<ComplexGrid> Single_Phase_Vortexkonf (Vortexnumber, ComplexGrid(1,opt.grid[1], opt.grid[2], opt.grid[3]));
     
     for(int j = 0; j < opt.grid[0]; j++)
     {
-        
+        int r = 0; 
         for(int i = 0; i < Vortexnumber; i++)
         {
             if((columns_x % 2)==0 && (i % columns_x)==0)
@@ -181,31 +176,33 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
                 r++;
             }          
                   
-            for(int y=0;y<opt.grid[2];y++)
+            for(int y = 0; y < opt.grid[2]; y++)
             {
-                for(int x=0;x<opt.grid[1];x++)
+                for(int x = 0; x < opt.grid[1]; x++)
                 {
-                    Single_Phase_Vortexkonf[i](0,x,y,0) = polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
-
                     if(i==0)
                     {
-                        g->at(j,x,y,0)= Single_Phase_Vortexkonf[i](0,x,y,0);
+                        g->at(j,x,y,0)= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+			
                     }
                     else if(i==Vortexnumber-1)
                     {
-                        g->at(j,x,y,0)*= sqrt(rho)*Single_Phase_Vortexkonf[i](0,x,y,0);
+                        g->at(j,x,y,0)*= sqrt(rho)*polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
                     }
                     else
                     {
-                        g->at(j,x,y,0)*= Single_Phase_Vortexkonf[i](0,x,y,0);
+                        g->at(j,x,y,0)*= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
                     }
 
                 }
             }
         } 
     }
+
+
  
-    ComplexGrid::fft (*g, *g, false);
+//truncated Wigner noise; 
+/*    ComplexGrid::fft (*g, *g, false);
 
     GaussRandom rand (get_seed());
 
@@ -224,10 +221,126 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
         }
     }
  
-    ComplexGrid::fft (*g, *g, false);
-  
+    ComplexGrid::fft (*g, *g, false);*/
+    
     return g;  
     	                                                                     
+}
+
+
+ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g, const Options &opt,int Vortexnumber, int rows_y, int columns_x, int Q) 
+{
+    if(rows_y*columns_x!=Vortexnumber)
+    {
+        std::cout<< "Invalid Columnsize or Rowsize" <<std::endl;
+        exit(1);
+    }
+
+    if((Vortexnumber % 2)!=0)
+    {
+        std::cout<< "!!!!!!!!!Be careful momentum is entering in the starting conditions!!!!!!!!!" <<std::endl;
+    }
+
+
+
+    double rho=opt.N/(opt.grid[1]*opt.grid[2]*opt.grid[3]);
+  
+    int V_dim_x[2*Vortexnumber]; // this variable
+    int V_dim_y[2*Vortexnumber]; //  has no use in this function
+
+    int V_y[Vortexnumber];
+    int V_x[Vortexnumber]; 
+
+    int Setting_x=(int)(opt.grid[1]/(columns_x*2));
+    int Setting_y=(int)(opt.grid[2]/(rows_y*2));
+    
+    // What to do: get (x,y) of vortices from polar coordinates x = r * cos(alpha) and y = r * sin(alpha)
+    // increment alpha by 60 Degrees, remember alpha = degrees * PI / 180
+    // r should be of order of full width at half maximum of the underlying gaussian, think about this, and test. 
+    // Build the gaussian into this function, down below, when g is set, in polar function, instead of 1.0 use the gaussian.
+      
+    for(int i = 0; i < Vortexnumber; i++)
+    {
+        if(((i%columns_x)==0))
+        {
+            V_x[i]=Setting_x;
+            V_dim_x[i]=Setting_x;
+            V_dim_x[i+Vortexnumber]=Setting_x-1;
+        }
+        else if((i%(columns_x))==(columns_x-1))
+        {
+            V_x[i]=2*Setting_x+V_x[i-1];
+            V_dim_x[i]=Setting_x;
+            V_dim_x[i+Vortexnumber]=opt.grid[0]-V_x[i]-1;
+        }
+        else 
+        {
+            V_x[i]=2*Setting_x+V_x[i-1];
+            V_dim_x[i]=Setting_x;
+            V_dim_x[i+Vortexnumber]=Setting_x-1;
+        }
+             
+    }
+           
+    for(int i = 0; i < Vortexnumber; i++)
+    {
+        if(i<columns_x)
+        {
+            V_y[i]=Setting_y;
+            V_dim_y[i]=Setting_y;
+            V_dim_y[i+Vortexnumber]=Setting_y-1;
+        }
+        else if(i>=(columns_x*(rows_y-1)))
+        {
+            V_y[i]=2*Setting_y+V_y[i-columns_x];
+            V_dim_y[i]=Setting_y;
+            V_dim_y[i+Vortexnumber]=opt.grid[1]-V_y[i]-1;
+        }
+        else 
+        {
+            V_y[i]=2*Setting_y+V_y[i-columns_x];
+            V_dim_y[i]=Setting_y;
+            V_dim_y[i+Vortexnumber]=Setting_y-1;
+        }
+    }
+
+    
+    for(int j = 0; j < opt.grid[0]; j++)
+    {
+        int r = 0; 
+        for(int i = 0; i < Vortexnumber; i++)
+        {
+            if((columns_x % 2)==0 && (i % columns_x)==0)
+            {    
+                r++;
+            }          
+                  
+            for(int y = 0; y < opt.grid[2]; y++)
+            {
+                for(int x = 0; x < opt.grid[1]; x++)
+                {
+
+                    g->at(j,x,y,0) *= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+                    /*
+                    if(i==0)
+                    {
+                        g->at(j,x,y,0)= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+            
+                    }
+                    else if(i==Vortexnumber-1)
+                    {
+                        g->at(j,x,y,0)*= sqrt(rho)*polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+                    }
+                    else
+                    {
+                        g->at(j,x,y,0)*= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+                    }
+                    */
+                }
+            }
+        } 
+    }
+    return g;
 }
 
 //////////////neus Startgitter fuer vortices2//////////////////////////////////////////////////////////////////////////////////////////////
