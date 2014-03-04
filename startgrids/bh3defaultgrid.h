@@ -4,6 +4,7 @@
 #include <bh3binaryfile.h>
 #include <exp_RK4_tools.h>
 int mypow2(int x, int y); // Computes x^y
+ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma[2]);
 ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g,const Options &opt,int Vortexnumber, int rows_y, int columns_x, int Q) ;
 ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, int rows_y, int columns_x, int Q) ;
 ComplexGrid *create_Vortex_start_Grid(const PathOptions &opt,int Vortexnumber);// Vortex Startgitter

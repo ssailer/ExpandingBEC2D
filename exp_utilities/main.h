@@ -13,7 +13,7 @@ using namespace libconfig;
 	else{ return atan2(b-y,a-x); }        
 }
 	
-inline double gauss(double & x,double & y){return (exp(-x*x-y*y));} //A simple Gaussian
+inline double gauss(double & x,double & y){return (exp(-x*x/2-y*y/2));} //A simple Gaussian
 
 inline void printInitVar(Options &opt)
 	{

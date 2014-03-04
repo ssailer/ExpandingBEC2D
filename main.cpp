@@ -54,16 +54,16 @@ try
     po::options_description desc("Options"); 
     desc.add_options() 
       ("help,h", "Print help messages.") 
-      ("config,c",po::value<string>(&opt.config), "Name of the configfile")
-      ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
-      ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
-      ("gauss",po::value<bool>(&opt.startgrid[0]),"Initial Grid has gaussian form.")
-      ("vortices",po::value<bool>(&opt.startgrid[1]),"Add Vortices to the grid.")
-      ("itp",po::value<int>(&opt.n_it_ITP),"Total runtime of the ITP-Step.")
-      ("rte",po::value<int>(&opt.n_it_RTE),"Total runtime of the RTE-Step.")
-      ("number,N",po::value<double>(&opt.N),"Number of particles.")
-      ("expansion,e",po::value<complex<double> >(&opt.exp_factor),"Expansion Factor")
-      ("interaction,g",po::value<double> (&opt.g),"Interaction Constant");
+      ("config,c",po::value<string>(&opt.config), "Name of the configfile");
+      // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
+      // ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
+      // ("gauss",po::value<bool>(&opt.startgrid[0]),"Initial Grid has gaussian form.")
+      // ("vortices",po::value<bool>(&opt.startgrid[1]),"Add Vortices to the grid.")
+      // ("itp",po::value<int>(&opt.n_it_ITP),"Total runtime of the ITP-Step.")
+      // ("rte",po::value<int>(&opt.n_it_RTE),"Total runtime of the RTE-Step.")
+      // ("number,N",po::value<double>(&opt.N),"Number of particles.")
+      // ("expansion,e",po::value<complex<double> >(&opt.exp_factor),"Expansion Factor")
+      // ("interaction,g",po::value<double> (&opt.g),"Interaction Constant");
 
 	po::positional_options_description positionalOptions; 
 	positionalOptions.add("config", 1);
@@ -111,6 +111,14 @@ try
 
 	// if the given value is true, initialize the startgrid with a gaussian distribution
 
+	double sigma_real[2];
+	sigma_real[0] = opt.min_x/2;
+	sigma_real[1] = opt.min_y/2;
+	int sigma_grid[2];
+	sigma_grid[0] = opt.grid[1]/4;
+	sigma_grid[1] = opt.grid[2]/4;
+
+
 	if(opt.startgrid[0]==true) 
 	{
 	for(int i=0;i<opt.grid[1];i++)
@@ -136,7 +144,7 @@ try
 
 	//====> Imaginary Time Propagation (ITP)
 	opt.name = "ITP1";
-	opt.n_it_ITP = 8001;
+	opt.n_it_ITP = 1001;
 	run->itpToTime(opt);
 
 //////////// VORTICES ////////////////
@@ -144,14 +152,14 @@ try
 	// if the given value is true, add vortices to the startgrid
 	if(opt.startgrid[1]==true)
     {
-    run->pPsi = create_Vortex_start_Grid3(run->pPsi,opt,opt.cV*opt.rV,opt.cV,opt.rV,opt.Q);
+    run->pPsi = add_vortex_to_grid(run->pPsi,opt,sigma_grid);
    	cout << "Vortices added." << endl;
    	opt.name = "VORT";
    	run->save_2D(run->pPsi,opt);
 
    	//====> Imaginary Time Propagation (ITP)
     opt.name = "ITP2";
-	opt.n_it_ITP = 2001;
+	opt.n_it_ITP = 1001;
 	run->itpToTime(opt);
 	}
 

@@ -227,6 +227,68 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
     	                                                                     
 }
 
+ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
+{
+    // What to do: get (x,y) of vortices from polar coordinates x = r * cos(alpha) and y = r * sin(alpha)
+    // increment alpha by 60 Degrees, remember alpha = degrees * PI / 180
+    // r should be of order of full width at half maximum of the underlying gaussian, think about this, and test. 
+    // Build the gaussian into this function, down below, when g is set, in polar function, instead of 1.0 use the gaussian.
+    //  think about rotations of the vortices and the winding number Q
+    int Vortexnumber = 6;
+    int V_x[Vortexnumber]; 
+    int V_y[Vortexnumber]; // Coordinates of all Vortices.
+    double alpha = 60 * M_PI / 180.0; // const-angle between all vortices
+    double r = (sigma_grid[0]+sigma_grid[1])/2.0; // Radius of the Cookie
+
+    for(int i = 0; i < Vortexnumber; i++)
+    {
+    V_x[i] = opt.grid[1]/2 + (int)(r * cos(i*alpha));
+    V_y[i] = opt.grid[2]/2 + (int)(r * sin(i*alpha)); 
+    cout << "Vortex Coordinates: " << V_x[i] << "  " << V_y[i] << endl;
+    }
+
+
+    for(int j = 0; j < opt.grid[0]; j++)
+    {
+        // int r = 0; 
+        for(int i = 0; i < Vortexnumber; i++)
+        {
+            // if()
+            // {    
+            //     r++; // r is used in the mypow2 function to give the direction of rotation of the vortices
+                        // In this first case, I want to have it alternate, so ommited the r
+            // }  
+            // g->at(j,V_x[i],V_y[i],0) = 0;        
+                  
+            for(int y = 0; y < opt.grid[2]; y++)
+            {
+                for(int x = 0; x < opt.grid[1]; x++)
+                {
+
+                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,i))*(atan2(y-V_y[i],x-V_x[i])));
+                    /*
+                    if(i==0)
+                    {
+                        g->at(j,x,y,0)= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+            
+                    }
+                    else if(i==Vortexnumber-1)
+                    {
+                        g->at(j,x,y,0)*= sqrt(rho)*polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+                    }
+                    else
+                    {
+                        g->at(j,x,y,0)*= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
+                    }
+                    */
+                }
+            }
+        } 
+    }
+    return g;
+
+}
+
 
 ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g, const Options &opt,int Vortexnumber, int rows_y, int columns_x, int Q) 
 {
@@ -248,17 +310,16 @@ ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g, const Options &opt,int V
     int V_dim_x[2*Vortexnumber]; // this variable
     int V_dim_y[2*Vortexnumber]; //  has no use in this function
 
-    int V_y[Vortexnumber];
+    int V_y[Vortexnumber]; 
     int V_x[Vortexnumber]; 
+
+
 
     int Setting_x=(int)(opt.grid[1]/(columns_x*2));
     int Setting_y=(int)(opt.grid[2]/(rows_y*2));
     
-    // What to do: get (x,y) of vortices from polar coordinates x = r * cos(alpha) and y = r * sin(alpha)
-    // increment alpha by 60 Degrees, remember alpha = degrees * PI / 180
-    // r should be of order of full width at half maximum of the underlying gaussian, think about this, and test. 
-    // Build the gaussian into this function, down below, when g is set, in polar function, instead of 1.0 use the gaussian.
-    //  think about rotations of the vortices and the winding number Q
+
+  
       
     for(int i = 0; i < Vortexnumber; i++)
     {
