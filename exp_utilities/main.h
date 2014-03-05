@@ -7,15 +7,7 @@
 
 using namespace libconfig;
 
- inline double vortex(int a, int b, int x, int y) //Vortex with phase [0,2*pi)          
-{
-        if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
-	else{ return atan2(b-y,a-x); }        
-}
-	
-inline double gauss(double & x,double & y){return (exp(-x*x/2-y*y/2));} //A simple Gaussian
-
-inline void printInitVar(Options &opt)
+void printInitVar(Options &opt)
 	{
 		std::cout 	<< endl << "Initial Values of this run:" << endl
 					<< "Used Configfile: \"" << opt.config << "\"   Remember, all inputs override the config!" << endl << endl
@@ -23,8 +15,9 @@ inline void printInitVar(Options &opt)
 			  		<< "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y << endl
 			  		<< "Expansion Factor: " << opt.exp_factor << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
 			  		<< "Initial Packet (1 = yes, 0 = false): " << opt.startgrid[0] << "\t" << "Vortices added (1 = yes, 0 = false): " << opt.startgrid[1] << endl
-					<< "Total time of the ITP-Step: " << opt.n_it_ITP << endl
-					<< "Total time of the RTE-Step: " << opt.n_it_RTE << endl << endl;
+					<< "Total time of the ITP1-Step: " << opt.n_it_ITP1 << " (saving every " << opt.n_save_ITP << "-th step)" << endl
+					<< "Total time of the ITP2-Step: " << opt.n_it_ITP2 << " (saving every " << opt.n_save_ITP << "-th step)" << endl
+					<< "Total time of the RTE-Step: " << opt.n_it_RTE << " (saving every " << opt.n_save_RTE << "-th step)" << endl << endl;
 	}
 
 
@@ -67,13 +60,12 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.g                    = root["RunOptions"]["g"]; 						
 	opt.n_it_RTE             = root["RunOptions"]["n_it_RTE"]; 				
 	opt.n_save_RTE           = root["RunOptions"]["n_save_RTE"]; 			
-	opt.n_it_ITP             = root["RunOptions"]["n_it_ITP"];				
+	opt.n_it_ITP1            = root["RunOptions"]["n_it_ITP1"];	
+	opt.n_it_ITP2            = root["RunOptions"]["n_it_ITP2"];				
 	opt.n_save_ITP           = root["RunOptions"]["n_save_ITP"]; 			
 	opt.times                = root["RunOptions"]["times"]; 	    			
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
-	opt.RTE_step             = root["RunOptions"]["RTE_step"]; 				
-	opt.cV                   = root["RunOptions"]["cV"]; 		   	   		
-	opt.rV                   = root["RunOptions"]["rV"]; 			   		
+	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.Q                    = root["RunOptions"]["Q"];	
 	// opt.name 				 = cfg.lookup("RunOptions.name").c_str();
 
@@ -106,12 +98,11 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	opt.grid[2]    = 600;
 	opt.grid[3]    = 1;
 	opt.g          = 1;
-	opt.cV         = 2;
-	opt.rV         = 2;
 	opt.Q          = 1;
 	opt.n_it_RTE   = 101;
 	opt.n_save_RTE = 50;
-	opt.n_it_ITP   = 10000;
+	opt.n_it_ITP1   = 1001;
+	opt.n_it_ITP2   = 1001;
 	opt.n_save_ITP = 1000;
 	opt.times      = 1;
 	

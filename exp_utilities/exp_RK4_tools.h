@@ -23,6 +23,8 @@ typedef struct : PathOptions {
   double g; // coupling constant
   double ITP_step, RTE_step; // stepsize for the timeiteration
   int n_it_ITP; // number of timesteps
+  int n_it_ITP1; // number of timesteps
+  int n_it_ITP2; // number of timesteps
   int n_it_RTE; // number of timesteps
   int n_save_RTE; // times, when to save the process 
   int n_save_ITP; // replace with snapshot_times
@@ -32,8 +34,6 @@ typedef struct : PathOptions {
   bool startgrid[2];
   int threads;
   //Vortex Positions and winding Number
-  int cV;
-  int rV;
   int Q;
 	
 } Options;

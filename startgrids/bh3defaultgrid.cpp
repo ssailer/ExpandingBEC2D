@@ -227,6 +227,20 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
     	                                                                     
 }
 
+ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, std::vector<double> &x, std::vector<double> & y, double & sigma_x, double & sigma_y)
+{
+    for(int k = 0; k < opt.grid[0]; k++)
+    {
+        for(int i=0; i < opt.grid[1]; i++){
+            for(int j=0; j < opt.grid[2]; j++){
+            g->at(k,i,j,0) = exp( -(x[i] * x[i])/(2*sigma_x*sigma_x) - (y[j] * y[j])/(2*sigma_y*sigma_y));
+            }
+        }
+    }
+
+    return g;
+} 
+
 ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
 {
     // What to do: get (x,y) of vortices from polar coordinates x = r * cos(alpha) and y = r * sin(alpha)
@@ -238,13 +252,14 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
     int V_x[Vortexnumber]; 
     int V_y[Vortexnumber]; // Coordinates of all Vortices.
     double alpha = 60 * M_PI / 180.0; // const-angle between all vortices
-    double r = (sigma_grid[0]+sigma_grid[1])/2.0; // Radius of the Cookie
+    double r = (sigma_grid[0]+sigma_grid[1])/3.0; // Radius of the Cookie
 
+    cout << "Vortex Coordinates:\n";
     for(int i = 0; i < Vortexnumber; i++)
     {
     V_x[i] = opt.grid[1]/2 + (int)(r * cos(i*alpha));
     V_y[i] = opt.grid[2]/2 + (int)(r * sin(i*alpha)); 
-    cout << "Vortex Coordinates: " << V_x[i] << "  " << V_y[i] << endl;
+    cout << "\t" << V_x[i] << "  " << V_y[i] << endl;
     }
 
 
@@ -263,7 +278,7 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
             for(int y = 0; y < opt.grid[2]; y++)
             {
                 for(int x = 0; x < opt.grid[1]; x++)
-                {
+                {   
 
                     g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,i))*(atan2(y-V_y[i],x-V_x[i])));
                     /*

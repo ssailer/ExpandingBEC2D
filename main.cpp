@@ -1,9 +1,9 @@
 /**************************************************************************
 Title: Simulating the Expansion of Turbulent Bose-Einstein Condensates (2D) 
-Author: Bartholomew Andrews / Modified and updated: Simon Sailer
+Author: Simon Sailer (This work is based on the work of Bartholomew Andrews who made this as his master thesis.)
 Last Update: 22/07/13
-Website: www.bartholomewandrews.com
 **************************************************************************/
+
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <cstdlib>
@@ -30,8 +30,6 @@ namespace // namespace for program options
   const size_t ERROR_UNHANDLED_EXCEPTION = 2; 
  
 }
-
-// const int vortex_start=8000; //ITP iterations before the phase disturbances are added (8000<n_it_ITP) 
 
 //>>>>>main program<<<<< 
 
@@ -82,8 +80,8 @@ try
       { 
         std::cout << "This is a program to simulate the expansion of a BEC with Vortices in 2D" << endl
         		  << "after a harmonic trap has been turned off. The expansion is simulated by" << endl
-        		  << "an expanding coordinate system.The implemented algorithm to solve the GPE" << endl
-        		  << "is a 4-th order Runge-Kutta Integration because of this." << endl 
+        		  << "an expanding coordinate system. The implemented algorithm to solve the GPE" << endl
+        		  << "is a 4-th order Runge-Kutta Integration." << endl << endl
                   << desc << endl; 
         return SUCCESS; 
       } 
@@ -111,40 +109,22 @@ try
 
 	// if the given value is true, initialize the startgrid with a gaussian distribution
 
+	if(opt.startgrid[0]==true){
 	double sigma_real[2];
 	sigma_real[0] = opt.min_x/2;
-	sigma_real[1] = opt.min_y/2;
-	int sigma_grid[2];
-	sigma_grid[0] = opt.grid[1]/4;
-	sigma_grid[1] = opt.grid[2]/4;
-
-
-	if(opt.startgrid[0]==true) 
-	{
-	for(int i=0;i<opt.grid[1];i++)
-    {
-        for(int j=0;j<opt.grid[2];j++)
-        {
-                        
-            double xfactor;
-            xfactor = gauss(run->x_axis[i],run->y_axis[j]);           
-            complex<double> factor (xfactor,0);             
-            run->pPsi->at(0,i,j,0) = factor;                       
-        }   
-    }
+	sigma_real[1] = opt.min_y/2;		
+	run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
 	}
-
 
 	// set the datafile identifier name and save the initial grid
 
     opt.name = "INIT";
-	run->save_2D(run->pPsi,opt);
-	
+	run->save_2D(run->pPsi,opt);	
 
 
 	//====> Imaginary Time Propagation (ITP)
 	opt.name = "ITP1";
-	opt.n_it_ITP = 1001;
+	opt.n_it_ITP = opt.n_it_ITP1;
 	run->itpToTime(opt);
 
 //////////// VORTICES ////////////////
@@ -152,20 +132,22 @@ try
 	// if the given value is true, add vortices to the startgrid
 	if(opt.startgrid[1]==true)
     {
+    int sigma_grid[2];
+	sigma_grid[0] = opt.grid[1]/4;
+	sigma_grid[1] = opt.grid[2]/4;
+
     run->pPsi = add_vortex_to_grid(run->pPsi,opt,sigma_grid);
    	cout << "Vortices added." << endl;
    	opt.name = "VORT";
    	run->save_2D(run->pPsi,opt);
 
-   	//====> Imaginary Time Propagation (ITP)
-    opt.name = "ITP2";
-	opt.n_it_ITP = 1001;
-	run->itpToTime(opt);
-	}
-
 ////// END VORTICES //////////
 
-
+   	//====> Imaginary Time Propagation (ITP)
+    opt.name = "ITP2";
+	opt.n_it_ITP = opt.n_it_ITP2;
+	run->itpToTime(opt);
+	}
 
 
 	//====> Real Time Expansion (RTE)
