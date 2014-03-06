@@ -16,6 +16,7 @@ Last Update: 22/07/13
 #include <bh3defaultgrid.h>
 #include <omp.h>
 #include <main.h>
+#include <plot_with_mgl.h>
 // #include <typeinfo>
 // #include <vortexcoordinates.h>
 
@@ -120,6 +121,7 @@ try
 
     opt.name = "INIT";
 	run->save_2D(run->pPsi,opt);	
+	plotdatatopng(run->pPsi,opt,false);
 
 
 	//====> Imaginary Time Propagation (ITP)
@@ -140,19 +142,21 @@ try
    	cout << "Vortices added." << endl;
    	opt.name = "VORT";
    	run->save_2D(run->pPsi,opt);
-
+   	plotdatatopng(run->pPsi,opt,false);
+   	}
 ////// END VORTICES //////////
 
    	//====> Imaginary Time Propagation (ITP)
     opt.name = "ITP2";
 	opt.n_it_ITP = opt.n_it_ITP2;
 	run->itpToTime(opt);
-	}
+	plotdatatopng(run->pPsi,opt,false);
 
 
 	//====> Real Time Expansion (RTE)
 	opt.name = "RTE";
 	run->rteToTime(opt);
+	plotdatatopng(run->pPsi,opt,false);
 
 	// Everything finished here, plots and cleanup remaining	
 
