@@ -248,11 +248,11 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
     // r should be of order of full width at half maximum of the underlying gaussian, think about this, and test. 
     // Build the gaussian into this function, down below, when g is set, in polar function, instead of 1.0 use the gaussian.
     //  think about rotations of the vortices and the winding number Q
-    int Vortexnumber = 6;
+    int Vortexnumber = 2;
     int V_x[Vortexnumber]; 
     int V_y[Vortexnumber]; // Coordinates of all Vortices.
-    double alpha = 60 * M_PI / 180.0; // const-angle between all vortices
-    double r = (sigma_grid[0]+sigma_grid[1])/3.0; // Radius of the Cookie
+    double alpha = (360 / Vortexnumber) * M_PI / 180.0; // const-angle between all vortices
+    double r = (sigma_grid[0]+sigma_grid[1])/4.0; // Radius of the Cookie
 
     cout << "Vortex Coordinates:\n";
     for(int i = 0; i < Vortexnumber; i++)
@@ -273,7 +273,7 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
             //     r++; // r is used in the mypow2 function to give the direction of rotation of the vortices
                         // In this first case, I want to have it alternate, so ommited the r
             // }  
-            // g->at(j,V_x[i],V_y[i],0) = 0;        
+            // g->at(j,V_x[i],V_y[i],0) = 0.;        
                   
             for(int y = 0; y < opt.grid[2]; y++)
             {

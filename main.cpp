@@ -32,6 +32,17 @@ namespace // namespace for program options
  
 }
 
+inline void savedatahdf5(double time,Bh3BinaryFile* &bf, ComplexGrid* &g, Options &opt)
+	{
+	vector<ComplexGrid> vectork(1);
+	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+	for(int i = 0; i < opt.grid[1];i++) for(int j = 0; j < opt.grid[2]; j++)
+	vectork.at(0).at(0,i,j,0) = g->at(0,i,j,0);	
+
+	bf->append_snapshot(time, vectork);
+	}
+
 //>>>>>main program<<<<< 
 
 int main( int argc, char** argv) 
@@ -107,22 +118,22 @@ try
 
 	ComplexGrid* startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	RK4* run = new RK4(startgrid,opt);
+	Bh3BinaryFile *bf = new Bh3BinaryFile("myrun_01", opt, Bh3BinaryFile::out);
 
 	// if the given value is true, initialize the startgrid with a gaussian distribution
 
 	if(opt.startgrid[0]==true){
 	double sigma_real[2];
-	sigma_real[0] = opt.min_x/2;
-	sigma_real[1] = opt.min_y/2;		
+	sigma_real[0] = opt.min_x/4;
+	sigma_real[1] = opt.min_y/4;		
 	run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
 	}
 
 	// set the datafile identifier name and save the initial grid
 
     opt.name = "INIT";
-	run->save_2D(run->pPsi,opt);	
-	plotdatatopng(run->pPsi,opt,false);
-
+	plotdatatopng(run->pPsi,opt);
+	savedatahdf5(1.,bf,run->pPsi,opt);
 
 	//====> Imaginary Time Propagation (ITP)
 	opt.name = "ITP1";
@@ -141,8 +152,9 @@ try
     run->pPsi = add_vortex_to_grid(run->pPsi,opt,sigma_grid);
    	cout << "Vortices added." << endl;
    	opt.name = "VORT";
-   	run->save_2D(run->pPsi,opt);
-   	plotdatatopng(run->pPsi,opt,false);
+
+	plotdatatopng(run->pPsi,opt);
+   	savedatahdf5(2.,bf,run->pPsi,opt);
    	}
 ////// END VORTICES //////////
 
@@ -150,13 +162,15 @@ try
     opt.name = "ITP2";
 	opt.n_it_ITP = opt.n_it_ITP2;
 	run->itpToTime(opt);
-	plotdatatopng(run->pPsi,opt,false);
+	plotdatatopng(run->pPsi,opt);
+	savedatahdf5(3.,bf,run->pPsi,opt);
 
 
 	//====> Real Time Expansion (RTE)
 	opt.name = "RTE";
 	run->rteToTime(opt);
-	plotdatatopng(run->pPsi,opt,false);
+	plotdatatopng(run->pPsi,opt);
+	savedatahdf5(4.,bf,run->pPsi,opt);
 
 	// Everything finished here, plots and cleanup remaining	
 
@@ -164,6 +178,7 @@ try
 
     delete startgrid;
 	delete run;
+	delete bf;
  
  
   } 

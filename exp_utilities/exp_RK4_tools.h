@@ -8,36 +8,36 @@
 #include <bh3binaryfile.h>
 #include <vector>
 #include <omp.h>
-#include <cstring>
+#include <string>
+
 
 
 using namespace std;
 
 // Inherit PathOptions from bh3binaryfile.h with additional Options for RK4 and the Potential
 typedef struct : PathOptions {
-  complex<double> omega_x,omega_y; // Frequency of the harmonic trap
-  double min_x,min_y; // Coordinate boundaries
-  complex<double> scale_factor; //Scale factor
-  complex<double> t_abs; //Absolute time 
-  complex<double> exp_factor; //Expansion factor
-  double g; // coupling constant
-  double ITP_step, RTE_step; // stepsize for the timeiteration
-  int n_it_ITP; // number of timesteps
-  int n_it_ITP1; // number of timesteps
-  int n_it_ITP2; // number of timesteps
-  int n_it_RTE; // number of timesteps
-  int n_save_RTE; // times, when to save the process 
-  int n_save_ITP; // replace with snapshot_times
-  int times; // naming of the datafile - time of the snapshot
-  std::string name; // naming of the datafile
-  std::string config; // name of the config file
-  bool startgrid[2];
-  int threads;
-  //Vortex Positions and winding Number
-  int Q;
-	
+    complex<double> omega_x,omega_y; // Frequency of the harmonic trap
+    double min_x,min_y; // Coordinate boundaries
+    complex<double> scale_factor; //Scale factor
+    complex<double> t_abs; //Absolute time 
+    complex<double> exp_factor; //Expansion factor
+    double g; // coupling constant
+    double ITP_step, RTE_step; // stepsize for the timeiteration
+    int n_it_ITP; // number of timesteps
+    int n_it_ITP1; // number of timesteps
+    int n_it_ITP2; // number of timesteps
+    int n_it_RTE; // number of timesteps
+    int n_save_RTE; // times, when to save the process 
+    int n_save_ITP; // replace with snapshot_times
+    int times; // naming of the datafile - time of the snapshot
+    std::string name; // naming of the datafile
+    std::string config; // name of the config file
+    bool startgrid[2];
+    int threads;
+    //Vortex Positions and winding Number
+    int Q;
+    
 } Options;
-
 
 
 class RK4

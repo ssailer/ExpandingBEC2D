@@ -60,7 +60,7 @@ protected:
     return use_abs? abs(res) : arg(res);  }
 };
 
-inline void plotdatatopng(ComplexGrid* &g,Options &opt,bool use_abs)
+inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 {
 	
 
@@ -90,27 +90,40 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt,bool use_abs)
 
 	string filename = "OBDM_" + opt.name + ".png";
 
+	gr.SetSize(1600,800);
+	gr.SetQuality(3);
 	gr.Title(opt.name.c_str());
-	// gr.Alpha(true);	
+	// gr.Alpha(true);
+
+
+
+	data.use_abs=false;
+	gr.SetRange('x',-opt.min_x,opt.min_x);
+	gr.SetRange('y',-opt.min_y,opt.min_y);	
+	gr.SubPlot(2,1,0);
+	gr.Axis();
+	gr.Colorbar("<");
+	gr.Dens(data);
+	
+
+	data.use_abs=true;
 	gr.SetRange('x',-opt.min_x,opt.min_x);
 	gr.SetRange('y',-opt.min_y,opt.min_y);
-	gr.Axis();	
-
-	data.use_abs=use_abs;
-
-	if(use_abs == true){
-	gr.Light(true);
-	gr.Rotate(60,40);
-	gr.Box();
-	gr.SetRange('z',data);
-	gr.Surf(data); }
-	
-	if(use_abs == false){
+	gr.SubPlot(2,1,1);
+	// gr.Light(true);
+	// gr.Rotate(60,40);
+	// gr.Box();
+	// gr.SetRange('z',data);
+	// gr.Surf(data);
+	gr.Axis();
+	gr.Colorbar("<");
 	gr.Dens(data);
-	}
+	
+
+	
 
 
-	gr.WritePNG(filename.c_str(),filename.c_str(),true);
+	gr.WritePNG(filename.c_str());
 
 }
 

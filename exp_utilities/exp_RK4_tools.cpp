@@ -1,6 +1,7 @@
 #include <exp_RK4_tools.h>
 #include <2dexpan.h>
 #include <omp.h>
+#include <plot_with_mgl.h>
 
 
 using namespace std;
@@ -57,8 +58,8 @@ RK4::RK4(ComplexGrid* &c,Options &opt)
 	cout << "Max Number of Threads: " << opt.threads << endl;
 	omp_set_num_threads(opt.threads);
   	pPsi = c;  
-  	real(h_x) = 2.*opt.min_x/opt.grid[1]; 
-  	real(h_y) = 2.*opt.min_y/opt.grid[2]; 
+  	h_x.real(2.*opt.min_x/opt.grid[1]);
+  	h_y.real(2.*opt.min_y/opt.grid[2]); 
   	x_axis.resize(opt.grid[1]);
   	y_axis.resize(opt.grid[2]);
   	for(int i=0;i<opt.grid[1];i++){x_axis[i]=-opt.min_x+i*real(h_x);}
@@ -267,10 +268,10 @@ void RK4::itpToTime(Options &opt)
 
 		// if(k==vortex_start){add_vortex();} //Add vortex at ~80% of the ITP
 
-		if(k>0 && k%opt.n_save_ITP==0)
-			{
-				save_2D(pPsi,opt);
-			}
+		// if(k>0 && k%opt.n_save_ITP==0)
+		// 	{
+		// 		save_2D(pPsi,opt);
+		// 	}
 
   		counter_ITP+=1;
 
@@ -352,7 +353,7 @@ void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 
 	TimeStepRK4(pPsi,k,opt,t_RTE);
 
-	rescale(pPsi,opt);
+	// rescale(pPsi,opt);
 
 }
 
@@ -371,19 +372,21 @@ void RK4::rteToTime(Options &opt)
 	for(int k=0;k<opt.n_it_RTE;k++)
 	{
 		RTE(pPsi,opt);
+		opt.name = "RTE" + std::to_string(k);
+		plotdatatopng(pPsi,opt);
 
 
-		if(k>0 && k%opt.n_save_RTE==0)
-			{
-				save_2D(pPsi,opt);
-			}
+		// if(k>0 && k%opt.n_save_RTE==0)
+		// 	{
+		// 		save_2D(pPsi,opt);
+		// 	}
 
   		counter_RTE+=1;
 
 		if(counter_RTE%(opt.n_it_RTE/100)==0)
 			{
 				end = omp_get_wtime();
-				cout << "    " << opt.name << " " << (counter_RTE/(opt.n_it_RTE/100)) << "%   " << end - start << "s        \r" << flush;
+				cout << "    " << "RTE" << " " << (counter_RTE/(opt.n_it_RTE/100)) << "%   " << end - start << "s        \r" << flush;
 				opt.times = counter_RTE;
 			}
 	}
