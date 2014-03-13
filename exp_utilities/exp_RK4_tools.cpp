@@ -359,8 +359,6 @@ void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 
 // Propagation Wrapper Functions
 
-
-
 void RK4::rteToTime(Options &opt)
 {
 	int counter_RTE = 0;

@@ -98,26 +98,30 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 
 
 	data.use_abs=false;
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);	
 	gr.SubPlot(2,1,0);
+	gr.SetRange('x',-opt.min_x,opt.min_x);
+	gr.SetRange('y',-opt.min_y,opt.min_y);
+	gr.SetRange('c',data);	
+	
 	gr.Axis();
 	gr.Colorbar("<");
 	gr.Dens(data);
 	
 
 	data.use_abs=true;
+	gr.SubPlot(2,1,1);
 	gr.SetRange('x',-opt.min_x,opt.min_x);
 	gr.SetRange('y',-opt.min_y,opt.min_y);
-	gr.SubPlot(2,1,1);
-	// gr.Light(true);
-	// gr.Rotate(60,40);
-	// gr.Box();
-	// gr.SetRange('z',data);
-	// gr.Surf(data);
+	gr.SetRange('c',data);	
+	
+	gr.Light(true);
+	gr.Rotate(60,40);
+	gr.Box();
+	gr.SetRange('z',data);
+	gr.Surf(data);
 	gr.Axis();
 	gr.Colorbar("<");
-	gr.Dens(data);
+	// gr.Dens(data);
 	
 
 	

@@ -241,6 +241,8 @@ ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, std::vector<dou
     return g;
 } 
 
+
+
 ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
 {
     // What to do: get (x,y) of vortices from polar coordinates x = r * cos(alpha) and y = r * sin(alpha)
@@ -248,7 +250,7 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
     // r should be of order of full width at half maximum of the underlying gaussian, think about this, and test. 
     // Build the gaussian into this function, down below, when g is set, in polar function, instead of 1.0 use the gaussian.
     //  think about rotations of the vortices and the winding number Q
-    int Vortexnumber = 2;
+    int Vortexnumber = 1;
     int V_x[Vortexnumber]; 
     int V_y[Vortexnumber]; // Coordinates of all Vortices.
     double alpha = (360 / Vortexnumber) * M_PI / 180.0; // const-angle between all vortices
@@ -280,7 +282,7 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
                 for(int x = 0; x < opt.grid[1]; x++)
                 {   
 
-                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,i))*(atan2(y-V_y[i],x-V_x[i])));
+                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,i))*(vortex(y,V_y[i],x,V_x[i])));
                     /*
                     if(i==0)
                     {
