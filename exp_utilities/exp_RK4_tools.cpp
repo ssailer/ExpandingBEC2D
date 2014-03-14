@@ -101,7 +101,7 @@ complex<double> RK4::y_expand(complex<double> a,Options &opt)
 
 complex<double> RK4::integral(ComplexGrid* & pPsi,Options &opt)
 {	
-	Integral_aux=(0,0);	
+	Integral_aux = complex<double>(0,0);	
 	for(int i=0;i<opt.grid[1]-1;i++)
 	{
 		for(int j=0;j<opt.grid[2]-1;j++)
@@ -118,7 +118,7 @@ void RK4::rescale(ComplexGrid* & pPsi, Options &opt)
 	Integral=integral(pPsi,opt);
 	opt.scale_factor=complex<double>(opt.N,0)/Integral;
 	// cout << "Particle Number: " << opt.N << endl;
- 	// cout  << "opt.scale_factor " << opt.scale_factor<< "   Integral : " <<  Integral << endl;
+ 	cout  << "sqrt(opt.scale_factor) " << sqrt(opt.scale_factor) <<  endl;
 	
 	for(int i=0;i<opt.grid[1];i++)
 	{
@@ -353,7 +353,7 @@ void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 
 	TimeStepRK4(pPsi,k,opt,t_RTE);
 
-	// rescale(pPsi,opt);
+	rescale(pPsi,opt);
 
 }
 

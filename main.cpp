@@ -122,23 +122,26 @@ try
 
 	// if the given value is true, initialize the startgrid with a gaussian distribution
 
-	if(opt.startgrid[0]==true){
-	double sigma_real[2];
-	sigma_real[0] = opt.min_x/4;
-	sigma_real[1] = opt.min_y/4;		
-	run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
-	}
+	// if(opt.startgrid[0]==true){
+	// double sigma_real[2];
+	// sigma_real[0] = opt.min_x/4;
+	// sigma_real[1] = opt.min_y/4;		
+	// run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
+	// }else{
+		
+	// 	run->pPsi = create_noise_Start_Grid(run->pPsi,opt);
+	// }
 
-	// set the datafile identifier name and save the initial grid
+	// // set the datafile identifier name and save the initial grid
 
-    opt.name = "INIT";
-	plotdatatopng(run->pPsi,opt);
-	savedatahdf5(1.,bf,run->pPsi,opt);
+ //    opt.name = "INIT";
+	// plotdatatopng(run->pPsi,opt);
+	// savedatahdf5(1.,bf,run->pPsi,opt);
 
-	//====> Imaginary Time Propagation (ITP)
-	opt.name = "ITP1";
-	opt.n_it_ITP = opt.n_it_ITP1;
-	run->itpToTime(opt);
+	// //====> Imaginary Time Propagation (ITP)
+	// opt.name = "ITP1";
+	// opt.n_it_ITP = opt.n_it_ITP1;
+	// run->itpToTime(opt);
 
 //////////// VORTICES ////////////////
 

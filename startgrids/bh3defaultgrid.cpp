@@ -282,7 +282,7 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
                 for(int x = 0; x < opt.grid[1]; x++)
                 {   
 
-                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,i))*(vortex(y,V_y[i],x,V_x[i])));
+                    g->at(j,x,y,0) = polar(1.0,(opt.Q*mypow2(1,i))*(vortex(y,V_y[i],x,V_x[i])));
                     /*
                     if(i==0)
                     {
@@ -519,13 +519,14 @@ ComplexGrid *create_no_noise_Start_Grid(const PathOptions &opt, int d)
 	return g;
 }
 
-ComplexGrid *create_noise_Start_Grid(const PathOptions &opt)
+ComplexGrid *create_noise_Start_Grid(ComplexGrid* &g,const Options &opt)
 {
     GaussRandom r (get_seed());
 	
     double RATIO = 0.5;
+    double rvalue;
 	
-    ComplexGrid *g = new ComplexGrid(opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
+    // ComplexGrid *g = new ComplexGrid(opt.grid[0], opt.grid[1], opt.grid[2], opt.grid[3]);
 	
     for(int i = 0; i < opt.grid[0]; i++)
     {
@@ -535,7 +536,8 @@ ComplexGrid *create_noise_Start_Grid(const PathOptions &opt)
             {
                 for(int z=0; z < opt.grid[3]; z++)
                 {
-                    g->at(i,x,y,z) = noise(r);
+                    rvalue = noise(r).real();
+                    g->at(i,x,y,z) = complex<double>(rvalue,0);
                 }
             }
         }
@@ -543,7 +545,7 @@ ComplexGrid *create_noise_Start_Grid(const PathOptions &opt)
     
 
 
-	ComplexGrid::fft(*g, *g, false);
+	// ComplexGrid::fft(*g, *g, false);
 	return g;
 }
 

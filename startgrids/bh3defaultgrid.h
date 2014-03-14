@@ -11,12 +11,14 @@ inline double vortex(int b, int y, int a, int x) //Vortex with phase [0,2*pi)
 }
 ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, std::vector<double> &x, std::vector<double> & y, double & sigma_x, double & sigma_y);
 ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma[2]);
+ComplexGrid *create_noise_Start_Grid(ComplexGrid* &g,const Options &opt);
+
+
 ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g,const Options &opt,int Vortexnumber, int rows_y, int columns_x, int Q) ;
 ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, int rows_y, int columns_x, int Q) ;
 ComplexGrid *create_Vortex_start_Grid(const PathOptions &opt,int Vortexnumber);// Vortex Startgitter
 ComplexGrid *create_no_noise_Start_Grid(const PathOptions &opt, int d = -1);
 ComplexGrid *create_Default_Start_Grid(const PathOptions &opt, int d = -1);
-ComplexGrid *create_noise_Start_Grid(const PathOptions &opt);
 ComplexGrid *create_test2_Start_Grid(const PathOptions &opt, int d = -1);
 ComplexGrid *create_oszi_test_Start_Grid(const PathOptions &opt, int d = -1); //n =2 harm oszi eigenstate
 ComplexGrid *create_vortex(const PathOptions &opt, int d = -1); //bright soliton solution, so only for U < 0!
