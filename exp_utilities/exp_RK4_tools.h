@@ -49,8 +49,8 @@ class RK4
     ~RK4();
     
     // Propagatoren
-    void itpToTime(Options &opt);
-    void rteToTime(Options &opt);
+    void itpToTime(Options &opt,bool plot);
+    void rteToTime(Options &opt,bool plot);
     void ITP(ComplexGrid* & pPsi,Options &opt);
     void RTE(ComplexGrid* & pPsi,Options &opt);
     
@@ -91,16 +91,18 @@ class RK4
     complex<double> V(ComplexGrid & pPsicopy,int i, int j,Options &opt);   
     
     // Hilfsfunktionen fuer RTE
-    complex<double> function_RTE(ComplexGrid & pPsiCopy,int i, int j,Options &opt);
+   
+    complex<double> function_RTE(ComplexGrid &wavefct,int i, int j, Options &opt);
+    // complex<double> function_RTE2(ComplexGrid &pPsiCopy,int i, int j,Options &opt);
     complex<double> interaction(complex<double> a,Options &opt);
-    complex<double> grad_x(complex<double> a, complex<double> b);
-    complex<double> grad_y(complex<double> a, complex<double> b);
-    complex<double> lambda_x(Options &opt);
-    complex<double> lambda_x_dot(Options &opt);
-    complex<double> lambda_y(Options &opt);
-    complex<double> lambda_y_dot(Options &opt);
-    complex<double> x_expand(complex<double> a,Options &opt);
-    complex<double> y_expand(complex<double> a,Options &opt);
+    // complex<double> grad_x(complex<double> a, complex<double> b);
+    // complex<double> grad_y(complex<double> a, complex<double> b);
+    // complex<double> lambda_x(Options &opt);
+    // complex<double> lambda_x_dot(Options &opt);
+    // complex<double> lambda_y(Options &opt);
+    // complex<double> lambda_y_dot(Options &opt);
+    // complex<double> x_expand(complex<double> a,Options &opt);
+    // complex<double> y_expand(complex<double> a,Options &opt);
     
     // Hilfsvariablen
     complex<double> h_x, h_y;
@@ -113,6 +115,85 @@ class RK4
     
     double pi; //acos(-1.0L);
     complex<double>  zero,half,one,two,four,six,i_unit;
+
+
+
+
+    // inline functions for stuff
+
+    inline complex<double> rte_kinetic(ComplexGrid &wavefct, int i, int j, Options &opt)
+{
+    return i_unit * ( laplacian_x(wavefct,i,j,opt)/(two*lambda_x(opt)*lambda_x(opt)) + laplacian_y(wavefct,i,j,opt)/(two*lambda_y(opt)*lambda_y(opt)) );
+}
+
+inline complex<double> rte_potential(int i, int j, Options &opt)
+{
+    complex<double> xvalue = complex<double>(x_axis[i],0);
+    complex<double> yvalue = complex<double>(y_axis[j],0);
+    return i_unit * (half * opt.omega_x * opt.omega_x * xvalue * xvalue * lambda_x(opt) * lambda_x(opt) + half * opt.omega_y * opt.omega_y * yvalue * yvalue * lambda_x(opt) * lambda_x(opt));
+}
+
+inline complex<double> rte_interaction(ComplexGrid &wavefct,int i, int j, Options &opt)
+{
+    return i_unit * complex<double>(opt.g,0) * norm(wavefct(0,i,j,0));
+}
+
+inline complex<double> rte_expandingframe(ComplexGrid &wavefct,int i, int j, Options &opt)
+{
+    complex<double> xvalue = complex<double>(x_axis[i],0);
+    complex<double> yvalue = complex<double>(y_axis[j],0);
+    return (lambda_x_dot(opt)/lambda_x(opt)) * xvalue * grad_x(wavefct,i,j) + (lambda_y_dot(opt)/lambda_y(opt)) * yvalue * grad_y(wavefct,i,j);
+}
+
+inline complex<double> laplacian_x(ComplexGrid &wavefct,int i, int j, Options &opt)
+{
+    return ( wavefct(0,i+1,j,0) - two * wavefct(0,i,j,0) + wavefct(0,i-1,j,0) ) / (h_x * h_x);
+}
+
+inline complex<double> laplacian_y(ComplexGrid &wavefct,int i, int j, Options &opt)
+{
+    return ( wavefct(0,i,j+1,0) - two * wavefct(0,i,j,0) + wavefct(0,i,j-1,0) ) / (h_y * h_y);
+}
+
+// inline complex<double> x_expand(complex<double> a,Options &opt)
+// {
+//  return ((-complex<double>(opt.grid[1],0)/two+a)*h_x*lambda_x(opt));
+// }
+
+// inline complex<double> y_expand(complex<double> a,Options &opt)
+// {
+//  return ((-complex<double>(opt.grid[2],0)/two+a)*h_y*lambda_y(opt));
+// }
+
+inline complex<double> grad_x(ComplexGrid &wavefct,int i, int j)
+{   //Central-difference x-grad approximation
+    return (wavefct(0,i+1,j,0) + wavefct(0,i-1,j,0) ) / (two*h_x) ;
+} 
+
+inline complex<double> grad_y(ComplexGrid &wavefct,int i, int j)
+{   //Central-difference y-grad approximation
+    return (wavefct(0,i,j+1,0) + wavefct(0,i,j-1,0) ) / (two*h_y) ;
+} 
+
+inline complex<double> lambda_x(Options &opt)
+{
+    return sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs);
+}
+
+inline complex<double> lambda_x_dot(Options &opt)
+{
+    return (opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs));
+}
+
+inline complex<double> lambda_y(Options &opt)
+{
+    return sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs);
+}
+
+inline complex<double> lambda_y_dot(Options &opt)
+{
+    return (opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs));
+}
       
 
   

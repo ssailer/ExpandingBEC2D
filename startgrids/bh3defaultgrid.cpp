@@ -282,7 +282,7 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
                 for(int x = 0; x < opt.grid[1]; x++)
                 {   
 
-                    g->at(j,x,y,0) = polar(1.0,(opt.Q*mypow2(1,i))*(vortex(y,V_y[i],x,V_x[i])));
+                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,i))*(vortex(y,V_y[i],x,V_x[i])));
                     /*
                     if(i==0)
                     {

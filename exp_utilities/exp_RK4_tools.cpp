@@ -75,29 +75,11 @@ RK4::~RK4(){};
 complex<double> RK4::interaction(complex<double> a,Options &opt)
 {return (opt.g*norm(a));} //Interaction term in the GPE Hamiltonian   
 
-complex<double> RK4::grad_x(complex<double> a, complex<double> b)
-{return ((a-b)/(two*h_x));} //Central-difference x-grad approximation
 
-complex<double> RK4::grad_y(complex<double> a, complex<double> b)
-{return ((a-b)/(two*h_y));} //Central-difference y-grad approximation
 
-complex<double> RK4::lambda_x(Options &opt)
-{return sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs);}
 
-complex<double> RK4::lambda_x_dot(Options &opt)
-{return (opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs));}
 
-complex<double> RK4::lambda_y(Options &opt)
-{return sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs);}
 
-complex<double> RK4::lambda_y_dot(Options &opt)
-{return (opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs));}
-
-complex<double> RK4::x_expand(complex<double> a,Options &opt)
-{return ((-complex<double>(opt.grid[1],0)/two+a)*h_x*lambda_x(opt));}
-
-complex<double> RK4::y_expand(complex<double> a,Options &opt)
-{return ((-complex<double>(opt.grid[2],0)/two+a)*h_y*lambda_y(opt));}
 
 complex<double> RK4::integral(ComplexGrid* & pPsi,Options &opt)
 {	
@@ -117,8 +99,6 @@ void RK4::rescale(ComplexGrid* & pPsi, Options &opt)
 {	
 	Integral=integral(pPsi,opt);
 	opt.scale_factor=complex<double>(opt.N,0)/Integral;
-	// cout << "Particle Number: " << opt.N << endl;
- 	cout  << "sqrt(opt.scale_factor) " << sqrt(opt.scale_factor) <<  endl;
 	
 	for(int i=0;i<opt.grid[1];i++)
 	{
@@ -254,7 +234,7 @@ void RK4::ITP(ComplexGrid* & pPsi, Options &opt)
 	rescale(pPsi,opt); 
 }
 
-void RK4::itpToTime(Options &opt)
+void RK4::itpToTime(Options &opt,bool plot)
 {
 	int counter_ITP = 0;
 	double start, end;
@@ -265,6 +245,11 @@ void RK4::itpToTime(Options &opt)
 	for(int k=0;k<opt.n_it_ITP;k++)
 	{ 
 		ITP(pPsi,opt);
+
+		if(plot == true){
+		opt.name = "ITP" + std::to_string(k);
+		plotdatatopng(pPsi,opt);
+		}
 
 		// if(k==vortex_start){add_vortex();} //Add vortex at ~80% of the ITP
 
@@ -287,15 +272,22 @@ void RK4::itpToTime(Options &opt)
 }
 
 
-complex<double> RK4::function_RTE(ComplexGrid &PsiCopy,int i, int j,Options &opt) //Function used for the RTE Runge-Kutta evolution (expanding frame)
+// complex<double> RK4::function_RTE2(ComplexGrid &PsiCopy,int i, int j,Options &opt) //Function used for the RTE Runge-Kutta evolution (expanding frame)
+// {
+// 	return 
+//  ((i_unit*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x)))/(two*lambda_x(opt)*lambda_x(opt)))
+// +((i_unit*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_y*h_y)))/(two*lambda_y(opt)*lambda_y(opt)))
+// -(i_unit*(complex<double>(opt.g,0)*norm(PsiCopy(0,i,j,0)))*PsiCopy(0,i,j,0))
+// +((lambda_x_dot(opt)*real(x_expand(i,opt))*((PsiCopy(0,i+1,j,0)-PsiCopy(0,i-1,j,0))/(two*h_x)))/lambda_x(opt))
+// +((lambda_y_dot(opt)*real(y_expand(j,opt))*((PsiCopy(0,i,j+1,0)-PsiCopy(0,i,j-1,0))/(two*h_y)))/lambda_y(opt));
+// }
+
+complex<double> RK4::function_RTE(ComplexGrid &wavefct,int i, int j, Options &opt)
 {
-	return 
- ((i_unit*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x)))/(two*lambda_x(opt)*lambda_x(opt)))
-+((i_unit*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_y*h_y)))/(two*lambda_y(opt)*lambda_y(opt)))
--(i_unit*(complex<double>(opt.g,0)*norm((PsiCopy(0,i,j,0))))*PsiCopy(0,i,j,0))
-+((lambda_x_dot(opt)*real(x_expand(i,opt))*((PsiCopy(0,i+1,j,0)-PsiCopy(0,i-1,j,0))/(two*h_x)))/lambda_x(opt))
-+((lambda_y_dot(opt)*real(y_expand(j,opt))*((PsiCopy(0,i,j+1,0)-PsiCopy(0,i,j-1,0))/(two*h_y)))/lambda_y(opt));
+	return rte_kinetic(wavefct,i,j,opt) - ( rte_potential(i,j,opt) + rte_interaction(wavefct,i,j,opt) ) * wavefct(0,i,j,0) + rte_expandingframe(wavefct,i,j,opt);
 }
+
+
 
 void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 
@@ -353,13 +345,11 @@ void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 
 	TimeStepRK4(pPsi,k,opt,t_RTE);
 
-	rescale(pPsi,opt);
-
 }
 
 // Propagation Wrapper Functions
 
-void RK4::rteToTime(Options &opt)
+void RK4::rteToTime(Options &opt, bool plot)
 {
 	int counter_RTE = 0;
 	double start, end;
@@ -370,8 +360,11 @@ void RK4::rteToTime(Options &opt)
 	for(int k=0;k<opt.n_it_RTE;k++)
 	{
 		RTE(pPsi,opt);
+
+		if(plot == true){
 		opt.name = "RTE" + std::to_string(k);
 		plotdatatopng(pPsi,opt);
+		}
 
 
 		// if(k>0 && k%opt.n_save_RTE==0)
