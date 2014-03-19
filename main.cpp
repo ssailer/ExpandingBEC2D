@@ -164,14 +164,18 @@ try
    	//====> Imaginary Time Propagation (ITP)
     opt.name = "ITP2";
 	opt.n_it_ITP = opt.n_it_ITP2;
-	run->itpToTime(opt,true);
+
+	run->itpToTime(opt,false);
+
 	plotdatatopng(run->pPsi,opt);
 	savedatahdf5(3.,bf,run->pPsi,opt);
 
 
 	//====> Real Time Expansion (RTE)
 	opt.name = "RTE";
-	run->rteToTime(opt,false);
+	
+	run->rteToTime(opt,true);
+
 	plotdatatopng(run->pPsi,opt);
 	savedatahdf5(4.,bf,run->pPsi,opt);
 

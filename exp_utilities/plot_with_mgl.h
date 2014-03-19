@@ -114,14 +114,17 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 	gr.SetRange('y',-opt.min_y,opt.min_y);
 	gr.SetRange('c',data);	
 	
-	gr.Light(true);
-	gr.Rotate(60,40);
-	gr.Box();
-	gr.SetRange('z',data);
-	gr.Surf(data);
+	// gr.Light(true);
+	// gr.Rotate(60,40);
+	// gr.Box();
+	// gr.SetRange('z',data);
+	// gr.Surf(data);
+	
 	gr.Axis();
 	gr.Colorbar("<");
-	// gr.Dens(data);
+	gr.Dens(data);
+
+	
 	
 
 	

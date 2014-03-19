@@ -254,7 +254,8 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
     int V_x[Vortexnumber]; 
     int V_y[Vortexnumber]; // Coordinates of all Vortices.
     double alpha = (360 / Vortexnumber) * M_PI / 180.0; // const-angle between all vortices
-    double r = (sigma_grid[0]+sigma_grid[1])/4.0; // Radius of the Cookie
+    double r = 0.;
+    // (sigma_grid[0]+sigma_grid[1])/4.0; // Radius of the Cookie
 
     cout << "Vortex Coordinates:\n";
     for(int i = 0; i < Vortexnumber; i++)
