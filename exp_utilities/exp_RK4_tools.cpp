@@ -241,15 +241,13 @@ void RK4::itpToTime(Options &opt,bool plot)
 
 	start = omp_get_wtime();
 	
-
+	cout << "    " << opt.name << endl;
+	string tmp = opt.name;
 	for(int k=0;k<opt.n_it_ITP;k++)
 	{ 
 		ITP(pPsi,opt);
 
-		if(plot == true){
-		opt.name = "ITP" + std::to_string(k);
-		plotdatatopng(pPsi,opt);
-		}
+		
 
 		// if(k==vortex_start){add_vortex();} //Add vortex at ~80% of the ITP
 
@@ -262,8 +260,14 @@ void RK4::itpToTime(Options &opt,bool plot)
 
 		if(counter_ITP%(opt.n_it_ITP/100)==0)
 			{	
+				if(plot == true)
+				{
+					opt.name = tmp +"-"+ std::to_string(counter_ITP/(opt.n_it_ITP/100));
+					plotdatatopng(pPsi,opt);
+				}
+
 				end = omp_get_wtime();
-				cout << "    " << opt.name << " " << (counter_ITP/(opt.n_it_ITP/100)) << "%   " << end - start << "s        \r" << flush;
+				cout << "    " << (counter_ITP/(opt.n_it_ITP/100)) << "%   " << end - start << "s        \r" << flush;
 				opt.times = counter_ITP;
 			}
 	
@@ -284,7 +288,19 @@ void RK4::itpToTime(Options &opt,bool plot)
 
 complex<double> RK4::function_RTE(ComplexGrid &wavefct,int i, int j, Options &opt)
 {
-	return rte_kinetic(wavefct,i,j,opt) - ( rte_potential(i,j,opt) + rte_interaction(wavefct,i,j,opt) ) * wavefct(0,i,j,0) + rte_expandingframe(wavefct,i,j,opt);
+	complex<double> tmp;
+
+	tmp = rte_kinetic(wavefct,i,j,opt)  + rte_expandingframe(wavefct,i,j,opt);	
+
+	if(opt.startgrid[2] == true)
+	{
+	tmp -= ( rte_potential(i,j,opt) + rte_interaction(wavefct,i,j,opt) ) * wavefct(0,i,j,0);
+	}else
+	{
+	tmp -= rte_interaction(wavefct,i,j,opt) * wavefct(0,i,j,0);	
+	}
+
+	return tmp;
 }
 
 
@@ -306,7 +322,7 @@ void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 
 	ComplexGrid PsiCopy = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
-	Dirichlet(pPsi,opt);
+	// Dirichlet(pPsi,opt);
 	PsiCopy = *pPsi;
 	
       
@@ -355,17 +371,12 @@ void RK4::rteToTime(Options &opt, bool plot)
 	double start, end;
 
 	start = omp_get_wtime();
-	
+
+	cout << "    " << opt.name << endl;
 
 	for(int k=0;k<opt.n_it_RTE;k++)
 	{
 		RTE(pPsi,opt);
-
-		if(plot == true){
-		opt.name = "RTE" + std::to_string(k);
-		plotdatatopng(pPsi,opt);
-		}
-
 
 		// if(k>0 && k%opt.n_save_RTE==0)
 		// 	{
@@ -376,8 +387,14 @@ void RK4::rteToTime(Options &opt, bool plot)
 
 		if(counter_RTE%(opt.n_it_RTE/100)==0)
 			{
+
+				if(plot == true)
+				{
+					opt.name = "RTE-"+ std::to_string(counter_RTE/(opt.n_it_RTE/100));
+					plotdatatopng(pPsi,opt);
+				}
 				end = omp_get_wtime();
-				cout << "    " << "RTE" << " " << (counter_RTE/(opt.n_it_RTE/100)) << "%   " << end - start << "s        \r" << flush;
+				cout << "    " << (counter_RTE/(opt.n_it_RTE/100)) << "%   " << end - start << "s        \r" << flush;
 				opt.times = counter_RTE;
 			}
 	}

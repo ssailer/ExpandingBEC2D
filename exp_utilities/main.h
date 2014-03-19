@@ -9,30 +9,34 @@ using namespace libconfig;
 
 void printInitVar(Options &opt)
 	{
-		std::cout 	<< endl << "Initial Values of this run:" << endl
-					<< "Used Configfile: \"" << opt.config << "\"   Remember, all inputs override the config!" << endl << endl
-					<< "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x << endl
-			  		<< "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y << endl
-			  		<< "Expansion Factor: " << opt.exp_factor << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-			  		<< "Initial Packet (1 = yes, 0 = false): " << opt.startgrid[0] << "\t" << "Vortices added (1 = yes, 0 = false): " << opt.startgrid[1] << endl
-					<< "Total time of the ITP1-Step: " << opt.n_it_ITP1 << " (saving every " << opt.n_save_ITP << "-th step)" << endl
-					<< "Total time of the ITP2-Step: " << opt.n_it_ITP2 << " (saving every " << opt.n_save_ITP << "-th step)" << endl
-					<< "Total time of the RTE-Step: " << opt.n_it_RTE << " (saving every " << opt.n_save_RTE << "-th step)" << endl << endl;
+		std::cout.setf(std::ios::boolalpha);
+		std::cout 	<< "Initial Values of this run:" << endl
+					<< "Used Configfile: \"" << opt.config << endl
+					<< "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
+			  		<< "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
+			  		<< "Expansion Factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
+			  		<< "Initial Packet: " << opt.startgrid[0] << "\t" << "Vortices added: " << opt.startgrid[1] << endl
+			  		<< "RTE is having potential: " << opt.startgrid[2] << endl
+					<< "Runtime of the ITP1-Step: " << opt.n_it_ITP1 << endl
+					<< "Runtime of the ITP2-Step: " << opt.n_it_ITP2 << endl
+					<< "Runtime of the RTE-Step: " << opt.n_it_RTE << endl << endl;
 	}
 
 
-void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times)
+int init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times)
 {
+
+
 	libconfig::Config cfg;
 
 	string sConfig = opt.config;
-	const char* configfile = argv[1]; /// I would really like to use opt.config here.. ffs. WHY NOT? Something with the scope I bet.
+	// const char* configfile = argv[1]; /// I would really like to use opt.config here.. ffs. WHY NOT? Something with the scope I bet.
 
 
 	  // Read the file. If there is an error, report it and exit.
 	  try
 	  {
-	    cfg.readFile(configfile);
+	    cfg.readFile(sConfig.c_str());
 	  }
 	  catch(const libconfig::FileIOException &fioex)
 	  {
@@ -71,10 +75,11 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 
 	opt.startgrid[0]         = root["RunOptions"]["startgrid0"];
 	opt.startgrid[1]         = root["RunOptions"]["startgrid1"];
+	opt.startgrid[2]		 = root["RunOptions"]["startgrid2"];
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
-	double omega_x_realValue = cfg.lookup("RunOptions.omega_x");	// root["RunOptions"]["omega_x"];
-	double omega_y_realValue = cfg.lookup("RunOptions.omega_y");	// root["RunOptions"]["omega_y"];
+	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
+	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
 
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
@@ -83,33 +88,16 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
 	}
 	catch(const SettingNotFoundException &nfex)
 	{
-	cerr << endl <<  "Something is wrong here with your config, using default settings,\nexcept the values you have give me directly." << endl << endl;
+	cerr << endl <<  "Something is wrong here with your config." << endl << endl;
 
-	opt.N          = 1000;
-	opt.exp_factor = complex<double>(1.0,0);
-	opt.omega_x = complex<double>(150.0,0);
-	opt.omega_y = complex<double>(100.0,0);
-	opt.startgrid[0] = true; // gaussian packet on
-	opt.startgrid[1] = false; // vortices off
-	opt.min_x      = 2;
-	opt.min_y      = 2;	
-	opt.grid[0]    = 1;
-	opt.grid[1]    = 600;
-	opt.grid[2]    = 600;
-	opt.grid[3]    = 1;
-	opt.g          = 1;
-	opt.Q          = 1;
-	opt.n_it_RTE   = 101;
-	opt.n_save_RTE = 50;
-	opt.n_it_ITP1   = 1001;
-	opt.n_it_ITP2   = 1001;
-	opt.n_save_ITP = 1000;
-	opt.times      = 1;
-	
-	opt.ITP_step   = 0.000001; //Time-step for the ITP (0.000001)
-	opt.RTE_step   = 0.00001; //Time-step for the RTE (0.00001)
+	return 1;
 
 	}
+
+	char* command;
+	sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
+    system(command);
+    chdir(opt.workingdirectory.c_str());
 
 
 
@@ -186,6 +174,8 @@ void init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_time
                     //cout<<snapshot_times[i]<<endl;
                         //snapshot_times[i] = i*time_res + 25000;
                         }*/
+
+     return 0;
 	
 }
 

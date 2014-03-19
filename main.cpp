@@ -6,6 +6,7 @@ Last Update: 22/07/13
 
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <unistd.h>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -50,9 +51,9 @@ int main( int argc, char** argv)
 	Options opt;
 	vector<double> snapshot_times;
 
-	// Initialize all option variables
 
-	init_bh3(argc, argv, opt, snapshot_times);
+
+
 	
 
 	// Beginning of the options block
@@ -64,7 +65,8 @@ try
     po::options_description desc("Options"); 
     desc.add_options() 
       ("help,h", "Print help messages.") 
-      ("config,c",po::value<string>(&opt.config), "Name of the configfile");
+      ("config,c",po::value<string>(&opt.config), "Name of the configfile")
+      ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data");
       // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
       // ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
       // ("gauss",po::value<bool>(&opt.startgrid[0]),"Initial Grid has gaussian form.")
@@ -77,6 +79,7 @@ try
 
 	po::positional_options_description positionalOptions; 
 	positionalOptions.add("config", 1);
+	positionalOptions.add("directory",1);
 
     po::variables_map vm; 
     try 
@@ -110,6 +113,15 @@ try
 
 // Beginning of the main program block
 
+    // Initialize all option variables
+
+    if(init_bh3(argc, argv, opt, snapshot_times) == 1){
+		cout << endl << "Could not initialize the values, abort." << endl;
+		return 0;
+	}else{ 
+		cout << endl << "Run parameters initialized. Ready to start the computation." << endl << endl;
+	}
+
     // print the initial values of the run to the console
 
     printInitVar(opt); 
@@ -122,15 +134,20 @@ try
 
 	// if the given value is true, initialize the startgrid with a gaussian distribution
 
-	if(opt.startgrid[0]==true){
-	double sigma_real[2];
-	sigma_real[0] = opt.min_x/4;
-	sigma_real[1] = opt.min_y/4;		
-	run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
-	}else{
+	for(int i=0;i<opt.grid[1];i++)for(int j=0;j<opt.grid[2];j++)
+		run->pPsi->at(0,i,j,0)=complex<double>(1.0,0.0);
+
+
+	// if(opt.startgrid[0]==true){
+	// double sigma_real[2];
+	// sigma_real[0] = opt.min_x/4;
+	// sigma_real[1] = opt.min_y/4;		
+	// run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
+	// }else{
 		
-		run->pPsi = create_noise_Start_Grid(run->pPsi,opt);
-	}
+	// 	run->pPsi = create_noise_Start_Grid(run->pPsi,opt);
+	// }
+
 
 	// set the datafile identifier name and save the initial grid
 
@@ -165,7 +182,7 @@ try
     opt.name = "ITP2";
 	opt.n_it_ITP = opt.n_it_ITP2;
 
-	run->itpToTime(opt,false);
+	run->itpToTime(opt,true);
 
 	plotdatatopng(run->pPsi,opt);
 	savedatahdf5(3.,bf,run->pPsi,opt);
