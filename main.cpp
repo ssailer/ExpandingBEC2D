@@ -134,19 +134,15 @@ try
 
 	// if the given value is true, initialize the startgrid with a gaussian distribution
 
-	for(int i=0;i<opt.grid[1];i++)for(int j=0;j<opt.grid[2];j++)
-		run->pPsi->at(0,i,j,0)=complex<double>(1.0,0.0);
-
-
-	// if(opt.startgrid[0]==true){
-	// double sigma_real[2];
-	// sigma_real[0] = opt.min_x/4;
-	// sigma_real[1] = opt.min_y/4;		
-	// run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
-	// }else{
+	if(opt.startgrid[0]==true){
+	double sigma_real[2];
+	sigma_real[0] = opt.min_x/4;
+	sigma_real[1] = opt.min_y/4;		
+	run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
+	}else{
 		
-	// 	run->pPsi = create_noise_Start_Grid(run->pPsi,opt);
-	// }
+		run->pPsi = create_noise_Start_Grid(run->pPsi,opt);
+	}
 
 
 	// set the datafile identifier name and save the initial grid
@@ -166,8 +162,8 @@ try
 	if(opt.startgrid[1]==true)
     {
     int sigma_grid[2];
-	sigma_grid[0] = opt.grid[1]/4;
-	sigma_grid[1] = opt.grid[2]/4;
+	sigma_grid[0] = opt.grid[1]/6;
+	sigma_grid[1] = opt.grid[2]/6;
 
     run->pPsi = add_vortex_to_grid(run->pPsi,opt,sigma_grid);
    	cout << "Vortices added." << endl;
@@ -186,7 +182,6 @@ try
 
 	plotdatatopng(run->pPsi,opt);
 	savedatahdf5(3.,bf,run->pPsi,opt);
-
 
 	//====> Real Time Expansion (RTE)
 	opt.name = "RTE";

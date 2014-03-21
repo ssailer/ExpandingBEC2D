@@ -90,7 +90,7 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 
 	string filename = "OBDM_" + opt.name + ".png";
 
-	gr.SetSize(1600,800);
+	gr.SetSize(1800,1600);
 	gr.SetQuality(3);
 	gr.Title(opt.name.c_str());
 	// gr.Alpha(true);
@@ -98,31 +98,50 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 
 
 	data.use_abs=false;
-	gr.SubPlot(2,1,0);
 	gr.SetRange('x',-opt.min_x,opt.min_x);
 	gr.SetRange('y',-opt.min_y,opt.min_y);
-	gr.SetRange('c',data);	
-	
+	gr.SetRange('z',data);
+	gr.SetRange('c',data);
+
+	gr.SubPlot(2,2,0);
+
+	gr.Rotate(40,40);
+	gr.Box();
 	gr.Axis();
-	gr.Colorbar("<");
+	gr.Colorbar("_");
+	gr.Surf(data);
+
+
+	gr.SubPlot(2,2,2);
+	gr.Axis();
+	gr.Colorbar("_");
 	gr.Dens(data);
-	
+
 
 	data.use_abs=true;
-	gr.SubPlot(2,1,1);
 	gr.SetRange('x',-opt.min_x,opt.min_x);
 	gr.SetRange('y',-opt.min_y,opt.min_y);
-	gr.SetRange('c',data);	
-	
+	gr.SetRange('z',data);
+	gr.SetRange('c',data);
+
+	gr.SubPlot(2,2,1);
+
 	// gr.Light(true);
-	// gr.Rotate(60,40);
-	// gr.Box();
-	// gr.SetRange('z',data);
-	// gr.Surf(data);
-	
+	gr.Rotate(40,40);
+	gr.Box();
 	gr.Axis();
-	gr.Colorbar("<");
+	gr.Colorbar("_");
+
+	gr.Surf(data);
+
+
+	gr.SubPlot(2,2,3);
+	gr.Axis();
+	gr.Colorbar("_");
 	gr.Dens(data);
+
+
+
 
 	
 	

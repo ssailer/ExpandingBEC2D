@@ -86,7 +86,9 @@ class RK4
     void computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE);
     void TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,complex<double> &t);
     void Neumann(ComplexGrid &k,ComplexGrid &PsiCopy,Options &opt);
+    void NeumannRTE(ComplexGrid &k,ComplexGrid &wavefct,Options &opt);
     void Dirichlet(ComplexGrid* &pPsi,Options &opt);
+    void DirichletK(ComplexGrid &pPsi,Options &opt);
 
     complex<double> T(ComplexGrid & pPsiCopy,int i, int j);
     complex<double> V(ComplexGrid & pPsicopy,int i, int j,Options &opt);   
@@ -124,7 +126,7 @@ class RK4
 
    inline complex<double> rte_kinetic(ComplexGrid &wavefct, int i, int j, Options &opt)
    {
-   return i_unit * ( laplacian_x(wavefct,i,j,opt)/(two*lambda_x(opt)*lambda_x(opt)) + laplacian_y(wavefct,i,j,opt)/(two*lambda_y(opt)*lambda_y(opt)) );
+   return i_unit * ( laplacian_x(wavefct,i,j,opt)/two /* /(two*lambda_x(opt)*lambda_x(opt) )*/  + laplacian_y(wavefct,i,j,opt)/two /*/(two*lambda_y(opt)*lambda_y(opt) )*/ );
    }
 
    inline complex<double> rte_potential(int i, int j, Options &opt)
@@ -148,7 +150,7 @@ class RK4
 
    inline complex<double> laplacian_x(ComplexGrid &wavefct,int i, int j, Options &opt)
    {
-   return ( wavefct(0,i+1,j,0) - two * wavefct(0,i,j,0) + wavefct(0,i-1,j,0) ) / (h_x * h_x);
+    return ( wavefct(0,i+1,j,0) - two * wavefct(0,i,j,0) + wavefct(0,i-1,j,0) ) / (h_x * h_x);
    }
 
    inline complex<double> laplacian_y(ComplexGrid &wavefct,int i, int j, Options &opt)

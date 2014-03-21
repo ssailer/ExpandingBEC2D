@@ -58,8 +58,8 @@ RK4::RK4(ComplexGrid* &c,Options &opt)
 	cout << "Max Number of Threads: " << opt.threads << endl;
 	omp_set_num_threads(opt.threads);
   	pPsi = c;  
-  	h_x.real(2.*opt.min_x/opt.grid[1]);
-  	h_y.real(2.*opt.min_y/opt.grid[2]); 
+  	h_x = complex<double>((2.*opt.min_x/opt.grid[1]),0.0);
+  	h_y = complex<double>((2.*opt.min_y/opt.grid[2]),0.0); 
   	x_axis.resize(opt.grid[1]);
   	y_axis.resize(opt.grid[2]);
   	for(int i=0;i<opt.grid[1];i++){x_axis[i]=-opt.min_x+i*real(h_x);}
@@ -187,26 +187,26 @@ void RK4::computeK_ITP(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 	PsiCopy = *pPsi;
 	
 
-	for(int d=1; d<=4; d++){
+	for(int d=0; d<4; d++){
 
   // The k's have to be computed differently, this is decided by int d
-    if (d == 2 || d == 3){
-      	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_ITP*k[d-2](0,i,j,0) ;}}
+    if (d == 1 || d == 2){
+      	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_ITP*k[d-1](0,i,j,0) ;}}
     }
-    else if (d == 4){
-    	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+t_ITP*k[d-2](0,i,j,0) ;}}	
+    else if (d == 3){
+    	for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+t_ITP*k[d-1](0,i,j,0) ;}}	
 	}
    
     // Compute all k[1]..k[4] for the RK4
 	#pragma omp parallel for 
     for(int i=1;i<opt.grid[1]-1;i++) {
 		for(int j=1;j<opt.grid[2]-1;j++) {
-	   		k[d-1](0,i,j,0) = T(PsiCopy,i,j)+V(PsiCopy,i,j,opt); 
+	   		k[d](0,i,j,0) = T(PsiCopy,i,j)+V(PsiCopy,i,j,opt); 
 	 	}
 	}
 	
     
-    Neumann(k[d-1],PsiCopy,opt);
+    Neumann(k[d],PsiCopy,opt);
 
 	}
   
@@ -290,15 +290,16 @@ complex<double> RK4::function_RTE(ComplexGrid &wavefct,int i, int j, Options &op
 {
 	complex<double> tmp;
 
-	tmp = rte_kinetic(wavefct,i,j,opt)  + rte_expandingframe(wavefct,i,j,opt);	
+	tmp = rte_kinetic(wavefct,i,j,opt);
 
-	if(opt.startgrid[2] == true)
-	{
-	tmp -= ( rte_potential(i,j,opt) + rte_interaction(wavefct,i,j,opt) ) * wavefct(0,i,j,0);
-	}else
-	{
-	tmp -= rte_interaction(wavefct,i,j,opt) * wavefct(0,i,j,0);	
-	}
+	// if(opt.g != 0.0)
+	// {tmp -= (rte_interaction(wavefct,i,j,opt) * wavefct(0,i,j,0));}
+
+	// if(opt.exp_factor != 0.0)
+	// {tmp += rte_expandingframe(wavefct,i,j,opt);}
+
+	// if(opt.startgrid[2] == true)
+	// {tmp -= rte_potential(i,j,opt) * wavefct(0,i,j,0);}
 
 	return tmp;
 }
@@ -309,13 +310,43 @@ void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 
         //Fixed (Dirichlet) boundary conditions for the RTE
     for(int l=0;l<opt.grid[1];l++){ 
-	  pPsi->at(0,l,0,0)=zero;
-	  pPsi->at(0,l,opt.grid[2]-1,0)=zero;
+	  pPsi->at(0,l,0,0).real(0.0);
+	  pPsi->at(0,l,opt.grid[2]-1,0).real(0.0);
 	}
     for(int m=0;m<opt.grid[2];m++){
-	  pPsi->at(0,0,m,0)=zero;
-	  pPsi->at(0,opt.grid[1]-1,m,0)=zero;
+	  pPsi->at(0,0,m,0).real(0.0);
+	  pPsi->at(0,opt.grid[1]-1,m,0).real(0.0);
 	}
+}
+
+void RK4::DirichletK(ComplexGrid &pPsi,Options &opt){
+
+        //Fixed (Dirichlet) boundary conditions for the RTE
+    for(int l=0;l<opt.grid[1];l++){ 
+	  pPsi.at(0,l,0,0)=zero;
+	  pPsi.at(0,l,opt.grid[2]-1,0)=zero;
+	}
+    for(int m=0;m<opt.grid[2];m++){
+	  pPsi.at(0,0,m,0)=zero;
+	  pPsi.at(0,opt.grid[1]-1,m,0)=zero;
+	}
+}
+
+void RK4::NeumannRTE(ComplexGrid &k,ComplexGrid &wavefct,Options &opt){
+      //Fixed derivative (Neumann) boundary conditions for the RTE
+
+
+    for(int i=0;i<opt.grid[1];i++) 
+    { 
+		k(0,i,0,0)  = - rte_interaction(wavefct,i,0,opt) * wavefct(0,i,0,0);
+		k(0,i,opt.grid[1]-1,0) = - rte_interaction(wavefct,opt.grid[1]-1,0,opt) * wavefct(0,opt.grid[1]-1,0,0);
+    }
+
+    for(int j=0;j<opt.grid[2];j++)
+    { 
+		k(0,0,j,0)= - rte_interaction(wavefct,0,j,opt) * wavefct(0,0,j,0);
+		k(0,opt.grid[2]-1,j,0)= - rte_interaction(wavefct,0,opt.grid[2]-1,opt) * wavefct(0,0,opt.grid[2]-1,0);
+    }
 }
 
 void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
@@ -323,30 +354,27 @@ void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 	ComplexGrid PsiCopy = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	// Dirichlet(pPsi,opt);
-	PsiCopy = *pPsi;
-	
+	PsiCopy = *pPsi;	
       
-    for(int d=1;d<=4;d++)
+    for(int d=0;d<4;d++)
 	{  
-		if(d==2){
+		// NeumannRTE(k[d-1],PsiCopy,opt);
+
+		if(d==1){
 			opt.t_abs += half*t_RTE;
 			for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}		
-		}else if(d ==3){	
+		}else if(d ==2){	
 			for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}
-		} else if (d==4){
+		} else if (d==3){
 			opt.t_abs += half*t_RTE;
 			for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+t_RTE*k[d-1](0,i,j,0) ;}}
 		}
 
-		#pragma omp parallel for
-		for(int i=1;i<opt.grid[1]-1;i++)
-			{
-			for(int j=1;j<opt.grid[2]-1;j++)
-			{
-				k[d-1](0,i,j,0)=function_RTE(PsiCopy,i,j,opt) ;
-			}
-		}
+		// #pragma omp parallel for
+		for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[d](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
+		// DirichletK(k[d],opt);
 	}
+
 
 }
 
@@ -355,7 +383,13 @@ void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 	complex<double> t_RTE(opt.RTE_step,0); //Time-step size for RTE
 	vector<ComplexGrid> k(4);
 	
-	for(int i=0;i<4;i++){k[i] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);}
+	for(int d=0;d<4;d++){k[d] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+		for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ k[d](0,i,j,0) = zero;}}
+
+	}
+
+
 	
 	computeK_RTE(pPsi,k,opt,t_RTE);
 
