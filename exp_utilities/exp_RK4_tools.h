@@ -69,11 +69,7 @@ class RK4
     ComplexGrid* pPhase;
     
     // Coordinates
-    vector<double> x_axis,y_axis;
-    
-    
-  
-         
+    vector<double> x_axis,y_axis; 
 
   private:
 

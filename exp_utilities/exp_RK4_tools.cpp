@@ -16,42 +16,6 @@ RK4::RK4()
 	zero=complex<double>(0,0),half=complex<double>(0.5,0),one=complex<double>(1,0),two=complex<double>(2,0),four=complex<double>(4,0),six=complex<double>(6,0),i_unit=complex<double>(0,1);
 }
 
-/*
-RK4::RK4(Options &opt)
-{
-  	real(h_x) = 2.*opt.min_x/opt.grid[1]; 
-  	real(h_y) = 2.*opt.min_y/opt.grid[2]; 
-
-    x_axis.resize(opt.grid[1]);
-  	y_axis.resize(opt.grid[2]);
-  	for(int i=0;i<opt.grid[1];i++){x_axis[i]=-opt.min_x+i*real(h_x);} //Initialisation of the x-axis from -min_x to +min_x
-  	for(int j=0;j<opt.grid[2];j++){y_axis[j]=-opt.min_y+j*real(h_y); 
-
-    Integral=0;
-    Integral_aux=0;
-
-    pi = M_PI;
-    zero=complex<double>(0,0),half=complex<double>(0.5,0),one=complex<double>(1,0),two=complex<double>(2,0),four=complex<double>(4,0),six=complex<double>(6,0),i_unit=complex<double>(0,1);
-
-    ComplexGrid* pPsi = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-    for(int i=0;i<opt.grid[1];i++) //Initialise the wavefunction as gaussian by default with default_gridsize
- 	{
- 		for(int j=0;j<opt.grid[2];j++)
- 		{
- 						
-			double xfactor;
- 			xfactor = gauss(x_axis[i],y_axis[j]); 			
- 			complex<double> factor (xfactor,0); 			
- 			pPsi->at(0,i,j,0) = factor;
- 			pPhase->at(0,i,j,0) = (0,0); //!!!! Check if this should be double, and not complexdouble !!!!
- 			 
- 		}	
- 	}
-    
-}
-*/
-
 RK4::RK4(ComplexGrid* &c,Options &opt)
 {	
 	opt.threads = omp_get_max_threads();
@@ -74,14 +38,6 @@ RK4::~RK4(){};
 
 complex<double> RK4::interaction(complex<double> a,Options &opt)
 {return (opt.g*norm(a));} //Interaction term in the GPE Hamiltonian 
-
-
-
-
-
-
-
-
 
 complex<double> RK4::integral(ComplexGrid* & pPsi,Options &opt)
 {	
@@ -281,36 +237,10 @@ void RK4::itpToTime(Options &opt,bool plot)
 	{ 
 		ITP(pPsi,opt);		
 
-		// if(k==vortex_start){add_vortex();} //Add vortex at ~80% of the ITP
-
-		// if(k>0 && k%opt.n_save_ITP==0)
-		// 	{
-		// 		save_2D(pPsi,opt);
-		// 	}
-
   		counter_ITP+=1;
 
   		cli_plot(opt,tmp,counter_ITP,opt.n_it_ITP,start,plot);
 
-		// if(counter_ITP%(opt.n_it_ITP/100)==0)
-		// 	{	
-		// 		if(plot == true)
-		// 		{
-		// 			opt.name = tmp +"-"+ std::to_string(counter_ITP/(opt.n_it_ITP/100));
-		// 			plotdatatopng(pPsi,opt);
-		// 		}
-
-		// 		total = omp_get_wtime() - start;
-		// 		hour = total / 3600; 
-		// 		min = total / 60; 
-		// 		seconds = total % 60;
-
-		// 		cout << "    " << std::setw(3) << std::setfill('0') << (counter_ITP/(opt.n_it_ITP/100)) << "%   "
-		// 			 << std::setw(2) << std::setfill('0') << hour << ":"
-		// 			 << std::setw(2) << std::setfill('0') << min << ":"
-		// 			 << std::setw(2) << std::setfill('0') << seconds  << " h:m:s        \r" << flush;
-		// 		opt.times = counter_ITP;
-		// 	}
 	
 	}
 	cout << "\n";	
@@ -454,34 +384,10 @@ void RK4::rteToTime(Options &opt, bool plot)
 	{
 		RTE(pPsi,opt);
 
-		// if(k>0 && k%opt.n_save_RTE==0)
-		// 	{
-		// 		save_2D(pPsi,opt);
-		// 	}
-
   		counter_RTE+=1;
 
   		cli_plot(opt,"RTE",counter_RTE,opt.n_it_RTE,start,plot);
 
-		// if(counter_RTE%(opt.n_it_RTE/100)==0)
-		// 	{
-
-		// 		if(plot == true)
-		// 		{
-		// 			opt.name = "RTE-"+ std::to_string(counter_RTE/(opt.n_it_RTE/100));
-		// 			plotdatatopng(pPsi,opt);
-		// 		}
-		// 		total = omp_get_wtime() - start;
-		// 		hour = total / 3600;
-		// 		min = total / 60;
-		// 		seconds = total % 60;
-
-		// 		cout << "    " << std::setw(3) << std::setfill('0') << (counter_RTE/(opt.n_it_RTE/100)) << "%   " 
-		// 			 << std::setw(2) << std::setfill('0') << hour << ":"
-		// 			 << std::setw(2) << std::setfill('0') << min << ":"
-		// 			 << std::setw(2) << std::setfill('0') << seconds  << " h:m:s        \r" << flush;
-
-		// 	}
 	}
 
 	cout << "\n";
