@@ -229,14 +229,22 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
 
 ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, std::vector<double> &x, std::vector<double> & y, double & sigma_x, double & sigma_y)
 {
+
+    complex<double> value;
+
     for(int k = 0; k < opt.grid[0]; k++)
     {
         for(int i=0; i < opt.grid[1]; i++){
             for(int j=0; j < opt.grid[2]; j++){
-            g->at(k,i,j,0) = complex<double>(exp( -(x[i] * x[i])/(2*sigma_x*sigma_x) - (y[j] * y[j])/(2*sigma_y*sigma_y)),0);
+                value = complex<double> ( exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), /*sin(x[i]*M_PI/2)*/ /*- M_PI * x[i] / opt.min_x*/ 0.0 );
+                // value = complex<double>(exp(-(x[i] * x[i] + y[j] * y[j])),exp( -(x[i] * x[i] + y[j] * y[j]) ) );
+            g->at(k,i,j,0) = value;
             }
         }
     }
+
+
+
 
     return g;
 } 
@@ -250,12 +258,11 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
     // r should be of order of full width at half maximum of the underlying gaussian, think about this, and test. 
     // Build the gaussian into this function, down below, when g is set, in polar function, instead of 1.0 use the gaussian.
     //  think about rotations of the vortices and the winding number Q
-    int Vortexnumber = 1;
+    int Vortexnumber = 6;
     int V_x[Vortexnumber]; 
     int V_y[Vortexnumber]; // Coordinates of all Vortices.
     double alpha = (360 / Vortexnumber) * M_PI / 180.0; // const-angle between all vortices
-    double r = 0.;
-    // (sigma_grid[0]+sigma_grid[1])/4.0; // Radius of the Cookie
+    double r = (sigma_grid[0]+sigma_grid[1])/4.0; // Radius of the Cookie
 
     cout << "Vortex Coordinates:\n";
     for(int i = 0; i < Vortexnumber; i++)
@@ -283,7 +290,7 @@ ComplexGrid *add_vortex_to_grid(ComplexGrid* &g, Options &opt,int sigma_grid[2])
                 for(int x = 0; x < opt.grid[1]; x++)
                 {   
 
-                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(-1,1))*(vortex(y,V_y[i],x,V_x[i])));
+                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,1))*(vortex(y,V_y[i],x,V_x[i])));
                     /*
                     if(i==0)
                     {
@@ -538,7 +545,7 @@ ComplexGrid *create_noise_Start_Grid(ComplexGrid* &g,const Options &opt)
                 for(int z=0; z < opt.grid[3]; z++)
                 {
                     // rvalue = noise(r).real();
-                    g->at(i,x,y,z) += complex<double>(0,noise(r).imag());
+                    g->at(i,x,y,z).imag(noise(r).imag());
                 }
             }
         }

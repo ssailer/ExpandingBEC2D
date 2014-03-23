@@ -144,14 +144,18 @@ try
 		run->pPsi = create_noise_Start_Grid(run->pPsi,opt);
 	}
 
+  // run->save_2D(run->pPsi,opt);
+
+
 
 	// set the datafile identifier name and save the initial grid
 
     opt.name = "INIT";
 	plotdatatopng(run->pPsi,opt);
-	savedatahdf5(1.,bf,run->pPsi,opt);
+	// savedatahdf5(1.,bf,run->pPsi,opt);
+  // run->save_2D(run->pPsi,opt);
 
-	//====> Imaginary Time Propagation (ITP)
+	// //====> Imaginary Time Propagation (ITP)
 	opt.name = "ITP1";
 	opt.n_it_ITP = opt.n_it_ITP1;
 	run->itpToTime(opt,false);
@@ -170,18 +174,19 @@ try
    	opt.name = "VORT";
 
 	plotdatatopng(run->pPsi,opt);
-   	savedatahdf5(2.,bf,run->pPsi,opt);
-   	}
+   	// savedatahdf5(2.,bf,run->pPsi,opt);
+   }
+
 ////// END VORTICES //////////
 
    	//====> Imaginary Time Propagation (ITP)
-    opt.name = "ITP2";
+  opt.name = "ITP2";
 	opt.n_it_ITP = opt.n_it_ITP2;
 
-	run->itpToTime(opt,true);
+	run->itpToTime(opt,false);
 
 	plotdatatopng(run->pPsi,opt);
-	savedatahdf5(3.,bf,run->pPsi,opt);
+	// savedatahdf5(3.,bf,run->pPsi,opt);
 
 	//====> Real Time Expansion (RTE)
 	opt.name = "RTE";
@@ -189,7 +194,7 @@ try
 	run->rteToTime(opt,true);
 
 	plotdatatopng(run->pPsi,opt);
-	savedatahdf5(4.,bf,run->pPsi,opt);
+	// savedatahdf5(4.,bf,run->pPsi,opt);
 
 	// Everything finished here, plots and cleanup remaining	
 

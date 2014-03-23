@@ -9,6 +9,7 @@
 #include <vector>
 #include <omp.h>
 #include <string>
+#include <iomanip>
 
 
 
@@ -56,8 +57,8 @@ class RK4
     void RTE(ComplexGrid* & pPsi,Options &opt);
     
     
-    // Hilfsfunktionen  
-  
+    // Hilfsfunktionen 
+    void cli_plot(Options &opt,string name,int counter_state, int counter_max, double start,bool plot);  
     double phase_save(ComplexGrid* & pPsi,int a,int b);
     
     // save the Grid to file
