@@ -98,19 +98,21 @@ void RK4::save_2D(ComplexGrid* &pPsi,Options &opt) //Function to save the data t
 	closeDataFiles_obdm();
 }
 
-
-complex<double> RK4::T(ComplexGrid &PsiCopy,int i, int j)
+complex<double> RK4::itp_kinetic(ComplexGrid &PsiCopy,int i, int j)
 {
-	return half*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x))+half*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_x*h_x)); 
+    return half*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x))+half*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_x*h_x)); 
 }
 
-complex<double> RK4::V(ComplexGrid & PsiCopy,int i, int j,Options & opt)
+complex<double> RK4::itp_potential(ComplexGrid & PsiCopy,int i, int j,Options & opt)
 { 
-	complex<double> xvalue = complex<double>(x_axis[i],0);
-	complex<double> yvalue = complex<double>(y_axis[j],0);
+    complex<double> xvalue = complex<double>(x_axis[i],0);
+    complex<double> yvalue = complex<double>(y_axis[j],0);
   
-	return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+complex<double>(opt.g,0)*norm(PsiCopy(0,i,j,0)))*PsiCopy(0,i,j,0);
+    return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+complex<double>(opt.g,0)*norm(PsiCopy(0,i,j,0)))*PsiCopy(0,i,j,0);
 }
+
+
+
 
 void RK4::TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,complex<double> &t)
 {	
@@ -164,13 +166,13 @@ void RK4::Neumann(ComplexGrid &k,ComplexGrid &PsiCopy,Options &opt){
     for(int i=0;i<opt.grid[1];i++) 
     { 
 		k(0,i,0,0)=V(PsiCopy,i,0,opt);
-		k(0,i,opt.grid[1]-1,0)=V(PsiCopy,i,opt.grid[1]-1,opt);
+		k(0,i,opt.grid[1]-1,0)= itp_potential(PsiCopy,i,opt.grid[1]-1,opt);
     }
 
     for(int j=0;j<opt.grid[2];j++)
     { 
 		k(0,0,j,0)=V(PsiCopy,0,j,opt);
-		k(0,opt.grid[2]-1,j,0)=V(PsiCopy,opt.grid[2]-1,j,opt);
+		k(0,opt.grid[2]-1,j,0)= itp_potential(PsiCopy,opt.grid[2]-1,j,opt);
     }
 }
 
@@ -195,7 +197,7 @@ void RK4::computeK_ITP(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 	#pragma omp parallel for 
     for(int i=1;i<opt.grid[1]-1;i++) {
 		for(int j=1;j<opt.grid[2]-1;j++) {
-	   		k[d](0,i,j,0) = T(PsiCopy,i,j)+V(PsiCopy,i,j,opt); 
+	   		k[d](0,i,j,0) = itp_kinetic(PsiCopy,i,j) + itp_potential(PsiCopy,i,j,opt); 
 	 	}
 	}
 	
@@ -235,13 +237,13 @@ void RK4::itpToTime(Options &opt,bool plot)
 
 	start = omp_get_wtime();
 	
-	cout << "    " << opt.name << endl;
+	cout << " " << opt.name << endl;
 	string tmp = opt.name;
 	for(int k=0;k<opt.n_it_ITP;k++)
 	{ 
 		ITP(pPsi,opt);		
 
-  		counter_ITP+=1;
+  		counter_ITP += 1;
 
   		cli_plot(opt,tmp,counter_ITP,opt.n_it_ITP,start,plot);
 
@@ -380,7 +382,7 @@ void RK4::rteToTime(Options &opt, bool plot)
 	start = omp_get_wtime();
 
 
-	cout << "    " << opt.name << endl;
+	cout << " " << opt.name << endl;
 
 	for(int k=0;k<opt.n_it_RTE;k++)
 	{
