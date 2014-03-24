@@ -16,7 +16,16 @@
 using namespace std;
 
 // Inherit PathOptions from bh3binaryfile.h with additional Options for RK4 and the Potential
-typedef struct : PathOptions {
+typedef struct {
+        // From bh3binaryfile
+    // double timestepsize;
+    // double U;
+    double N; // Number of particles
+    int32_t grid[4];  // gridsize
+    // double klength[3];
+    // vector<double> delta_t;
+    // vector<double> g;
+        // my own
     complex<double> omega_x,omega_y; // Frequency of the harmonic trap
     double min_x,min_y; // Coordinate boundaries
     complex<double> scale_factor; //Scale factor
@@ -46,20 +55,12 @@ class RK4
 {
   public:
     RK4();
-    // RK4(Options &opt);
     RK4(ComplexGrid* &c,Options &opt);    
     ~RK4();
     
     // Propagatoren
     void itpToTime(Options &opt,bool plot);
-    void rteToTime(Options &opt,bool plot);
-    void ITP(ComplexGrid* & pPsi,Options &opt);
-    void RTE(ComplexGrid* & pPsi,Options &opt);
-    
-    
-    // Hilfsfunktionen 
-    void cli_plot(Options &opt,string name,int counter_state, int counter_max, double start,bool plot);  
-    double phase_save(ComplexGrid* & pPsi,int a,int b);
+    void rteToTime(Options &opt,bool plot); 
     
     // save the Grid to file
     void save_2D(ComplexGrid* & pPsi,Options &opt);
@@ -72,30 +73,33 @@ class RK4
     vector<double> x_axis,y_axis; 
 
   private:
-    typedef struct {
-      complex<double> t_abs;
-      string workingdirectory;
-      int threads;
-    } runVariables;
+
+    void TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,complex<double> &t);
+    void ITP(ComplexGrid* & pPsi,Options &opt);
+    void RTE(ComplexGrid* & pPsi,Options &opt);
 
     // double gauss(double x,double y); //A simple Gaussian
    
-    // Scaling of Wavefunction after every timestep in ITP and RTE
+    // Scaling of Wavefunction after every timestep in ITP
     void rescale(ComplexGrid* & pPsi, Options &opt);
     
     // Hilfsfunktionen fuer ITP
     void computeK_ITP(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_ITP);
-    void computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE);
-    void TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,complex<double> &t);
+
+
     void Neumann(ComplexGrid &k,ComplexGrid &PsiCopy,Options &opt);
+    
+
+    complex<double> itp_kinetic(ComplexGrid &PsiCopy,int i, int j);
+    complex<double> itp_potential(ComplexGrid & PsiCopy,int i, int j,Options & opt);
+   
+    // Hilfsfunktionen fuer RTE
+
     void NeumannRTE(ComplexGrid &k,ComplexGrid &wavefct,Options &opt);
     void Dirichlet(ComplexGrid* &pPsi,Options &opt);
     void DirichletK(ComplexGrid &pPsi,Options &opt);
 
-    complex<double> T(ComplexGrid & pPsiCopy,int i, int j);
-    complex<double> V(ComplexGrid & pPsicopy,int i, int j,Options &opt);   
-    
-    // Hilfsfunktionen fuer RTE
+    void computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE);
    
     complex<double> function_RTE(ComplexGrid &wavefct,int i, int j, Options &opt);
     // complex<double> function_RTE2(ComplexGrid &pPsiCopy,int i, int j,Options &opt);
@@ -108,6 +112,10 @@ class RK4
     // complex<double> lambda_y_dot(Options &opt);
     // complex<double> x_expand(complex<double> a,Options &opt);
     // complex<double> y_expand(complex<double> a,Options &opt);
+
+        // Hilfsfunktionen 
+    void cli_plot(Options &opt,string name,int counter_state, int counter_max, double start,bool plot);  
+    double phase_save(ComplexGrid* & pPsi,int a,int b);
     
     // Hilfsvariablen
     complex<double> h_x, h_y;
@@ -147,7 +155,7 @@ class RK4
    {
     complex<double> xvalue = complex<double>(x_axis[i],0);
     complex<double> yvalue = complex<double>(y_axis[j],0);
-   return (lambda_x_dot(opt)/lambda_x(opt)) * xvalue * grad_x(wavefct,i,j) + (lambda_y_dot(opt)/lambda_y(opt)) * yvalue * grad_y(wavefct,i,j);
+    return (lambda_x_dot(opt)/lambda_x(opt)) * xvalue * grad_x(wavefct,i,j) + (lambda_y_dot(opt)/lambda_y(opt)) * yvalue * grad_y(wavefct,i,j);
    }
 
    inline complex<double> laplacian_x(ComplexGrid &wavefct,int i, int j, Options &opt)
@@ -200,18 +208,7 @@ class RK4
     return (opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs));
    }
 
-   inline complex<double> T(ComplexGrid &PsiCopy,int i, int j)
-   {
-    return half*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x))+half*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_x*h_x)); 
-   }
 
-   inline complex<double> V(ComplexGrid & PsiCopy,int i, int j,Options & opt)
-   { 
-    complex<double> xvalue = complex<double>(x_axis[i],0);
-    complex<double> yvalue = complex<double>(y_axis[j],0);
-  
-    return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+complex<double>(opt.g,0)*norm(PsiCopy(0,i,j,0)))*PsiCopy(0,i,j,0);
-   }
       
 
   
