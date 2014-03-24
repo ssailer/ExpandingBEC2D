@@ -99,18 +99,7 @@ void RK4::save_2D(ComplexGrid* &pPsi,Options &opt) //Function to save the data t
 }
 
 
-complex<double> RK4::T(ComplexGrid &PsiCopy,int i, int j)
-{
-	return half*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x))+half*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_x*h_x)); 
-}
 
-complex<double> RK4::V(ComplexGrid & PsiCopy,int i, int j,Options & opt)
-{ 
-	complex<double> xvalue = complex<double>(x_axis[i],0);
-	complex<double> yvalue = complex<double>(y_axis[j],0);
-  
-	return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+complex<double>(opt.g,0)*norm(PsiCopy(0,i,j,0)))*PsiCopy(0,i,j,0);
-}
 
 void RK4::TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,complex<double> &t)
 {	

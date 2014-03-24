@@ -72,6 +72,11 @@ class RK4
     vector<double> x_axis,y_axis; 
 
   private:
+    typedef struct {
+      complex<double> t_abs;
+      string workingdirectory;
+      int threads;
+    } runVariables;
 
     // double gauss(double x,double y); //A simple Gaussian
    
@@ -123,19 +128,19 @@ class RK4
 
    inline complex<double> rte_kinetic(ComplexGrid &wavefct, int i, int j, Options &opt)
    {
-   return i_unit * ( laplacian_x(wavefct,i,j,opt)/two /* /(two*lambda_x(opt)*lambda_x(opt) )*/  + laplacian_y(wavefct,i,j,opt)/two /*/(two*lambda_y(opt)*lambda_y(opt) )*/ );
+    return i_unit * ( laplacian_x(wavefct,i,j,opt)/two /* /(two*lambda_x(opt)*lambda_x(opt) )*/  + laplacian_y(wavefct,i,j,opt)/two /*/(two*lambda_y(opt)*lambda_y(opt) )*/ );
    }
 
    inline complex<double> rte_potential(int i, int j, Options &opt)
    {
     complex<double> xvalue = complex<double>(x_axis[i],0);
     complex<double> yvalue = complex<double>(y_axis[j],0);
-   return i_unit * (half * opt.omega_x * opt.omega_x * xvalue * xvalue + half * opt.omega_y * opt.omega_y * yvalue * yvalue);
+    return i_unit * (half * opt.omega_x * opt.omega_x * xvalue * xvalue + half * opt.omega_y * opt.omega_y * yvalue * yvalue);
    }
 
    inline complex<double> rte_interaction(ComplexGrid &wavefct,int i, int j, Options &opt)
    {
-   return i_unit * complex<double>(opt.g,0) * norm(wavefct(0,i,j,0));
+    return i_unit * complex<double>(opt.g,0) * norm(wavefct(0,i,j,0));
    }
 
    inline complex<double> rte_expandingframe(ComplexGrid &wavefct,int i, int j, Options &opt)
@@ -152,7 +157,7 @@ class RK4
 
    inline complex<double> laplacian_y(ComplexGrid &wavefct,int i, int j, Options &opt)
    {
-   return ( wavefct(0,i,j+1,0) - two * wavefct(0,i,j,0) + wavefct(0,i,j-1,0) ) / (h_y * h_y);
+    return ( wavefct(0,i,j+1,0) - two * wavefct(0,i,j,0) + wavefct(0,i,j-1,0) ) / (h_y * h_y);
    }
 
 // inline complex<double> x_expand(complex<double> a,Options &opt)
@@ -167,17 +172,17 @@ class RK4
 
    inline complex<double> grad_x(ComplexGrid &wavefct,int i, int j)
    { //Central-difference x-grad approximation
-   return (wavefct(0,i+1,j,0) + wavefct(0,i-1,j,0) ) / (two*h_x) ;
+    return (wavefct(0,i+1,j,0) + wavefct(0,i-1,j,0) ) / (two*h_x) ;
    }
 
    inline complex<double> grad_y(ComplexGrid &wavefct,int i, int j)
    { //Central-difference y-grad approximation
-   return (wavefct(0,i,j+1,0) + wavefct(0,i,j-1,0) ) / (two*h_y) ;
+    return (wavefct(0,i,j+1,0) + wavefct(0,i,j-1,0) ) / (two*h_y) ;
    }
 
    inline complex<double> lambda_x(Options &opt)
    {
-   return sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs);
+    return sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs);
    }
 
    inline complex<double> lambda_x_dot(Options &opt)
@@ -192,7 +197,20 @@ class RK4
 
    inline complex<double> lambda_y_dot(Options &opt)
    {
-   return (opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs));
+    return (opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs));
+   }
+
+   inline complex<double> T(ComplexGrid &PsiCopy,int i, int j)
+   {
+    return half*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x))+half*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_x*h_x)); 
+   }
+
+   inline complex<double> V(ComplexGrid & PsiCopy,int i, int j,Options & opt)
+   { 
+    complex<double> xvalue = complex<double>(x_axis[i],0);
+    complex<double> yvalue = complex<double>(y_axis[j],0);
+  
+    return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+complex<double>(opt.g,0)*norm(PsiCopy(0,i,j,0)))*PsiCopy(0,i,j,0);
    }
       
 
