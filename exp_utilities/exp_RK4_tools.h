@@ -12,8 +12,6 @@
 #include <iomanip>
 
 
-//// DEVELOPMENT BRANCH TEST
-
 
 using namespace std;
 
@@ -42,13 +40,15 @@ typedef struct {
     int n_save_RTE; // times, when to save the process // don't need it here anymore
     int n_save_ITP; // replace with snapshot_times     // don't need it here anymore
     int times; // naming of the datafile - time of the snapshot  // don't need it here anymore
-    std::string name; // naming of the datafile      // think about that naming system remove it from here
-    std::string config; // name of the config file 
-    std::string workingdirectory;   // remove it from here, only needed in the program itself
+    string name; // naming of the datafile      // think about that naming system remove it from here
+    string config; // name of the config file 
+    string workingdirectory;   // remove it from here, only needed in the program itself
+    string workingfile;
     bool startgrid[3];
     int threads;   // don't need it here, remove it from this, build a new struct in the class itself for all of this
     //Vortex Positions and winding Number
     int Q;
+    bool RTE_only;
     
 } Options;
 
@@ -157,11 +157,8 @@ class RK4
    {
     complex<double> xvalue = complex<double>(x_axis[i],0);
     complex<double> yvalue = complex<double>(y_axis[j],0);
-<<<<<<< HEAD
    return (lambda_x_dot(opt)/lambda_x(opt)) * x_expand(xvalue,opt) * grad_x(wavefct,i,j) + (lambda_y_dot(opt)/lambda_y(opt)) * y_expand(yvalue,opt) * grad_y(wavefct,i,j);
-=======
-    return (lambda_x_dot(opt)/lambda_x(opt)) * xvalue * grad_x(wavefct,i,j) + (lambda_y_dot(opt)/lambda_y(opt)) * yvalue * grad_y(wavefct,i,j);
->>>>>>> 6e6536965b8411ae933f23ab38ba26744bb2e5c1
+
    }
 
    inline complex<double> laplacian_x(ComplexGrid &wavefct,int i, int j, Options &opt)

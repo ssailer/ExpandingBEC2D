@@ -165,13 +165,13 @@ void RK4::Neumann(ComplexGrid &k,ComplexGrid &PsiCopy,Options &opt){
 
     for(int i=0;i<opt.grid[1];i++) 
     { 
-		k(0,i,0,0)=V(PsiCopy,i,0,opt);
+		k(0,i,0,0)=itp_potential(PsiCopy,i,0,opt);
 		k(0,i,opt.grid[1]-1,0)= itp_potential(PsiCopy,i,opt.grid[1]-1,opt);
     }
 
     for(int j=0;j<opt.grid[2];j++)
     { 
-		k(0,0,j,0)=V(PsiCopy,0,j,opt);
+		k(0,0,j,0)=itp_potential(PsiCopy,0,j,opt);
 		k(0,opt.grid[2]-1,j,0)= itp_potential(PsiCopy,opt.grid[2]-1,j,opt);
     }
 }
@@ -200,7 +200,6 @@ void RK4::computeK_ITP(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 	   		k[d](0,i,j,0) = itp_kinetic(PsiCopy,i,j) + itp_potential(PsiCopy,i,j,opt); 
 	 	}
 	}
-	
     
     Neumann(k[d],PsiCopy,opt);
 
@@ -246,8 +245,7 @@ void RK4::itpToTime(Options &opt,bool plot)
   		counter_ITP += 1;
 
   		cli_plot(opt,tmp,counter_ITP,opt.n_it_ITP,start,plot);
-
-	
+  			
 	}
 	cout << "\n";	
 }

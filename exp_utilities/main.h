@@ -7,26 +7,164 @@
 
 using namespace libconfig;
 
-void printInitVar(Options &opt)
-	{
-		std::cout.setf(std::ios::boolalpha);
-		std::cout 	<< "Initial Values of this run:" << endl
-					<< "Used Configfile: \"" << opt.config << endl
-					<< "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
-			  		<< "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
-			  		<< "Expansion Factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-			  		<< "Initial Packet: " << opt.startgrid[0] << "\t" << "Vortices added: " << opt.startgrid[1] << endl
-			  		<< "RTE is having potential: " << opt.startgrid[2] << endl
-					<< "Runtime of the ITP1-Step: " << opt.n_it_ITP1 << endl
-					<< "Runtime of the ITP2-Step: " << opt.n_it_ITP2 << endl
-					<< "Runtime of the RTE-Step: " << opt.n_it_RTE << endl << endl;
+namespace // namespace for program options
+{ 
+  const size_t ERROR_IN_COMMAND_LINE = 1; 
+  const size_t SUCCESS = 0; 
+  const size_t ERROR_UNHANDLED_EXCEPTION = 2;  
+}
+
+inline void saveDataToHDF5(ComplexGrid* &g, Options &opt)
+{ 
+
+  PathOptions options;
+
+  	// useless to me
+  options.timestepsize = 1.0;
+  for(int i = 0; i<3; i++){options.klength[i] = 1.0;}
+  options.delta_t.resize(1);
+  options.delta_t[0] = 1.0;
+  	// still useless to me
+
+  options.U = opt.g;
+  options.N = opt.N;
+  for(int i = 0; i<4;i++){ options.grid[i] = opt.grid[i]; }
+  options.g.resize(2);
+  options.g[0] = real(opt.omega_x);
+  options.g[1] = real(opt.omega_y);
+
+  double time = opt.n_it_ITP1 + opt.n_it_ITP2;
+
+  Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, options, Bh3BinaryFile::out);
+
+	vector<ComplexGrid> vectork(1);
+	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+	for(int i = 0; i < opt.grid[1];i++) for(int j = 0; j < opt.grid[2]; j++)
+	{vectork.at(0).at(0,i,j,0) = g->at(0,i,j,0);}
+
+	bf->append_snapshot(time, vectork);
+
+  delete bf;
+}
+
+inline void readDataFromHDF5(ComplexGrid* &g,Options &opt)
+{
+	try{
+	PathOptions options;
+
+  	double time = opt.n_it_ITP1 + opt.n_it_ITP2;
+
+	Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, options, Bh3BinaryFile::in);
+
+	options = bf->get_options();
+
+	opt.g = options.U;
+	opt.N = options.N;
+	for(int i = 0; i<4; i++){ options.grid[i] = opt.grid[i]; }
+	options.g.resize(2);
+	opt.omega_x = complex<double>(options.g[0],0.0);
+	opt.omega_y = complex<double>(options.g[1],0.0);
+
+	vector<ComplexGrid> vectork(1);
+	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+	bf->get_snapshot(time, vectork,0);
+
+	for(int i = 0; i < opt.grid[1];i++) for(int j = 0; j < opt.grid[2]; j++)
+	{g->at(0,i,j,0) = vectork.at(0).at(0,i,j,0);}
+	
+	delete bf;
 	}
 
+	catch(std::exception& e) 
+	{ 
+  		std::cerr << "Reading from HDF5 File failed, whaaaat?: " 
+        		  << e.what() << ", application will now exit" << std::endl; 
+	} 
 
-int init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times)
+}
+
+inline void printInitVar(Options &opt)
 {
+	std::cout.setf(std::ios::boolalpha);
+	std::cout 	<< "Initial Values of this run:" << endl
+				<< "Used Configfile: \"" << opt.config << endl
+				<< "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
+				<< "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
+				<< "Expansion Factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
+				<< "Initial Packet: " << opt.startgrid[0] << "\t" << "Vortices added: " << opt.startgrid[1] << endl
+				<< "RTE is having potential: " << opt.startgrid[2] << endl
+				<< "Runtime of the ITP1-Step: " << opt.n_it_ITP1 << endl
+				<< "Runtime of the ITP2-Step: " << opt.n_it_ITP2 << endl
+				<< "Runtime of the RTE-Step: " << opt.n_it_RTE << endl << endl;
+}
 
 
+inline int read_cli_options(int argc, char** argv, Options &opt)
+{
+	// Beginning of the options block
+
+    // Define and parse the program options 
+
+    namespace po = boost::program_options; 
+    po::options_description desc("Options"); 
+    desc.add_options() 
+      ("help,h", "Print help messages.") 
+      ("config,c",po::value<string>(&opt.config), "Name of the configfile")
+      ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data");
+      // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
+      // ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
+      // ("gauss",po::value<bool>(&opt.startgrid[0]),"Initial Grid has gaussian form.")
+      // ("vortices",po::value<bool>(&opt.startgrid[1]),"Add Vortices to the grid.")
+      // ("itp",po::value<int>(&opt.n_it_ITP),"Total runtime of the ITP-Step.")
+      // ("rte",po::value<int>(&opt.n_it_RTE),"Total runtime of the RTE-Step.")
+      // ("number,N",po::value<double>(&opt.N),"Number of particles.")
+      // ("expansion,e",po::value<complex<double> >(&opt.exp_factor),"Expansion Factor")
+      // ("interaction,g",po::value<double> (&opt.g),"Interaction Constant");
+
+	po::positional_options_description positionalOptions; 
+	positionalOptions.add("config", 1);
+	positionalOptions.add("directory",1);
+
+    po::variables_map vm; 
+
+    try 
+    { 
+
+		po::store(po::command_line_parser(argc, argv).options(desc)
+					.positional(positionalOptions).run(), 
+          			vm); 
+ 
+      /** --help option 
+       */ 
+      if ( vm.count("help")  ) 
+      { 
+        std::cout << "This is a program to simulate the expansion of a BEC with Vortices in 2D" << endl
+        		  << "after a harmonic trap has been turned off. The expansion is simulated by" << endl
+        		  << "an expanding coordinate system. The implemented algorithm to solve the GPE" << endl
+        		  << "is a 4-th order Runge-Kutta Integration." << endl << endl
+                  << desc << endl; 
+        return SUCCESS; 
+      } 
+ 
+      po::notify(vm); // throws on error, so do after help in case 
+                      // there are any problems 
+    } 
+    catch(po::error& e) 
+    { 
+      std::cerr << "ERROR: " << e.what() << std::endl << std::endl; 
+      std::cerr << desc << std::endl; 
+      return ERROR_IN_COMMAND_LINE; 
+    } 
+
+    return SUCCESS;
+
+}
+
+
+int readConfig(int argc, char** argv, Options &opt)
+{
 	libconfig::Config cfg;
 
 	string sConfig = opt.config;
@@ -70,8 +208,11 @@ int init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times
 	opt.times                = root["RunOptions"]["times"]; 	    			
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
-	opt.Q                    = root["RunOptions"]["Q"];	
-	// opt.name 				 = cfg.lookup("RunOptions.name").c_str();
+	opt.Q                    = root["RunOptions"]["Q"];
+	opt.RTE_only			 = root["RunOptions"]["RTE_only"];
+	// opt.workingfile			 = root["RunOptions"]["workingfile"]
+	cfg.lookupValue("RunOptions.workingfile",opt.workingfile);
+	// opt.name
 
 	opt.startgrid[0]         = root["RunOptions"]["startgrid0"];
 	opt.startgrid[1]         = root["RunOptions"]["startgrid1"];
@@ -94,9 +235,12 @@ int init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times
 
 	}
 
+	if(opt.RTE_only == false)
+	{
 	char* command;
 	sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
     system(command);
+	}
     chdir(opt.workingdirectory.c_str());
 
 
@@ -121,50 +265,7 @@ int init_bh3(int argc, char** argv, Options &opt, vector<double> &snapshot_times
 	// 	opt.klength[2] = 2.0;
 	
 
-	
-	snapshot_times.resize(5);
-	snapshot_times[0] =5000;
-	snapshot_times[1] =10000;
-	snapshot_times[2] =15000;
-	snapshot_times[3] =20000;
-	snapshot_times[4] =25000;
-//         snapshot_times[6] =17000;
-          // snapshot_times[7] =20000;
-          // snapshot_times[8] =30000;
-          // snapshot_times[9] =50000;
-          // snapshot_times[10]=70000;
-          // snapshot_times[11]=100000;
-          // snapshot_times[12]=150000;
-          // snapshot_times[13]=180000;
-          // snapshot_times[14]=220000;
-          // snapshot_times[15]=250000;
-          // snapshot_times[16]=300000;
-          // snapshot_times[17]=450000;
-          // snapshot_times[18]=500000;
-          // snapshot_times[19]=550000;
-          // snapshot_times[20]=600000;
-          // snapshot_times[21]=600000;
-          // snapshot_times[22]=600000;
-          // snapshot_times[23]=650000;
-          // snapshot_times[24]=700000;
-          // snapshot_times[25]=750000;
-          // snapshot_times[26]=800000;
-          // snapshot_times[27]=840000;
-          // snapshot_times[28]=870000;
-          // snapshot_times[29]=900000;
-          // snapshot_times[30]=930000;
-          // snapshot_times[31]=960000;
-          // snapshot_times[32]=1000000;
-          // snapshot_times[33]=1100000;
-          // snapshot_times[34]=1200000;
-          // snapshot_times[35]=1300000;
-          // snapshot_times[36]=1400000;
-          // snapshot_times[37]=1500000;
-          // snapshot_times[38]=1600000;
-          // snapshot_times[39]=1700000;
-          // snapshot_times[40]=1800000;
-          // snapshot_times[41]=1900000;
-      
+
 		
 
         /*		for(int i = 0; i < snapshot_times.size(); i++)///////////////////////was passiert hier/????????////====warum die snapshot zeit veraendern???========?????
