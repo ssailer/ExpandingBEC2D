@@ -20,7 +20,7 @@ typedef struct : PathOptions {
     complex<double> omega_x,omega_y; // Frequency of the harmonic trap
     double min_x,min_y; // Coordinate boundaries
     complex<double> scale_factor; //Scale factor
-    complex<double> t_abs; //Absolute time 
+    complex<double> t_abs; //Absolute time // remove from opt! put into the function, don't need it here
     complex<double> exp_factor; //Expansion factor
     double g; // coupling constant
     double ITP_step, RTE_step; // stepsize for the timeiteration
@@ -28,14 +28,14 @@ typedef struct : PathOptions {
     int n_it_ITP1; // number of timesteps
     int n_it_ITP2; // number of timesteps
     int n_it_RTE; // number of timesteps
-    int n_save_RTE; // times, when to save the process 
-    int n_save_ITP; // replace with snapshot_times
-    int times; // naming of the datafile - time of the snapshot
-    std::string name; // naming of the datafile
-    std::string config; // name of the config file
-    std::string workingdirectory;
+    int n_save_RTE; // times, when to save the process // don't need it here anymore
+    int n_save_ITP; // replace with snapshot_times     // don't need it here anymore
+    int times; // naming of the datafile - time of the snapshot  // don't need it here anymore
+    std::string name; // naming of the datafile      // think about that naming system remove it from here
+    std::string config; // name of the config file 
+    std::string workingdirectory;   // remove it from here, only needed in the program itself
     bool startgrid[3];
-    int threads;
+    int threads;   // don't need it here, remove it from this, build a new struct in the class itself for all of this
     //Vortex Positions and winding Number
     int Q;
     
