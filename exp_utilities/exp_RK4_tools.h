@@ -142,7 +142,7 @@ class RK4
    {
     complex<double> xvalue = complex<double>(x_axis[i],0);
     complex<double> yvalue = complex<double>(y_axis[j],0);
-   return (lambda_x_dot(opt)/lambda_x(opt)) * xvalue * grad_x(wavefct,i,j) + (lambda_y_dot(opt)/lambda_y(opt)) * yvalue * grad_y(wavefct,i,j);
+   return (lambda_x_dot(opt)/lambda_x(opt)) * x_expand(xvalue,opt) * grad_x(wavefct,i,j) + (lambda_y_dot(opt)/lambda_y(opt)) * y_expand(yvalue,opt) * grad_y(wavefct,i,j);
    }
 
    inline complex<double> laplacian_x(ComplexGrid &wavefct,int i, int j, Options &opt)
@@ -155,15 +155,15 @@ class RK4
    return ( wavefct(0,i,j+1,0) - two * wavefct(0,i,j,0) + wavefct(0,i,j-1,0) ) / (h_y * h_y);
    }
 
-// inline complex<double> x_expand(complex<double> a,Options &opt)
-// {
-// return ((-complex<double>(opt.grid[1],0)/two+a)*h_x*lambda_x(opt));
-// }
+   inline complex<double> x_expand(complex<double> a,Options &opt)
+   {
+   return ((-complex<double>(opt.grid[1],0)/two+a)*h_x*lambda_x(opt));
+   }
 
-// inline complex<double> y_expand(complex<double> a,Options &opt)
-// {
-// return ((-complex<double>(opt.grid[2],0)/two+a)*h_y*lambda_y(opt));
-// }
+   inline complex<double> y_expand(complex<double> a,Options &opt)
+   {
+   return ((-complex<double>(opt.grid[2],0)/two+a)*h_y*lambda_y(opt));
+   }
 
    inline complex<double> grad_x(ComplexGrid &wavefct,int i, int j)
    { //Central-difference x-grad approximation

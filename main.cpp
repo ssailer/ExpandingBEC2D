@@ -200,7 +200,7 @@ try
 
 	cout << "Run finished." << endl;
 
-    delete startgrid;
+  delete startgrid;
 	delete run;
 	delete bf;
  

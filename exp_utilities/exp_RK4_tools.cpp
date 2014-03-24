@@ -144,11 +144,15 @@ void RK4::cli_plot(Options &opt, string name,int counter_state, int counter_max,
 			min = total / 60;
 			seconds = total % 60;
 
-			cout << "    " << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%   " 
-				 << std::setw(2) << std::setfill('0') << hour << ":"
+			cout << std::setw(2) << std::setfill('0') << hour << ":"
 				 << std::setw(2) << std::setfill('0') << min << ":"
-				 << std::setw(2) << std::setfill('0') << seconds  << " h:m:s        \r" << flush;
+				 << std::setw(2) << std::setfill('0') << seconds  << "    "
+				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
 		}
+	if(counter_state == counter_max)
+	{
+		cout << endl;
+	}
 
 }
 
@@ -359,8 +363,6 @@ void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 		for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ k[d](0,i,j,0) = zero;}}
 
 	}
-
-
 	
 	computeK_RTE(pPsi,k,opt,t_RTE);
 
