@@ -138,14 +138,7 @@ class RK4
 
    inline complex<double> rte_kinetic(ComplexGrid &wavefct, int i, int j, Options &opt)
    {
-    return i_unit * ( laplacian_x(wavefct,i,j,opt)/two /* /(two*lambda_x(opt)*lambda_x(opt) )*/  + laplacian_y(wavefct,i,j,opt)/two /*/(two*lambda_y(opt)*lambda_y(opt) )*/ );
-   }
-
-   inline complex<double> rte_potential(int i, int j, Options &opt)
-   {
-    complex<double> xvalue = complex<double>(x_axis[i],0);
-    complex<double> yvalue = complex<double>(y_axis[j],0);
-    return i_unit * (half * opt.omega_x * opt.omega_x * xvalue * xvalue + half * opt.omega_y * opt.omega_y * yvalue * yvalue);
+    return i_unit * ( laplacian_x(wavefct,i,j,opt)/(two*lambda_x(opt)*lambda_x(opt) )  + laplacian_y(wavefct,i,j,opt)/(two*lambda_y(opt)*lambda_y(opt) ) );
    }
 
    inline complex<double> rte_interaction(ComplexGrid &wavefct,int i, int j, Options &opt)
@@ -158,7 +151,13 @@ class RK4
     complex<double> xvalue = complex<double>(x_axis[i],0);
     complex<double> yvalue = complex<double>(y_axis[j],0);
    return (lambda_x_dot(opt)/lambda_x(opt)) * x_expand(xvalue,opt) * grad_x(wavefct,i,j) + (lambda_y_dot(opt)/lambda_y(opt)) * y_expand(yvalue,opt) * grad_y(wavefct,i,j);
+   }
 
+   inline complex<double> rte_potential(int i, int j, Options &opt)
+   {
+    complex<double> xvalue = complex<double>(x_axis[i],0);
+    complex<double> yvalue = complex<double>(y_axis[j],0);
+    return i_unit * (half * opt.omega_x * opt.omega_x * x_expand(xvalue,opt) * x_expand(xvalue,opt) + half * opt.omega_y * opt.omega_y * y_expand(xvalue,opt) * y_expand(xvalue,opt));
    }
 
    inline complex<double> laplacian_x(ComplexGrid &wavefct,int i, int j, Options &opt)

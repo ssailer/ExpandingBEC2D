@@ -120,8 +120,9 @@ inline int read_cli_options(int argc, char** argv, Options &opt)
       // ("itp",po::value<int>(&opt.n_it_ITP),"Total runtime of the ITP-Step.")
       // ("rte",po::value<int>(&opt.n_it_RTE),"Total runtime of the RTE-Step.")
       // ("number,N",po::value<double>(&opt.N),"Number of particles.")
-      // ("expansion,e",po::value<complex<double> >(&opt.exp_factor),"Expansion Factor")
+      // ("expansion,e",po::value<double>(&exp_factor),"Expansion Factor")
       // ("interaction,g",po::value<double> (&opt.g),"Interaction Constant");
+
 
 	po::positional_options_description positionalOptions; 
 	positionalOptions.add("config", 1);

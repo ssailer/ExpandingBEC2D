@@ -12,10 +12,12 @@ Last Update: 22/07/13
 #include <string>
 #include <cmath>
 #include <complex>
-#include <complexgrid.h>
-#include <exp_RK4_tools.h>
-#include <bh3defaultgrid.h>
 #include <omp.h>
+
+#include <complexgrid.h>
+#include <bh3defaultgrid.h>
+
+#include <exp_RK4_tools.h>
 #include <main.h>
 #include <plot_with_mgl.h>
 // #include <typeinfo>
@@ -92,8 +94,12 @@ if(opt.startgrid[1]==true)
   int sigma_grid[2];
 	sigma_grid[0] = opt.grid[1]/6;
 	sigma_grid[1] = opt.grid[2]/6;
+	double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
-  run->pPsi = add_vortex_to_grid(run->pPsi,opt,sigma_grid);
+  run->pPsi = add_central_vortex(run->pPsi,opt);	
+  run->pPsi = add_circle_vortex(run->pPsi,opt,r/2.0,6);
+  run->pPsi = add_circle_vortex(run->pPsi,opt,r,12);
+
   cout << "Vortices added." << endl;
   opt.name = "VORT";
 
