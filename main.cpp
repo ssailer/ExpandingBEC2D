@@ -91,10 +91,11 @@ if(opt.startgrid[1]==true)
 	sigma_grid[1] = opt.grid[2]/6;
 	double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
-  run->pPsi = add_central_vortex(run->pPsi,opt);	
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r/4.0,6);
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r/2.0,12);
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r,24);
+  // run->pPsi = add_central_vortex(run->pPsi,opt);	
+  // run->pPsi = add_circle_vortex(run->pPsi,opt,r/4.0,6);
+  // run->pPsi = add_circle_vortex(run->pPsi,opt,r/2.0,12);
+  // run->pPsi = add_circle_vortex(run->pPsi,opt,r/1.5,24);
+	run->pPsi = add_circle_vortex(run->pPsi,opt,r,2);
 
   cout << "Vortices added." << endl;
   opt.name = "VORT";
@@ -124,6 +125,11 @@ printInitVar(opt);
 opt.name = "RTE";
 	
 run->rteToTime(opt,true);
+saveDataToHDF5(run->pPsi,opt);
+
+
+opt.name = "startgrid test";
+plotdatatopng(startgrid,opt);
 
 // Everything finished here, cleanup remaining	
 

@@ -4,6 +4,8 @@
 #include <libconfig.h++>
 #include <string>
 #include <cstring>
+#include <unistd.h>
+#include <stdio.h>
 
 #define SUCCESS 0; 
 #define ERROR_IN_COMMAND_LINE 1;
@@ -12,7 +14,7 @@
 
 using namespace libconfig;
 
-inline void saveDataToHDF5(ComplexGrid* &g, Options &opt)
+void saveDataToHDF5(ComplexGrid* &g, Options &opt)
 { 
 
   PathOptions options;
@@ -27,9 +29,10 @@ inline void saveDataToHDF5(ComplexGrid* &g, Options &opt)
   options.U = opt.g;
   options.N = opt.N;
   for(int i = 0; i<4;i++){ options.grid[i] = opt.grid[i]; }
-  options.g.resize(2);
+  options.g.resize(3);
   options.g[0] = real(opt.omega_x);
   options.g[1] = real(opt.omega_y);
+  options.g[2] = real(opt.t_abs);
 
   double time = opt.n_it_ITP1 + opt.n_it_ITP2;
 
@@ -38,15 +41,14 @@ inline void saveDataToHDF5(ComplexGrid* &g, Options &opt)
 	vector<ComplexGrid> vectork(1);
 	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
-	for(int i = 0; i < opt.grid[1];i++) for(int j = 0; j < opt.grid[2]; j++)
-	{vectork.at(0).at(0,i,j,0) = g->at(0,i,j,0);}
+	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ vectork.at(0).at(0,i,j,0) = g->at(0,i,j,0) ;}}
 
 	bf->append_snapshot(time, vectork);
 
   delete bf;
 }
 
-inline void readDataFromHDF5(ComplexGrid* &g,Options &opt)
+void readDataFromHDF5(ComplexGrid* &g,Options &opt)
 {
 	try{
 	PathOptions options;
@@ -60,17 +62,17 @@ inline void readDataFromHDF5(ComplexGrid* &g,Options &opt)
 	opt.g = options.U;
 	opt.N = options.N;
 	for(int i = 0; i<4; i++){ options.grid[i] = opt.grid[i]; }
-	options.g.resize(2);
+	options.g.resize(3);
 	opt.omega_x = complex<double>(options.g[0],0.0);
 	opt.omega_y = complex<double>(options.g[1],0.0);
+	opt.t_abs   = complex<double>(options.g[2],0.0);
 
 	vector<ComplexGrid> vectork(1);
 	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	bf->get_snapshot(time, vectork,0);
 
-	for(int i = 0; i < opt.grid[1];i++) for(int j = 0; j < opt.grid[2]; j++)
-	{g->at(0,i,j,0) = vectork.at(0).at(0,i,j,0);}
+	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ g->at(0,i,j,0) = vectork.at(0).at(0,i,j,0) ;}}
 	
 	delete bf;
 	}
@@ -83,37 +85,37 @@ inline void readDataFromHDF5(ComplexGrid* &g,Options &opt)
 
 }
 
-inline void printInitVar(Options &opt)
+void printInitVar(Options &opt)
 {
 	std::cout.setf(std::ios::boolalpha);
-	std::cout 	<< "Initial Values of this run:" << endl
-				<< "Used Configfile: \"" << opt.config << endl
-				<< "Gridsize in x direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
-				<< "Gridsize in y direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
-				<< "Expansion Factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-				<< "Initial Packet: " << opt.startgrid[0] << "\t" << "Vortices added: " << opt.startgrid[1] << endl
-				<< "RTE is having potential: " << opt.startgrid[2] << endl
-				<< "Runtime of the ITP1-Step: " << opt.n_it_ITP1 << endl
-				<< "Runtime of the ITP2-Step: " << opt.n_it_ITP2 << endl
-				<< "Runtime of the RTE-Step: " << opt.n_it_RTE << endl << endl;
+	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
+				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
+				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
+				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
+				<< "Initial gausspacket: " << opt.startgrid[0] << "\t" << "Vortices will be added: " << opt.startgrid[1] << endl
+				<< "RTE potential on: " << opt.startgrid[2] << endl
+				<< "Runtime of the ITP1: " << opt.n_it_ITP1 << " steps." << endl
+				<< "Runtime of the ITP2: " << opt.n_it_ITP2 << " steps." << endl
+				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
 }
 
-inline void set_workingdirectory(Options &opt)
+void set_workingdirectory(Options &opt)
 {
-struct stat wd_stat;
-if(stat(opt.workingdirectory,&wd_stat) == 0){
-	chdir(opt.workingdirectory.c_str()
-}else
-{
-	char* command;
-	sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
-	system(command);
-	chdir(opt.workingdirectory.c_str();
-}
+	cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
+	struct stat wd_stat;
+	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){
+		chdir(opt.workingdirectory.c_str());
+	}else
+	{
+		char* command;
+		sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
+		system(command);
+		chdir(opt.workingdirectory.c_str());
+	}
 }
 
 
-inline int read_cli_options(int argc, char** argv, Options &opt)
+int read_cli_options(int argc, char** argv, Options &opt)
 {
 	// Beginning of the options block
 
@@ -225,9 +227,9 @@ int read_config(int argc, char** argv, Options &opt)
 	cfg.lookupValue("RunOptions.workingfile",opt.workingfile);
 	// opt.name
 
-	opt.startgrid[0]         = root["RunOptions"]["startgrid0"];
-	opt.startgrid[1]         = root["RunOptions"]["startgrid1"];
-	opt.startgrid[2]		 = root["RunOptions"]["startgrid2"];
+	opt.startgrid[0]         = root["RunOptions"]["gaussian"];
+	opt.startgrid[1]         = root["RunOptions"]["vortices"];
+	opt.startgrid[2]		 = root["RunOptions"]["potential"];
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
