@@ -90,7 +90,7 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 
 	string filename = "OBDM_" + opt.name + ".png";
 
-	gr.SetSize(1800,1600);
+	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
 	gr.Title(opt.name.c_str());
 	// gr.Alpha(true);

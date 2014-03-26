@@ -95,7 +95,7 @@ if(opt.startgrid[1]==true)
   // run->pPsi = add_circle_vortex(run->pPsi,opt,r/4.0,6);
   // run->pPsi = add_circle_vortex(run->pPsi,opt,r/2.0,12);
   // run->pPsi = add_circle_vortex(run->pPsi,opt,r/1.5,24);
-	run->pPsi = add_circle_vortex(run->pPsi,opt,r,2);
+	run->pPsi = add_circle_vortex(run->pPsi,opt,r,1);
 
   cout << "Vortices added." << endl;
   opt.name = "VORT";
@@ -125,11 +125,6 @@ printInitVar(opt);
 opt.name = "RTE";
 	
 run->rteToTime(opt,true);
-saveDataToHDF5(run->pPsi,opt);
-
-
-opt.name = "startgrid test";
-plotdatatopng(startgrid,opt);
 
 // Everything finished here, cleanup remaining	
 

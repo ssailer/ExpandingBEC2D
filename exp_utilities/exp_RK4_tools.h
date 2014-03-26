@@ -153,7 +153,7 @@ class RK4
 
    inline complex<double> rte_potential(int i, int j, Options &opt)
    {
-    return i_unit * (half * opt.omega_x * opt.omega_x * complex<double>(x_axis[i] * x_axis[i],0.0)  + half * opt.omega_y * opt.omega_y * complex<double>(y_axis[j] * y_axis[j]),0.0);
+    return i_unit * (half * opt.omega_x * opt.omega_x * complex<double>((x_axis[i] * x_axis[i]),0.0)  + half * opt.omega_y * opt.omega_y * complex<double>((y_axis[j] * y_axis[j]),0.0));
    }
 
    inline complex<double> laplacian_x(ComplexGrid &wavefct,int i, int j, Options &opt)
