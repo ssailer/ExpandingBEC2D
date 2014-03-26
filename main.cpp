@@ -13,6 +13,7 @@ Last Update: 22/07/13
 #include <cmath>
 #include <complex>
 #include <omp.h>
+#include <sys/stat.h>
 
 #include <complexgrid.h>
 #include <bh3defaultgrid.h>
@@ -21,39 +22,33 @@ Last Update: 22/07/13
 #include <main.h>
 #include <plot_with_mgl.h>
 // #include <typeinfo>
-// #include <vortexcoordinates.h>
 
+#define SUCCESS 0; 
+#define ERROR_IN_COMMAND_LINE 1;
+#define ERROR_IN_CONFIG_FILE 2;
+#define ERROR_UNHANDLED_EXCEPTION 3;
 
 using namespace std;
-
-//>>>>>main program<<<<< 
 
 int main( int argc, char** argv) 
 {	
 try{ 
 
 Options opt;
-vector<double> snapshot_times;
 
 read_cli_options(argc,argv,opt);
 
 // Initialize all option variables
 
-if(readConfig(argc,argv,opt) == 1)
-{
-  cout << endl << "Could not initialize the values, abort." << endl;
-	return ERROR_UNHANDLED_EXCEPTION;
-}else
-{ 
-  cout << endl << "Run parameters initialized. Ready to start the computation." << endl << endl;
-}
+read_config(argc,argv,opt);
+
+set_workingdirectory(opt);
 
 // print the initial values of the run to the console
 
-
 if(opt.RTE_only == false)
 {
-printInitVar(opt); 
+	printInitVar(opt); 
 }
 		
 // Initialize the needed grid object and run object
@@ -97,8 +92,9 @@ if(opt.startgrid[1]==true)
 	double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
   run->pPsi = add_central_vortex(run->pPsi,opt);	
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r/2.0,6);
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r,12);
+  run->pPsi = add_circle_vortex(run->pPsi,opt,r/4.0,6);
+  run->pPsi = add_circle_vortex(run->pPsi,opt,r/2.0,12);
+  run->pPsi = add_circle_vortex(run->pPsi,opt,r,24);
 
   cout << "Vortices added." << endl;
   opt.name = "VORT";

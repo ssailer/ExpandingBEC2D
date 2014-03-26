@@ -5,14 +5,12 @@
 #include <string>
 #include <cstring>
 
-using namespace libconfig;
+#define SUCCESS 0; 
+#define ERROR_IN_COMMAND_LINE 1;
+#define ERROR_IN_CONFIG_FILE 2;
+#define ERROR_UNHANDLED_EXCEPTION 3;
 
-namespace // namespace for program options
-{ 
-  const size_t ERROR_IN_COMMAND_LINE = 1; 
-  const size_t SUCCESS = 0; 
-  const size_t ERROR_UNHANDLED_EXCEPTION = 2;  
-}
+using namespace libconfig;
 
 inline void saveDataToHDF5(ComplexGrid* &g, Options &opt)
 { 
@@ -100,6 +98,20 @@ inline void printInitVar(Options &opt)
 				<< "Runtime of the RTE-Step: " << opt.n_it_RTE << endl << endl;
 }
 
+inline void set_workingdirectory(Options &opt)
+{
+struct stat wd_stat;
+if(stat(opt.workingdirectory,&wd_stat) == 0){
+	chdir(opt.workingdirectory.c_str()
+}else
+{
+	char* command;
+	sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
+	system(command);
+	chdir(opt.workingdirectory.c_str();
+}
+}
+
 
 inline int read_cli_options(int argc, char** argv, Options &opt)
 {
@@ -164,13 +176,11 @@ inline int read_cli_options(int argc, char** argv, Options &opt)
 }
 
 
-int readConfig(int argc, char** argv, Options &opt)
+int read_config(int argc, char** argv, Options &opt)
 {
 	libconfig::Config cfg;
 
 	string sConfig = opt.config;
-	// const char* configfile = argv[1]; /// I would really like to use opt.config here.. ffs. WHY NOT? Something with the scope I bet.
-
 
 	  // Read the file. If there is an error, report it and exit.
 	  try
@@ -232,19 +242,9 @@ int readConfig(int argc, char** argv, Options &opt)
 	{
 	cerr << endl <<  "Something is wrong here with your config." << endl << endl;
 
-	return 1;
+	return ERROR_IN_CONFIG_FILE;
 
 	}
-
-	if(opt.RTE_only == false)
-	{
-	char* command;
-	sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
-    system(command);
-	}
-    chdir(opt.workingdirectory.c_str());
-
-
 
 	// runspecific Values, just initilized here
 	opt.scale_factor = complex<double>(0,0); //Scale factor
@@ -257,27 +257,11 @@ int readConfig(int argc, char** argv, Options &opt)
 	//opt.delta_t.resize(0);   
     //opt.delta_t[0]=0.2;
     //opt.delta_t[1]=0.4;
- 
-	
-	
-
 	// 	opt.klength[0] = 2.0;
 	// 	opt.klength[1] = 2.0;
 	// 	opt.klength[2] = 2.0;
-	
 
-
-		
-
-        /*		for(int i = 0; i < snapshot_times.size(); i++)///////////////////////was passiert hier/????????////====warum die snapshot zeit veraendern???========?????
-                {
-                int time_res = 1000;
-                snapshot_times[i] = (int) (500.*pow(10,((double)i/10.)));
-                    //cout<<snapshot_times[i]<<endl;
-                        //snapshot_times[i] = i*time_res + 25000;
-                        }*/
-
-     return 0;
+     return SUCCESS;
 	
 }
 
