@@ -180,7 +180,8 @@ void RK4::Neumann(ComplexGrid &k,ComplexGrid &PsiCopy,Options &opt){
 void RK4::computeK_ITP(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_ITP){ 
 	
 	ComplexGrid PsiCopy(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	PsiCopy = *pPsi;
+	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0);}}
+
 	
 	
 
@@ -317,7 +318,7 @@ void RK4::NeumannRTE(ComplexGrid &k,ComplexGrid &wavefct,Options &opt){
 void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
 
 	ComplexGrid PsiCopy(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	PsiCopy = *pPsi;
+	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0);}}
 
 	Dirichlet(pPsi,opt);
 	// PsiCopy = *pPsi;	

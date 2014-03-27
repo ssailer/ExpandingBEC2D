@@ -107,7 +107,7 @@ void set_workingdirectory(Options &opt)
 		chdir(opt.workingdirectory.c_str());
 	}else
 	{
-		char* command;
+		char command[256];
 		sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
 		system(command);
 		chdir(opt.workingdirectory.c_str());

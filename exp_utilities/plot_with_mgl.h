@@ -108,7 +108,6 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 	gr.Rotate(40,40);
 	gr.Box();
 	gr.Axis();
-	gr.Colorbar("_");
 	gr.Surf(data);
 
 
@@ -130,26 +129,15 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 	gr.Rotate(40,40);
 	gr.Box();
 	gr.Axis();
-	gr.Colorbar("_");
 
 	gr.Surf(data);
-
 
 	gr.SubPlot(2,2,3);
 	gr.Axis();
 	gr.Colorbar("_");
 	gr.Dens(data);
 
-
-
-
-	
-	
-
-	
-
-
-	gr.WritePNG(filename.c_str());
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 
 }
 

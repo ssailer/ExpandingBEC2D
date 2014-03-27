@@ -69,7 +69,6 @@ class RK4
    
     // StorageObjects for the wavefunction and its phase
     ComplexGrid* pPsi;
-    ComplexGrid* pPhase;
     
     // Coordinates
     vector<double> x_axis,y_axis; 
