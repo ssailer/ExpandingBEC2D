@@ -235,9 +235,14 @@ int read_config(int argc, char** argv, Options &opt)
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
 
+	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
+	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
+
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
-	opt.omega_y              = complex<double>(omega_y_realValue,0);	
+	opt.omega_y              = complex<double>(omega_y_realValue,0);
+	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
+	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
 	}
 	catch(const SettingNotFoundException &nfex)

@@ -87,10 +87,7 @@ void RK4::save_2D(ComplexGrid* &pPsi,Options &opt) //Function to save the data t
 			double y;
 			x = x_axis[i];
 			y = y_axis[j];
-// 			cout << "x = " << x << "  |  y = " << y << endl;
 		    save_obdm(x*real(lambda_x(opt)),y*real(lambda_y(opt)),norm(pPsi->at(0,i,j,0)),phase_save(pPsi,i,j));
-// 			cout << "lambda: " << real(lambda_x(opt.t_abs,opt)) << " |  return of lambda_x  "  << sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs) << "  Psi = " << pPsi->at(0,i,j,0) << "  |  NORM: " << norm(pPsi->at(0,i,j,0)) <<  "      ";
-// 			cout << x*real(lambda_x(opt.t_abs,opt)) << "  " << y*real(lambda_y(opt.t_abs,opt))  << "  " << norm(pPsi->at(0,i,j,0)) << "  " << phase_save(pPsi,i,j) << endl << endl;
 	        }
                 blank_line();
         }
@@ -348,8 +345,41 @@ void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 			for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[d](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
 		// DirichletK(k[d],opt);
 	}
+}
 
+void RK4::computeK_RTE_v2(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
 
+	ComplexGrid PsiCopy(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0);}}
+
+	Dirichlet(pPsi,opt);
+	// PsiCopy = *pPsi;	
+      
+    for(int d=0;d<4;d++)
+	{  
+		// NeumannRTE(k[d-1],PsiCopy,opt);
+
+		switch ( d ){
+			case 1:
+				opt.t_abs += half*t_RTE;
+				#pragma omp parallel for
+				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}				
+				break;
+			case 2:
+				#pragma omp parallel for	
+				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}
+				break;
+			case 3:
+				opt.t_abs += half*t_RTE;
+				#pragma omp parallel for
+				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+t_RTE*k[d-1](0,i,j,0) ;}}
+				break;
+		}
+
+		#pragma omp parallel for
+			for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[d](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
+		// DirichletK(k[d],opt);
+	}
 }
 
 void RK4::RTE(ComplexGrid* &pPsi,Options &opt)

@@ -27,6 +27,7 @@ typedef struct {
     // vector<double> g;
         // my own
     complex<double> omega_x,omega_y; // Frequency of the harmonic trap
+    complex<double> dispersion_x, dispersion_y; // dispersion relation for the expandion frame
     double min_x,min_y; // Coordinate boundaries
     complex<double> scale_factor; //Scale factor
     complex<double> t_abs; //Absolute time // remove from opt! put into the function, don't need it here
@@ -197,22 +198,22 @@ class RK4
 
    inline complex<double> lambda_x(Options &opt)
    {
-    return sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs);
+    return sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*opt.t_abs*opt.t_abs);
    }
 
    inline complex<double> lambda_x_dot(Options &opt)
    {
-   return (opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_x*opt.omega_x*opt.t_abs*opt.t_abs));
+   return (opt.exp_factor*opt.dispersion_x*opt.dispersion_x*opt.t_abs/sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*opt.t_abs*opt.t_abs));
    }
 
    inline complex<double> lambda_y(Options &opt)
    {
-   return sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs);
+   return sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*opt.t_abs*opt.t_abs);
    }
 
    inline complex<double> lambda_y_dot(Options &opt)
    {
-    return (opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.omega_y*opt.omega_y*opt.t_abs*opt.t_abs));
+    return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*opt.t_abs*opt.t_abs));
    }
 
 
