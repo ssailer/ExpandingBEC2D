@@ -231,7 +231,7 @@ void RK4::ITP(ComplexGrid* & pPsi, Options &opt)
 void RK4::itpToTime(Options &opt,bool plot)
 {
 	int counter_ITP = 0;
-	double start, end;
+	double start;
 
 	start = omp_get_wtime();
 	
@@ -282,108 +282,71 @@ void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 	}
 }
 
-void RK4::DirichletK(ComplexGrid &pPsi,Options &opt){
-
-        //Fixed (Dirichlet) boundary conditions for the RTE
-    for(int l=0;l<opt.grid[1];l++){ 
-	  pPsi.at(0,l,0,0)=zero;
-	  pPsi.at(0,l,opt.grid[2]-1,0)=zero;
-	}
-    for(int m=0;m<opt.grid[2];m++){
-	  pPsi.at(0,0,m,0)=zero;
-	  pPsi.at(0,opt.grid[1]-1,m,0)=zero;
-	}
-}
-
-void RK4::NeumannRTE(ComplexGrid &k,ComplexGrid &wavefct,Options &opt){
-      //Fixed derivative (Neumann) boundary conditions for the RTE
-
-
-    for(int i=0;i<opt.grid[1];i++) 
-    { 
-		k(0,i,0,0)  = - rte_interaction(wavefct,i,0,opt) * wavefct(0,i,0,0);
-		k(0,i,opt.grid[1]-1,0) = - rte_interaction(wavefct,opt.grid[1]-1,0,opt) * wavefct(0,opt.grid[1]-1,0,0);
-    }
-
-    for(int j=0;j<opt.grid[2];j++)
-    { 
-		k(0,0,j,0)= - rte_interaction(wavefct,0,j,opt) * wavefct(0,0,j,0);
-		k(0,opt.grid[2]-1,j,0)= - rte_interaction(wavefct,0,opt.grid[2]-1,opt) * wavefct(0,0,opt.grid[2]-1,0);
-    }
-}
-
 void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
 
+	int grid_x = opt.grid[1];
+	int grid_y = opt.grid[2];
+
 	ComplexGrid PsiCopy(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0);}}
+
+	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0);}}
 
 	Dirichlet(pPsi,opt);
-	// PsiCopy = *pPsi;	
-      
-    for(int d=0;d<4;d++)
-	{  
-		// NeumannRTE(k[d-1],PsiCopy,opt);
+	
+	complex<double> timestep[3];
+	timestep[0] = half * t_RTE;
+	timestep[1] = half * t_RTE;
+	timestep[2] = t_RTE;
 
-		switch ( d ){
-			case 1:
-				opt.t_abs += half*t_RTE;
-				#pragma omp parallel for
-				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}				
-				break;
-			case 2:
-				#pragma omp parallel for	
-				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}
-				break;
-			case 3:
-				opt.t_abs += half*t_RTE;
-				#pragma omp parallel for
-				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+t_RTE*k[d-1](0,i,j,0) ;}}
-				break;
-		}
+	#pragma omp parallel for
+	for(int i=1;i<grid_x-1;i++){for(int j=1;j<grid_y-1;j++){ k[0](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
+
+	opt.t_abs += half * t_RTE;
+      
+    for(int d=0;d<3;d++)
+	{  
+
+		if(d == 2){opt.t_abs += half * t_RTE;}
 
 		#pragma omp parallel for
-			for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[d](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
-		// DirichletK(k[d],opt);
-	}
-}
+		for(int i=0;i<grid_x;i++){for(int j=0;j<grid_y;j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0) + timestep[d]*k[d](0,i,j,0) ;}}
 
-void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
-{	
-	complex<double> t_RTE(opt.RTE_step,0); //Time-step size for RTE
-	vector<ComplexGrid> k(4);
-	
-	for(int d=0;d<4;d++){k[d] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-		for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ k[d](0,i,j,0) = zero; }}
+		#pragma omp parallel for
+		for(int i=1;i<grid_x-1;i++){for(int j=1;j<grid_y-1;j++){ k[d+1](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
 
 	}
-	
-	computeK_RTE(pPsi,k,opt,t_RTE);
-
-	TimeStepRK4(pPsi,k,opt,t_RTE);
-
 }
 
 // Propagation Wrapper Functions
 
 void RK4::rteToTime(Options &opt, bool plot)
 {
-	int counter_RTE = 0;
 	double start;
+	complex<double> t_RTE(opt.RTE_step,0); //Time-step size for RTE
+
+
+	vector<ComplexGrid> k(4);	// kvectors for RK4
+	for(int d=0;d<4;d++){
+		k[d] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+		for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ k[d](0,i,j,0) = zero; }}
+	}
+
+
 
 	start = omp_get_wtime();
 
 	cout << " " << opt.name << endl;
 
-	for(int k=0;k<opt.n_it_RTE;k++)
+	for(int m = 1; m <= opt.n_it_RTE; m++)
 	{
-		RTE(pPsi,opt);
+		computeK_RTE(pPsi,k,opt,t_RTE);
 
-  		counter_RTE+=1;
+		TimeStepRK4(pPsi,k,opt,t_RTE);
+
   		opt.min_x = x_expand(opt.grid[1]-1,opt);
   		opt.min_y = y_expand(opt.grid[2]-1,opt);
 
-  		cli_plot(opt,"RTE",counter_RTE,opt.n_it_RTE,start,plot);
+  		cli_plot(opt,"RTE",m,opt.n_it_RTE,start,plot);
 
 	}
 

@@ -78,7 +78,6 @@ class RK4
 
     void TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,complex<double> &t);
     void ITP(ComplexGrid* & pPsi,Options &opt);
-    void RTE(ComplexGrid* & pPsi,Options &opt);
 
     // double gauss(double x,double y); //A simple Gaussian
    
@@ -97,10 +96,8 @@ class RK4
    
     // Hilfsfunktionen fuer RTE
 
-    void NeumannRTE(ComplexGrid &k,ComplexGrid &wavefct,Options &opt);
-    void Dirichlet(ComplexGrid* &pPsi,Options &opt);
-    void DirichletK(ComplexGrid &pPsi,Options &opt);
 
+    void Dirichlet(ComplexGrid* &pPsi,Options &opt);
     void computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE);
    
     complex<double> function_RTE(ComplexGrid &wavefct,int i, int j, Options &opt);
