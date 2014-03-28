@@ -347,53 +347,6 @@ void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 	}
 }
 
-/*void RK4::computeK_RTE_v2(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
-
-	ComplexGrid PsiCopy(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0);}}
-
-	Dirichlet(pPsi,opt);
-	// PsiCopy = *pPsi;	
-      
-    for(int d=0;d<4;d++)
-	{  
-		// NeumannRTE(k[d-1],PsiCopy,opt);
-
-		switch ( d ){
-			case 1:
-				opt.t_abs += half*t_RTE;
-				#pragma omp parallel for
-				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}				
-				break;
-			case 2:
-				#pragma omp parallel for	
-				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+half*t_RTE*k[d-1](0,i,j,0) ;}}
-				break;
-			case 3:
-				opt.t_abs += half*t_RTE;
-				#pragma omp parallel for
-				for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ PsiCopy(0,i,j,0)=pPsi->at(0,i,j,0)+t_RTE*k[d-1](0,i,j,0) ;}}
-				break;
-		}
-
-		#pragma omp parallel for
-			for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){ k[d](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
-		// DirichletK(k[d],opt);
-	}
-	
-	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){      k[0] = function_RTE(pPsi)    ;}}
-
-	opt.t_abs += half * t_rte;
-	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){      k[1] = function_RTE(pPsi + half * t_RTE * k[0])
-
-	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){      k[2] = function_RTE(pPsi + half * t_RTE * k[1])
-
-	opt.t_abs += half * t_rte;
-	for(int i=1;i<opt.grid[1]-1;i++){for(int j=1;j<opt.grid[2]-1;j++){      k[3] = function_RTE(pPsi + t_RTE * k[2])
-
-
-}*/
-
 void RK4::RTE(ComplexGrid* &pPsi,Options &opt)
 {	
 	complex<double> t_RTE(opt.RTE_step,0); //Time-step size for RTE
