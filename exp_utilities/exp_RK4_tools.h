@@ -213,6 +213,19 @@ class RK4
     return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*opt.t_abs*opt.t_abs));
    }
 
+   vector<complex<double>> l_x, l_y, l_x_dot, l_y_dot;
+
+   void compute_lambdas(Options &opt, complex<double> t_STEP)
+   {
+      l_x.resize(opt.n_it_RTE); l_y.resize(opt.n_it_RTE);
+      l_x_dot.resize(opt.n_it_RTE); l_y_dot.resize(opt.n_it_RTE);
+
+      for(int i = 0; i<opt.n_it_RTE; i++)
+      {
+        l_x[i] = sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*opt.t_abs*opt.t_abs);
+      }
+   }
+
 
       
 
