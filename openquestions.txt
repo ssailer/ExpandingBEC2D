@@ -11,12 +11,6 @@
 	/home/nhrjr/projects/expandingvortexgas2d/utilities/bh3binaryfile.cpp:201:72: warning: narrowing conversion of ‘((((((Bh3BinaryFile*)this)->Bh3BinaryFile::options.PathOptions::grid[0] * 2) * ((Bh3BinaryFile*)this)->Bh3BinaryFile::options.PathOptions::grid[1]) * ((Bh3BinaryFile*)this)->Bh3BinaryFile::options.PathOptions::grid[2]) * ((Bh3BinaryFile*)this)->Bh3BinaryFile::options.PathOptions::grid[3])’ from ‘int’ to ‘hsize_t {aka long long unsigned int}’ inside { } [-Wnarrowing]
 	   hsize_t dimsf[1] = {2*options.grid[0]*options.grid[1]*options.grid[2]*options.grid[3]}; //dimensions for whole grid
 
-3.   inline complex<double> rte_potential(int i, int j, Options &opt)
-   {
-    return i_unit * (half * opt.omega_x * opt.omega_x * complex<double>((x_axis[i] * x_axis[i]),0.0)  + half * opt.omega_y * opt.omega_y * complex<double>((y_axis[j] * y_axis[j]),0.0));
-   }
-
-   should I use x_expand instead of x_axis[i]?
-
-4. general optimizing questions like if clauses in for loops etc.?
+3. general optimizing questions like if clauses in for loops etc.? (vectorization, etc)
+	How does the ComplexGrid work with V, precompute stuff, etc?
 		

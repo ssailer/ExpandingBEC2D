@@ -331,8 +331,6 @@ void RK4::rteToTime(Options &opt, bool plot)
 		for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ k[d](0,i,j,0) = zero; }}
 	}
 
-
-
 	start = omp_get_wtime();
 
 	cout << " " << opt.name << endl;
