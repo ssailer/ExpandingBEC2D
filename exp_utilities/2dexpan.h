@@ -23,6 +23,7 @@ int openDataFiles_obdm(string name, int iterate, int time) //This function can b
   
         fileobdm.open(ding);
         fileobdm.setf(ios_base::scientific);
+        return 0;
 }
 
 int closeDataFiles_obdm(void)

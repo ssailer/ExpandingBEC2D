@@ -29,7 +29,54 @@ RK4::RK4(ComplexGrid* &c,Options &opt)
   	for(int i=0;i<opt.grid[1];i++){x_axis[i]=-opt.min_x+i*real(h_x);}
   	for(int j=0;j<opt.grid[2];j++){y_axis[j]=-opt.min_y+j*real(h_y);}
   	pi = M_PI;
+  	dispersion_x = opt.dispersion_x;
+  	dispersion_y = opt.dispersion_y;
+  	exp_factor = opt.exp_factor;
+  	g = opt.g;
  	zero=complex<double>(0,0),half=complex<double>(0.5,0),one=complex<double>(1,0),two=complex<double>(2,0),four=complex<double>(4,0),six=complex<double>(6,0),i_unit=complex<double>(0,1);
+
+cout << "jetzt resize" << endl;
+X.resize(opt.grid[1],opt.grid[2]);
+Y.resize(opt.grid[1],opt.grid[2]);  
+L.resize(opt.grid[1],opt.grid[2]);  
+// G(opt.grid[1],opt.grid[2]);  
+X.reserve(opt.grid[1]);
+Y.reserve(opt.grid[2]);
+L.reserve(3 * (opt.grid[1]-2));
+
+cout << "bishier und nicht" << endl;
+// G.reserve(2 * (opt.grid[1]-2));
+ 	for(int i = 0; i<opt.grid[1];i++)
+	{
+		X.insert(i,i) = complex<double>(x_axis[i],0.0);
+	}
+	X.makeCompressed();
+
+	cout << "x done" << endl;
+
+	for(int j = 0; j<opt.grid[2];j++)
+	{
+		Y.insert(j,j) = complex<double>(y_axis[j],0.0);
+	}
+	Y.makeCompressed();
+
+	cout << "y done" << endl;
+
+	for(int i = 1;i<opt.grid[1]-1;i++){
+	L.insert(i,i-1) = complex<double>(1.0,0.0);
+	L.insert(i,i) = complex<double>(-2.0,0.0);
+	L.insert(i,i+1) = complex<double>(1.0,0.0);
+	}
+	L.makeCompressed();
+
+	cout << "L done" << endl;
+
+	for(int i = 1;i<opt.grid[1]-1;i++){
+	G(i,i-1) = complex<double>(-1.0,0.0);
+	G(i,i+1) = complex<double>(1.0,0.0);
+	}
+	// G.makeCompressed();
+	cout << "G done" << endl;
 }
 
 RK4::~RK4(){}
@@ -315,6 +362,68 @@ void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 		for(int i=1;i<grid_x-1;i++){for(int j=1;j<grid_y-1;j++){ k[d+1](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
 
 	}
+}
+
+void RK4::functionEigen_RTE(Eigen::MatrixXcd& k,Eigen::MatrixXcd& mPsiCopy,complex<double>& t)
+{
+	k.noalias() += complex<double>(0.0,0.5) * (L * mPsiCopy / ( l_x(t) * l_x(t) ) + mPsiCopy * L.transpose() / (l_y(t) * l_y(t) ) );
+	k.noalias() += ( (l_x_dot(t) / l_x(t)) * X * ( G * mPsiCopy) );
+	k.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * G.transpose() ) * Y );
+	k.noalias() -= complex<double>(0.0, g ) * (mPsiCopy.adjoint() * mPsiCopy) * mPsiCopy;
+}
+
+void RK4::computeWithEigen_RTE(Options &opt, bool plot)
+{	
+	int grid_x = opt.grid[1];
+	int grid_y = opt.grid[2];
+	complex<double> t(0.0,0.0);
+	double start;
+	complex<double> t_RTE(opt.RTE_step,0); 
+
+
+	Eigen::MatrixXcd mPsi,mPsiCopy;
+	Eigen::MatrixXcd k0,k1,k2,k3;
+	
+	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ mPsiCopy(i,j) = pPsi->at(0,i,j,0);}}
+	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ mPsi(i,j) = pPsi->at(0,i,j,0);}}
+
+
+
+	start = omp_get_wtime();
+
+	cout << " " << opt.name << endl;
+
+for(int m = 1; m <= opt.n_it_RTE; m++)
+{
+
+	functionEigen_RTE(k0,mPsiCopy,t);
+
+	t += half * t_RTE;
+	mPsiCopy = mPsi + half * t_RTE * k0;
+	functionEigen_RTE(k1,mPsiCopy,t);
+
+	mPsiCopy = mPsi + half * t_RTE * k1;
+	functionEigen_RTE(k2,mPsiCopy,t);
+
+	t += half * t_RTE;
+	mPsiCopy = mPsi + t_RTE * k2;
+	functionEigen_RTE(k3,mPsiCopy,t);
+
+	mPsi += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
+
+	// opt.min_x = x_expand(opt.grid[1]-1,opt);
+  	// opt.min_y = y_expand(opt.grid[2]-1,opt);
+
+  	// cli_plot(opt,"RTE",m,opt.n_it_RTE,start,plot);
+
+}
+	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ pPsi->at(0,i,j,0) = mPsi(i,j) ;}}
+	cli_plot(opt,"RTE",100,opt.n_it_RTE,start,plot);
+
+cout << "\n";
+
+
+	
 }
 
 // Propagation Wrapper Functions

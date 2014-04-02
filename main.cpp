@@ -50,7 +50,7 @@ if(opt.RTE_only == false)
 {
 	printInitVar(opt); 
 }
-		
+
 // Initialize the needed grid object and run object
 
 ComplexGrid* startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -124,7 +124,7 @@ printInitVar(opt);
 //====> Real Time Expansion (RTE)
 opt.name = "RTE";
 	
-run->rteToTime(opt,true);
+run->computeWithEigen_RTE(opt,true);
 
 // Everything finished here, cleanup remaining	
 

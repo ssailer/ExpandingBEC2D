@@ -1,6 +1,10 @@
 #ifndef EXP_RK4_TOOLS_H__
 #define EXP_RK4_TOOLS_H__
 
+#define EIGEN_VECTORIZE
+#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
+// #define EIGEN_NO_AUTOMATIC_RESIZING // to find bugs etc.. maybe turn off, when done with coding
+
 #include <iostream>
 #include <complex>
 #include <math.h>
@@ -10,6 +14,12 @@
 #include <omp.h>
 #include <string>
 #include <iomanip>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Sparse>
+
+
+
+
 
 
 
@@ -64,6 +74,8 @@ class RK4
     // Propagatoren
     void itpToTime(Options &opt,bool plot);
     void rteToTime(Options &opt,bool plot); 
+    void computeWithEigen_RTE(Options &opt, bool plot);
+    void functionEigen_RTE(Eigen::MatrixXcd& k,Eigen::MatrixXcd& mPsiCopy,complex<double>& t);
     
     // save the Grid to file
     void save_2D(ComplexGrid* & pPsi,Options &opt);
@@ -213,18 +225,49 @@ class RK4
     return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*opt.t_abs/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*opt.t_abs*opt.t_abs));
    }
 
-   vector<complex<double>> l_x, l_y, l_x_dot, l_y_dot;
+   complex<double> exp_factor, dispersion_x, dispersion_y;
+   double g;
 
-   void compute_lambdas(Options &opt, complex<double> t_STEP)
+
+  inline complex<double> l_x(complex<double>& t)
    {
-      l_x.resize(opt.n_it_RTE); l_y.resize(opt.n_it_RTE);
-      l_x_dot.resize(opt.n_it_RTE); l_y_dot.resize(opt.n_it_RTE);
-
-      for(int i = 0; i<opt.n_it_RTE; i++)
-      {
-        l_x[i] = sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*opt.t_abs*opt.t_abs);
-      }
+    return sqrt(one+exp_factor*dispersion_x*dispersion_x*t*t);
    }
+
+   inline complex<double> l_x_dot(complex<double>& t)
+   {
+   return (exp_factor*dispersion_x*dispersion_x*t/sqrt(one+exp_factor*dispersion_x*dispersion_x*t*t));
+   }
+
+   inline complex<double> l_y(complex<double>& t)
+   {
+   return sqrt(one+exp_factor*dispersion_y*dispersion_y*t*t);
+   }
+
+   inline complex<double> l_y_dot(complex<double>& t)
+   {
+    return (exp_factor*dispersion_y*dispersion_y*t/sqrt(one+exp_factor*dispersion_y*dispersion_y*t*t));
+   }
+
+
+   Eigen::SparseMatrix<std::complex<double>,1,std::ptrdiff_t >  L,X,Y;
+   Eigen::MatrixXcd G;
+
+
+
+
+   // vector<complex<double>> l_x, l_y, l_x_dot, l_y_dot;
+
+   // void compute_lambdas(Options &opt, complex<double> t_STEP)
+   // {
+   //    l_x.resize(opt.n_it_RTE); l_y.resize(opt.n_it_RTE);
+   //    l_x_dot.resize(opt.n_it_RTE); l_y_dot.resize(opt.n_it_RTE);
+
+   //    for(int i = 0; i<opt.n_it_RTE; i++)
+   //    {
+   //      l_x[i] = sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*opt.t_abs*opt.t_abs);
+   //    }
+   // }
 
 
       
