@@ -2,8 +2,7 @@
 #define EXP_RK4_TOOLS_H__
 
 #define EIGEN_VECTORIZE
-#define EIGEN_INITIALIZE_MATRICES_BY_ZERO
-// #define EIGEN_NO_AUTOMATIC_RESIZING // to find bugs etc.. maybe turn off, when done with coding
+#define EIGEN_NO_DEBUG
 
 #include <iostream>
 #include <complex>
@@ -125,7 +124,7 @@ class RK4
     // complex<double> y_expand(complex<double> a,Options &opt);
 
         // Hilfsfunktionen 
-    void cli_plot(Options &opt,string name,int counter_state, int counter_max, double start,bool plot);  
+    void cli_plot(Eigen::MatrixXcd& mPsi, Options &opt,string name,int counter_state, int counter_max, double start,bool plot);  
     double phase_save(ComplexGrid* & pPsi,int a,int b);
     
     // Hilfsvariablen
@@ -250,8 +249,8 @@ class RK4
    }
 
 
-   Eigen::SparseMatrix<std::complex<double>,1,std::ptrdiff_t >  L,X,Y;
-   Eigen::MatrixXcd G;
+   // Eigen::SparseMatrix<std::complex<double>,1,std::ptrdiff_t >  L,X,Y;
+   // Eigen::MatrixXcd L,X,Y,G;
 
 
 

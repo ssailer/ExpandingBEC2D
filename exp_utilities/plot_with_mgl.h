@@ -10,6 +10,8 @@
 #include <vector>
 #include <omp.h>
 #include <cstring>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Sparse>
 
 #define dual std::complex<double>
 
@@ -80,6 +82,87 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 		k = i+n*j;
 		// data1 = g->at(0,i,j,0);
 		data.a[k] = g->at(0,i,j,0);
+	}
+
+	mglGraph gr;
+
+		
+		// gr.Light(0,true);
+		// gr.Alpha(true);
+
+	string filename = "OBDM_" + opt.name + ".png";
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(opt.name.c_str());
+	// gr.Alpha(true);
+
+
+
+	data.use_abs=false;
+	gr.SetRange('x',-opt.min_x,opt.min_x);
+	gr.SetRange('y',-opt.min_y,opt.min_y);
+	gr.SetRange('z',data);
+	gr.SetRange('c',data);
+
+	gr.SubPlot(2,2,0);
+
+	gr.Rotate(40,40);
+	gr.Box();
+	gr.Axis();
+	gr.Surf(data);
+
+
+	gr.SubPlot(2,2,2);
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(data);
+
+
+	data.use_abs=true;
+	gr.SetRange('x',-opt.min_x,opt.min_x);
+	gr.SetRange('y',-opt.min_y,opt.min_y);
+	gr.SetRange('z',data);
+	gr.SetRange('c',data);
+
+	gr.SubPlot(2,2,1);
+
+	// gr.Light(true);
+	gr.Rotate(40,40);
+	gr.Box();
+	gr.Axis();
+
+	gr.Surf(data);
+
+	gr.SubPlot(2,2,3);
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(data);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
+inline void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt)
+{
+	
+
+	int n = opt.grid[1];
+	int m = opt.grid[2];
+
+	mglComplex data(n,m);
+
+	int i,j,k;
+
+	// data.Create(n,m);
+
+	// complex<double> data1;
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		k = i+n*j;
+		// data1 = g->at(0,i,j,0);
+		data.a[k] = mPsi(i,j);
 	}
 
 	mglGraph gr;

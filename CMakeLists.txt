@@ -14,7 +14,7 @@ set(SOURCES main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/exp_RK4_tools.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/realgrid.cpp
 					 ${CMAKE_SOURCE_DIR}/startgrids/bh3defaultgrid.cpp)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++0x -Wall -fopenmp -O3 -march=native -ftree-vectorizer-verbose=1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++0x -Wall -fopenmp -Ofast -funroll-loops -march=native -ftree-vectorizer-verbose=1")
 
 add_executable(main ${SOURCES})
 
