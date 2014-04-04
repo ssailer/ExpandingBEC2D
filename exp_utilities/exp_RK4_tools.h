@@ -75,6 +75,10 @@ class RK4
     void rteToTime(Options &opt,bool plot); 
     void computeWithEigen_RTE(Options &opt, bool plot);
     void functionEigen_RTE(Eigen::MatrixXcd& k,Eigen::MatrixXcd& mPsiCopy,complex<double>& t);
+
+    void functionEigen2_RTE(Options &opt, bool plot);
+
+  void compute_the_eigen_k(Eigen::MatrixXcd &wavefctcp,Eigen::MatrixXcd &k,Eigen::VectorXcd &X,Eigen::VectorXcd &Y,int &t,int grid_x,int grid_y);
     
     // save the Grid to file
     void save_2D(ComplexGrid* & pPsi,Options &opt);
@@ -247,6 +251,10 @@ class RK4
    {
     return (exp_factor*dispersion_y*dispersion_y*t/sqrt(one+exp_factor*dispersion_y*dispersion_y*t*t));
    }
+
+      complex<double> t_RTE;
+         complex<double> tmp;
+   vector<complex<double>> lambda_x_squared,lambda_y_squared,lambda_dot_x,lambda_dot_y;
 
 
    // Eigen::SparseMatrix<std::complex<double>,1,std::ptrdiff_t >  L,X,Y;

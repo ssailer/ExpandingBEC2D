@@ -34,6 +34,33 @@ RK4::RK4(ComplexGrid* &c,Options &opt)
   	exp_factor = opt.exp_factor;
   	g = opt.g;
  	zero=complex<double>(0,0),half=complex<double>(0.5,0),one=complex<double>(1,0),two=complex<double>(2,0),four=complex<double>(4,0),six=complex<double>(6,0),i_unit=complex<double>(0,1);
+ 	t_RTE = complex<double>(opt.RTE_step,0);
+
+ 	//compute lambda_squareds
+
+   lambda_x_squared = vector<complex<double>>(2 * opt.n_it_RTE);
+   lambda_y_squared = vector<complex<double>>(2 * opt.n_it_RTE);
+   lambda_dot_y = vector<complex<double>>(2 * opt.n_it_RTE);
+   lambda_dot_x = vector<complex<double>>(2 * opt.n_it_RTE);
+
+
+   for(int t = 0; t< ( 2* opt.n_it_RTE); t++)
+   {
+   	tmp = half * complex<double>(t,0.0) * t_RTE;
+   	lambda_x_squared[t] = l_x(tmp) * l_x(tmp);
+   	lambda_y_squared[t] = l_y(tmp) * l_y(tmp);
+   	lambda_dot_x[t] = l_x_dot(tmp) / l_x(tmp);
+   	lambda_dot_y[t] = l_y_dot(tmp) / l_y(tmp);
+   	
+  //  	if(t%((2*opt.n_it_RTE)/100)==0)
+		// {
+		// cout << lambda_x_squared[t] << endl;;
+		// }
+
+
+   }
+
+
 
 
 // // X.resize(opt.grid[1],opt.grid[2]);
@@ -282,10 +309,10 @@ void RK4::ITP(ComplexGrid* & pPsi, Options &opt)
 
 void RK4::itpToTime(Options &opt,bool plot)
 {
-	int counter_ITP = 0;
-	double start;
+	// int counter_ITP = 0;
+	// double start;
 
-	start = omp_get_wtime();
+	// start = omp_get_wtime();
 	
 	cout << " " << opt.name << endl;
 	string tmp = opt.name;
@@ -543,6 +570,130 @@ cout << "\n";
 
 	
 }
+
+
+
+
+void RK4::functionEigen2_RTE(Options &opt, bool plot)
+{
+	int grid_x = opt.grid[1];
+	int grid_y = opt.grid[2];
+	double start;
+
+	Eigen::MatrixXcd wavefct(grid_x,grid_y);
+	Eigen::MatrixXcd wavefctcp(grid_x,grid_y);
+	Eigen::MatrixXcd k0 = Eigen::MatrixXcd::Zero(grid_x,grid_y);
+	Eigen::MatrixXcd k1 = Eigen::MatrixXcd::Zero(grid_x,grid_y);
+	Eigen::MatrixXcd k2 = Eigen::MatrixXcd::Zero(grid_x,grid_y);
+	Eigen::MatrixXcd k3 = Eigen::MatrixXcd::Zero(grid_x,grid_y);
+	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ wavefct(i,j) = pPsi->at(0,i,j,0);}}
+	
+	Eigen::VectorXcd X(opt.grid[1]), Y(opt.grid[2]);
+	for(int i = 0;i<grid_x;i++){
+		X(i) = complex<double>(x_axis[i],0.0);
+	}
+	for(int j = 0;j<grid_y;j++){
+		Y(j) = complex<double>(y_axis[j],0.0);
+	}
+
+	start = omp_get_wtime();
+
+	cout << " " << opt.name << endl;
+
+	int t = 0;
+	//start loop here
+	for(int m = 1; m <= opt.n_it_RTE; m++){
+
+		wavefctcp = wavefct;
+
+		// if(m%((opt.n_it_RTE)/100)==0)
+		// {	
+		// 	cout << "  " << m << " wavefct " << wavefct.block<1,4>(grid_x/2,grid_y/2) << endl;
+		// 	cout << "  " << m << " norm " << wavefct.norm() << endl << endl;
+		// }
+
+		compute_the_eigen_k(wavefctcp,k0,X,Y,t,grid_x,grid_y);
+		wavefctcp = wavefct + half * t_RTE * k0;
+
+		t += 1;
+		compute_the_eigen_k(wavefctcp,k1,X,Y,t,grid_x,grid_y);
+		wavefctcp = wavefct + half * t_RTE * k1;
+
+		compute_the_eigen_k(wavefctcp,k2,X,Y,t,grid_x,grid_y);		
+		wavefctcp = wavefct + t_RTE * k2;
+
+		t += 1;
+		compute_the_eigen_k(wavefctcp,k3,X,Y,t,grid_x,grid_y);
+
+		wavefct += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
+
+		// if(m%((opt.n_it_RTE)/100)==0)
+		// {
+		// 	cout << "1 " << k0.block<1,4>(grid_x/2,grid_y/2) << endl
+		// 		 << "2 " << k1.block<1,4>(grid_x/2,grid_y/2) << endl
+		// 		 << "3 " << k2.block<1,4>(grid_x/2,grid_y/2) << endl
+		// 		 << "4 " << k3.block<1,4>(grid_x/2,grid_y/2) << endl << endl
+		// 		 << t_RTE/six << endl;
+		// }
+
+		cli_plot(wavefct,opt,"RTE",m,opt.n_it_RTE,start,plot);
+
+	}
+
+cout << "\n";
+
+}
+
+	void RK4::compute_the_eigen_k(Eigen::MatrixXcd &wavefctcp,Eigen::MatrixXcd &k,Eigen::VectorXcd &X,Eigen::VectorXcd &Y,int &t,int grid_x,int grid_y)
+	{
+	Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> wavefctcpX(grid_x,grid_y);
+	Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> wavefctcpY(grid_x,grid_y);
+
+
+	//laplacian
+	wavefctcpX = complex<double>(0.0,1.0) * wavefctcp / (two * h_x * h_x * lambda_x_squared[t]);
+	wavefctcpY = complex<double>(0.0,1.0) * wavefctcp / (two * h_y * h_y * lambda_y_squared[t]);
+
+	#pragma omp parallel for
+	for(int j = 0;j<grid_y;j++){
+	for(int i = 1;i<grid_x-1;i++){
+	k(i,j) = wavefctcpX(i-1,j) - two * wavefctcpX(i,j) + wavefctcpX(i+1,j);
+	}}
+	#pragma omp parallel for
+	for(int i = 0;i<grid_x;i++){
+	for(int j = 1;j<grid_y-1;j++){
+	k(i,j) += wavefctcpY(i,j-1) - two * wavefctcpY(i,j) + wavefctcpY(i,j+1);
+	}}
+	//laplacian end
+
+	// gradient
+
+	// wavefctcpX = wavefctcp * lambda_dot_x[t] / (two * h_x );
+	// wavefctcpY = wavefctcp * lambda_dot_y[t] / (two * h_y );
+
+	// #pragma omp parallel for
+	// for(int j = 0;j<grid_y;j++){ wavefctcpX.col(j).array() *= X.array(); }
+	// #pragma omp parallel for
+	// for(int i = 0;i<grid_x;i++){ wavefctcpY.row(i).array() *= Y.array(); }
+
+	// #pragma omp parallel for
+	// for(int j = 0;j<grid_y;j++){
+	// for(int i = 1;i<grid_x-1;i++){
+	// k(i,j) += wavefctcpX(i+1,j) - wavefctcpX(i-1,j);
+	// }}
+	// #pragma omp parallel for
+	// for(int i = 0;i<grid_x;i++){
+	// for(int j = 1;j<grid_y-1;j++){
+	// k(i,j) += wavefctcpY(i,j+1) - wavefctcpY(i,j-1);
+	// }}
+	// // gradient end
+
+	//interaction
+	// k.array() -= complex<double>(0.0,g) * ( wavefctcp.adjoint().array() * wavefctcp.array() ) * wavefctcp.array();
+
+	//interaction end
+	}
+
 
 // Propagation Wrapper Functions
 
