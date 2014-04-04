@@ -1,0 +1,1284 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"grid",
+				"grid_x"
+			],
+			[
+				"G",
+				"G"
+			],
+			[
+				"j",
+				"j"
+			],
+			[
+				"reser",
+				"reserve"
+			],
+			[
+				"grid_y",
+				"grid_y"
+			],
+			[
+				"dio",
+				"dispersion_y"
+			],
+			[
+				"mPsi",
+				"mPsiCopy"
+			],
+			[
+				"function",
+				"functionEigen_RTE"
+			],
+			[
+				"com",
+				"computeK_RTE"
+			],
+			[
+				"date",
+				"datewidget"
+			],
+			[
+				"right",
+				"right_layout"
+			],
+			[
+				"layout",
+				"layoutbox"
+			],
+			[
+				"left",
+				"left_layout"
+			],
+			[
+				"n",
+				"n_it_RTE"
+			],
+			[
+				"time",
+				"timestep"
+			],
+			[
+				"x_axis",
+				"x_axis_expand"
+			],
+			[
+				"dis",
+				"dispersion_y"
+			],
+			[
+				"disper",
+				"dispersion_y"
+			],
+			[
+				"dispersion",
+				"dispersion_x"
+			],
+			[
+				"y_",
+				"y_axis"
+			],
+			[
+				"x_",
+				"x_axis"
+			],
+			[
+				"min",
+				"min_y"
+			],
+			[
+				"work",
+				"workingdirectory"
+			],
+			[
+				"add",
+				"add_circle_vortex"
+			],
+			[
+				"ERROR",
+				"ERROR_IN_CONFIG_FILE"
+			],
+			[
+				"Comp",
+				"ComplexGrid"
+			],
+			[
+				"x",
+				"x_expand"
+			],
+			[
+				"omega",
+				"omega_x"
+			],
+			[
+				"wor",
+				"workingfile"
+			],
+			[
+				"RTE",
+				"RTE_only"
+			],
+			[
+				"print",
+				"printInitVar"
+			],
+			[
+				"opt",
+				"options"
+			],
+			[
+				"arg",
+				"argv"
+			],
+			[
+				"itP",
+				"itp_kinetic"
+			],
+			[
+				"itp_",
+				"itp_kinetic"
+			],
+			[
+				"save",
+				"saveDataToHDF5"
+			],
+			[
+				"n_",
+				"n_it_RTE"
+			],
+			[
+				"counter",
+				"counter_max"
+			],
+			[
+				"Nueman",
+				"NeumannRTE"
+			],
+			[
+				"w",
+				"workingdirectory"
+			],
+			[
+				"lambda",
+				"lambda_x"
+			],
+			[
+				"lab",
+				"lambda_x"
+			],
+			[
+				"lap",
+				"laplacian_x"
+			],
+			[
+				"ome",
+				"omega_x"
+			],
+			[
+				"vector",
+				"vectork"
+			],
+			[
+				"use",
+				"use_abs"
+			],
+			[
+				"n_it",
+				"n_save_ITP"
+			],
+			[
+				"sigma",
+				"sigma_real"
+			],
+			[
+				"sigmra",
+				"sigma_grid"
+			],
+			[
+				"simg",
+				"sigma_grid"
+			],
+			[
+				"sigm",
+				"sigma_grid"
+			],
+			[
+				"V",
+				"V_y"
+			],
+			[
+				"i",
+				"i"
+			],
+			[
+				"config",
+				"configfile"
+			],
+			[
+				"conf",
+				"configcstr"
+			],
+			[
+				"positional",
+				"positionalOptions"
+			],
+			[
+				"omp",
+				"omp_get_wtime"
+			],
+			[
+				"RUn",
+				"RunOptions"
+			],
+			[
+				"om",
+				"omega_x"
+			],
+			[
+				"star",
+				"startgrid"
+			],
+			[
+				"omeg",
+				"omega_y"
+			],
+			[
+				"expo",
+				"exp_factor"
+			],
+			[
+				"starg",
+				"startgrid0"
+			],
+			[
+				"omeg_",
+				"omega_y_realValue"
+			],
+			[
+				"fufuf",
+				"fufufu2"
+			],
+			[
+				"Set",
+				"SettingNotFoundException"
+			],
+			[
+				"Run",
+				"RunOptions"
+			],
+			[
+				"start",
+				"startgrid"
+			],
+			[
+				"ITP",
+				"ITP_step"
+			],
+			[
+				"p",
+				"pPsi"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "main.cpp",
+			"settings":
+			{
+				"buffer_size": 3362,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/exp_RK4_tools.h",
+			"settings":
+			{
+				"buffer_size": 9160,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/exp_RK4_tools.cpp",
+			"settings":
+			{
+				"buffer_size": 16928,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "build/run.cfg",
+			"settings":
+			{
+				"buffer_size": 1053,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 969,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/nhrjr/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 1990,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 75.0,
+		"selected_items":
+		[
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"disable linting",
+				"SublimeLinter: Disable Linting"
+			],
+			[
+				"linter",
+				"SublimeLinter: Disable Linter"
+			],
+			[
+				"package remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"Clang",
+				"SublimeLinter: Create Linter Plugin"
+			],
+			[
+				"Package dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"Enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"Install",
+				"Package Control: Install Package"
+			],
+			[
+				"package remove ",
+				"Package Control: Remove Package"
+			],
+			[
+				"Install ",
+				"Package Control: Install Package"
+			],
+			[
+				"Linter Settings",
+				"Preferences: SublimeLinter Settings – User"
+			],
+			[
+				"Linter",
+				"Preferences: SublimeLinter Settings – Default"
+			],
+			[
+				"Package install",
+				"Package Control: Install Package"
+			],
+			[
+				"clang",
+				"Package Control: Enable Package"
+			],
+			[
+				"git",
+				"Package Control: Install Package"
+			],
+			[
+				"align",
+				"AlignTab"
+			],
+			[
+				"al",
+				"AlignTab"
+			],
+			[
+				"",
+				"AlignTab"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"Align",
+				"Preferences: Alignment Key Bindings – Default"
+			],
+			[
+				"Destro",
+				"Origami: Destroy Pane on the Right"
+			],
+			[
+				"destro p",
+				"Origami: Destroy Pane on the Right"
+			],
+			[
+				"origami move",
+				"Origami: Move File to Pane on the Left"
+			],
+			[
+				"Brow",
+				"Browse Mode..."
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"quic",
+				"File: Quick File Open"
+			],
+			[
+				"OPen file",
+				"View: Toggle Open Files in Side Bar"
+			],
+			[
+				"Synb",
+				"Set Syntax: Objective-C++"
+			],
+			[
+				"INstall",
+				"Package Control: Install Package"
+			],
+			[
+				"Pack",
+				"Package Control: Install Package"
+			],
+			[
+				"Packa",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control In",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 521.0
+	},
+	"console":
+	{
+		"height": 145.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/nhrjr/.config/gtk-3.0/settings.ini",
+		"/home/nhrjr/.config/gtk-2.0/gtkfilechooser.ini",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_RK4_tools.cpp",
+		"/home/nhrjr/.config/sublime-text-3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/home/nhrjr/projects/expandingvortexgas2d/expandingvortexgas2d.sublime-project",
+		"/home/nhrjr/.config/sublime-text-3/Packages/C++11/C++11.sublime-settings",
+		"/home/nhrjr/.config/sublime-text-3/Packages/SublimeLinter/Default (Linux).sublime-keymap",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
+		"/home/nhrjr/.config/sublime-text-3/Packages/C++11/messages/install.txt",
+		"/home/nhrjr/projects/svn_gasenzer_11/Expansion2DVortexgas/Code_sample/PascalWeckesser/Expansion-19-Anti-Vortices.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/CMakeLists.txt",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_RK4_tools.h",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/2dexpan.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/test_speed-icpc-Ofast/runspeed.txt",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/run.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/main.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/CMakeCache.txt",
+		"/opt/intel/bin/compilervars.sh",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/test_speed-g++_Ofast/runtime.txt",
+		"/opt/intel/ipp/bin/ippvars.sh",
+		"/opt/intel/bin/compilervars..sh",
+		"/opt/intel/composer_xe_2013_sp1.2.144/ipp/bin/ippvars.sh",
+		"/opt/intel/bin/compilervars.csh",
+		"/opt/intel/composer_xe_2013_sp1.2.144/ipp/bin/ippvars.",
+		"/opt/intel/composer_xe_2013_sp1.2.144/ipp/bin/ippvars.csh",
+		"/home/nhrjr/.config/awesome/rc.lua",
+		"/home/nhrjr/.config/awesome/zenburn.lua",
+		"/home/nhrjr/.config/awesome/rc.3.5.lua",
+		"/usr/share/awesome/lib/wibox/widget/base.lua",
+		"/home/nhrjr/.config/awesome/vicious/init.lua",
+		"/usr/share/awesome/lib/beautiful.lua",
+		"/usr/share/awesome/lib/wibox/widget/imagebox.lua",
+		"/usr/share/awesome/lib/gears/debug.lua",
+		"/home/nhrjr/.config/awesome/rc.3.4_old.lua",
+		"/home/nhrjr/.config/awesome/rc.lua.3.5",
+		"/home/nhrjr/.bashrc",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/complexgrid.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/startgrids/bh3defaultgrid.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/startgrids/bh3defaultgrid.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/mainvector.dump",
+		"/home/nhrjr/projects/expandingvortexgas2d/resources/bh3myanalyzerun.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3cudapropagator.cu",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/Makefile",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/bh3binaryfile.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/complexgrid.h",
+		"/usr/local/include/mgl2/mgl.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/openquestions.txt",
+		"/home/nhrjr/.config/KeePass/KeePass.config.xml",
+		"/home/nhrjr/projects/expandingvortexgas2d/observables/bh3observables.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/vortexcoordinates.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/bh3binaryfile.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/resources/offset_tracking.cpp",
+		"/home/nhrjr/projects/svn_gasenzer_11/Expansion2DVortexgas/Code_sample/code_Andrews/61vor_fig_6.3.e/61vor.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/resources/61vor.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/Makefile",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/runtests.sh",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/testtest.sh",
+		"/home/nhrjr/projects/expandingvortexgas2d/bh3myanalyzerun_thorge.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/61vor.cpp",
+		"/home/nhrjr/projects/61vor_fig_6.3.e/61vor.cpp",
+		"/home/nhrjr/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/nhrjr/Documents/Koerpermasse.txt",
+		"/home/nhrjr/.config/awesome/vicious/widgets/thermal.lua",
+		"/home/nhrjr/.config/awesome/vicious/widgets/date.lua",
+		"/home/nhrjr/.config/awesome/vicious/widgets/gmail.lua",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/gauss_random.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/61vor_aspect.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/testRTE2/run.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/build/testRTE/run.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/gauss_random.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_binaryfile.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_defaultgrid.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_defaultgrid.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_binaryfile.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3propagator.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3propagator.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/observables/bh3save.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/observables/bh3observables.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3cudapropagator.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plc++demos.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/pythonplot.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/x11.cc",
+		"/usr/share/doc/libplplot11/examples/c++/x26.cc",
+		"/home/nhrjr/Downloads/gnuplot-cpp/gnuplot_i.hpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/plotscript.sh",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/init_bh3.h",
+		"/home/nhrjr/.config/sublime-text-3/Packages/AlignTab/AlignTab.sublime-settings",
+		"/home/nhrjr/.config/sublime-text-3/Packages/Alignment/Base File.sublime-settings",
+		"/home/nhrjr/.config/sublime-text-3/Packages/Alignment/Default (Linux).sublime-keymap",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/C++.sublime-settings",
+		"/etc/xdg/awesome/rc.lua",
+		"/home/nhrjr/projects/awesome-configs/rc.lua",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/averageclass.h",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/SyntaxMgr.sublime-settings",
+		"/home/nhrjr/Desktop/classes.vbs"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"L",
+			"l",
+			"L",
+			"l_x",
+			"L",
+			"k",
+			"array",
+			"compress",
+			"i",
+			"opt.",
+			"Options &opt",
+			"opt.t_abs",
+			"PsiCopy",
+			"Psi",
+			"\"v\"",
+			"terminal",
+			"menubar",
+			"  ",
+			"menubar",
+			"scrat",
+			"\"s\"",
+			"wibox",
+			"prompt",
+			"mod",
+			".image = image",
+			"cpubar",
+			"\")\n",
+			"set_gradie",
+			"awful.menu",
+			"tasklist",
+			"register",
+			"textbox",
+			"tzswidget",
+			"textbox",
+			"widget({ type = \"systray\" })",
+			"widget({ type = \"textbox\" })",
+			"widget({ type = \"imagebox\" })",
+			"cpuicon",
+			"widget({ type = \"imagebox\" })\n",
+			"widget({ type = \"imagebox\" })",
+			"cpuicon",
+			"widget({ type = \"imagebox\" })\n",
+			"widget({ type = \"imagebox\" })",
+			"opt.grid[2]",
+			"opt.grid[1]",
+			"run.Psi",
+			"pPsi",
+			"->p",
+			"->at",
+			"ComplexGrid* &pPsi",
+			"pPsi",
+			"ComplexGrid* &pPsi",
+			"ComplexGrid* & pPsi",
+			"pPsi->at",
+			"i",
+			"d",
+			"pragma",
+			"# ",
+			"omega_y",
+			"omega_x",
+			"omega_y",
+			"omega_x",
+			"h5_complexgriddata",
+			"get_address",
+			"allocate",
+			"Allocation",
+			"&j",
+			"j",
+			" &j",
+			"&j",
+			"&i",
+			"memcpy",
+			"calculator",
+			"vortex",
+			"opt.times",
+			"gauss",
+			"gaussian",
+			"rules",
+			"RTE_step",
+			"t_RTE",
+			"awful.widget.layout.horizontal",
+			"tasklist",
+			"height",
+			"12",
+			"noise",
+			"y_axis",
+			"x_axis",
+			"grad_x",
+			"wavefunction",
+			"x_expand",
+			"lambda",
+			"exp_factor",
+			"PathOptions",
+			"save_2D\n",
+			"save_\n",
+			"{\n",
+			"->",
+			"x",
+			"opt",
+			")",
+			".",
+			"cfg.lookup(",
+			")",
+			"config_lookup",
+			"&",
+			",",
+			"opt",
+			"cf",
+			"name",
+			"g",
+			"opt",
+			"grid",
+			"N",
+			"opt",
+			"pragma",
+			"batwidget",
+			"terminator",
+			"terminal",
+			"urxvt",
+			"xterm",
+			"tear",
+			"toggle",
+			"vortex",
+			"n_y",
+			"n_x",
+			"n_y",
+			"n_x",
+			"meansFD"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "main.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3362,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2783,
+								2783
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close"
+							],
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1426.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "exp_utilities/exp_RK4_tools.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9160,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8574,
+								8574
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close"
+							],
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3158.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "exp_utilities/exp_RK4_tools.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16928,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14278,
+								14278
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close"
+							],
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 6976.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "build/run.cfg",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1053,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								565,
+								565
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close"
+							],
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 969,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								669,
+								669
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close"
+							],
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/home/nhrjr/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1990,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1046,
+								1046
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 296.0,
+						"translation.y": 150.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "expandingvortexgas2d.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 249.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
