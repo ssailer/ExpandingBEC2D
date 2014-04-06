@@ -91,8 +91,8 @@ if(opt.startgrid[1]==true)
 	sigma_grid[1] = opt.grid[2]/4;
 	double r = (sigma_grid[0]+sigma_grid[1])/4.0; 
 
-  // run->pPsi = add_central_vortex(run->pPsi,opt);	
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r/4.0,6);
+  run->pPsi = add_central_vortex(run->pPsi,opt);	
+  // run->pPsi = add_circle_vortex(run->pPsi,opt,r/4.0,6);
   // run->pPsi = add_circle_vortex(run->pPsi,opt,r/2.0,12);
   // run->pPsi = add_circle_vortex(run->pPsi,opt,r/1.5,24);
 	// run->pPsi = add_circle_vortex(run->pPsi,opt,r,2);

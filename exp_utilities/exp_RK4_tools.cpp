@@ -328,23 +328,23 @@ void RK4::itpToTime(Options &opt,bool plot)
 	cout << "\n";	
 }
 
-complex<double> RK4::function_RTE(ComplexGrid &wavefct,int i, int j, Options &opt)
-{
-	complex<double> tmp;
+// complex<double> RK4::function_RTE(ComplexGrid &wavefct,int i, int j, Options &opt)
+// {
+// 	complex<double> tmp;
 
-	tmp = rte_kinetic(wavefct,i,j,opt);
+// 	tmp = rte_kinetic(wavefct,i,j,opt);
 
-	if(opt.g != 0.0)
-	{tmp -= (rte_interaction(wavefct,i,j,opt) * wavefct(0,i,j,0));}
+// 	if(opt.g != 0.0)
+// 	{tmp -= (rte_interaction(wavefct,i,j,opt) * wavefct(0,i,j,0));}
 
-	if(opt.exp_factor != 0.0)
-	{tmp += rte_expandingframe(wavefct,i,j,opt);}
+// 	if(opt.exp_factor != 0.0)
+// 	{tmp += rte_expandingframe(wavefct,i,j,opt);}
 
-	if(opt.startgrid[2] == true)
-	{tmp -= rte_potential(i,j,opt) * wavefct(0,i,j,0);}
+// 	if(opt.startgrid[2] == true)
+// 	{tmp -= rte_potential(i,j,opt) * wavefct(0,i,j,0);}
 
-	return tmp;
-}
+// 	return tmp;
+// }
 
 
 
@@ -361,40 +361,40 @@ void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 	}
 }
 
-void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
+// void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_RTE){
 
-	int grid_x = opt.grid[1];
-	int grid_y = opt.grid[2];
+// 	int grid_x = opt.grid[1];
+// 	int grid_y = opt.grid[2];
 
-	ComplexGrid PsiCopy(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 	ComplexGrid PsiCopy(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
-	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0);}}
+// 	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0);}}
 
-	Dirichlet(pPsi,opt);
+// 	Dirichlet(pPsi,opt);
 	
-	complex<double> timestep[3];
-	timestep[0] = half * t_RTE;
-	timestep[1] = half * t_RTE;
-	timestep[2] = t_RTE;
+// 	complex<double> timestep[3];
+// 	timestep[0] = half * t_RTE;
+// 	timestep[1] = half * t_RTE;
+// 	timestep[2] = t_RTE;
 
-	#pragma omp parallel for
-	for(int i=1;i<grid_x-1;i++){for(int j=1;j<grid_y-1;j++){ k[0](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
+// 	#pragma omp parallel for
+// 	for(int i=1;i<grid_x-1;i++){for(int j=1;j<grid_y-1;j++){ k[0](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
 
-	opt.t_abs += half * t_RTE;
+// 	opt.t_abs += half * t_RTE;
       
-    for(int d=0;d<3;d++)
-	{  
+//     for(int d=0;d<3;d++)
+// 	{  
 
-		if(d == 2){opt.t_abs += half * t_RTE;}
+// 		if(d == 2){opt.t_abs += half * t_RTE;}
 
-		#pragma omp parallel for
-		for(int i=0;i<grid_x;i++){for(int j=0;j<grid_y;j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0) + timestep[d]*k[d](0,i,j,0) ;}}
+// 		#pragma omp parallel for
+// 		for(int i=0;i<grid_x;i++){for(int j=0;j<grid_y;j++){ PsiCopy(0,i,j,0) = pPsi->at(0,i,j,0) + timestep[d]*k[d](0,i,j,0) ;}}
 
-		#pragma omp parallel for
-		for(int i=1;i<grid_x-1;i++){for(int j=1;j<grid_y-1;j++){ k[d+1](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
+// 		#pragma omp parallel for
+// 		for(int i=1;i<grid_x-1;i++){for(int j=1;j<grid_y-1;j++){ k[d+1](0,i,j,0)=function_RTE(PsiCopy,i,j,opt);}}
 
-	}
-}
+// 	}
+// }
 
 // void RK4::functionEigen_RTE(Eigen::MatrixXcd& k,Eigen::MatrixXcd& mPsiCopy,complex<double>& t)
 // {	
@@ -409,167 +409,167 @@ void RK4::computeK_RTE(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,c
 // 	cout << "5" << endl;
 // }
 
-void RK4::computeWithEigen_RTE(Options &opt, bool plot)
-{	
-	int grid_x = opt.grid[1];
-	int grid_y = opt.grid[2];
-	complex<double> t(0.0,0.0);
-	double start;
-	complex<double> t_RTE(opt.RTE_step,0); 
+// void RK4::computeWithEigen_RTE(Options &opt, bool plot)
+// {	
+// 	int grid_x = opt.grid[1];
+// 	int grid_y = opt.grid[2];
+// 	complex<double> t(0.0,0.0);
+// 	double start;
+// 	complex<double> t_RTE(opt.RTE_step,0); 
 
 
-	Eigen::MatrixXcd mPsi(grid_x,grid_y);
-	Eigen::MatrixXcd mPsiCopy(grid_x,grid_y);
-	Eigen::MatrixXcd k0(grid_x,grid_y);
-	Eigen::MatrixXcd k1(grid_x,grid_y);
-	Eigen::MatrixXcd k2(grid_x,grid_y);
-	Eigen::MatrixXcd k3(grid_x,grid_y);
-	Eigen::MatrixXcd L(grid_x,grid_y);
-	Eigen::MatrixXcd G(grid_x,grid_y);
-	Eigen::MatrixXcd X(grid_x,grid_y);
-	Eigen::MatrixXcd Y(grid_x,grid_y);
+// 	Eigen::MatrixXcd mPsi(grid_x,grid_y);
+// 	Eigen::MatrixXcd mPsiCopy(grid_x,grid_y);
+// 	Eigen::MatrixXcd k0(grid_x,grid_y);
+// 	Eigen::MatrixXcd k1(grid_x,grid_y);
+// 	Eigen::MatrixXcd k2(grid_x,grid_y);
+// 	Eigen::MatrixXcd k3(grid_x,grid_y);
+// 	Eigen::MatrixXcd L(grid_x,grid_y);
+// 	Eigen::MatrixXcd G(grid_x,grid_y);
+// 	Eigen::MatrixXcd X(grid_x,grid_y);
+// 	Eigen::MatrixXcd Y(grid_x,grid_y);
 
-	Eigen::SparseMatrix<std::complex<double>,1,std::ptrdiff_t >  Lsparse, Gsparse, Xsparse, Ysparse;
-	Lsparse.resize(grid_x,grid_y);
-	Gsparse.resize(grid_x,grid_y);
-	Xsparse.resize(grid_x,grid_y);
-	Ysparse.resize(grid_x,grid_y);
+// 	Eigen::SparseMatrix<std::complex<double>,1,std::ptrdiff_t >  Lsparse, Gsparse, Xsparse, Ysparse;
+// 	Lsparse.resize(grid_x,grid_y);
+// 	Gsparse.resize(grid_x,grid_y);
+// 	Xsparse.resize(grid_x,grid_y);
+// 	Ysparse.resize(grid_x,grid_y);
 
-	Lsparse.reserve(3 * (grid_x-2));
-	Xsparse.reserve(opt.grid[1]);
-	Ysparse.reserve(opt.grid[2]);
-	Gsparse.reserve(2 * (opt.grid[1]-2));
+// 	Lsparse.reserve(3 * (grid_x-2));
+// 	Xsparse.reserve(opt.grid[1]);
+// 	Ysparse.reserve(opt.grid[2]);
+// 	Gsparse.reserve(2 * (opt.grid[1]-2));
 
 
 
-		for(int i = 1;i<opt.grid[1]-1;i++){
-	Lsparse.insert(i,i-1) = complex<double>(1.0,0.0);
-	Lsparse.insert(i,i) = complex<double>(-2.0,0.0);
-	Lsparse.insert(i,i+1) = complex<double>(1.0,0.0);
-	}
-	Lsparse.makeCompressed();
+// 		for(int i = 1;i<opt.grid[1]-1;i++){
+// 	Lsparse.insert(i,i-1) = complex<double>(1.0,0.0);
+// 	Lsparse.insert(i,i) = complex<double>(-2.0,0.0);
+// 	Lsparse.insert(i,i+1) = complex<double>(1.0,0.0);
+// 	}
+// 	Lsparse.makeCompressed();
 
-	// cout<< " Lsparse: \n" << Lsparse << endl;
-
-	
-	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ mPsiCopy(i,j) = pPsi->at(0,i,j,0);}}
-	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ mPsi(i,j) = pPsi->at(0,i,j,0);}}
-
-	// 	Eigen::MatrixXcd result;
-	// result = Lsparse * mPsiCopy;
-
-	// cout << "result: " << result << endl;
-
-// Eigen::MatrixXcd G(opt.grid[1],opt.grid[2]);
-// Eigen::MatrixXcd X(opt.grid[1],opt.grid[2]); 
-// Eigen::MatrixXcd Y(opt.grid[1],opt.grid[2]); 
-// Eigen::MatrixXcd L(opt.grid[1],opt.grid[2]);   
-
- 	for(int i = 0; i<opt.grid[1];i++)
-	{
-		Xsparse.insert(i,i) = complex<double>(x_axis[i],0.0);
-	}
-	Xsparse.makeCompressed();
-
-	// cout << " X: \n" << X << endl;
-
-	for(int j = 0; j<opt.grid[2];j++)
-	{
-		Ysparse.insert(j,j) = complex<double>(y_axis[j],0.0);
-	}
-	Ysparse.makeCompressed();
-
-	// cout << " Y: \n"<< Y << endl;
-
-	// for(int i = 1;i<opt.grid[1]-1;i++){
-	// L(i,i-1) = complex<double>(1.0,0.0);
-	// L(i,i) = complex<double>(-2.0,0.0);
-	// L(i,i+1) = complex<double>(1.0,0.0);
-	// }
-	// L.makeCompressed();
-
-	// cout<< " L: \n" << L << endl;
-	Gsparse.resize(grid_x,grid_y);
-	Gsparse.reserve(2 * (opt.grid[1]-2));
-	for(int i = 1;i<opt.grid[1]-1;i++){
-	Gsparse.insert(i,i-1) = complex<double>(-1.0,0.0);
-	Gsparse.insert(i,i+1) = complex<double>(1.0,0.0);
-	}
-	Gsparse.makeCompressed();
-	// cout << " G: \n"<< G << endl;
-
-	Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t > LsparseT = Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t >(Lsparse.transpose());
-	Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t > GsparseT = Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t >(Gsparse.transpose());
-
-	cout << "All Matrix Sizes: " << endl
-		<< "Lsparse: " << Lsparse.size() << endl
-		<< "LsparseT: " << LsparseT.size() << endl
-		<< "GsparseT: " << GsparseT.size() << endl
-		<< "Gsparse: " << Gsparse.size() << endl
-		<< "XSparse: " << Xsparse.size() << endl
-		<< "YSparse: " << Ysparse.size() << endl
-		<< "mPsiCopy: " << mPsiCopy.size() << endl;
-
-	start = omp_get_wtime();
-
-	cout << " " << opt.name << endl;
-
-for(int m = 1; m <= opt.n_it_RTE; m++)
-{
-	// cout << "before function" << endl;
-	// functionEigen_RTE(k0,mPsiCopy,t);
-		// cout << "L " << L.size() << " mPsiCopy:  " << mPsiCopy.size() << " Ltrans:  " << L.transpose().size()<< endl;
-	k0.noalias() += complex<double>(0.0,0.5) * ((Lsparse * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LsparseT ) / (l_y(t) * l_y(t) ) );
-	// cout << "2" << endl;
-	k0.noalias() += ( (l_x_dot(t) / l_x(t)) * /*Xsparse **/ ( Gsparse * mPsiCopy) );
-	// cout << "3" << endl;
-	k0.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * GsparseT ) /** Ysparse*/ );
-	// cout << "4" << endl;
-	k0.array() += - complex<double>(0.0, g ) * (mPsiCopy.adjoint().array() * mPsiCopy.array()) * mPsiCopy.array();
-	// cout << "5" << endl;
-	// cout << "after function" << endl;
-
-	t += half * t_RTE;
-	mPsiCopy = mPsi + half * t_RTE * k0;
-	// functionEigen_RTE(k1,mPsiCopy,t);
-	k1.noalias() += complex<double>(0.0,0.5) * ((Lsparse * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LsparseT ) / (l_y(t) * l_y(t) ) );
-	k1.noalias() += ( (l_x_dot(t) / l_x(t)) * /*Xsparse **/ ( Gsparse * mPsiCopy) );
-	k1.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * GsparseT ) /** Ysparse*/ );
-	k1.array() += - complex<double>(0.0, g ) * (mPsiCopy.adjoint().array() * mPsiCopy.array()) * mPsiCopy.array();
-
-	mPsiCopy = mPsi + half * t_RTE * k1;
-	// functionEigen_RTE(k2,mPsiCopy,t);
-	k2.noalias() += complex<double>(0.0,0.5) * ((Lsparse * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LsparseT ) / (l_y(t) * l_y(t) ) );
-	k2.noalias() += ( (l_x_dot(t) / l_x(t)) * /*Xsparse **/ ( Gsparse * mPsiCopy) );
-	k2.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * GsparseT ) /** Ysparse*/ );
-	k2.array() += - complex<double>(0.0, g ) * (mPsiCopy.adjoint().array() * mPsiCopy.array()) * mPsiCopy.array();
-
-	t += half * t_RTE;
-	mPsiCopy = mPsi + t_RTE * k2;
-	// functionEigen_RTE(k3,mPsiCopy,t);
-	k3.noalias() += complex<double>(0.0,0.5) * ((Lsparse * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LsparseT ) / (l_y(t) * l_y(t) ) );
-	k3.noalias() += ( (l_x_dot(t) / l_x(t)) * /*Xsparse **/ ( Gsparse * mPsiCopy) );
-	k3.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * GsparseT ) /** Ysparse*/ );
-	k3.array() += - complex<double>(0.0, g ) * (mPsiCopy.adjoint().array() * mPsiCopy.array()) * mPsiCopy.array();
-
-	mPsi += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
-
-	mPsiCopy = mPsi;
-
-	// opt.min_x = x_expand(opt.grid[1]-1,opt);
-  	// opt.min_y = y_expand(opt.grid[2]-1,opt);
-
-  	cli_plot(mPsi,opt,"RTE",m,opt.n_it_RTE,start,plot);
-
-}
-	// for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ pPsi->at(0,i,j,0) = mPsi(i,j) ;}}
-	// cli_plot(opt,"RTE",100,opt.n_it_RTE,start,plot);
-
-cout << "\n";
-
+// 	// cout<< " Lsparse: \n" << Lsparse << endl;
 
 	
-}
+// 	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ mPsiCopy(i,j) = pPsi->at(0,i,j,0);}}
+// 	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ mPsi(i,j) = pPsi->at(0,i,j,0);}}
+
+// 	// 	Eigen::MatrixXcd result;
+// 	// result = Lsparse * mPsiCopy;
+
+// 	// cout << "result: " << result << endl;
+
+// // Eigen::MatrixXcd G(opt.grid[1],opt.grid[2]);
+// // Eigen::MatrixXcd X(opt.grid[1],opt.grid[2]); 
+// // Eigen::MatrixXcd Y(opt.grid[1],opt.grid[2]); 
+// // Eigen::MatrixXcd L(opt.grid[1],opt.grid[2]);   
+
+//  	for(int i = 0; i<opt.grid[1];i++)
+// 	{
+// 		Xsparse.insert(i,i) = complex<double>(x_axis[i],0.0);
+// 	}
+// 	Xsparse.makeCompressed();
+
+// 	// cout << " X: \n" << X << endl;
+
+// 	for(int j = 0; j<opt.grid[2];j++)
+// 	{
+// 		Ysparse.insert(j,j) = complex<double>(y_axis[j],0.0);
+// 	}
+// 	Ysparse.makeCompressed();
+
+// 	// cout << " Y: \n"<< Y << endl;
+
+// 	// for(int i = 1;i<opt.grid[1]-1;i++){
+// 	// L(i,i-1) = complex<double>(1.0,0.0);
+// 	// L(i,i) = complex<double>(-2.0,0.0);
+// 	// L(i,i+1) = complex<double>(1.0,0.0);
+// 	// }
+// 	// L.makeCompressed();
+
+// 	// cout<< " L: \n" << L << endl;
+// 	Gsparse.resize(grid_x,grid_y);
+// 	Gsparse.reserve(2 * (opt.grid[1]-2));
+// 	for(int i = 1;i<opt.grid[1]-1;i++){
+// 	Gsparse.insert(i,i-1) = complex<double>(-1.0,0.0);
+// 	Gsparse.insert(i,i+1) = complex<double>(1.0,0.0);
+// 	}
+// 	Gsparse.makeCompressed();
+// 	// cout << " G: \n"<< G << endl;
+
+// 	Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t > LsparseT = Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t >(Lsparse.transpose());
+// 	Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t > GsparseT = Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t >(Gsparse.transpose());
+
+// 	cout << "All Matrix Sizes: " << endl
+// 		<< "Lsparse: " << Lsparse.size() << endl
+// 		<< "LsparseT: " << LsparseT.size() << endl
+// 		<< "GsparseT: " << GsparseT.size() << endl
+// 		<< "Gsparse: " << Gsparse.size() << endl
+// 		<< "XSparse: " << Xsparse.size() << endl
+// 		<< "YSparse: " << Ysparse.size() << endl
+// 		<< "mPsiCopy: " << mPsiCopy.size() << endl;
+
+// 	start = omp_get_wtime();
+
+// 	cout << " " << opt.name << endl;
+
+// for(int m = 1; m <= opt.n_it_RTE; m++)
+// {
+// 	// cout << "before function" << endl;
+// 	// functionEigen_RTE(k0,mPsiCopy,t);
+// 		// cout << "L " << L.size() << " mPsiCopy:  " << mPsiCopy.size() << " Ltrans:  " << L.transpose().size()<< endl;
+// 	k0.noalias() += complex<double>(0.0,0.5) * ((Lsparse * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LsparseT ) / (l_y(t) * l_y(t) ) );
+// 	// cout << "2" << endl;
+// 	k0.noalias() += ( (l_x_dot(t) / l_x(t)) * /*Xsparse **/ ( Gsparse * mPsiCopy) );
+// 	// cout << "3" << endl;
+// 	k0.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * GsparseT ) /** Ysparse*/ );
+// 	// cout << "4" << endl;
+// 	k0.array() += - complex<double>(0.0, g ) * (mPsiCopy.adjoint().array() * mPsiCopy.array()) * mPsiCopy.array();
+// 	// cout << "5" << endl;
+// 	// cout << "after function" << endl;
+
+// 	t += half * t_RTE;
+// 	mPsiCopy = mPsi + half * t_RTE * k0;
+// 	// functionEigen_RTE(k1,mPsiCopy,t);
+// 	k1.noalias() += complex<double>(0.0,0.5) * ((Lsparse * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LsparseT ) / (l_y(t) * l_y(t) ) );
+// 	k1.noalias() += ( (l_x_dot(t) / l_x(t)) * /*Xsparse **/ ( Gsparse * mPsiCopy) );
+// 	k1.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * GsparseT ) /** Ysparse*/ );
+// 	k1.array() += - complex<double>(0.0, g ) * (mPsiCopy.adjoint().array() * mPsiCopy.array()) * mPsiCopy.array();
+
+// 	mPsiCopy = mPsi + half * t_RTE * k1;
+// 	// functionEigen_RTE(k2,mPsiCopy,t);
+// 	k2.noalias() += complex<double>(0.0,0.5) * ((Lsparse * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LsparseT ) / (l_y(t) * l_y(t) ) );
+// 	k2.noalias() += ( (l_x_dot(t) / l_x(t)) * /*Xsparse **/ ( Gsparse * mPsiCopy) );
+// 	k2.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * GsparseT ) /** Ysparse*/ );
+// 	k2.array() += - complex<double>(0.0, g ) * (mPsiCopy.adjoint().array() * mPsiCopy.array()) * mPsiCopy.array();
+
+// 	t += half * t_RTE;
+// 	mPsiCopy = mPsi + t_RTE * k2;
+// 	// functionEigen_RTE(k3,mPsiCopy,t);
+// 	k3.noalias() += complex<double>(0.0,0.5) * ((Lsparse * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LsparseT ) / (l_y(t) * l_y(t) ) );
+// 	k3.noalias() += ( (l_x_dot(t) / l_x(t)) * /*Xsparse **/ ( Gsparse * mPsiCopy) );
+// 	k3.noalias() += ( (l_y_dot(t) / l_y(t)) * ( mPsiCopy * GsparseT ) /** Ysparse*/ );
+// 	k3.array() += - complex<double>(0.0, g ) * (mPsiCopy.adjoint().array() * mPsiCopy.array()) * mPsiCopy.array();
+
+// 	mPsi += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
+
+// 	mPsiCopy = mPsi;
+
+// 	// opt.min_x = x_expand(opt.grid[1]-1,opt);
+//   	// opt.min_y = y_expand(opt.grid[2]-1,opt);
+
+//   	cli_plot(mPsi,opt,"RTE",m,opt.n_it_RTE,start,plot);
+
+// }
+// 	// for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ pPsi->at(0,i,j,0) = mPsi(i,j) ;}}
+// 	// cli_plot(opt,"RTE",100,opt.n_it_RTE,start,plot);
+
+// cout << "\n";
+
+
+	
+// }
 
 
 
@@ -606,24 +606,34 @@ void RK4::functionEigen2_RTE(Options &opt, bool plot)
 
 		wavefctcp = wavefct;
 
+		//boundary conditions -- Dirichlet
+
+		wavefct.row(0) = Eigen::VectorXcd::Zero(grid_x);
+		wavefct.row(grid_x-1) = Eigen::VectorXcd::Zero(grid_x);
+		wavefct.col(0) = Eigen::VectorXcd::Zero(grid_y);
+		wavefct.col(grid_y-1) = Eigen::VectorXcd::Zero(grid_y);
+
+		//boundary conditions end
+
+
 		// if(m%((opt.n_it_RTE)/100)==0)
 		// {	
 		// 	cout << "  " << m << " wavefct " << wavefct.block<1,4>(grid_x/2,grid_y/2) << endl;
 		// 	cout << "  " << m << " norm " << wavefct.norm() << endl << endl;
 		// }
 
-		compute_the_eigen_k(wavefctcp,k0,X,Y,t,grid_x,grid_y);
+		k0 = compute_the_eigen_k(wavefctcp,X,Y,t,grid_x,grid_y);
 		wavefctcp = wavefct + half * t_RTE * k0;
 
 		t += 1;
-		compute_the_eigen_k(wavefctcp,k1,X,Y,t,grid_x,grid_y);
+		k1 = compute_the_eigen_k(wavefctcp,X,Y,t,grid_x,grid_y);
 		wavefctcp = wavefct + half * t_RTE * k1;
 
-		compute_the_eigen_k(wavefctcp,k2,X,Y,t,grid_x,grid_y);		
+		k2 = compute_the_eigen_k(wavefctcp,X,Y,t,grid_x,grid_y);		
 		wavefctcp = wavefct + t_RTE * k2;
 
 		t += 1;
-		compute_the_eigen_k(wavefctcp,k3,X,Y,t,grid_x,grid_y);
+		k3 = compute_the_eigen_k(wavefctcp,X,Y,t,grid_x,grid_y);
 
 		wavefct += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
@@ -644,26 +654,31 @@ cout << "\n";
 
 }
 
-	void RK4::compute_the_eigen_k(Eigen::MatrixXcd &wavefctcp,Eigen::MatrixXcd &k,Eigen::VectorXcd &X,Eigen::VectorXcd &Y,int &t,int grid_x,int grid_y)
+Eigen::MatrixXcd RK4::compute_the_eigen_k(Eigen::MatrixXcd &wavefctcp, Eigen::VectorXcd &X,Eigen::VectorXcd &Y,int &t,int &grid_x,int &grid_y)
 	{
-	Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> wavefctcpX(grid_x,grid_y);
-	Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> wavefctcpY(grid_x,grid_y);
+	Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> wavefctcpX = Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>::Zero(grid_x,grid_y);
+	Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> wavefctcpY = Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor>::Zero(grid_x,grid_y);
+	Eigen::MatrixXcd k = Eigen::MatrixXcd::Zero(grid_x,grid_y);
 
 
 	//laplacian
-	wavefctcpX = complex<double>(0.0,1.0) * wavefctcp / (two * h_x * h_x * lambda_x_squared[t]);
-	wavefctcpY = complex<double>(0.0,1.0) * wavefctcp / (two * h_y * h_y * lambda_y_squared[t]);
+	// wavefctcpX = complex<double>(0.0,1.0) * wavefctcp / (two * h_x * h_x /** lambda_x_squared[t]*/);
+	// wavefctcpY = complex<double>(0.0,1.0) * wavefctcp / (two * h_y * h_y /** lambda_y_squared[t]*/);
 
-	#pragma omp parallel for
-	for(int j = 0;j<grid_y;j++){
-	for(int i = 1;i<grid_x-1;i++){
-	k(i,j) = wavefctcpX(i-1,j) - two * wavefctcpX(i,j) + wavefctcpX(i+1,j);
-	}}
-	#pragma omp parallel for
-	for(int i = 0;i<grid_x;i++){
+	// #pragma omp parallel for
 	for(int j = 1;j<grid_y-1;j++){
-	k(i,j) += wavefctcpY(i,j-1) - two * wavefctcpY(i,j) + wavefctcpY(i,j+1);
+	for(int i = 1;i<grid_x-1;i++){
+	wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
+	wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
 	}}
+	k += i_unit * ( wavefctcpX / (two * h_x * h_x /** lambda_x_squared[t]*/) +  wavefctcpY / (two * h_y * h_y /** lambda_y_squared[t]*/)  );
+	// k += i_unit * wavefctcpX / (two * h_x * h_x /** lambda_x_squared[t]*/);
+	// #pragma omp parallel for
+	// for(int i = 1;i<grid_x-1;i++){
+	// for(int j = 1;j<grid_y-1;j++){
+	// wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
+	// }}
+	// k += i_unit * wavefctcpY / (two * h_y * h_y /** lambda_y_squared[t]*/);
 	//laplacian end
 
 	// gradient
@@ -689,44 +704,46 @@ cout << "\n";
 	// // gradient end
 
 	//interaction
-	// k.array() -= complex<double>(0.0,g) * ( wavefctcp.adjoint().array() * wavefctcp.array() ) * wavefctcp.array();
+	k.array() -= complex<double>(0.0,g) * ( wavefctcp.conjugate().array() * wavefctcp.array() ) * wavefctcp.array();
 
 	//interaction end
+
+	return k;
 	}
 
 
 // Propagation Wrapper Functions
 
-void RK4::rteToTime(Options &opt, bool plot)
-{
-	double start;
-	complex<double> t_RTE(opt.RTE_step,0); //Time-step size for RTE
+// void RK4::rteToTime(Options &opt, bool plot)
+// {
+// 	double start;
+// 	complex<double> t_RTE(opt.RTE_step,0); //Time-step size for RTE
 
 
-	vector<ComplexGrid> k(4);	// kvectors for RK4
-	for(int d=0;d<4;d++){
-		k[d] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-		for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ k[d](0,i,j,0) = zero; }}
-	}
+// 	vector<ComplexGrid> k(4);	// kvectors for RK4
+// 	for(int d=0;d<4;d++){
+// 		k[d] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 		for(int i=0;i<opt.grid[1];i++){for(int j=0;j<opt.grid[2];j++){ k[d](0,i,j,0) = zero; }}
+// 	}
 
-	start = omp_get_wtime();
+// 	start = omp_get_wtime();
 
-	cout << " " << opt.name << endl;
+// 	cout << " " << opt.name << endl;
 
-	for(int m = 1; m <= opt.n_it_RTE; m++)
-	{
-		computeK_RTE(pPsi,k,opt,t_RTE);
+// 	for(int m = 1; m <= opt.n_it_RTE; m++)
+// 	{
+// 		computeK_RTE(pPsi,k,opt,t_RTE);
 
-		TimeStepRK4(pPsi,k,opt,t_RTE);
+// 		TimeStepRK4(pPsi,k,opt,t_RTE);
 
-  		opt.min_x = x_expand(opt.grid[1]-1,opt);
-  		opt.min_y = y_expand(opt.grid[2]-1,opt);
+//   		opt.min_x = x_expand(opt.grid[1]-1,opt);
+//   		opt.min_y = y_expand(opt.grid[2]-1,opt);
 
-  		// cli_plot(opt,"RTE",m,opt.n_it_RTE,start,plot);
+//   		// cli_plot(opt,"RTE",m,opt.n_it_RTE,start,plot);
 
-	}
+// 	}
 
-	cout << "\n";
-}
+// 	cout << "\n";
+// }
 
 

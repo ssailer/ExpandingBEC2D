@@ -72,13 +72,13 @@ class RK4
     
     // Propagatoren
     void itpToTime(Options &opt,bool plot);
-    void rteToTime(Options &opt,bool plot); 
-    void computeWithEigen_RTE(Options &opt, bool plot);
-    void functionEigen_RTE(Eigen::MatrixXcd& k,Eigen::MatrixXcd& mPsiCopy,complex<double>& t);
+    // void rteToTime(Options &opt,bool plot); 
+    // void computeWithEigen_RTE(Options &opt, bool plot);
+    // void functionEigen_RTE(Eigen::MatrixXcd& k,Eigen::MatrixXcd& mPsiCopy,complex<double>& t);
 
     void functionEigen2_RTE(Options &opt, bool plot);
 
-  void compute_the_eigen_k(Eigen::MatrixXcd &wavefctcp,Eigen::MatrixXcd &k,Eigen::VectorXcd &X,Eigen::VectorXcd &Y,int &t,int grid_x,int grid_y);
+  Eigen::MatrixXcd compute_the_eigen_k(Eigen::MatrixXcd &wavefctcp, Eigen::VectorXcd &X,Eigen::VectorXcd &Y,int &t,int &grid_x,int &grid_y);
     
     // save the Grid to file
     void save_2D(ComplexGrid* & pPsi,Options &opt);
