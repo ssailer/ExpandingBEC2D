@@ -1,8 +1,7 @@
 #ifndef EXP_RK4_TOOLS_H__
 #define EXP_RK4_TOOLS_H__
 
-#define EIGEN_VECTORIZE
-#define EIGEN_NO_DEBUG
+
 
 #include <iostream>
 #include <complex>

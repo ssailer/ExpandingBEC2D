@@ -1,3 +1,6 @@
+#define EIGEN_VECTORIZE
+#define EIGEN_NO_DEBUG
+
 #include <exp_RK4_tools.h>
 #include <2dexpan.h>
 #include <omp.h>
@@ -5,6 +8,7 @@
 
 
 using namespace std;
+using namespace Eigen;
 
 RK4::RK4()
 {
@@ -19,8 +23,12 @@ RK4::RK4()
 RK4::RK4(ComplexGrid* &c,Options &opt)
 {	
 	opt.threads = omp_get_max_threads();
-	cout << "Max Number of Threads: " << opt.threads << endl;
 	omp_set_num_threads(opt.threads);
+	cout << "Max Number of Threads: " << omp_get_max_threads() << endl;	
+	cout << "Eigenthreads: " << Eigen::nbThreads() << endl;
+
+
+
   	pPsi = c;  
   	h_x = complex<double>((2.*opt.min_x/opt.grid[1]),0.0);
   	h_y = complex<double>((2.*opt.min_y/opt.grid[2]),0.0); 
@@ -47,17 +55,10 @@ RK4::RK4(ComplexGrid* &c,Options &opt)
    for(int t = 0; t< ( 2* opt.n_it_RTE); t++)
    {
    	tmp = half * complex<double>(t,0.0) * t_RTE;
-   	lambda_x_squared[t] = l_x(tmp) * l_x(tmp);
-   	lambda_y_squared[t] = l_y(tmp) * l_y(tmp);
-   	lambda_dot_x[t] = l_x_dot(tmp) / l_x(tmp);
-   	lambda_dot_y[t] = l_y_dot(tmp) / l_y(tmp);
-   	
-  //  	if(t%((2*opt.n_it_RTE)/100)==0)
-		// {
-		// cout << lambda_x_squared[t] << endl;;
-		// }
-
-
+   	lambda_x_squared[t] = i_unit / ( two * h_x * h_x * l_x(tmp) * l_x(tmp) );
+   	lambda_y_squared[t] = i_unit / ( two * h_y * h_y * l_y(tmp) * l_y(tmp) );
+   	lambda_dot_x[t] = l_x_dot(tmp) / (two * h_x * l_x(tmp));
+   	lambda_dot_y[t] = l_y_dot(tmp) / (two * h_y * l_y(tmp));   	
    }
 
 
@@ -66,10 +67,10 @@ RK4::RK4(ComplexGrid* &c,Options &opt)
 // // X.resize(opt.grid[1],opt.grid[2]);
 // // Y.resize(opt.grid[1],opt.grid[2]);  
 // // L.resize(opt.grid[1],opt.grid[2]);  
-// Eigen::MatrixXcd G(opt.grid[1],opt.grid[2]);
-// Eigen::MatrixXcd X(opt.grid[1],opt.grid[2]); 
-// Eigen::MatrixXcd Y(opt.grid[1],opt.grid[2]); 
-// Eigen::MatrixXcd L(opt.grid[1],opt.grid[2]);   
+// MatrixXcd G(opt.grid[1],opt.grid[2]);
+// MatrixXcd X(opt.grid[1],opt.grid[2]); 
+// MatrixXcd Y(opt.grid[1],opt.grid[2]); 
+// MatrixXcd L(opt.grid[1],opt.grid[2]);   
 // // X.reserve(opt.grid[1]);
 // // Y.reserve(opt.grid[2]);
 // // L.reserve(3 * (opt.grid[1]-2));
@@ -201,7 +202,7 @@ void RK4::TimeStepRK4(ComplexGrid* &pPsi,vector<ComplexGrid> &k,Options &opt,com
 }	
 
 
-void RK4::cli_plot(Eigen::MatrixXcd& mPsi, Options &opt, string name,int counter_state, int counter_max, double start,bool plot)
+void RK4::cli_plot(MatrixXcd& mPsi, Options &opt, string name,int counter_state, int counter_max, double start,bool plot)
 {
 	int seconds;
 	int min;
@@ -396,7 +397,7 @@ void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 // 	}
 // }
 
-// void RK4::functionEigen_RTE(Eigen::MatrixXcd& k,Eigen::MatrixXcd& mPsiCopy,complex<double>& t)
+// void RK4::functionEigen_RTE(MatrixXcd& k,MatrixXcd& mPsiCopy,complex<double>& t)
 // {	
 // 	cout << "1" << endl;
 // 	k.noalias() += complex<double>(0.0,0.5) * ((L * mPsiCopy) / ( l_x(t) * l_x(t) ) + ( mPsiCopy * LT ) / (l_y(t) * l_y(t) ) );
@@ -418,18 +419,18 @@ void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 // 	complex<double> t_RTE(opt.RTE_step,0); 
 
 
-// 	Eigen::MatrixXcd mPsi(grid_x,grid_y);
-// 	Eigen::MatrixXcd mPsiCopy(grid_x,grid_y);
-// 	Eigen::MatrixXcd k0(grid_x,grid_y);
-// 	Eigen::MatrixXcd k1(grid_x,grid_y);
-// 	Eigen::MatrixXcd k2(grid_x,grid_y);
-// 	Eigen::MatrixXcd k3(grid_x,grid_y);
-// 	Eigen::MatrixXcd L(grid_x,grid_y);
-// 	Eigen::MatrixXcd G(grid_x,grid_y);
-// 	Eigen::MatrixXcd X(grid_x,grid_y);
-// 	Eigen::MatrixXcd Y(grid_x,grid_y);
+// 	MatrixXcd mPsi(grid_x,grid_y);
+// 	MatrixXcd mPsiCopy(grid_x,grid_y);
+// 	MatrixXcd k0(grid_x,grid_y);
+// 	MatrixXcd k1(grid_x,grid_y);
+// 	MatrixXcd k2(grid_x,grid_y);
+// 	MatrixXcd k3(grid_x,grid_y);
+// 	MatrixXcd L(grid_x,grid_y);
+// 	MatrixXcd G(grid_x,grid_y);
+// 	MatrixXcd X(grid_x,grid_y);
+// 	MatrixXcd Y(grid_x,grid_y);
 
-// 	Eigen::SparseMatrix<std::complex<double>,1,std::ptrdiff_t >  Lsparse, Gsparse, Xsparse, Ysparse;
+// 	SparseMatrix<std::complex<double>,1,std::ptrdiff_t >  Lsparse, Gsparse, Xsparse, Ysparse;
 // 	Lsparse.resize(grid_x,grid_y);
 // 	Gsparse.resize(grid_x,grid_y);
 // 	Xsparse.resize(grid_x,grid_y);
@@ -455,15 +456,15 @@ void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 // 	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ mPsiCopy(i,j) = pPsi->at(0,i,j,0);}}
 // 	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ mPsi(i,j) = pPsi->at(0,i,j,0);}}
 
-// 	// 	Eigen::MatrixXcd result;
+// 	// 	MatrixXcd result;
 // 	// result = Lsparse * mPsiCopy;
 
 // 	// cout << "result: " << result << endl;
 
-// // Eigen::MatrixXcd G(opt.grid[1],opt.grid[2]);
-// // Eigen::MatrixXcd X(opt.grid[1],opt.grid[2]); 
-// // Eigen::MatrixXcd Y(opt.grid[1],opt.grid[2]); 
-// // Eigen::MatrixXcd L(opt.grid[1],opt.grid[2]);   
+// // MatrixXcd G(opt.grid[1],opt.grid[2]);
+// // MatrixXcd X(opt.grid[1],opt.grid[2]); 
+// // MatrixXcd Y(opt.grid[1],opt.grid[2]); 
+// // MatrixXcd L(opt.grid[1],opt.grid[2]);   
 
 //  	for(int i = 0; i<opt.grid[1];i++)
 // 	{
@@ -498,8 +499,8 @@ void RK4::Dirichlet(ComplexGrid* &pPsi,Options &opt){
 // 	Gsparse.makeCompressed();
 // 	// cout << " G: \n"<< G << endl;
 
-// 	Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t > LsparseT = Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t >(Lsparse.transpose());
-// 	Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t > GsparseT = Eigen::SparseMatrix<std::complex<double>,0,std::ptrdiff_t >(Gsparse.transpose());
+// 	SparseMatrix<std::complex<double>,0,std::ptrdiff_t > LsparseT = SparseMatrix<std::complex<double>,0,std::ptrdiff_t >(Lsparse.transpose());
+// 	SparseMatrix<std::complex<double>,0,std::ptrdiff_t > GsparseT = SparseMatrix<std::complex<double>,0,std::ptrdiff_t >(Gsparse.transpose());
 
 // 	cout << "All Matrix Sizes: " << endl
 // 		<< "Lsparse: " << Lsparse.size() << endl
@@ -580,15 +581,15 @@ void RK4::functionEigen2_RTE(Options &opt, bool plot)
 	int grid_y = opt.grid[2];
 	double start;
 
-	Eigen::MatrixXcd wavefct(grid_x,grid_y);
-	Eigen::MatrixXcd wavefctcp(grid_x,grid_y);
-	Eigen::MatrixXcd k0 = Eigen::MatrixXcd::Zero(grid_x,grid_y);
-	Eigen::MatrixXcd k1 = Eigen::MatrixXcd::Zero(grid_x,grid_y);
-	Eigen::MatrixXcd k2 = Eigen::MatrixXcd::Zero(grid_x,grid_y);
-	Eigen::MatrixXcd k3 = Eigen::MatrixXcd::Zero(grid_x,grid_y);
+	MatrixXcd wavefct(grid_x,grid_y);
+	MatrixXcd wavefctcp(grid_x,grid_y);
+	MatrixXcd k0 = MatrixXcd::Zero(grid_x,grid_y);
+	MatrixXcd k1 = MatrixXcd::Zero(grid_x,grid_y);
+	MatrixXcd k2 = MatrixXcd::Zero(grid_x,grid_y);
+	MatrixXcd k3 = MatrixXcd::Zero(grid_x,grid_y);
 	for(int i = 0; i < grid_x; i++){for(int j = 0; j < grid_y; j++){ wavefct(i,j) = pPsi->at(0,i,j,0);}}
 	
-	Eigen::VectorXcd X(opt.grid[1]), Y(opt.grid[2]);
+	VectorXcd X(opt.grid[1]), Y(opt.grid[2]);
 	for(int i = 0;i<grid_x;i++){
 		X(i) = complex<double>(x_axis[i],0.0);
 	}
@@ -602,16 +603,17 @@ void RK4::functionEigen2_RTE(Options &opt, bool plot)
 
 	int t = 0;
 	//start loop here
+	Eigen::initParallel();
 	for(int m = 1; m <= opt.n_it_RTE; m++){
 
 		wavefctcp = wavefct;
 
 		//boundary conditions -- Dirichlet
 
-		wavefct.row(0) = Eigen::VectorXcd::Zero(grid_x);
-		wavefct.row(grid_x-1) = Eigen::VectorXcd::Zero(grid_x);
-		wavefct.col(0) = Eigen::VectorXcd::Zero(grid_y);
-		wavefct.col(grid_y-1) = Eigen::VectorXcd::Zero(grid_y);
+		wavefct.row(0) = VectorXcd::Zero(grid_x);
+		wavefct.row(grid_x-1) = VectorXcd::Zero(grid_x);
+		wavefct.col(0) = VectorXcd::Zero(grid_y);
+		wavefct.col(grid_y-1) = VectorXcd::Zero(grid_y);
 
 		//boundary conditions end
 
@@ -654,16 +656,14 @@ cout << "\n";
 
 }
 
-Eigen::MatrixXcd RK4::compute_the_eigen_k(Eigen::MatrixXcd &wavefctcp, Eigen::VectorXcd &X,Eigen::VectorXcd &Y,int &t,int &grid_x,int &grid_y)
+MatrixXcd RK4::compute_the_eigen_k(MatrixXcd &wavefctcp, VectorXcd &X,VectorXcd &Y,int &t,int &grid_x,int &grid_y)
 	{
-	Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> wavefctcpX = Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>::Zero(grid_x,grid_y);
-	Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> wavefctcpY = Eigen::Matrix<std::complex<double>,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor>::Zero(grid_x,grid_y);
-	Eigen::MatrixXcd k = Eigen::MatrixXcd::Zero(grid_x,grid_y);
+	Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(grid_x,grid_y);
+	Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(grid_x,grid_y);
+	MatrixXcd k = MatrixXcd::Zero(grid_x,grid_y);
 
 
 	//laplacian
-	// wavefctcpX = complex<double>(0.0,1.0) * wavefctcp / (two * h_x * h_x /** lambda_x_squared[t]*/);
-	// wavefctcpY = complex<double>(0.0,1.0) * wavefctcp / (two * h_y * h_y /** lambda_y_squared[t]*/);
 
 	// #pragma omp parallel for
 	for(int j = 1;j<grid_y-1;j++){
@@ -671,36 +671,22 @@ Eigen::MatrixXcd RK4::compute_the_eigen_k(Eigen::MatrixXcd &wavefctcp, Eigen::Ve
 	wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
 	wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
 	}}
-	k += i_unit * ( wavefctcpX / (two * h_x * h_x /** lambda_x_squared[t]*/) +  wavefctcpY / (two * h_y * h_y /** lambda_y_squared[t]*/)  );
-	// k += i_unit * wavefctcpX / (two * h_x * h_x /** lambda_x_squared[t]*/);
-	// #pragma omp parallel for
-	// for(int i = 1;i<grid_x-1;i++){
-	// for(int j = 1;j<grid_y-1;j++){
-	// wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
-	// }}
-	// k += i_unit * wavefctcpY / (two * h_y * h_y /** lambda_y_squared[t]*/);
+	k.noalias() +=   wavefctcpX * lambda_x_squared[t] + wavefctcpY * lambda_y_squared[t];
 	//laplacian end
 
 	// gradient
 
-	// wavefctcpX = wavefctcp * lambda_dot_x[t] / (two * h_x );
-	// wavefctcpY = wavefctcp * lambda_dot_y[t] / (two * h_y );
+	// #pragma omp parallel for
+	for(int j = 1;j<grid_y-1;j++){
+	for(int i = 1;i<grid_x-1;i++){
+	wavefctcpX(i,j) = wavefctcp(i+1,j) - wavefctcp(i-1,j);
+	wavefctcpY(i,j) = wavefctcp(i,j+1) - wavefctcp(i,j-1);
+	}}
 
-	// #pragma omp parallel for
-	// for(int j = 0;j<grid_y;j++){ wavefctcpX.col(j).array() *= X.array(); }
-	// #pragma omp parallel for
-	// for(int i = 0;i<grid_x;i++){ wavefctcpY.row(i).array() *= Y.array(); }
+	for(int i = 0;i<grid_x;i++){ wavefctcpY.row(i).array() *= Y.array(); }
+	for(int j = 0;j<grid_y;j++){ wavefctcpX.col(j).array() *= X.array(); }
 
-	// #pragma omp parallel for
-	// for(int j = 0;j<grid_y;j++){
-	// for(int i = 1;i<grid_x-1;i++){
-	// k(i,j) += wavefctcpX(i+1,j) - wavefctcpX(i-1,j);
-	// }}
-	// #pragma omp parallel for
-	// for(int i = 0;i<grid_x;i++){
-	// for(int j = 1;j<grid_y-1;j++){
-	// k(i,j) += wavefctcpY(i,j+1) - wavefctcpY(i,j-1);
-	// }}
+	k.noalias() += wavefctcpX * lambda_dot_x[t] + wavefctcpY * lambda_dot_y[t];
 	// // gradient end
 
 	//interaction
