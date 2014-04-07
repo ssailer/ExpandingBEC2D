@@ -217,8 +217,7 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.n_save_RTE           = root["RunOptions"]["n_save_RTE"]; 			
 	opt.n_it_ITP1            = root["RunOptions"]["n_it_ITP1"];	
 	opt.n_it_ITP2            = root["RunOptions"]["n_it_ITP2"];				
-	opt.n_save_ITP           = root["RunOptions"]["n_save_ITP"]; 			
-	opt.times                = root["RunOptions"]["times"]; 	    			
+	opt.n_save_ITP           = root["RunOptions"]["n_save_ITP"];   			
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.Q                    = root["RunOptions"]["Q"];

@@ -236,8 +236,7 @@ ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, std::vector<dou
     {
         for(int i=0; i < opt.grid[1]; i++){
             for(int j=0; j < opt.grid[2]; j++){
-                value = complex<double> ( exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), /*sin(x[i]*M_PI/2)*/ /*- M_PI * x[i] / opt.min_x*/ 0.0 );
-                // value = complex<double>(exp(-(x[i] * x[i] + y[j] * y[j])),exp( -(x[i] * x[i] + y[j] * y[j]) ) );
+                value = complex<double> ( exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), 0.0 );                
             g->at(k,i,j,0) = value;
             }
         }
@@ -307,7 +306,7 @@ ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vorte
                 for(int x = 0; x < opt.grid[1]; x++)
                 {   
 
-                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(-1,i+1))*(vortex(y,V_y[i],x,V_x[i])));
+                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,i+1))*(vortex(y,V_y[i],x,V_x[i])));
                     /*
                     if(i==0)
                     {

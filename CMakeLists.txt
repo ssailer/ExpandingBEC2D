@@ -7,7 +7,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/exp_utilities
 					 ${CMAKE_SOURCE_DIR}/propagators
 					 ${CMAKE_SOURCE_DIR}/observables)
 
-set(SOURCES main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/exp_RK4_tools.cpp
+set(SOURCES main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_tools.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/bh3binaryfile.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/complexgrid.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/gauss_random.cpp

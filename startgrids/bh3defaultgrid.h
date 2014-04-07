@@ -2,7 +2,7 @@
 #define BH3DEFAULTGRID_H__
 
 #include <bh3binaryfile.h>
-#include <exp_RK4_tools.h>
+#include <EXP2D_tools.h>
 int mypow2(int x, int y); // Computes x^y
 inline double vortex(int b, int y, int a, int x) //Vortex with phase [0,2*pi)          
 {
