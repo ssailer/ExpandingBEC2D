@@ -53,8 +53,8 @@ if(opt.RTE_only == false)
 
 // Initialize the needed grid object and run object
 
-ComplexGrid* startgrid = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-EXP2D* run = new EXP2D(startgrid,opt);	
+ComplexGrid* DATA = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+EXP2D* run = new EXP2D(DATA,opt);	
 
 // if the given value is true, initialize the startgrid with a gaussian distribution
 
@@ -77,9 +77,7 @@ opt.name = "INIT";
 plotdatatopng(run->pPsi,opt);
 
 // //====> Imaginary Time Propagation (ITP)
-opt.name = "ITP1";
-opt.n_it_ITP = opt.n_it_ITP1;
-run->itpToTime(opt,false);
+run->itpToTime("ITP1", opt.n_it_ITP1,false);
 
 //////////// VORTICES ////////////////
 
@@ -89,28 +87,24 @@ if(opt.startgrid[1]==true)
   int sigma_grid[2];
 	sigma_grid[0] = opt.grid[1]/8;
 	sigma_grid[1] = opt.grid[2]/8;
-	double r = (sigma_grid[0]+sigma_grid[1])/4.0; 
+	double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
   // run->pPsi = add_central_vortex(run->pPsi,opt);	
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r/3.,6);
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r*2./3.,12);
+  run->pPsi = add_circle_vortex(run->pPsi,opt,r,6);
+  // run->pPsi = add_circle_vortex(run->pPsi,opt,r,12);
   // run->pPsi = add_circle_vortex(run->pPsi,opt,r,24);
 	// run->pPsi = add_circle_vortex(run->pPsi,opt,r,2);
 
-  cout << "Vortices added." << endl;
-  opt.name = "VORT";
-
-	plotdatatopng(run->pPsi,opt);
+cout << "Vortices added." << endl;
+opt.name = "VORT";
+plotdatatopng(run->pPsi,opt);
 }
 
 ////// END VORTICES //////////
 
 //====> Imaginary Time Propagation (ITP)
+run->itpToTime("ITP2",opt.n_it_ITP2,false);
 opt.name = "ITP2";
-opt.n_it_ITP = opt.n_it_ITP2;
-
-run->itpToTime(opt,false);
-
 plotdatatopng(run->pPsi,opt);
 saveDataToHDF5(run->pPsi,opt);
 
@@ -118,19 +112,18 @@ saveDataToHDF5(run->pPsi,opt);
 }else
 {
 readDataFromHDF5(run->pPsi,opt);
+run->setOptions(opt);
 printInitVar(opt);
 }
 
 //====> Real Time Expansion (RTE)
-opt.name = "RTE";
-	
-run->rteToTime(opt,true);
+run->rteToTime("RTE",opt.n_it_RTE,true);
 
 // Everything finished here, cleanup remaining	
 
 cout << "Run finished." << endl;
 
-delete startgrid;
+delete DATA;
 delete run;
  
 }  // exceptions catcher

@@ -53,48 +53,48 @@ class EXP2D
     EXP2D();
     EXP2D(ComplexGrid* &c,Options &opt);    
     ~EXP2D();
+
+    void setOptions(Options &externaloptions);
     
     // Propagatoren
-    void itpToTime(Options &opt,bool plot);
-    void rteToTime(Options &opt, bool plot);    
+    void itpToTime(string runname, int runtime, bool plot);
+    void rteToTime(string runname, int runtime, bool plot);    
    
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;
     
     // Coordinates
-    vector<double> x_axis,y_axis; 
+    vector<double> x_axis,y_axis;
+    VectorXcd X,Y;
+
+    Options opt; 
+
 
   private:
 
-  void ITP(ComplexGrid* & pPsi,Options &opt);
-  inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp, VectorXcd &X,VectorXcd &Y,int &t,int &grid_x,int &grid_y);
-
-    // double gauss(double x,double y); //A simple Gaussian
+  inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
+  inline void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
    
     // Scaling of Wavefunction after every timestep in ITP
-    void rescale(ComplexGrid* & pPsi, Options &opt);
-    
-    // Hilfsfunktionen fuer ITP
-    void computeK_ITP(ComplexGrid* &pPsi, vector<ComplexGrid> &k,Options &opt,complex<double> &t_ITP);
-    void Neumann(ComplexGrid &k,ComplexGrid &PsiCopy,Options &opt);    
+    void rescale(MatrixXcd &wavefct);   
    
     // Hilfsfunktionen 
-    void cli_plot(MatrixXcd& mPsi, Options &opt,string name,int counter_state, int counter_max, double start,bool plot);  
-    void run_status(string name,int counter_state, int counter_max, double start);
+    void cli_plot(MatrixXcd& wavefct,string name,int counter_state, int counter_max, double start,bool plot);  
     
     // Hilfsvariablen
     complex<double> h_x, h_y;
     complex<double> Integral;
-    complex<double> Integral_aux;
+   
+
+    VectorXcd Xpotential, Ypotential;
     
     
     // some used constants
     
   double pi;
   complex<double>  zero,half,one,two,four,six,i_unit;
-  complex<double> exp_factor, dispersion_x, dispersion_y;
-  double g;
   complex<double> t_RTE;
+  complex<double> t_ITP;
 
   vector<complex<double>> laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;  
 
@@ -102,38 +102,6 @@ class EXP2D
 
 
     // inline functions for stuff
-
-    inline complex<double> interaction(complex<double> a,Options &opt)
-{return (opt.g*norm(a));} //Interaction term in the GPE Hamiltonian 
-
-inline complex<double> integral(ComplexGrid* & pPsi,Options &opt)
-{ 
-  Integral_aux = complex<double>(0,0);  
-  for(int i=0;i<opt.grid[1]-1;i++)
-  {
-    for(int j=0;j<opt.grid[2]-1;j++)
-    {
-      Integral_aux+=h_x*h_y*(norm(pPsi->at(0,i,j,0))+norm(pPsi->at(0,i+1,j,0))+norm(pPsi->at(0,i,j+1,0))+norm(pPsi->at(0,i+1,j+1,0)))/four;
-      
-    }
-  }
-  return Integral_aux;
-}
-
-    inline complex<double> itp_kinetic(ComplexGrid &PsiCopy,int i, int j)
-{
-    return half*((PsiCopy(0,i+1,j,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i-1,j,0))/(h_x*h_x))+half*((PsiCopy(0,i,j+1,0)-(two*PsiCopy(0,i,j,0))+PsiCopy(0,i,j-1,0))/(h_x*h_x)); 
-}
-
-inline complex<double> itp_potential(ComplexGrid & PsiCopy,int i, int j,Options & opt)
-{ 
-    complex<double> xvalue = complex<double>(x_axis[i],0);
-    complex<double> yvalue = complex<double>(y_axis[j],0);
-  
-    return -(half*opt.omega_x*opt.omega_x*xvalue*xvalue+half*opt.omega_y*opt.omega_y*yvalue*yvalue+complex<double>(opt.g,0)*norm(PsiCopy(0,i,j,0)))*PsiCopy(0,i,j,0);
-}
-
-   
 
    // inline double x_expand(int i, Options &opt)
    // {
@@ -148,22 +116,22 @@ inline complex<double> itp_potential(ComplexGrid & PsiCopy,int i, int j,Options 
 
   inline complex<double> lambda_x(complex<double>& t)
    {
-    return sqrt(one+exp_factor*dispersion_x*dispersion_x*t*t);
+    return sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t);
    }
 
    inline complex<double> lambda_x_dot(complex<double>& t)
    {
-   return (exp_factor*dispersion_x*dispersion_x*t/sqrt(one+exp_factor*dispersion_x*dispersion_x*t*t));
+   return (opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t/sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t));
    }
 
    inline complex<double> lambda_y(complex<double>& t)
    {
-   return sqrt(one+exp_factor*dispersion_y*dispersion_y*t*t);
+   return sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t);
    }
 
    inline complex<double> lambda_y_dot(complex<double>& t)
    {
-    return (exp_factor*dispersion_y*dispersion_y*t/sqrt(one+exp_factor*dispersion_y*dispersion_y*t*t));
+    return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t));
    }
 
 
