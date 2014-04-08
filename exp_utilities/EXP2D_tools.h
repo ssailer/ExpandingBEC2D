@@ -66,6 +66,7 @@ class EXP2D
     // Coordinates
     vector<double> x_axis,y_axis;
     VectorXcd X,Y;
+    VectorXd Xexpanding, Yexpanding;
 
     Options opt; 
 
@@ -79,14 +80,15 @@ class EXP2D
     void rescale(MatrixXcd &wavefct);   
    
     // Hilfsfunktionen 
-    void cli_plot(MatrixXcd& wavefct,string name,int counter_state, int counter_max, double start,bool plot);  
+    void cli_plot(MatrixXcd& wavefct,string name,int counter_state, int counter_max, double start,bool plot);
+    void cli_plot_expanding(MatrixXcd& wavefct,vector<double> &ranges,string name,int counter_state, int counter_max, double start,bool plot);
     
     // Hilfsvariablen
     complex<double> h_x, h_y;
     complex<double> Integral;
    
 
-    VectorXcd Xpotential, Ypotential;
+    MatrixXcd ITPpotential;
     
     
     // some used constants
@@ -96,22 +98,24 @@ class EXP2D
   complex<double> t_RTE;
   complex<double> t_ITP;
 
-  vector<complex<double>> laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;  
+  VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
+  complex<double> itp_laplacian_x;
+  complex<double> itp_laplacian_y;
 
 
 
 
     // inline functions for stuff
 
-   // inline double x_expand(int i, Options &opt)
-   // {
-   //  return x_axis[i] * real(lambda_x(opt));
-   // }
+   inline VectorXd x_expand(complex<double> &t)
+   {
+    return X.real() * real(lambda_x(t));
+   }
 
-   // inline double y_expand(int j, Options &opt)
-   // {
-   //  return y_axis[j] * real(lambda_y(opt));
-   // }
+   inline VectorXd y_expand(complex<double> &t)
+   {
+    return Y.real() * real(lambda_y(t));
+   }
 
 
   inline complex<double> lambda_x(complex<double>& t)

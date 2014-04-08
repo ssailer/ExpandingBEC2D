@@ -224,4 +224,91 @@ inline void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt)
 
 }
 
+inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,VectorXd &Xexpanding,VectorXd &Yexpanding,Options &opt)
+{
+	
+
+	int n = opt.grid[1];
+	int m = opt.grid[2];
+
+
+
+	mglComplex data(n,m);
+	mglData xaxis(n);
+	mglData yaxis(m);
+
+	int i,j,k;
+
+	// data.Create(n,m);
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		k = i+n*j;
+
+		data.a[k] = mPsi(i,j);		
+	}
+
+	for( i = 0; i < n; i++){ xaxis.a[i] = Xexpanding(i); }
+	for( j = 0; j < m; j++){ yaxis.a[j] = Yexpanding(j); }
+
+
+
+	mglGraph gr;
+
+		
+		// gr.Light(0,true);
+		// gr.Alpha(true);
+
+	string filename = "OBDM_" + opt.name + ".png";
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(opt.name.c_str());
+	gr.SetRange('x',-ranges[0],ranges[0]);
+	gr.SetRange('y',-ranges[1],ranges[1]);
+	// gr.Alpha(true);
+
+
+
+	data.use_abs=false;
+
+	gr.SetRange('z',data);
+	gr.SetRange('c',data);
+
+	gr.SubPlot(2,2,0);
+
+	gr.Rotate(40,40);
+	gr.Box();
+	gr.Axis();
+	gr.Surf(xaxis,yaxis,data);
+
+
+	gr.SubPlot(2,2,2);
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(xaxis,yaxis,data);
+
+
+	data.use_abs=true;
+	gr.SetRange('z',data);
+	gr.SetRange('c',data);
+
+	gr.SubPlot(2,2,1);
+
+	// gr.Light(true);
+	gr.Rotate(40,40);
+	gr.Box();
+	gr.Axis();
+
+	gr.Surf(xaxis,yaxis,data);
+
+	gr.SubPlot(2,2,3);
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(xaxis,yaxis,data);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
 #endif // PLOT_WITH_MGL_H__
