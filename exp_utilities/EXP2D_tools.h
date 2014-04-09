@@ -55,6 +55,7 @@ class EXP2D
     ~EXP2D();
 
     void setOptions(Options &externaloptions);
+    void RunSetup();
     
     // Propagatoren
     void itpToTime(string runname, int runtime, bool plot);
@@ -62,84 +63,79 @@ class EXP2D
    
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;
+    // Storage Variable for the runs
+    MatrixXcd wavefct;
+
+    void CopyComplexGridToEigen();
+    void CopyEigenToComplexGrid();
     
     // Coordinates
     vector<double> x_axis,y_axis;
     VectorXcd X,Y;
     VectorXd Xexpanding, Yexpanding;
 
+    // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt; 
 
 
   private:
 
-  inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-  inline void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
+    //
+    void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
+    void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
+    void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
    
     // Scaling of Wavefunction after every timestep in ITP
     void rescale(MatrixXcd &wavefct);   
    
-    // Hilfsfunktionen 
-    void cli_plot(MatrixXcd& wavefct,string name,int counter_state, int counter_max, double start,bool plot);
-    void cli_plot_expanding(MatrixXcd& wavefct,vector<double> &ranges,string name,int counter_state, int counter_max, double start,bool plot);
+    // Plotting and progress functions 
+    void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
+    void cli_plot_expanding(vector<double> &ranges,string name,int counter_state, int counter_max, double start,bool plot);
     
-    // Hilfsvariablen
+    // Variables
     complex<double> h_x, h_y;
     complex<double> Integral;
-   
-
-    MatrixXcd ITPpotential;
+    complex<double> itp_laplacian_x;
+    complex<double> itp_laplacian_y;
+    vector<double> ranges;
+    Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
+    Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
+    MatrixXcd PotentialGrid;
+    VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
     
     
     // some used constants
     
-  double pi;
-  complex<double>  zero,half,one,two,four,six,i_unit;
-  complex<double> t_RTE;
-  complex<double> t_ITP;
+    double pi;
+    complex<double>  zero,half,one,two,four,six,i_unit;
+    complex<double> t_RTE;
+    complex<double> t_ITP;
 
-  VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
-  complex<double> itp_laplacian_x;
-  complex<double> itp_laplacian_y;
+    // little helper functions for stuff
 
-
-
-
-    // inline functions for stuff
-
-   inline VectorXd x_expand(complex<double> &t)
-   {
+   inline VectorXd x_expand(complex<double> &t){
     return X.real() * real(lambda_x(t));
    }
 
-   inline VectorXd y_expand(complex<double> &t)
-   {
+   inline VectorXd y_expand(complex<double> &t){
     return Y.real() * real(lambda_y(t));
    }
 
-
-  inline complex<double> lambda_x(complex<double>& t)
-   {
+   inline complex<double> lambda_x(complex<double> &t){
     return sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t);
    }
 
-   inline complex<double> lambda_x_dot(complex<double>& t)
-   {
-   return (opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t/sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t));
+   inline complex<double> lambda_x_dot(complex<double> &t){
+    return (opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t/sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t));
    }
 
-   inline complex<double> lambda_y(complex<double>& t)
-   {
-   return sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t);
+   inline complex<double> lambda_y(complex<double> &t){
+    return sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t);
    }
 
-   inline complex<double> lambda_y_dot(complex<double>& t)
-   {
+   inline complex<double> lambda_y_dot(complex<double> &t){
     return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t));
    }
-
-
-
   
 };
 

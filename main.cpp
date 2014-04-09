@@ -51,10 +51,8 @@ if(opt.RTE_only == false)
 	printInitVar(opt); 
 }
 
-// Initialize the needed grid object and run object
-
-ComplexGrid* DATA = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-EXP2D* run = new EXP2D(DATA,opt);	
+// Initialize the needed grid object 
+ComplexGrid* DATA = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);	
 
 // if the given value is true, initialize the startgrid with a gaussian distribution
 
@@ -65,16 +63,19 @@ if(opt.startgrid[0]==true)
 	double sigma_real[2];
 	sigma_real[0] = opt.min_x/4;
 	sigma_real[1] = opt.min_y/4;		
-	run->pPsi = set_grid_to_gaussian(run->pPsi,opt,run->x_axis,run->y_axis,sigma_real[0],sigma_real[1]);
+	DATA = set_grid_to_gaussian(DATA,opt,sigma_real[0],sigma_real[1]);
 }else
 {
-	run->pPsi = create_noise_Start_Grid(run->pPsi,opt);
+	DATA = create_noise_Start_Grid(DATA,opt);
 }
+
+// Initialize the Run Object and load the Grid
+EXP2D* run = new EXP2D(DATA,opt);
 
 // set the datafile identifier name and save the initial grid
 
 opt.name = "INIT";
-plotdatatopng(run->pPsi,opt);
+plotdatatopng(DATA,opt);
 
 // //====> Imaginary Time Propagation (ITP)
 run->itpToTime("ITP1", opt.n_it_ITP1,false);
@@ -89,15 +90,15 @@ if(opt.startgrid[1]==true)
 	sigma_grid[1] = opt.grid[2]/8;
 	double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
-  run->pPsi = add_central_vortex(run->pPsi,opt);	
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r/4.0,6);
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r/2.0,12);
-  run->pPsi = add_circle_vortex(run->pPsi,opt,r*3.0/4.0,24);
-	// run->pPsi = add_circle_vortex(run->pPsi,opt,r,2);
+  DATA = add_central_vortex(DATA,opt);	
+  DATA = add_circle_vortex(DATA,opt,r/4.0,3);
+  DATA = add_circle_vortex(DATA,opt,r/2.0,6);
+  DATA = add_circle_vortex(DATA,opt,r*3.0/4.0,12);
+	// DATA = add_circle_vortex(DATA,opt,r,2);
 
 cout << "Vortices added." << endl;
 opt.name = "VORT";
-plotdatatopng(run->pPsi,opt);
+plotdatatopng(DATA,opt);
 }
 
 ////// END VORTICES //////////
@@ -105,26 +106,34 @@ plotdatatopng(run->pPsi,opt);
 //====> Imaginary Time Propagation (ITP)
 run->itpToTime("ITP2",opt.n_it_ITP2,false);
 opt.name = "ITP2";
-plotdatatopng(run->pPsi,opt);
-saveDataToHDF5(run->pPsi,opt);
+plotdatatopng(DATA,opt);
+saveDataToHDF5(DATA,opt);
+
+//====> Real Time Expansion (RTE)
+run->rteToTime("RTE",opt.n_it_RTE,true);
+delete run;
 
 // endif opt.RTE_only
 }else
 {
-readDataFromHDF5(run->pPsi,opt);
+EXP2D* run = new EXP2D(DATA,opt);
+readDataFromHDF5(DATA,opt);
 run->setOptions(opt);
+run->RunSetup();
 printInitVar(opt);
-}
-
 //====> Real Time Expansion (RTE)
 run->rteToTime("RTE",opt.n_it_RTE,true);
+delete run;
+
+}
+
+delete DATA;
 
 // Everything finished here, cleanup remaining	
 
 cout << "Run finished." << endl;
 
-delete DATA;
-delete run;
+
  
 }  // exceptions catcher
 catch(std::exception& e) 

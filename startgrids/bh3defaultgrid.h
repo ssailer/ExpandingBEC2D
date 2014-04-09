@@ -9,7 +9,7 @@ inline double vortex(int b, int y, int a, int x) //Vortex with phase [0,2*pi)
         if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
     else{ return atan2(b-y,a-x); }        
 }
-ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, std::vector<double> &x, std::vector<double> & y, double & sigma_x, double & sigma_y);
+ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, double & sigma_x, double & sigma_y);
 ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r,int Vortexnumber);
 ComplexGrid *add_central_vortex(ComplexGrid* &g, Options &opt);
 ComplexGrid *create_noise_Start_Grid(ComplexGrid* &g,const Options &opt);
