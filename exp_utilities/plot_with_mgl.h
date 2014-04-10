@@ -90,7 +90,7 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 		// gr.Light(0,true);
 		// gr.Alpha(true);
 
-	string filename = "OBDM_" + opt.name + ".png";
+	string filename = opt.name + ".png";
 
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
@@ -171,8 +171,9 @@ inline void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt)
 		// gr.Light(0,true);
 		// gr.Alpha(true);
 
-	string filename = "OBDM_" + opt.name + ".png";
-
+	
+	gr.SetRange('x',-opt.min_x,opt.min_x);
+	gr.SetRange('y',-opt.min_y,opt.min_y);
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
 	gr.Title(opt.name.c_str());
@@ -181,41 +182,41 @@ inline void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt)
 
 
 	data.use_abs=false;
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);
+	string filename = "PHASE-" + opt.name + ".png";
+
 	gr.SetRange('z',data);
 	gr.SetRange('c',data);
 
-	gr.SubPlot(2,2,0);
+	// gr.SubPlot(2,2,0);
 
-	gr.Rotate(40,40);
-	gr.Box();
-	gr.Axis();
-	gr.Surf(data);
+	// gr.Rotate(40,40);
+	// gr.Box();
+	// gr.Axis();
+	// gr.Surf(data);
 
 
-	gr.SubPlot(2,2,2);
+	// gr.SubPlot(2,2,2);
 	gr.Axis();
 	gr.Colorbar("_");
 	gr.Dens(data);
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 
 
 	data.use_abs=true;
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);
+	filename = "DENS-" + opt.name + ".png";
 	gr.SetRange('z',data);
 	gr.SetRange('c',data);
 
-	gr.SubPlot(2,2,1);
+	// gr.SubPlot(2,2,1);
 
-	// gr.Light(true);
-	gr.Rotate(40,40);
-	gr.Box();
-	gr.Axis();
+	// // gr.Light(true);
+	// gr.Rotate(40,40);
+	// gr.Box();
+	// gr.Axis();
 
-	gr.Surf(data);
+	// gr.Surf(data);
 
-	gr.SubPlot(2,2,3);
+	// gr.SubPlot(2,2,3);
 	gr.Axis();
 	gr.Colorbar("_");
 	gr.Dens(data);
@@ -259,7 +260,7 @@ inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &r
 		// gr.Light(0,true);
 		// gr.Alpha(true);
 
-	string filename = "OBDM_" + opt.name + ".png";
+	string filename = opt.name + "-DENS.png";
 
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
@@ -270,39 +271,39 @@ inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &r
 
 
 
-	data.use_abs=false;
+	// data.use_abs=false;
 
-	gr.SetRange('z',data);
-	gr.SetRange('c',data);
+	// gr.SetRange('z',data);
+	// gr.SetRange('c',data);
 
-	gr.SubPlot(2,2,0);
+	// gr.SubPlot(2,2,0);
 
-	gr.Rotate(40,40);
-	gr.Box();
-	gr.Axis();
-	gr.Surf(xaxis,yaxis,data);
+	// gr.Rotate(40,40);
+	// gr.Box();
+	// gr.Axis();
+	// gr.Surf(xaxis,yaxis,data);
 
 
-	gr.SubPlot(2,2,2);
-	gr.Axis();
-	gr.Colorbar("_");
-	gr.Dens(xaxis,yaxis,data);
+	// gr.SubPlot(2,2,2);
+	// gr.Axis();
+	// gr.Colorbar("_");
+	// gr.Dens(xaxis,yaxis,data);
 
 
 	data.use_abs=true;
 	gr.SetRange('z',data);
 	gr.SetRange('c',data);
 
-	gr.SubPlot(2,2,1);
+	// gr.SubPlot(2,2,1);
 
-	// gr.Light(true);
-	gr.Rotate(40,40);
-	gr.Box();
-	gr.Axis();
+	// // gr.Light(true);
+	// gr.Rotate(40,40);
+	// gr.Box();
+	// gr.Axis();
 
-	gr.Surf(xaxis,yaxis,data);
+	// gr.Surf(xaxis,yaxis,data);
 
-	gr.SubPlot(2,2,3);
+	// gr.SubPlot(2,2,3);
 	gr.Axis();
 	gr.Colorbar("_");
 	gr.Dens(xaxis,yaxis,data);

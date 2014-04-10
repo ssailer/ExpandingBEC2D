@@ -52,7 +52,7 @@ if(opt.RTE_only == false)
 }
 
 // Initialize the needed grid object 
-ComplexGrid* DATA = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);	
+ComplexGrid* data = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);	
 
 // if the given value is true, initialize the startgrid with a gaussian distribution
 
@@ -63,19 +63,19 @@ if(opt.startgrid[0]==true)
 	double sigma_real[2];
 	sigma_real[0] = opt.min_x/4;
 	sigma_real[1] = opt.min_y/4;		
-	DATA = set_grid_to_gaussian(DATA,opt,sigma_real[0],sigma_real[1]);
+	data = set_grid_to_gaussian(data,opt,sigma_real[0],sigma_real[1]);
 }else
 {
-	DATA = create_noise_Start_Grid(DATA,opt);
+	data = create_noise_Start_Grid(data,opt);
 }
 
 // Initialize the Run Object and load the Grid
-EXP2D* run = new EXP2D(DATA,opt);
+EXP2D* run = new EXP2D(data,opt);
 
 // set the datafile identifier name and save the initial grid
 
 opt.name = "INIT";
-plotdatatopng(DATA,opt);
+plotdatatopng(data,opt);
 
 // //====> Imaginary Time Propagation (ITP)
 run->itpToTime("ITP1", opt.n_it_ITP1,false);
@@ -90,15 +90,15 @@ if(opt.startgrid[1]==true)
 	sigma_grid[1] = opt.grid[2]/8;
 	double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
-  DATA = add_central_vortex(DATA,opt);	
-  DATA = add_circle_vortex(DATA,opt,r/4.0,3);
-  DATA = add_circle_vortex(DATA,opt,r/2.0,6);
-  DATA = add_circle_vortex(DATA,opt,r*3.0/4.0,12);
-	// DATA = add_circle_vortex(DATA,opt,r,2);
+  data = add_central_vortex(data,opt);	
+  data = add_circle_vortex(data,opt,r/4.0,3);
+  data = add_circle_vortex(data,opt,r/2.0,6);
+  data = add_circle_vortex(data,opt,r*3.0/4.0,12);
+	// data = add_circle_vortex(data,opt,r,2);
 
 cout << "Vortices added." << endl;
 opt.name = "VORT";
-plotdatatopng(DATA,opt);
+plotdatatopng(data,opt);
 }
 
 ////// END VORTICES //////////
@@ -106,8 +106,8 @@ plotdatatopng(DATA,opt);
 //====> Imaginary Time Propagation (ITP)
 run->itpToTime("ITP2",opt.n_it_ITP2,false);
 opt.name = "ITP2";
-plotdatatopng(DATA,opt);
-saveDataToHDF5(DATA,opt);
+plotdatatopng(data,opt);
+saveDataToHDF5(data,opt);
 
 //====> Real Time Expansion (RTE)
 run->rteToTime("RTE",opt.n_it_RTE,true);
@@ -116,8 +116,8 @@ delete run;
 // endif opt.RTE_only
 }else
 {
-EXP2D* run = new EXP2D(DATA,opt);
-readDataFromHDF5(DATA,opt);
+EXP2D* run = new EXP2D(data,opt);
+readDataFromHDF5(data,opt);
 run->setOptions(opt);
 run->RunSetup();
 printInitVar(opt);
@@ -127,7 +127,7 @@ delete run;
 
 }
 
-delete DATA;
+delete data;
 
 // Everything finished here, cleanup remaining	
 

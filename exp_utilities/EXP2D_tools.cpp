@@ -137,13 +137,13 @@ void EXP2D::rescale(MatrixXcd &wavefct)
 
 void EXP2D::cli_plot(string name,int counter_state, int counter_max, double start,bool plot)
 {
-	int seconds;
-	int min;
-	int hour;
-	int total;
-
 	if(counter_state%(counter_max/100)==0)
 		{
+			int seconds;
+			int min;
+			int hour;
+			int total;
+
 			if(plot == true)
 				{
 					opt.name = name + "-" + std::to_string(counter_state/(counter_max/100));
@@ -169,13 +169,14 @@ void EXP2D::cli_plot(string name,int counter_state, int counter_max, double star
 
 void EXP2D::cli_plot_expanding(vector<double> &ranges,string name,int counter_state, int counter_max, double start,bool plot)
 {
-	int seconds;
-	int min;
-	int hour;
-	int total;
+
 
 	if(counter_state%(counter_max/100)==0)
 		{
+			int seconds;
+			int min;
+			int hour;
+			int total;
 			if(plot == true)
 				{
 					opt.name = name + "-" + std::to_string(counter_state/(counter_max/100));
