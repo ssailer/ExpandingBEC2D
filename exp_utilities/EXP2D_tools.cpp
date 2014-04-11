@@ -327,6 +327,15 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 
 		wavefct += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
+		// Dirichlet Boundaries
+
+		wavefct.col(0) = VectorXcd::Zero(opt.grid[1]);
+		wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[1]);
+		wavefct.row(0) = VectorXcd::Zero(opt.grid[2]);
+		wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[2]);
+
+		// Boundaries
+
 		complex<double> tmp2 = complex<double>(m,0.0) * t_RTE;
 		Xexpanding = x_expand(tmp2);
    		Yexpanding = y_expand(tmp2);
@@ -339,15 +348,6 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 	for(int m = 1; m <= runtime; m++){
 
 		wavefctcp = wavefct;
-
-		//boundary conditions -- Dirichlet
-
-		// wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
-		// wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-		// wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
-		// wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
-
-		//boundary conditions end
 
 		RTE_compute_k_pot(k0,wavefctcp,t);
 		wavefctcp = wavefct + half * t_RTE * k0;
@@ -363,6 +363,15 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 		RTE_compute_k_pot(k3,wavefctcp,t);
 
 		wavefct += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
+
+		// Dirichlet Boundaries
+
+		wavefct.col(0) = VectorXcd::Zero(opt.grid[1]);
+		wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[1]);
+		wavefct.row(0) = VectorXcd::Zero(opt.grid[2]);
+		wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[2]);
+
+		// Boundaries
 
 		cli_plot(runname,m,runtime,start,plot);
 	}}

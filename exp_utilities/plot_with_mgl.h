@@ -181,33 +181,33 @@ inline void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt)
 
 
 
-	data.use_abs=false;
-	string filename = "PHASE-" + opt.name + ".png";
+	// data.use_abs=false;
+	// string filename = "PHASE-" + opt.name + ".png";
 
-	gr.SetRange('z',data);
-	gr.SetRange('c',data);
+	// gr.SetRange('z',data);
+	// gr.SetRange('c',data);
 
-	// gr.SubPlot(2,2,0);
+	// // gr.SubPlot(1,2,0);
 
-	// gr.Rotate(40,40);
-	// gr.Box();
+	// // gr.Rotate(40,40);
+	// // gr.Box();
+	// // gr.Axis();
+	// // gr.Surf(data);
+
+
+	// // gr.SubPlot(2,2,2);
 	// gr.Axis();
-	// gr.Surf(data);
-
-
-	// gr.SubPlot(2,2,2);
-	gr.Axis();
-	gr.Colorbar("_");
-	gr.Dens(data);
-	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+	// gr.Colorbar("_");
+	// gr.Dens(data);
+	// gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 
 
 	data.use_abs=true;
-	filename = "DENS-" + opt.name + ".png";
+	string filename = "DENS-" + opt.name + ".png";
 	gr.SetRange('z',data);
 	gr.SetRange('c',data);
 
-	// gr.SubPlot(2,2,1);
+	// gr.SubPlot(1,2,1);
 
 	// // gr.Light(true);
 	// gr.Rotate(40,40);
