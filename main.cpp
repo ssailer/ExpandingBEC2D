@@ -53,7 +53,8 @@ if(opt.RTE_only == false)
 }
 
 // Initialize the needed grid object 
-ComplexGrid* data = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);	
+ComplexGrid* data = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// AverageClass<ComplexGrid>* av = new AverageClass<ComplexGrid>();
 
 // if the given value is true, initialize the startgrid with a gaussian distribution
 
@@ -108,27 +109,34 @@ plotdatatopng(data,opt);
 run->itpToTime("ITP2",opt.n_it_ITP2,false);
 opt.name = "ITP2";
 plotdatatopng(data,opt);
+saveDataToHDF5(data,opt);
 
 //====> Noising the Grid before RTE
-
 noiseTest(opt,data);
 opt.name = "Noise after ITP";
 plotdatatopng(data,opt);
-saveDataToHDF5(data,opt);
+
 
 //====> Real Time Expansion (RTE)
 run->rteToTime("RTE",opt.n_it_RTE,true);
 delete run;
 
-// endif opt.RTE_only
-}else
+}else 
 {
+// run RTE only loading data from rundata
 
 EXP2D* run = new EXP2D(data,opt);
 readDataFromHDF5(data,opt);
 run->setOptions(opt);
 run->RunSetup();
 printInitVar(opt);
+
+//====> Noising the Grid before RTE
+noiseTest(opt,data);
+opt.name = "Noise after ITP";
+plotdatatopng(data,opt);
+
+
 
 //====> Real Time Expansion (RTE)
 run->rteToTime("RTE",opt.n_it_RTE,true);

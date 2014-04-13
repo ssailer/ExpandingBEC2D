@@ -81,7 +81,7 @@ inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 	{	
 		k = i+n*j;
 		// data1 = g->at(0,i,j,0);
-		data.a[k] = g->at(0,i,j,0);
+		data.a[k] = abs2(g->at(0,i,j,0));
 	}
 
 	mglGraph gr;
@@ -162,7 +162,7 @@ inline void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt)
 	{	
 		k = i+n*j;
 		// data1 = g->at(0,i,j,0);
-		data.a[k] = mPsi(i,j);
+		data.a[k] = abs2(mPsi(i,j));
 	}
 
 	mglGraph gr;
@@ -234,7 +234,7 @@ inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &r
 
 
 
-	mglComplex data(n,m);
+	mglData data(n,m);
 	mglData xaxis(n);
 	mglData yaxis(m);
 
@@ -246,7 +246,7 @@ inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &r
 	{	
 		k = i+n*j;
 
-		data.a[k] = mPsi(i,j);		
+		data.a[k] = abs2(mPsi(i,j));		
 	}
 
 	for( i = 0; i < n; i++){ xaxis.a[i] = Xexpanding(i); }
@@ -290,7 +290,7 @@ inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &r
 	// gr.Dens(xaxis,yaxis,data);
 
 
-	data.use_abs=true;
+	// data.use_abs=true;
 	gr.SetRange('z',data);
 	gr.SetRange('c',data);
 

@@ -30,6 +30,7 @@ EXP2D::EXP2D(ComplexGrid* &c,Options &externaloptions)
 	pPsi = c;
   	opt = externaloptions;
 
+
   	// some constants used in computations to shorten stuff
 	pi = M_PI;
  	zero=complex<double>(0,0);
@@ -50,7 +51,9 @@ EXP2D::EXP2D(ComplexGrid* &c,Options &externaloptions)
 
 }
 
-EXP2D::~EXP2D(){}
+EXP2D::~EXP2D(){
+	delete pK;
+}
 
 void EXP2D::setOptions(Options &externaloptions){
 	opt = externaloptions;
@@ -58,6 +61,8 @@ void EXP2D::setOptions(Options &externaloptions){
 }
 
 void EXP2D::RunSetup(){
+
+	pK = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	//Initialize and fill the Eigen Wavefunction Storage
 	wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -71,7 +76,11 @@ void EXP2D::RunSetup(){
 	ranges.resize(2);
 	complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
 	ranges[0] = opt.min_x * real(lambda_x(tmp3));
-	ranges[1] = opt.min_x * real(lambda_y(tmp3));
+	ranges[1] = opt.min_y * real(lambda_y(tmp3));
+	if(ranges[0] > ranges[1]){ ranges[1] = ranges[0];
+		cout << "range 1 bigger than 2" << endl;}
+		else if(ranges[1] > ranges[0]){ranges[0] = ranges[1];
+			cout << "range 2 bigger than 1" << endl;}
 
 	// Grid Spacing variables
 	h_x = complex<double>((2.*opt.min_x/opt.grid[1]),0.0);
@@ -131,6 +140,94 @@ void EXP2D::rescale(MatrixXcd &wavefct)
 	wavefct.array() *= sqrt(opt.scale_factor);
 }
 
+void Bh3Evaluation::init_k_space()
+{
+	kspace.resize(3);
+	kfspace.resize(3);
+	kbspace.resize(3);
+	for(int d = 0; d < 3; d++)
+	{
+		// set k-space
+		kspace[d].resize(options.grid[d+1]);
+		for (int i=0; i<options.grid[d+1]/2; i++)
+			kspace[d][i] = options.klength[d]*sin( M_PI*((double)i)/((double)options.grid[d+1]) );
+
+		for (int i=options.grid[d]/2; i<options.grid[d+1]; i++)
+			kspace[d][i] = options.klength[d]*sin( M_PI*((double)(-options.grid[d+1]+i))/((double)options.grid[d+1]) );
+
+		//Set k-forward
+		kfspace[d].resize(options.grid[d+1]);
+		for (int i=0; i<options.grid[d+1]; i++)
+			kfspace[d][i] = - complex<double>(0,1) * (polar( 1.0, 2*M_PI*((double)i)/((double)options.grid[d+1]) ) - 1.0);
+		//Set k-backward
+		kbspace[d].resize(options.grid[d+1]);
+		for (int i=0; i<options.grid[d+1]; i++)
+			kbspace[d][i] = complex<double>(0,1) * (polar( 1.0, - 2*M_PI*((double)i)/((double)options.grid[d+1]) ) - 1.0);
+	}
+}
+
+void EXP2D::spectrum(){
+
+			vector<vector<double> > kspace;
+			vector<vector<complex<double> > > kfspace, kbspace;
+			vector<double> klength(3);
+				klength[0] = 2.0;
+	klength[1] = 2.0;
+	klength[2] = 2.0;
+
+	double particle_count = 0.0;
+	double Ekin = 0.0;
+
+		double kwidth2[3];
+	for(int i = 0; i < 3; i++)
+		kwidth2[i] = (options.grid[i+1] == 1) ? 0 : options.klength[i]*options.klength[i];
+	double index_factor = (ares.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1] + kwidth2[2]);
+
+	kspace.resize(3);
+	kfspace.resize(3);
+	kbspace.resize(3);
+	for(int d = 0; d < 3; d++)
+	{
+		// set k-space
+		kspace[d].resize(options.grid[d+1]);
+		for (int i=0; i<options.grid[d+1]/2; i++)
+			kspace[d][i] = options.klength[d]*sin( M_PI*((double)i)/((double)options.grid[d+1]) );
+
+		for (int i=options.grid[d]/2; i<options.grid[d+1]; i++)
+			kspace[d][i] = options.klength[d]*sin( M_PI*((double)(-options.grid[d+1]+i))/((double)options.grid[d+1]) );
+
+		//Set k-forward
+		kfspace[d].resize(options.grid[d+1]);
+		for (int i=0; i<options.grid[d+1]; i++)
+			kfspace[d][i] = - complex<double>(0,1) * (polar( 1.0, 2*M_PI*((double)i)/((double)options.grid[d+1]) ) - 1.0);
+		//Set k-backward
+		kbspace[d].resize(options.grid[d+1]);
+		for (int i=0; i<options.grid[d+1]; i++)
+			kbspace[d][i] = complex<double>(0,1) * (polar( 1.0, - 2*M_PI*((double)i)/((double)options.grid[d+1]) ) - 1.0);
+	}
+}
+
+
+
+		// Im Impulsraum Werte aufaddieren
+	for(int x = 0; x < data[0].width(); x++)
+	{
+		for (int y = 0; y < data[0].height(); y++)
+		{
+			for (int z = 0; z < data[0].depth(); z++)
+			{
+				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y] + kspace[2][z]*kspace[2][z]);
+				// int index = index_factor * k;
+				Coordinate<int32_t> c = data[0].make_coord(x,y,z);
+				
+				// occupation number
+				double number = abs2(data[0](0,c));
+				// ares.number(index) += number;
+				particle_count += number;
+				Ekin += number * k * k;
+			}}}
+}
+
 
 
 void EXP2D::cli_plot(string name,int counter_state, int counter_max, double start,bool plot)
@@ -147,6 +244,14 @@ void EXP2D::cli_plot(string name,int counter_state, int counter_max, double star
 					opt.name = name + "-" + std::to_string(counter_state/(counter_max/100));
 					// plotdatatopng(pPsi,opt);
 					plotdatatopngEigen(wavefct,opt);
+
+					// kvalue analysis
+					CopyEigenToComplexGrid();
+					ComplexGrid::fft(*pPsi,*pK,true);
+					opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
+					plotdatatopng(pK,opt);
+
+
 				}
 
 			total = omp_get_wtime() - start;
@@ -180,6 +285,12 @@ void EXP2D::cli_plot_expanding(vector<double> &ranges,string name,int counter_st
 					opt.name = name + "-" + std::to_string(counter_state/(counter_max/100));
 					// plotdatatopng(pPsi,opt);
 					plotdatatopngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
+
+					// kvalue analysis
+					CopyEigenToComplexGrid();
+					ComplexGrid::fft(*pPsi,*pK,true);
+					opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
+					plotdatatopng(pK,opt);
 				}
 
 			total = omp_get_wtime() - start;
@@ -296,19 +407,19 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 	//start loop here
 	Eigen::initParallel();
 
-	if(opt.startgrid[2] == false){
+	if(opt.startgrid[2] == false){ //expanding and no potential
 	for(int m = 1; m <= runtime; m++){
 
 		wavefctcp = wavefct;
 
-		//boundary conditions -- Dirichlet
+		// boundary conditions -- Dirichlet
 
-		// wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
-		// wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-		// wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
-		// wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
+		wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
+		wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+		wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
+		wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
 
-		//boundary conditions end
+		// boundary conditions end
 
 		RTE_compute_k(k0,wavefctcp,t);
 		wavefctcp = wavefct + half * t_RTE * k0;
@@ -325,14 +436,14 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 
 		wavefct += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
-		// Neumann Boundaries
+		// // Neumann Boundaries
 
-		wavefct.col(0).real() = wavefct.col(1).real();
-		wavefct.col(opt.grid[2]-1).real() = wavefct.col(opt.grid[2]-2).real();
-		wavefct.row(0).real() = wavefct.row(0).real();
-		wavefct.row(opt.grid[1]-1).real() = wavefct.row(opt.grid[1]-2).real();
+		// wavefct.col(0).real() = wavefct.col(1).real();
+		// wavefct.col(opt.grid[2]-1).real() = wavefct.col(opt.grid[2]-2).real();
+		// wavefct.row(0).real() = wavefct.row(0).real();
+		// wavefct.row(opt.grid[1]-1).real() = wavefct.row(opt.grid[1]-2).real();
 
-		// Boundaries
+		// // Boundaries
 
 		complex<double> tmp2 = complex<double>(m,0.0) * t_RTE;
 		Xexpanding = x_expand(tmp2);

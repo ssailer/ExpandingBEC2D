@@ -64,6 +64,7 @@ class EXP2D
    
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;
+    ComplexGrid* pK;
     // Storage Variable for the runs
     MatrixXcd wavefct;
 
