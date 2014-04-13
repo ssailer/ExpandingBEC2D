@@ -30,6 +30,17 @@ inline complex<double> noise2(GaussRandom &r)
     //return 0.0;                                                                                                                                            
 }
 
+inline complex<double> noise3(GaussRandom &r)
+{
+    return r.gauss_random() * 0.1 ;
+    //return 0.0;                                                                                                                                            
+}
+
+inline complex<double> noise4(GaussRandom &r,double &rvalue)
+{
+    return r.gauss_random(0.0,rvalue);
+}
+
 void phasefunction(int depth_o,int depth_u ,int Vy, int width_l,int width_r,int Vx,  const PathOptions &opt,ComplexGrid &m)
 {
     double atan2(double y,double x);
@@ -89,6 +100,8 @@ void phasedisturbance(const PathOptions &opt,ComplexGrid &m)
         }
     }
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,6 +239,17 @@ ComplexGrid *create_Vortex_start_Grid2(const PathOptions &opt,int Vortexnumber, 
     return g;  
     	                                                                     
 }
+void noiseTest(const Options &opt, ComplexGrid* &g){
+   GaussRandom r (get_seed());
+   double rvalue;
+   for(int i = 0;i < g->width();i++){
+    for(int j = 0; j < g->height();j++){
+        rvalue = real(g->at(0,i,j,0)) * 0.1;
+        g->at(0,i,j,0) += noise4(r,rvalue);
+    }
+   }
+
+}
 
 ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, double & sigma_x, double & sigma_y)
 {
@@ -314,7 +338,7 @@ ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vorte
                 for(int x = 0; x < opt.grid[1]; x++)
                 {   
 
-                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(1,i+1))*(vortex(y,V_y[i],x,V_x[i])));
+                    g->at(j,x,y,0) *= polar(1.0,(opt.Q*mypow2(-1,i+1))*(vortex(y,V_y[i],x,V_x[i])));
                     /*
                     if(i==0)
                     {

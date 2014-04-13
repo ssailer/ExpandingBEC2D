@@ -8,6 +8,7 @@
 #include <math.h>
 #include <complexgrid.h>
 #include <bh3binaryfile.h>
+#include <gauss_random.h>
 #include <vector>
 #include <omp.h>
 #include <string>
@@ -75,7 +76,7 @@ class EXP2D
     VectorXd Xexpanding, Yexpanding;
 
     // internal RunOptions, use setOptions(Options) to update from the outside
-    Options opt; 
+    Options opt;
 
 
   private:

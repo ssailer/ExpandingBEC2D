@@ -119,8 +119,6 @@ void EXP2D::RunSetup(){
 
 }
 
-
-
 void EXP2D::rescale(MatrixXcd &wavefct)
 {	
 	Integral= complex<double>(0,0);  
@@ -327,12 +325,12 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 
 		wavefct += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
-		// Dirichlet Boundaries
+		// Neumann Boundaries
 
-		wavefct.col(0) = VectorXcd::Zero(opt.grid[1]);
-		wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[1]);
-		wavefct.row(0) = VectorXcd::Zero(opt.grid[2]);
-		wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[2]);
+		wavefct.col(0).real() = wavefct.col(1).real();
+		wavefct.col(opt.grid[2]-1).real() = wavefct.col(opt.grid[2]-2).real();
+		wavefct.row(0).real() = wavefct.row(0).real();
+		wavefct.row(opt.grid[1]-1).real() = wavefct.row(opt.grid[1]-2).real();
 
 		// Boundaries
 
@@ -364,12 +362,12 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 
 		wavefct += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
-		// Dirichlet Boundaries
+		// Neumann Boundaries
 
-		wavefct.col(0) = VectorXcd::Zero(opt.grid[1]);
-		wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[1]);
-		wavefct.row(0) = VectorXcd::Zero(opt.grid[2]);
-		wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[2]);
+		wavefct.col(0).real() = wavefct.col(1).real();
+		wavefct.col(opt.grid[2]-1).real() = wavefct.col(opt.grid[2]-2).real();
+		wavefct.row(0).real() = wavefct.row(0).real();
+		wavefct.row(opt.grid[1]-1).real() = wavefct.row(opt.grid[1]-2).real();
 
 		// Boundaries
 

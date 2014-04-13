@@ -17,6 +17,7 @@ Last Update: 22/07/13
 
 #include <complexgrid.h>
 #include <bh3defaultgrid.h>
+#include <averageclass.h>
 
 #include <EXP2D_tools.h>
 #include <main.h>
@@ -91,10 +92,10 @@ if(opt.startgrid[1]==true)
 	double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
   data = add_central_vortex(data,opt);	
-  data = add_circle_vortex(data,opt,r,3);
-  data = add_circle_vortex(data,opt,r/2.0,6);
-  data = add_circle_vortex(data,opt,r*3.0/4.0,12);
-	data = add_circle_vortex(data,opt,r,2);
+  // data = add_circle_vortex(data,opt,r,3);
+  data = add_circle_vortex(data,opt,r/4.0,6);
+  data = add_circle_vortex(data,opt,r*2.0/4.0,12);
+	data = add_circle_vortex(data,opt,r*3.0/4.0,24);
 
 cout << "Vortices added." << endl;
 opt.name = "VORT";
@@ -107,6 +108,12 @@ plotdatatopng(data,opt);
 run->itpToTime("ITP2",opt.n_it_ITP2,false);
 opt.name = "ITP2";
 plotdatatopng(data,opt);
+
+//====> Noising the Grid before RTE
+
+noiseTest(opt,data);
+opt.name = "Noise after ITP";
+plotdatatopng(data,opt);
 saveDataToHDF5(data,opt);
 
 //====> Real Time Expansion (RTE)
@@ -116,11 +123,13 @@ delete run;
 // endif opt.RTE_only
 }else
 {
+
 EXP2D* run = new EXP2D(data,opt);
 readDataFromHDF5(data,opt);
 run->setOptions(opt);
 run->RunSetup();
 printInitVar(opt);
+
 //====> Real Time Expansion (RTE)
 run->rteToTime("RTE",opt.n_it_RTE,true);
 delete run;
