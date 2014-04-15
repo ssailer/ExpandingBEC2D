@@ -12,7 +12,8 @@ set(SOURCES main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_tools.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/complexgrid.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/gauss_random.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/realgrid.cpp
-					 ${CMAKE_SOURCE_DIR}/startgrids/bh3defaultgrid.cpp)
+					 ${CMAKE_SOURCE_DIR}/startgrids/bh3defaultgrid.cpp
+					 ${CMAKE_SOURCE_DIR}/observables/bh3observables.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fopenmp -Ofast -funroll-loops -march=native ") #-ftree-vectorizer-verbose=1")
 

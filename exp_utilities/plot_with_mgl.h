@@ -265,10 +265,9 @@ inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &r
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
 	gr.Title(opt.name.c_str());
-	gr.SetRange('x',-ranges[0],ranges[0]);
-	gr.SetRange('y',-ranges[1],ranges[1]);
+	gr.SetRange('x',xaxis);
+	gr.SetRange('y',yaxis);
 	// gr.Alpha(true);
-
 
 
 	// data.use_abs=false;

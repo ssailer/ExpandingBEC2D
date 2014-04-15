@@ -76,6 +76,11 @@ class EXP2D
     VectorXcd X,Y;
     VectorXd Xexpanding, Yexpanding;
 
+    // Plotting and progress functions 
+    void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
+    void cli_plot_expanding(string name,int counter_state, int counter_max, double start,bool plot);
+    
+
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
 
@@ -90,10 +95,7 @@ class EXP2D
     // Scaling of Wavefunction after every timestep in ITP
     void rescale(MatrixXcd &wavefct);   
    
-    // Plotting and progress functions 
-    void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
-    void cli_plot_expanding(vector<double> &ranges,string name,int counter_state, int counter_max, double start,bool plot);
-    
+
     // Variables
     complex<double> h_x, h_y;
     complex<double> Integral;
