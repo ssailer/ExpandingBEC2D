@@ -62,6 +62,40 @@ protected:
     return use_abs? abs(res) : arg(res);  }
 };
 
+inline void plotspectrum(string name,ArrayXd &kvalue,ArrayXd &numbervalue){
+	int n = numbervalue.size() -7;
+
+	mglData k(n);
+	mglData number(n);
+
+	for(int i = 0; i < n -7; i++){
+		k.a[i] = log(kvalue(i+7));
+		number.a[i] = log(numbervalue(i+7));
+	}
+
+	mglGraph gr;
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(name.c_str());
+
+	gr.SetRange('x',k);
+	gr.SetRange('y',number);
+
+	// gr.SubPlot(2,1,0);
+	// gr.Axis();
+	// gr.Plot(k,number);
+
+	// gr.SubPlot(2,1,1);
+	gr.Axis();
+	gr.SetFunc("lg(x)","lg(y)");
+	gr.Plot(k,number);
+
+	name = name + ".png";
+
+	gr.WritePNG(name.c_str(),"Spectrum",false);
+}
+
 inline void plotdatatopng(ComplexGrid* &g,Options &opt)
 {
 	
