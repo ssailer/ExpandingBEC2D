@@ -20,8 +20,8 @@ void saveDataToHDF5(ComplexGrid* &g, Options &opt)
   PathOptions options;
 
   	// useless to me
-  options.timestepsize = 1.0;
-  for(int i = 0; i<3; i++){options.klength[i] = 1.0;}
+  options.timestepsize = opt.RTE_step;
+  for(int i = 0; i<3; i++){options.klength[i] = 2.0;}
   options.delta_t.resize(1);
   options.delta_t[0] = 1.0;
   	// still useless to me
@@ -101,16 +101,23 @@ void printInitVar(Options &opt)
 
 void set_workingdirectory(Options &opt)
 {
-	cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
+	// cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
 	struct stat wd_stat;
 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){
-		chdir(opt.workingdirectory.c_str());
+		if(chdir(opt.workingdirectory.c_str()) == 0){
+			cout << "Changed to existing directory: " << "\"" << opt.workingdirectory << "\"" << endl;
+		}
 	}else
 	{
 		char command[256];
 		sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
-		system(command);
-		chdir(opt.workingdirectory.c_str());
+		if(system(command) == 0){
+			cout << "Created directory: " << "\"" << opt.workingdirectory << "\"";
+		}
+		if(chdir(opt.workingdirectory.c_str()) == 0){
+			cout << " and changed into it.";
+		}
+		cout << endl;
 	}
 }
 

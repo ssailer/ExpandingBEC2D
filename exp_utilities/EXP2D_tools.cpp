@@ -241,7 +241,7 @@ void EXP2D::cli_plot(string name,int counter_state, int counter_max, double star
 
 			if(plot == true)
 				{
-					opt.name = name + "-" + std::to_string(counter_state/(counter_max/100));
+					opt.name = name; //+ "-" + std::to_string(counter_state/(counter_max/100));
 					// plotdatatopng(pPsi,opt);
 					plotdatatopngEigen(wavefct,opt);
 
@@ -259,7 +259,8 @@ void EXP2D::cli_plot(string name,int counter_state, int counter_max, double star
 			min = total / 60;
 			seconds = total % 60;
 
-			cout << std::setw(2) << std::setfill('0') << hour << ":"
+			cout << "  " << name << " reached: "
+				 << std::setw(2) << std::setfill('0') << hour << ":"
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
 				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
@@ -280,25 +281,26 @@ void EXP2D::cli_plot_expanding(string name,int counter_state, int counter_max, d
 			int min;
 			int hour;
 			int total;
-			if(plot == true)
-				{
-					opt.name = name + "-" + std::to_string(counter_state/(counter_max/100));
-					// plotdatatopng(pPsi,opt);
-					plotdatatopngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
+			// if(plot == true)
+			// 	{
+			// 		opt.name = name + "-" + std::to_string(counter_state/(counter_max/100));
+			// 		// plotdatatopng(pPsi,opt);
+			// 		plotdatatopngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
 
-					// kvalue analysis
-					// CopyEigenToComplexGrid();
-					// ComplexGrid::fft(*pPsi,*pK,true);
-					// opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
-					// plotdatatopng(pK,opt);
-				}
+			// 		// kvalue analysis
+			// 		// CopyEigenToComplexGrid();
+			// 		// ComplexGrid::fft(*pPsi,*pK,true);
+			// 		// opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
+			// 		// plotdatatopng(pK,opt);
+			// 	}
 
 			total = omp_get_wtime() - start;
 			hour = total / 3600;
 			min = total / 60;
 			seconds = total % 60;
 
-			cout << std::setw(2) << std::setfill('0') << hour << ":"
+			cout << "  " << name << "  "
+			 	 << std::setw(2) << std::setfill('0') << hour << ":"
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
 				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
@@ -332,7 +334,6 @@ void EXP2D::itpToTime(string runname, int runtime, bool plot)
 
 	start = omp_get_wtime();
 
-	cout << " " << runname << endl;	
 	//start loop here
 	Eigen::initParallel();
 	for(int m = 1; m <= runtime; m++){
@@ -359,9 +360,6 @@ void EXP2D::itpToTime(string runname, int runtime, bool plot)
 
 	// update the ComplexGrid* DATA object outside of this.
 	CopyEigenToComplexGrid();
-
-
-	cout << "\n";
 }
 
 inline void EXP2D::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp)
@@ -390,7 +388,7 @@ inline void EXP2D::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp)
 
 void EXP2D::rteToTime(string runname, int runtime, bool plot)
 {
-	double start;  // starttime of the run
+	// double start;  // starttime of the run
 	int t = 0;		// counter for the expanding lambdavectors with coefficients
 
 	CopyComplexGridToEigen();
@@ -401,9 +399,8 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 	MatrixXcd k2 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 	MatrixXcd k3 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);	
 	
-	start = omp_get_wtime();
+	// start = omp_get_wtime();
 
-	cout << " " << runname << endl;	
 	//start loop here
 	Eigen::initParallel();
 
@@ -487,8 +484,6 @@ void EXP2D::rteToTime(string runname, int runtime, bool plot)
 
 // update the ComplexGrid* DATA object outside of this.
 CopyEigenToComplexGrid();
-
-cout << "\n";
 
 }
 

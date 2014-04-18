@@ -62,15 +62,15 @@ protected:
     return use_abs? abs(res) : arg(res);  }
 };
 
-inline void plotspectrum(string name,ArrayXd &kvalue,ArrayXd &numbervalue){
-	int n = numbervalue.size() -7;
+inline void plotspectrum(string name,vector<double> &kvalue,vector<double> &numbervalue){
+	int n = kvalue.size()-1;
 
 	mglData k(n);
 	mglData number(n);
 
-	for(int i = 0; i < n -7; i++){
-		k.a[i] = log(kvalue(i+7));
-		number.a[i] = log(numbervalue(i+7));
+	for(int i = 0; i < n-1; i++){
+		k.a[i] = kvalue[i+1];
+		number.a[i] = numbervalue[i+1];
 	}
 
 	mglGraph gr;
@@ -78,18 +78,23 @@ inline void plotspectrum(string name,ArrayXd &kvalue,ArrayXd &numbervalue){
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
 	gr.Title(name.c_str());
-
-	gr.SetRange('x',k);
-	gr.SetRange('y',number);
+	gr.SetRange('x',0.01,10);
+	gr.SetRange('y',0.1,10000000);
+	gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);
 	// gr.Axis();
 	// gr.Plot(k,number);
-
 	// gr.SubPlot(2,1,1);
+
 	gr.Axis();
-	gr.SetFunc("lg(x)","lg(y)");
-	gr.Plot(k,number);
+
+	// gr.SetFunc("lg(x)","lg(y)");
+	gr.FPlot("x^(-2)");
+	gr.FPlot("x^(-4)");
+	gr.FPlot("x^(-5)");
+
+	gr.Plot(k,number," +");
 
 	name = name + ".png";
 
