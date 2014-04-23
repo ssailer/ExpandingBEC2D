@@ -14,77 +14,6 @@
 
 using namespace libconfig;
 
-void saveDataToHDF5(ComplexGrid* &g, Options &opt)
-{ 
-
-  PathOptions options;
-
-  	// useless to me
-  options.timestepsize = opt.RTE_step;
-  for(int i = 0; i<3; i++){options.klength[i] = 2.0;}
-  options.delta_t.resize(1);
-  options.delta_t[0] = 1.0;
-  	// still useless to me
-
-  options.U = opt.g;
-  options.N = opt.N;
-  for(int i = 0; i<4;i++){ options.grid[i] = opt.grid[i]; }
-  options.g.resize(3);
-  options.g[0] = real(opt.omega_x);
-  options.g[1] = real(opt.omega_y);
-  options.g[2] = real(opt.t_abs);
-
-  double time = opt.n_it_ITP1 + opt.n_it_ITP2;
-
-  Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, options, Bh3BinaryFile::out);
-
-	vector<ComplexGrid> vectork(1);
-	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ vectork.at(0).at(0,i,j,0) = g->at(0,i,j,0) ;}}
-
-	bf->append_snapshot(time, vectork);
-
-  delete bf;
-}
-
-void readDataFromHDF5(ComplexGrid* &g,Options &opt)
-{
-	try{
-	PathOptions options;
-
-  	double time = opt.n_it_ITP1 + opt.n_it_ITP2;
-
-	Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, options, Bh3BinaryFile::in);
-
-	options = bf->get_options();
-
-	opt.g = options.U;
-	opt.N = options.N;
-	for(int i = 0; i<4; i++){ options.grid[i] = opt.grid[i]; }
-	options.g.resize(3);
-	opt.omega_x = complex<double>(options.g[0],0.0);
-	opt.omega_y = complex<double>(options.g[1],0.0);
-	opt.t_abs   = complex<double>(options.g[2],0.0);
-
-	vector<ComplexGrid> vectork(1);
-	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-	bf->get_snapshot(time, vectork,0);
-
-	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ g->at(0,i,j,0) = vectork.at(0).at(0,i,j,0) ;}}
-	
-	delete bf;
-	}
-
-	catch(std::exception& e) 
-	{ 
-  		std::cerr << "Reading from HDF5 File failed, whaaaat?: " 
-        		  << e.what() << ", application will now exit" << std::endl; 
-	} 
-
-}
-
 void printInitVar(Options &opt)
 {
 	std::cout.setf(std::ios::boolalpha);
@@ -229,6 +158,7 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.Q                    = root["RunOptions"]["Q"];
 	opt.RTE_only			 = root["RunOptions"]["RTE_only"];
+	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	// opt.workingfile			 = root["RunOptions"]["workingfile"]
 	cfg.lookupValue("RunOptions.workingfile",opt.workingfile);
 	// opt.name

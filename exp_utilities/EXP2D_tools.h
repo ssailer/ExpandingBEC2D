@@ -2,20 +2,16 @@
 #define EXP2D_TOOLS_H__
 
 #include <iostream>
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Sparse>
 #include <complex>
 #include <math.h>
 #include <complexgrid.h>
 #include <bh3binaryfile.h>
 #include <gauss_random.h>
 #include <vector>
-#include <omp.h>
 #include <string>
 #include <iomanip>
 
 using namespace std;
-using namespace Eigen;
 
 typedef struct {
         // From bh3binaryfile
@@ -44,103 +40,12 @@ typedef struct {
     //Vortex Positions and winding Number
     int Q;
     bool RTE_only;
+    int samplesize;
     
 } Options;
 
+void readDataFromHDF5(ComplexGrid* &g,Options &opt);
+void saveDataToHDF5(ComplexGrid* &g, Options &opt);
 
-class EXP2D
-{
-  public:
-    EXP2D();
-    EXP2D(ComplexGrid* &c,Options &opt);    
-    ~EXP2D();
-
-    void setOptions(Options &externaloptions);
-    void RunSetup();
-    
-    // Propagatoren
-    void itpToTime(string runname, int runtime, bool plot);
-    void rteToTime(string runname, int runtime, bool plot);    
-   
-    // StoragePointer for the wavefunction
-    ComplexGrid* pPsi;
-    ComplexGrid* pK;
-    // Storage Variable for the runs
-    MatrixXcd wavefct;
-
-    void CopyComplexGridToEigen();
-    void CopyEigenToComplexGrid();
-    
-    // Coordinates
-    vector<double> x_axis,y_axis;
-    VectorXcd X,Y;
-    VectorXd Xexpanding, Yexpanding;
-
-    // Plotting and progress functions 
-    void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
-    void cli_plot_expanding(string name,int counter_state, int counter_max, double start,bool plot);
-    
-
-    // internal RunOptions, use setOptions(Options) to update from the outside
-    Options opt;
-
-
-  private:
-
-    //
-    void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
-   
-    // Scaling of Wavefunction after every timestep in ITP
-    void rescale(MatrixXcd &wavefct);   
-   
-
-    // Variables
-    complex<double> h_x, h_y;
-    complex<double> Integral;
-    complex<double> itp_laplacian_x;
-    complex<double> itp_laplacian_y;
-    vector<double> ranges;
-    Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
-    Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
-    MatrixXcd PotentialGrid;
-    VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
-    
-    
-    // some used constants
-    
-    double pi;
-    complex<double>  zero,half,one,two,four,six,i_unit;
-    complex<double> t_RTE;
-    complex<double> t_ITP;
-
-    // little helper functions for stuff
-
-   inline VectorXd x_expand(complex<double> &t){
-    return X.real() * real(lambda_x(t));
-   }
-
-   inline VectorXd y_expand(complex<double> &t){
-    return Y.real() * real(lambda_y(t));
-   }
-
-   inline complex<double> lambda_x(complex<double> &t){
-    return sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t);
-   }
-
-   inline complex<double> lambda_x_dot(complex<double> &t){
-    return (opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t/sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t));
-   }
-
-   inline complex<double> lambda_y(complex<double> &t){
-    return sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t);
-   }
-
-   inline complex<double> lambda_y_dot(complex<double> &t){
-    return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t));
-   }
-  
-};
 
 #endif // EXP2D_TOOLS_H__

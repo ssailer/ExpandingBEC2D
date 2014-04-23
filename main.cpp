@@ -22,6 +22,8 @@ Last Update: 22/07/13
 
 #include <main.h>
 #include <EXP2D_tools.h>
+#include <EXP2D_itp.hpp>
+#include <EXP2D_rte.hpp>
 #include <EXP2D_observables.h>
 #include <plot_with_mgl.h>
 
@@ -54,7 +56,9 @@ set_workingdirectory(opt);
 // Initialize the needed grid object 
 ComplexGrid* data = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 // Initialize the Run Object and load the Grid
-EXP2D* run = new EXP2D(data,opt);
+// EXP2D* run = new EXP2D(data,opt);
+ITP* itprun = new ITP(data,opt);
+RTE* rterun = new RTE(data,opt);
 
 
 // if the given value is true, initialize the startgrid with a gaussian distribution, else load from rundata file
@@ -70,8 +74,8 @@ if(opt.startgrid[0]==true)
 }else
 {
 	readDataFromHDF5(data,opt);	
-	run->setOptions(opt);
-	run->RunSetup();
+	rterun->setOptions(opt);
+	rterun->RunSetup();
 	printInitVar(opt);
 }
 
@@ -85,7 +89,9 @@ opt.name = "INIT";
 plotdatatopng(data,opt);
 
 // //====> Imaginary Time Propagation (ITP)
-run->itpToTime("ITP1", opt.n_it_ITP1,false);
+itprun->itpToTime("ITP1", true);
+opt.name = "ITP1";
+plotdatatopng(data,opt);
 
 //////////// VORTICES ////////////////
 
@@ -109,7 +115,9 @@ cout << "Vortices added." << endl;
 ////// END VORTICES //////////
 
 //====> Imaginary Time Propagation (ITP)
-run->itpToTime("ITP2",opt.n_it_ITP2,false);
+itprun->itpToTime("ITP2",true);
+opt.name = "ITP2";
+plotdatatopng(data,opt);
 saveDataToHDF5(data,opt);
 }
 
@@ -119,11 +127,11 @@ noiseTest(opt,data);
 //setting expansion without extending coordinates
 opt.omega_x = 0.0;
 opt.omega_y = 0.0;
-run->setOptions(opt);
-run->RunSetup();
+rterun->setOptions(opt);
+rterun->RunSetup();
 
 //====> Real Time Expansion (RTE)
-vector<double> snapshot_times(10);
+vector<int> snapshot_times(10);
 for(int i = 0;i < 10;i++){
 	snapshot_times[i] = (i+1) *opt.n_it_RTE / 10.0;
 }
@@ -157,35 +165,28 @@ runparameters << "Parameters of this run:" << endl
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
 runparameters.close();
 
+// run
+string runname = "RTE";
+Averages* eval = new Averages;
+rterun->rteToTime(runname,snapshot_times,eval);
 
-double start = omp_get_wtime();
-vector<ComplexGrid> data_storage(snapshot_times.size());
-	
-	// run
-for(int j = 0; j < snapshot_times.size(); j++){
-
-string runname = "RTE-Step-" + to_string(j+1);
-run->rteToTime(runname,snapshot_times[j],false);
-run->cli_plot(runname,(j+1)*10,100,start,true);
-
-data_storage[j] = *data;
-}
-
-opt.workingfile = "rundata_afterRTE";
-saveDataToHDF5(data,opt);
+// opt.workingfile = "rundata_afterRTE";
+// saveDataToHDF5(data,opt);
 
 cout << "Run finished." << endl;
 
-	// evalution
-start = omp_get_wtime();
-for(int j = 0; j < snapshot_times.size(); j++){
-run->cli_plot("Evaluating",(j+1)*10,100,start,false);
-evaluate(data_storage[j],pathopt,j+1);
-}
+// 	// evalution
+// start = omp_get_wtime();
+// for(int j = 0; j < snapshot_times.size(); j++){
+// run->cli_plot("Evaluating",(j+1)*10,100,start,false);
+// evaluate(data_storage[j],pathopt,j+1);
+// }
 
-cout << "Evaluating finished." << endl;
+// cout << "Evaluating finished." << endl;
+delete eval;
 
-delete run;
+delete itprun;
+delete rterun;
 
 delete data;
 

@@ -10,8 +10,10 @@
 #include <vector>
 #include <omp.h>
 #include <cstring>
+#include <EXP2D_tools.h>
 #include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Sparse>
+
+
 
 #define dual std::complex<double>
 
@@ -63,7 +65,7 @@ protected:
 };
 
 inline void plotspectrum(string name,vector<double> &kvalue,vector<double> &numbervalue){
-	int n = kvalue.size()-1;
+	int n = kvalue.size()-1; // don't plot the zero mode! (why? because it looks like shit)
 
 	mglData k(n);
 	mglData number(n);
@@ -264,7 +266,7 @@ inline void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt)
 
 }
 
-inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,VectorXd &Xexpanding,VectorXd &Yexpanding,Options &opt)
+inline void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt)
 {
 	
 
