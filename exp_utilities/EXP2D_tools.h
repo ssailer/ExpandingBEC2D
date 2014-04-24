@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <iomanip>
+#include <gauss_random.h>
 
 using namespace std;
 
@@ -46,6 +47,6 @@ typedef struct {
 
 void readDataFromHDF5(ComplexGrid* &g,Options &opt);
 void saveDataToHDF5(ComplexGrid* &g, Options &opt);
-
+void noiseTheGrid(ComplexGrid &g);
 
 #endif // EXP2D_TOOLS_H__

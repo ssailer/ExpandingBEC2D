@@ -121,12 +121,9 @@ plotdatatopng(data,opt);
 saveDataToHDF5(data,opt);
 }
 
-//====> Noising the Grid before RTE
-noiseTest(opt,data);
-
 //setting expansion without extending coordinates
-opt.omega_x = 0.0;
-opt.omega_y = 0.0;
+// opt.omega_x = 0.0;
+// opt.omega_y = 0.0;
 rterun->setOptions(opt);
 rterun->RunSetup();
 

@@ -10,10 +10,13 @@ using namespace Eigen;
 void Averages::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt){
 		opt = externalopt;
 		PsiVec.resize(wavefctVec.size());
-		for(int k = 0; k < wavefctVec.size(); k++){for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-		PsiVec[k].at(0,i,j,0) = wavefctVec[k](i,j);}}}
-}
+		// #pragma parallel for
+		// for(int k = 0; k < wavefctVec.size(); k++){for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
+		// PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+		// PsiVec[k].at(0,i,j,0) = wavefctVec[k](i,j);}}}
+
+
+	}	
 
 
 inline Evaluation::Evaluation(int avgrid) :

@@ -19,6 +19,11 @@
 using namespace std;
 using namespace Eigen;
 
+typedef struct {
+        int absoluteSteps;
+        int lambdaSteps;
+    } StepCounter;
+
 class RTE
 {
   public:
@@ -53,7 +58,7 @@ class RTE
     // Plotting and progress functions 
     
     void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
-    void cli(string name,vector<int> stateOfLoops, int counter_max, double start);
+    void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(string name,int counter_state, int counter_max);
     
 
@@ -72,6 +77,7 @@ class RTE
     //
     inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
+    void ToEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct);
 
 
     // Variables
@@ -83,6 +89,8 @@ class RTE
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
     MatrixXcd PotentialGrid;
     VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
+
+    StepCounter KeeperOfTime;
     
     
     // some used constants
