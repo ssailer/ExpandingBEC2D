@@ -8,7 +8,7 @@ Last Update: 22/07/13
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>
-#include <cstring>
+// #include <cstring>
 #include <string>
 #include <cmath>
 #include <complex>
@@ -46,42 +46,21 @@ try{
 Options opt;
 
 read_cli_options(argc,argv,opt);
-
-// Initialize all option variables
-
 read_config(argc,argv,opt);
-
 set_workingdirectory(opt);
 
 // Initialize the needed grid object 
 ComplexGrid* data = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-// Initialize the Run Object and load the Grid
-// EXP2D* run = new EXP2D(data,opt);
 ITP* itprun = new ITP(data,opt);
-RTE* rterun = new RTE(data,opt);
 
+printInitVar(opt); 
 
-// if the given value is true, initialize the startgrid with a gaussian distribution, else load from rundata file
+if(opt.runmode.compare(0,1,"0") == 0){
 
-if(opt.startgrid[0]==true)
-{
-	printInitVar(opt); 
-
-	double sigma_real[2];
-	sigma_real[0] = opt.min_x/4;
-	sigma_real[1] = opt.min_y/4;		
-	data = set_grid_to_gaussian(data,opt,sigma_real[0],sigma_real[1]);
-}else
-{
-	readDataFromHDF5(data,opt);	
-	rterun->setOptions(opt);
-	rterun->RunSetup();
-	printInitVar(opt);
-}
-
-
-
-if(opt.RTE_only == false){
+double sigma_real[2];
+sigma_real[0] = opt.min_x/4;
+sigma_real[1] = opt.min_y/4;		
+data = set_grid_to_gaussian(data,opt,sigma_real[0],sigma_real[1]);
 
 // set the datafile identifier name and save the initial grid
 
@@ -96,7 +75,7 @@ plotdatatopng(data,opt);
 //////////// VORTICES ////////////////
 
 	// if the given value is true, add vortices to the startgrid
-if(opt.startgrid[1]==true)
+if(opt.runmode.compare(3,1,"1") == 0)
 {
 int sigma_grid[2];
 sigma_grid[0] = opt.grid[1]/8;
@@ -121,11 +100,16 @@ plotdatatopng(data,opt);
 saveDataToHDF5(data,opt);
 }
 
-//setting expansion without extending coordinates
-// opt.omega_x = 0.0;
-// opt.omega_y = 0.0;
-rterun->setOptions(opt);
-rterun->RunSetup();
+delete itprun;
+RTE* rterun = new RTE(data,opt);
+
+if(opt.runmode.compare(0,1,"1") == 0)
+{
+	readDataFromHDF5(data,opt);	
+	rterun->setOptions(opt);
+	rterun->RunSetup();
+	printInitVar(opt);
+}
 
 //====> Real Time Expansion (RTE)
 vector<int> snapshot_times(10);
@@ -133,30 +117,15 @@ for(int i = 0;i < 10;i++){
 	snapshot_times[i] = (i+1) *opt.n_it_RTE / 10.0;
 }
 
-PathOptions pathopt;
-	pathopt.timestepsize = opt.RTE_step;
-	pathopt.delta_t.resize(0);
-	pathopt.g.resize(0);
-	pathopt.N =opt.N;
-    pathopt.grid[0] = opt.grid[0];
-    pathopt.grid[1] = opt.grid[1];
-	pathopt.grid[2] = opt.grid[2];
-	pathopt.grid[3] = opt.grid[3];
-	pathopt.U = opt.g;
-	pathopt.klength[0] = 2.0;
-	pathopt.klength[1] = 2.0;
-	pathopt.klength[2] = 2.0;
-
 ofstream runparameters;
 runparameters.open(("runparameters.txt")/*.c_str()*/, ios::out | ios::trunc);
 runparameters << "Parameters of this run:" << endl
 				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
 				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
-				<< "K-Length in x-direction: " << pathopt.klength[0] << endl
-				<< "K-Length in y-direction: " << pathopt.klength[1] << endl
+				<< "K-Length in x-direction: " << opt.klength[0] << endl
+				<< "K-Length in y-direction: " << opt.klength[1] << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-				<< "Initial gausspacket: " << opt.startgrid[0] << "\t" << "Vortices were be added: " << opt.startgrid[1] << endl
-				<< "RTE potential on: " << opt.startgrid[2] << endl
+				<< "Runmode: " << opt.runmode << endl
 				<< "Runtime of the ITP1: " << opt.n_it_ITP1 << " steps." << endl
 				<< "Runtime of the ITP2: " << opt.n_it_ITP2 << " steps." << endl
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
@@ -167,31 +136,13 @@ string runname = "RTE";
 Averages* eval = new Averages;
 rterun->rteToTime(runname,snapshot_times,eval);
 
-// opt.workingfile = "rundata_afterRTE";
-// saveDataToHDF5(data,opt);
-
 cout << "Run finished." << endl;
 
-// 	// evalution
-// start = omp_get_wtime();
-// for(int j = 0; j < snapshot_times.size(); j++){
-// run->cli_plot("Evaluating",(j+1)*10,100,start,false);
-// evaluate(data_storage[j],pathopt,j+1);
-// }
-
-// cout << "Evaluating finished." << endl;
 delete eval;
-
-delete itprun;
 delete rterun;
-
 delete data;
 
-// Everything finished here, cleanup remaining	
-
-
-
-
+// Everything finished here
  
 }  // exceptions catcher
 catch(std::exception& e) 

@@ -21,8 +21,9 @@ void printInitVar(Options &opt)
 				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
 				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-				<< "Initial gausspacket: " << opt.startgrid[0] << "\t" << "Vortices will be added: " << opt.startgrid[1] << endl
-				<< "RTE potential on: " << opt.startgrid[2] << endl
+				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << "Vortices will be added: " << opt.runmode[3] << endl
+				<< "RTE potential on: " << opt.runmode[2] << endl
+				<< "Runmode: " << opt.runmode << endl
 				<< "Runtime of the ITP1: " << opt.n_it_ITP1 << " steps." << endl
 				<< "Runtime of the ITP2: " << opt.n_it_ITP2 << " steps." << endl
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
@@ -150,22 +151,23 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.grid[3]              = root["RunOptions"]["grid3"];				
 	opt.g                    = root["RunOptions"]["g"]; 						
 	opt.n_it_RTE             = root["RunOptions"]["n_it_RTE"]; 				
-	opt.n_save_RTE           = root["RunOptions"]["n_save_RTE"]; 			
+	// opt.n_save_RTE           = root["RunOptions"]["n_save_RTE"]; 			
 	opt.n_it_ITP1            = root["RunOptions"]["n_it_ITP1"];	
 	opt.n_it_ITP2            = root["RunOptions"]["n_it_ITP2"];				
-	opt.n_save_ITP           = root["RunOptions"]["n_save_ITP"];   			
+	// opt.n_save_ITP           = root["RunOptions"]["n_save_ITP"];   			
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
-	opt.Q                    = root["RunOptions"]["Q"];
-	opt.RTE_only			 = root["RunOptions"]["RTE_only"];
+	// opt.Q                    = root["RunOptions"]["Q"];
+	// opt.RTE_only			 = root["RunOptions"]["RTE_only"];
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	// opt.workingfile			 = root["RunOptions"]["workingfile"]
 	cfg.lookupValue("RunOptions.workingfile",opt.workingfile);
+	cfg.lookupValue("RunOptions.runmode",opt.runmode);
 	// opt.name
 
-	opt.startgrid[0]         = root["RunOptions"]["gaussian"];
-	opt.startgrid[1]         = root["RunOptions"]["vortices"];
-	opt.startgrid[2]		 = root["RunOptions"]["potential"];
+	// opt.startgrid[0]         = root["RunOptions"]["gaussian"];
+	// opt.startgrid[1]         = root["RunOptions"]["vortices"];
+	// opt.startgrid[2]		 = root["RunOptions"]["potential"];
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
@@ -193,6 +195,9 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.scale_factor = complex<double>(0,0); //Scale factor
 	opt.t_abs = complex<double>(0,0); //Absolute time 
 	opt.name       = "run";
+	opt.klength[0] = 2.0;
+	opt.klength[1] = 2.0;
+	opt.klength[2] = 2.0;
 
 
     // Set Parameters manually (default values)

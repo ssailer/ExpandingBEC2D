@@ -18,9 +18,15 @@ RTE::RTE()
  	four=complex<double>(4,0);
  	six=complex<double>(6,0);
  	i_unit=complex<double>(0,1);
-	runmode[0] = 0;
-	runmode[1] = 1;
-	runmode[2] = 0;
+
+ 	// Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
+    // second char determines if expanding coordinates are used or not
+    // third char determines if potential is switch on for the differential equation
+	opt.runmode[0] = 0;
+	opt.runmode[1] = 1;
+	opt.runmode[2] = 0;
+	opt.runmode[3] = 1;
+
 
 }
 
@@ -28,8 +34,7 @@ RTE::RTE(ComplexGrid* &c,Options &externaloptions)
 {	
 	// Both essential Variables
 	pPsi = c;
-  	opt = externaloptions;
-
+  	setOptions(externaloptions);
 
   	// some constants used in computations to shorten stuff
 	pi = M_PI;
@@ -40,10 +45,6 @@ RTE::RTE(ComplexGrid* &c,Options &externaloptions)
  	four=complex<double>(4,0);
  	six=complex<double>(6,0);
  	i_unit=complex<double>(0,1);
-
- 	runmode[0] = 0;
-	runmode[1] = 1;
-	runmode[2] = 0;
 
  	// setting up multithreading. Output to see what Eigen is doing.
 	omp_set_num_threads(omp_get_max_threads());
@@ -203,11 +204,9 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 }
 
 void RTE::plot(string name,int counter_state, int counter_max){
-	if(counter_state%(counter_max/10)==0){
-opt.name = name + "-" + std::to_string(counter_state/(counter_max/100));
+opt.name = name;
 wavefct = wavefctVec[0];
 plotdatatopngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
-	}
 }
 
 
@@ -271,73 +270,73 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
 		int absoluteSteps = KeeperOfTime.absoluteSteps;
 		int lambdaSteps = KeeperOfTime.lambdaSteps;
 
-	// omp_set_num_threads(4);
-	#pragma omp parallel for
-	for(int i = 0; i < opt.samplesize; i++){
-		// list of which thread is working which iteration
-		threadinfo[i] = omp_get_thread_num();
-		for(int m = 1; m <= snapshot_times[j]; m++){
+		// omp_set_num_threads(4);
+		#pragma omp parallel for
+		for(int i = 0; i < opt.samplesize; i++){
+			// list of which thread is working which iteration
+			threadinfo[i] = omp_get_thread_num();
+			for(int m = 1; m <= snapshot_times[j]; m++){
+		
+				wavefctcp[i] = wavefctVec[i];
+		
+				// boundary conditions -- Dirichlet
+		
+				wavefctVec[i].row(0) = VectorXcd::Zero(opt.grid[1]);
+				wavefctVec[i].row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+				wavefctVec[i].col(0) = VectorXcd::Zero(opt.grid[2]);
+				wavefctVec[i].col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
+		
+				// boundary conditions end
+		
+				RTE_compute_k(k0[i],wavefctcp[i],lambdaSteps);
+				wavefctcp[i] = wavefctVec[i] + half * t_RTE * k0[i];
+		
+				lambdaSteps++;
+				RTE_compute_k(k1[i],wavefctcp[i],lambdaSteps);
+				wavefctcp[i] = wavefctVec[i] + half * t_RTE * k1[i];
+		
+				RTE_compute_k(k2[i],wavefctcp[i],lambdaSteps);		
+				wavefctcp[i] = wavefctVec[i] + t_RTE * k2[i];
+		
+				lambdaSteps++;
+				RTE_compute_k(k3[i],wavefctcp[i],lambdaSteps);
+		
+				wavefctVec[i] += (t_RTE/six) * ( k0[i] + two * k1[i] + two * k2[i] + k3[i]);
+		
+				// // Neumann Boundaries
+		
+				// wavefctVec[i].col(0).real() = wavefctVec[i].col(1).real();
+				// wavefctVec[i].col(opt.grid[2]-1).real() = wavefctVec[i].col(opt.grid[2]-2).real();
+				// wavefctVec[i].row(0).real() = wavefctVec[i].row(0).real();
+				// wavefctVec[i].row(opt.grid[1]-1).real() = wavefctVec[i].row(opt.grid[1]-2).real();
+		
+				// // Boundaries
+		
+				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
+   				stateOfLoops.at(i) = m;
+   				if(omp_get_thread_num() == slowestthread){
+   					cli(stepname,slowestthread,threadinfo,stateOfLoops,snapshot_times[j],start);
+   				}
 	
-			wavefctcp[i] = wavefctVec[i];
+			}
+			if(omp_get_thread_num() == 0){
+				KeeperOfTime.lambdaSteps = 2 * snapshot_times[j];
+				KeeperOfTime.absoluteSteps = snapshot_times[j];	
+			}
 	
-			// boundary conditions -- Dirichlet
-	
-			wavefctVec[i].row(0) = VectorXcd::Zero(opt.grid[1]);
-			wavefctVec[i].row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-			wavefctVec[i].col(0) = VectorXcd::Zero(opt.grid[2]);
-			wavefctVec[i].col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
-	
-			// boundary conditions end
-	
-			RTE_compute_k(k0[i],wavefctcp[i],lambdaSteps);
-			wavefctcp[i] = wavefctVec[i] + half * t_RTE * k0[i];
-	
-			lambdaSteps++;
-			RTE_compute_k(k1[i],wavefctcp[i],lambdaSteps);
-			wavefctcp[i] = wavefctVec[i] + half * t_RTE * k1[i];
-	
-			RTE_compute_k(k2[i],wavefctcp[i],lambdaSteps);		
-			wavefctcp[i] = wavefctVec[i] + t_RTE * k2[i];
-	
-			lambdaSteps++;
-			RTE_compute_k(k3[i],wavefctcp[i],lambdaSteps);
-	
-			wavefctVec[i] += (t_RTE/six) * ( k0[i] + two * k1[i] + two * k2[i] + k3[i]);
-	
-			// // Neumann Boundaries
-	
-			// wavefctVec[i].col(0).real() = wavefctVec[i].col(1).real();
-			// wavefctVec[i].col(opt.grid[2]-1).real() = wavefctVec[i].col(opt.grid[2]-2).real();
-			// wavefctVec[i].row(0).real() = wavefctVec[i].row(0).real();
-			// wavefctVec[i].row(opt.grid[1]-1).real() = wavefctVec[i].row(opt.grid[1]-2).real();
-	
-			// // Boundaries
-	
-			// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
-   			stateOfLoops.at(i) = m;
-   			if(omp_get_thread_num() == slowestthread){
-   			cli(stepname,slowestthread,threadinfo,stateOfLoops,snapshot_times[j],start);
-   			}
-   			//controlplot from the first iteration always, whichever thread is working that
-   			if(omp_get_thread_num() == 0){
-   			absoluteSteps++;
-			complex<double> tmp = complex<double>(absoluteSteps,0.0) * t_RTE;
-			Xexpanding = x_expand(tmp);
-   			Yexpanding = y_expand(tmp);
-   			plot(stepname,m,snapshot_times[j]);
-   			}
 		}
-		if(omp_get_thread_num() == 0){
-		KeeperOfTime.lambdaSteps = 2 * snapshot_times[j];
-		KeeperOfTime.absoluteSteps = snapshot_times[j];	
-		}
+	complex<double> tmp = complex<double>(KeeperOfTime.absoluteSteps,0.0) * t_RTE;
+	Xexpanding = x_expand(tmp);
+   	Yexpanding = y_expand(tmp);
+   	plot(stepname,j,snapshot_times.size());
 
-	}
-	// eval->saveData(wavefctVec,opt);
+	eval->saveData(wavefctVec,opt,snapshot_times[j]);
+	eval->evaluateData();
 }
+
 // update the ComplexGrid* DATA object outside of this.
 if(opt.samplesize == 1){
-CopyEigenToComplexGrid();
+	CopyEigenToComplexGrid();
 }
 
 }
@@ -348,7 +347,7 @@ inline void RTE::RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t)
 	Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
 	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);                                                                                                                                            
 
-	if(runmode[1] == 1){
+	if(opt.runmode.compare(1,1,"1") == 0){
 	//laplacian
 	for(int j = 1;j<opt.grid[2]-1;j++){
 	for(int i = 1;i<opt.grid[1]-1;i++){
@@ -369,7 +368,7 @@ inline void RTE::RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t)
 	k.noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
 	}
 
-	if(runmode[1] == 0){
+	if(opt.runmode.compare(1,1,"0") == 0){
 	//laplacian
 	for(int j = 1;j<opt.grid[2]-1;j++){
 	for(int i = 1;i<opt.grid[1]-1;i++){
@@ -379,12 +378,12 @@ inline void RTE::RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t)
 	k.noalias() +=   wavefctcpX * pot_laplacian_x * i_unit + wavefctcpY * pot_laplacian_x * i_unit;
 	}
 
-	if(runmode[2] == 0){
+	if(opt.runmode.compare(2,1,"0") == 0){
 	//interaction
 	k.array() -= complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() ) * wavefctcp.array();
 	}
 
-	if(runmode[2] == 1){
+	if(opt.runmode.compare(2,1,"1") == 0){
 		//Potential + Interaction
 	k.array() -= ( i_unit * PotentialGrid.array() + complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() )) * wavefctcp.array();
 	}

@@ -65,9 +65,7 @@ class RTE
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
 
-    char runmode[3]; // Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
-                     // second char determines if expanding coordinates are used or not
-                     // third char determines if potential is switch on for the differential equation
+    
 
     
 

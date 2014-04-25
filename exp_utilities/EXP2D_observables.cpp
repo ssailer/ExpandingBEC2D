@@ -7,30 +7,30 @@ using namespace Eigen;
  Averages::Averages() {};
  Averages::~Averages() {};
 
-void Averages::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt){
+void Averages::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time){
 		opt = externalopt;
+		snapshot_time = external_snapshot_time;
 		PsiVec.resize(wavefctVec.size());
-		// #pragma parallel for
-		// for(int k = 0; k < wavefctVec.size(); k++){for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-		// PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-		// PsiVec[k].at(0,i,j,0) = wavefctVec[k](i,j);}}}
 
+		#pragma parallel for
+		for(int k = 0; k < wavefctVec.size(); k++){
+			PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
-	}	
-
-
-inline Evaluation::Evaluation(int avgrid) :
-		number(avgrid),
-		k(avgrid)
-{
-	Ekin = particle_count= 0.0;
-    number.setZero();
-    k.setZero();
+			for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){		
+			PsiVec[k](0,i,j,0) = wavefctVec[k](i,j);}}
+		}
 }
 
+void Averages::evaluateData(){
+	Evaluation avResult(3*opt.grid[1]);
+	for(int k = 0; k < PsiVec.size(); k++){
+		avResult += evaluate(PsiVec[k]);
+	}
+	avResult /= PsiVec.size();
+	plot(snapshot_time,avResult);
+}
 
-
-void plot(const int &snapshottimes, const PathOptions& opt,Evaluation &eval)
+void Averages::plot(const int &snapshot_time,Evaluation &eval)
 {  
 	// stringstream d;
 	// d << dirname << "/" << "spectrum" << "/";
@@ -42,7 +42,7 @@ void plot(const int &snapshottimes, const PathOptions& opt,Evaluation &eval)
     vector<double> kval;
 	vector<double> numberval;
 	
-	plotfile.open(("Spectrum-Step-" + to_string(snapshottimes) + ".dat").c_str(), ios::out | ios::trunc);
+	plotfile.open(("Spectrum-Step-" + to_string(snapshot_time) + ".dat").c_str(), ios::out | ios::trunc);
 	
 	int sizeofvalues = 0;
    	// cout << "Begin Copying to Plotfile" << endl;
@@ -59,15 +59,13 @@ void plot(const int &snapshottimes, const PathOptions& opt,Evaluation &eval)
 	plotfile << endl << endl;	
 	plotfile.close();
 
-	string filename = "Spectrum-Step-" + to_string(snapshottimes); 
+	string filename = "Spectrum-Step-" + to_string(snapshot_time); 
 	plotspectrum(filename,kval,numberval);
 
 	// cout << "Particle count: " << eval.particle_count << "  " << "Total energy: " << eval.Ekin << endl;
-
-
 }
 
-void evaluate(ComplexGrid &data, PathOptions opt,int snapshottimes){
+Averages::Evaluation Averages::evaluate(ComplexGrid &data){
 
 	ComplexGrid::fft(data, data);
 
@@ -127,6 +125,14 @@ for(int x = 0; x < data.width(); x++)
 	}
 
 
-plot(snapshottimes,opt,ares);
+return ares;
+}
 
+inline Averages::Evaluation::Evaluation(int avgrid) :
+		number(avgrid),
+		k(avgrid)
+{
+	Ekin = particle_count= 0.0;
+    number.setZero();
+    k.setZero();
 }

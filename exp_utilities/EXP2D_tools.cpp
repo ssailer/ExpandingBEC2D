@@ -3,42 +3,24 @@
 
 #include <EXP2D_tools.h>
 
-void saveDataToHDF5(ComplexGrid* &g, Options &opt)
-{ 
-
-  PathOptions pathopt;
-
-  	// useless to me
-  pathopt.timestepsize = opt.RTE_step;
-  for(int i = 0; i<3; i++){pathopt.klength[i] = 2.0;}
-  pathopt.delta_t.resize(1);
-  pathopt.delta_t[0] = 1.0;
-  	// still useless to me
-
-  pathopt.U = opt.g;
-  pathopt.N = opt.N;
-  for(int i = 0; i<4;i++){ pathopt.grid[i] = opt.grid[i]; }
-  pathopt.g.resize(3);
-  pathopt.g[0] = real(opt.omega_x);
-  pathopt.g[1] = real(opt.omega_y);
-  pathopt.g[2] = real(opt.t_abs);
-
-  double time = opt.n_it_ITP1 + opt.n_it_ITP2;
-
-  Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, pathopt, Bh3BinaryFile::out);
-
+void saveDataToHDF5(ComplexGrid* &g, Options &opt){ 
+	PathOptions pathopt;
+	
+	optToPath(opt,pathopt);
+	
+	double time = opt.n_it_ITP1 + opt.n_it_ITP2;
+	
+	Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, pathopt, Bh3BinaryFile::out);
+	
 	vector<ComplexGrid> vectork(1);
 	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
 	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ vectork.at(0).at(0,i,j,0) = g->at(0,i,j,0) ;}}
-
 	bf->append_snapshot(time, vectork);
-
-  delete bf;
+	
+	delete bf;
 }
 
-void readDataFromHDF5(ComplexGrid* &g,Options &opt)
-{
+void readDataFromHDF5(ComplexGrid* &g,Options &opt){
 	try{
 	PathOptions pathopt;
 
@@ -48,13 +30,7 @@ void readDataFromHDF5(ComplexGrid* &g,Options &opt)
 
 	pathopt = bf->get_options();
 
-	opt.g = pathopt.U;
-	opt.N = pathopt.N;
-	for(int i = 0; i<4; i++){ pathopt.grid[i] = opt.grid[i]; }
-	pathopt.g.resize(3);
-	opt.omega_x = complex<double>(pathopt.g[0],0.0);
-	opt.omega_y = complex<double>(pathopt.g[1],0.0);
-	opt.t_abs   = complex<double>(pathopt.g[2],0.0);
+	pathToOpt(pathopt,opt);
 
 	vector<ComplexGrid> vectork(1);
 	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -71,7 +47,6 @@ void readDataFromHDF5(ComplexGrid* &g,Options &opt)
   		std::cerr << "Reading from HDF5 File failed, whaaaat?: " 
         		  << e.what() << ", application will now exit" << std::endl; 
 	} 
-
 }
 
 void noiseTheGrid(ComplexGrid &g){
@@ -84,3 +59,55 @@ void noiseTheGrid(ComplexGrid &g){
     }
    }
 }
+
+void pathToOpt(PathOptions &pathopt,Options &opt){
+	opt.RTE_step	          = pathopt.timestepsize;
+	opt.N                     = pathopt.N;
+	opt.grid[0]               = pathopt.grid[0];
+	opt.grid[1]               = pathopt.grid[1];
+	opt.grid[2]               = pathopt.grid[2];
+	opt.grid[3]               = pathopt.grid[3];
+	opt.g                     = pathopt.U;
+	opt.klength[0]            = pathopt.klength[0];
+	opt.klength[1]            = pathopt.klength[1];
+	opt.klength[2]            = pathopt.klength[2];
+	opt.min_x                 = pathopt.g[0];
+	opt.min_y                 = pathopt.g[1];
+	opt.exp_factor    		  = complex<double>(pathopt.g[2],0.0);
+	opt.omega_x       		  = complex<double>(pathopt.g[3],0.0);
+	opt.omega_y       		  = complex<double>(pathopt.g[4],0.0);
+	opt.dispersion_x  		  = complex<double>(pathopt.g[5],0.0);
+	opt.dispersion_y  		  = complex<double>(pathopt.g[6],0.0);
+	opt.t_abs         		  = complex<double>(pathopt.g[7],0.0);
+	opt.samplesize    		  = (int)pathopt.g[8];
+	opt.runmode 			  = std::to_string(pathopt.g[9] - 10000);
+	opt.n_it_RTE              = (int)pathopt.g[10];
+	opt.scale_factor          = pathopt.g[11];
+};
+
+void optToPath(Options &opt,PathOptions &pathopt){
+	pathopt.timestepsize 		= opt.RTE_step;	
+	pathopt.N            		= opt.N;
+	pathopt.grid[0]      		= opt.grid[0];
+	pathopt.grid[1]      		= opt.grid[1];
+	pathopt.grid[2]      		= opt.grid[2];
+	pathopt.grid[3]      		= opt.grid[3];
+	pathopt.U            		= opt.g;
+	pathopt.klength[0]   		= opt.klength[0];
+	pathopt.klength[1]   		= opt.klength[1];
+	pathopt.klength[2]   		= opt.klength[2];
+	pathopt.delta_t.resize(0);
+	pathopt.g.resize(12);
+	pathopt.g[0]         		= opt.min_x;
+	pathopt.g[1]         		= opt.min_y;
+	pathopt.g[2]         		= opt.exp_factor.real();
+	pathopt.g[3]         		= opt.omega_x.real();
+	pathopt.g[4]         		= opt.omega_y.real();
+	pathopt.g[5]         		= opt.dispersion_x.real();
+	pathopt.g[6]         		= opt.dispersion_y.real();
+	pathopt.g[7]         		= opt.t_abs.real();
+	pathopt.g[8]         		= (double)opt.samplesize;
+	pathopt.g[9]         		= 10000 + atof(opt.runmode.c_str());
+	pathopt.g[10]        		= opt.n_it_RTE;
+	pathopt.g[11]        		= opt.scale_factor.real();
+};
