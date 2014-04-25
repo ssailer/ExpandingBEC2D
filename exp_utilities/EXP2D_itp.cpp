@@ -213,7 +213,7 @@ void ITP::itpToTime(string runname, bool plot)
 int ITP::cli_itp(string name, double start,int state, double &oldabsolute){	
 	int counter;
 	double absolute = abs(opt.scale_factor.real() - oldabsolute);
-		if (absolute  <= 0.01){
+		if (absolute  <= 0.00000001){
 		counter = 1;
 	}else{counter = 0;}
 

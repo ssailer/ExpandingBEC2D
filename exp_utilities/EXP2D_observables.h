@@ -114,7 +114,14 @@ inline Averages::Evaluation Averages::Evaluation::operator/ (double d) const
 	ret.k = k / d;
 }
 
-
+inline Averages::Evaluation::Evaluation(int avgrid) :
+		number(avgrid),
+		k(avgrid)
+{
+	Ekin = particle_count= 0.0;
+    number.setZero();
+    k.setZero();
+}
 
 inline Averages::Evaluation & Averages::Evaluation::operator+= (const Evaluation &a)
 {

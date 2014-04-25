@@ -23,10 +23,12 @@ void Averages::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &
 
 void Averages::evaluateData(){
 	Evaluation avResult(3*opt.grid[1]);
-	for(int k = 0; k < PsiVec.size(); k++){
-		avResult += evaluate(PsiVec[k]);
+	avResult = evaluate(PsiVec[0]);
+	for(int k = 1; k < PsiVec.size(); k++){
+		avResult + evaluate(PsiVec[k]);
 	}
 	avResult /= PsiVec.size();
+
 	plot(snapshot_time,avResult);
 }
 
@@ -128,11 +130,3 @@ for(int x = 0; x < data.width(); x++)
 return ares;
 }
 
-inline Averages::Evaluation::Evaluation(int avgrid) :
-		number(avgrid),
-		k(avgrid)
-{
-	Ekin = particle_count= 0.0;
-    number.setZero();
-    k.setZero();
-}
