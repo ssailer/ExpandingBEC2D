@@ -58,6 +58,15 @@ private:
 
 };
 
+inline Averages::Evaluation::Evaluation(int avgrid) :
+		number(avgrid),
+		k(avgrid)
+{
+	Ekin = particle_count= 0.0;
+    number.setZero();
+    k.setZero();
+}
+
 inline Averages::Evaluation Averages::Evaluation::operator+ (const Evaluation &a) const
 {
 	Evaluation ret(number.size());	
@@ -65,7 +74,7 @@ inline Averages::Evaluation Averages::Evaluation::operator+ (const Evaluation &a
 	ret.particle_count = particle_count + a.particle_count;	
 	ret.Ekin = Ekin + a.Ekin;
 	ret.number = number + a.number;	
-	ret.k = k + a.k;
+	// ret.k = k + a.k;
 	
 	return ret;
 }
@@ -77,7 +86,7 @@ inline Averages::Evaluation Averages::Evaluation::operator- (const Evaluation &a
 	ret.particle_count = particle_count - a.particle_count;	
 	ret.Ekin = Ekin - a.Ekin;
 	ret.number = number - a.number;	
-	ret.k = k - a.k;
+	// ret.k = k - a.k;
 	
 	return ret;
 }
@@ -89,7 +98,7 @@ inline Averages::Evaluation Averages::Evaluation::operator* (const Evaluation &a
 	ret.particle_count = particle_count * a.particle_count;	
 	ret.Ekin = Ekin * a.Ekin;
 	ret.number = number * a.number;	
-	ret.k = k * a.k;
+	// ret.k = k * a.k;
 	
 	return ret;
 }
@@ -101,7 +110,7 @@ inline Averages::Evaluation Averages::Evaluation::operator* (double d) const
 	ret.particle_count = particle_count * d;	
 	ret.Ekin = Ekin * d;
 	ret.number = number * d;	
-	ret.k = k * d;
+	// ret.k = k * d;
 }
 
 inline Averages::Evaluation Averages::Evaluation::operator/ (double d) const
@@ -111,16 +120,7 @@ inline Averages::Evaluation Averages::Evaluation::operator/ (double d) const
 	ret.particle_count = particle_count / d;	
 	ret.Ekin = Ekin / d;
 	ret.number = number / d;	
-	ret.k = k / d;
-}
-
-inline Averages::Evaluation::Evaluation(int avgrid) :
-		number(avgrid),
-		k(avgrid)
-{
-	Ekin = particle_count= 0.0;
-    number.setZero();
-    k.setZero();
+	// ret.k = k / d;
 }
 
 inline Averages::Evaluation & Averages::Evaluation::operator+= (const Evaluation &a)

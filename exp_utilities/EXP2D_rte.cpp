@@ -118,8 +118,13 @@ void RTE::RunSetup(){
    	gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * lambda_y(tmp));
    	}
 
+   	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+   	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
+	PotentialGrid(i,j) = half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j);}}
+
    	pot_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	pot_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
+
 
 }
 
@@ -204,9 +209,18 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 }
 
 void RTE::plot(string name,int counter_state, int counter_max){
-opt.name = name;
-wavefct = wavefctVec[0];
-plotdatatopngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
+	opt.name = name;
+	wavefct = wavefctVec[0];
+
+	if(opt.runmode.compare(1,1,"1") == 0){
+		complex<double> tmp = complex<double>(KeeperOfTime.absoluteSteps,0.0) * t_RTE;
+		Xexpanding = x_expand(tmp);
+		Yexpanding = y_expand(tmp);
+		plotdatatopngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
+	}
+	if(opt.runmode.compare(1,1,"0") == 0){
+		plotdatatopngEigen(wavefct,opt);
+	}
 }
 
 
@@ -258,6 +272,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
 	
 	start = omp_get_wtime();
 
+
 	//start loop here
 	Eigen::initParallel();
 
@@ -267,8 +282,8 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
 		vector<int> stateOfLoops(opt.samplesize);
 		vector<int> threadinfo(opt.samplesize);
 		int slowestthread = 0;
-		int absoluteSteps = KeeperOfTime.absoluteSteps;
 		int lambdaSteps = KeeperOfTime.lambdaSteps;
+
 
 		// omp_set_num_threads(4);
 		#pragma omp parallel for
@@ -290,7 +305,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
 		
 				RTE_compute_k(k0[i],wavefctcp[i],lambdaSteps);
 				wavefctcp[i] = wavefctVec[i] + half * t_RTE * k0[i];
-		
+
 				lambdaSteps++;
 				RTE_compute_k(k1[i],wavefctcp[i],lambdaSteps);
 				wavefctcp[i] = wavefctVec[i] + half * t_RTE * k1[i];
@@ -325,11 +340,8 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
 			}
 	
 		}
-	complex<double> tmp = complex<double>(KeeperOfTime.absoluteSteps,0.0) * t_RTE;
-	Xexpanding = x_expand(tmp);
-   	Yexpanding = y_expand(tmp);
-   	plot(stepname,j,snapshot_times.size());
 
+   	plot(stepname,j,snapshot_times.size());
 	eval->saveData(wavefctVec,opt,snapshot_times[j]);
 	eval->evaluateData();
 }

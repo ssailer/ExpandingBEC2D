@@ -244,7 +244,7 @@ inline void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt)
 
 
 	data.use_abs=true;
-	string filename = "DENS-" + opt.name + ".png";
+	string filename = opt.name + "-DENS.png";
 	gr.SetRange('z',data);
 	gr.SetRange('c',data);
 

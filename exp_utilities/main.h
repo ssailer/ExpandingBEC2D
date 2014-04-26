@@ -144,7 +144,10 @@ int read_config(int argc, char** argv, Options &opt)
 
 	opt.N                    = root["RunOptions"]["N"];
 	opt.min_x                = root["RunOptions"]["min_x"]; 					
-	opt.min_y                = root["RunOptions"]["min_y"]; 					
+	opt.min_y                = root["RunOptions"]["min_y"];
+	opt.klength[0] 			 = root["RunOptions"]["klength0"];
+	opt.klength[1] 			 = root["RunOptions"]["klength1"];
+	opt.klength[2] 			 = root["RunOptions"]["klength2"];
 	opt.grid[0]              = root["RunOptions"]["grid0"];				
 	opt.grid[1]              = root["RunOptions"]["grid1"];				
 	opt.grid[2]              = root["RunOptions"]["grid2"];	   			
@@ -195,10 +198,6 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.scale_factor = complex<double>(0,0); //Scale factor
 	opt.t_abs = complex<double>(0,0); //Absolute time 
 	opt.name       = "run";
-	opt.klength[0] = 2.0;
-	opt.klength[1] = 2.0;
-	opt.klength[2] = 2.0;
-
 
     // Set Parameters manually (default values)
 	//opt.timestepsize = 0.2;

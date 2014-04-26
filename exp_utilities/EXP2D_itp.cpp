@@ -196,7 +196,7 @@ void ITP::itpToTime(string runname, bool plot)
 		state++;
 		counter_finished += cli_itp(runname, start,state,oldabsolute);
 
-		if(counter_finished >= 10){
+		if(counter_finished >= 1){
 			finished = true;
 		}
 		// cli_plot(runname,m,runtime,start,plot);
@@ -213,7 +213,7 @@ void ITP::itpToTime(string runname, bool plot)
 int ITP::cli_itp(string name, double start,int state, double &oldabsolute){	
 	int counter;
 	double absolute = abs(opt.scale_factor.real() - oldabsolute);
-		if (absolute  <= 0.00000001){
+		if (absolute  <= 1){
 		counter = 1;
 	}else{counter = 0;}
 

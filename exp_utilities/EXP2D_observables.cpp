@@ -22,14 +22,34 @@ void Averages::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &
 }
 
 void Averages::evaluateData(){
-	Evaluation avResult(3*opt.grid[1]);
-	avResult = evaluate(PsiVec[0]);
-	for(int k = 1; k < PsiVec.size(); k++){
-		avResult + evaluate(PsiVec[k]);
+	vector<Evaluation> avResult(PsiVec.size());
+		
+	for(int k = 0; k < PsiVec.size(); k++){
+		avResult[k] = Evaluation(3*opt.grid[1]);
+		avResult[k] = evaluate(PsiVec[k]);
+		// avResult + evaluate(PsiVec[k]);
 	}
-	avResult /= PsiVec.size();
 
-	plot(snapshot_time,avResult);
+
+	Evaluation totalResult(3*opt.grid[1]);
+		for(int k = 0; k < PsiVec.size(); k++){
+		totalResult.number += avResult[k].number;
+		}
+	
+	totalResult.k = avResult[0].k;
+	totalResult.number /= PsiVec.size();
+	// if(opt.samplesize == PsiVec.size()){
+	// 	// for(int i = 0; totalResult.number.size();i++){
+	// 	// 	totalResult.number(i) /= (double)opt.samplesize;
+	// 	// }
+	// totalResult /= (double)opt.samplesize;
+	// }else{cout << "Error in evaluationData() member."<<endl;}
+
+	plot(snapshot_time,totalResult);
+	// string pathnumber = "0";
+	// plot(pathnumber,snapshot_time,avResult[0]);
+	// pathnumber = "1";
+	// plot(pathnumber,snapshot_time,avResult[1]);
 }
 
 void Averages::plot(const int &snapshot_time,Evaluation &eval)
@@ -53,10 +73,12 @@ void Averages::plot(const int &snapshot_time,Evaluation &eval)
 			if(eval.k(r) != 0.0){
 				sizeofvalues ++;
 				plotfile << r <<"\t"<< eval.k(r) <<"\t" << eval.number(r) <<"\t";
+				plotfile << endl;
 
 				kval.push_back(eval.k(r));
 				numberval.push_back(eval.number(r));
-           		plotfile << endl;}
+           		
+           	}
 	}
 	plotfile << endl << endl;	
 	plotfile.close();
@@ -101,7 +123,7 @@ for(int x = 0; x < data.width(); x++)
 {
 	for (int y = 0; y < data.height(); y++)
 	{
-		for (int z = 0; z < data.height(); z++)
+		for (int z = 0; z < data.depth(); z++)
 		{
 		double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
 		Coordinate<int32_t> c = data.make_coord(x,y,z);
