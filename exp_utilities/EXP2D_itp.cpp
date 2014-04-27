@@ -4,6 +4,8 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
+#define VORTICES_BUILD_TIME 500
+
 using namespace std;
 using namespace Eigen;
 
@@ -103,7 +105,7 @@ inline void ITP::rescale(MatrixXcd &wavefct)
 	wavefct.array() *= sqrt(opt.scale_factor);
 }
 
-void ITP::cli_plot(string name,int counter_state, int counter_max, double start,bool plot)
+void ITP::cli(string name,int counter_state, int counter_max, double start)
 {
 	if(counter_state%(counter_max/100)==0)
 		{
@@ -112,27 +114,12 @@ void ITP::cli_plot(string name,int counter_state, int counter_max, double start,
 			int hour;
 			int total;
 
-			if(plot == true)
-				{
-					opt.name = name; //+ "-" + std::to_string(counter_state/(counter_max/100));
-					// plotdatatopng(pPsi,opt);
-					plotdatatopngEigen(wavefct,opt);
-
-					// // kvalue analysis
-					// CopyEigenToComplexGrid();
-					// ComplexGrid::fft(*pPsi,*pK,true);
-					// opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
-					// plotdatatopng(pK,opt);
-
-
-				}
-
 			total = omp_get_wtime() - start;
 			hour = total / 3600;
-			min = total / 60;
+			min = (total / 60) % 60;
 			seconds = total % 60;
 
-			cout << "  " << name << " reached: "
+			cout << "  " << name << " with " << VORTICES_BUILD_TIME << " Steps: "
 				 << std::setw(2) << std::setfill('0') << hour << ":"
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
@@ -152,15 +139,9 @@ void ITP::CopyEigenToComplexGrid(){
 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ pPsi->at(0,i,j,0) = wavefct(i,j);}}
 }
 
-void ITP::itpToTime(string runname, bool plot)
-{
+void ITP::formVortices(string runname){
 	double start;  // starttime of the run
-	bool finished = false;
-	int counter_finished = 0;
-	int state = 0;
-	double oldabsolute = 0.0;
 
-	// load external Data into wavefct
 	CopyComplexGridToEigen();
 
 	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -173,9 +154,8 @@ void ITP::itpToTime(string runname, bool plot)
 
 	//start loop here
 	Eigen::initParallel();
-	// for(int m = 1; opt.scale_factor < 0.99 && opt.scale_factor > 1.01; m++){
-	do {
 
+	for(int m = 1; m <= VORTICES_BUILD_TIME; m++){
 		wavefctcp = wavefct;
 
 		ITP_compute_k(k0,wavefctcp);
@@ -193,12 +173,71 @@ void ITP::itpToTime(string runname, bool plot)
 
 		rescale(wavefct);
 
-		state++;
-		counter_finished += cli_itp(runname, start,state,oldabsolute);
+		cli(runname,m,VORTICES_BUILD_TIME,start);	
+	}
+	cout << endl;
+	// update the ComplexGrid* DATA object outside of this.
+	CopyEigenToComplexGrid();
+}
+void ITP::propagateToGroundState(string runname)
+{
+	double start;  // starttime of the run
+	bool finished = false;
+	int counter_finished = 0;
+	int state = 0;
+	int oldEkin = 0;
 
-		if(counter_finished >= 1){
-			finished = true;
+	// load external Data into wavefct
+	CopyComplexGridToEigen();
+
+	Averages breakCondition;
+	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	MatrixXcd k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	MatrixXcd k1 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	MatrixXcd k2 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	MatrixXcd k3 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+
+	start = omp_get_wtime();
+
+	//start loop here
+	Eigen::initParallel();
+	// for(int m = 1; opt.scale_factor < 0.99 && opt.scale_factor > 1.01; m++){
+	do {
+
+		for(int m = 0; m < 100; m++){
+			wavefctcp = wavefct;
+	
+			ITP_compute_k(k0,wavefctcp);
+	
+			wavefctcp = wavefct + half * t_ITP * k0;
+			ITP_compute_k(k1,wavefctcp);
+	
+			wavefctcp = wavefct + half * t_ITP * k1;
+			ITP_compute_k(k2,wavefctcp);
+	
+			wavefctcp = wavefct + t_ITP * k2;
+			ITP_compute_k(k3,wavefctcp);
+	
+			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
+	
+			rescale(wavefct);
+	
+			state++;	
 		}
+		breakCondition.saveData(wavefct,opt,state);
+		breakCondition.evaluateData();
+
+		cli_groundState(runname,start,state,breakCondition.totalResult.Ekin);
+		int difference = breakCondition.totalResult.Ekin - oldEkin;
+		if(difference == 0){
+			counter_finished++;
+		}else{
+			counter_finished = 0;
+		}
+		oldEkin = breakCondition.totalResult.Ekin;
+		if(counter_finished >= 3){
+			finished = true;
+		}		
 		// cli_plot(runname,m,runtime,start,plot);
 	} while (finished == false);
 
@@ -210,12 +249,7 @@ void ITP::itpToTime(string runname, bool plot)
 	CopyEigenToComplexGrid();
 }
 
-int ITP::cli_itp(string name, double start,int state, double &oldabsolute){	
-	int counter;
-	double absolute = abs(opt.scale_factor.real() - oldabsolute);
-		if (absolute  <= 1){
-		counter = 1;
-	}else{counter = 0;}
+void ITP::cli_groundState(string name, double start,int state,int Ekin){	
 
 			int seconds;
 			int min;
@@ -224,17 +258,16 @@ int ITP::cli_itp(string name, double start,int state, double &oldabsolute){
 
 			total = omp_get_wtime() - start;
 			hour = total / 3600;
-			min = total / 60;
+			min = (total / 60) % 60;
 			seconds = total % 60;	
 
-		cout << "  " << name << " Runstep: " << state << "  Scalefactor: "<< std::setw(5) << opt.scale_factor.real() << "  " << "Absolute: " << std::setw(5) << absolute << "  "
+		cout << "  " << name << ":"
+			<< std::setw(5) << std::setfill(' ') << state
+			<< " Ekin: " << std::setw(5) << std::setfill(' ') << Ekin << " "
 			<< std::setw(2) << std::setfill('0') << hour << ":"
 			<< std::setw(2) << std::setfill('0') << min << ":"
 			<< std::setw(2) << std::setfill('0') << seconds  << "\r" << flush;
 
-
-			oldabsolute = opt.scale_factor.real();
-	return counter;
 
 }
 

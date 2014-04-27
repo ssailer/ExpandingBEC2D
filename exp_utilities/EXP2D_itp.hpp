@@ -12,6 +12,7 @@
 #include <string>
 #include <iomanip>
 #include <EXP2D_tools.h>
+#include <EXP2D_observables.h>
 #include <plot_with_mgl.h>
 #include <eigen3/Eigen/Dense>
 
@@ -28,7 +29,8 @@ public:
     void setOptions(Options &externaloptions);
     void RunSetup();
 
-    void itpToTime(string runname, bool plot);
+    void propagateToGroundState(string runname);
+    void formVortices(string runname);
 
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;
@@ -43,8 +45,8 @@ public:
     void CopyEigenToComplexGrid();
 
         // Plotting and progress functions 
-    void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
-    int cli_itp(string name, double start,int state, double &oldabsolute);
+    void cli(string name,int counter_state, int counter_max, double start);
+    void cli_groundState(string name, double start,int state,int Ekin);
 
         // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;

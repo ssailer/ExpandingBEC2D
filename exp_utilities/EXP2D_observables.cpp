@@ -21,6 +21,20 @@ void Averages::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &
 		}
 }
 
+void Averages::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time){
+		opt = externalopt;
+		snapshot_time = external_snapshot_time;
+		PsiVec.resize(1);
+
+		PsiVec[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+		for(int i = 0; i < opt.grid[1]; i++){
+			for(int j = 0; j < opt.grid[2]; j++){		
+				PsiVec[0](0,i,j,0) = wavefct(i,j);
+			}
+		}		
+}
+
 void Averages::evaluateData(){
 	vector<Evaluation> avResult(PsiVec.size());
 		
@@ -31,13 +45,18 @@ void Averages::evaluateData(){
 	}
 
 
-	Evaluation totalResult(3*opt.grid[1]);
+	totalResult = Evaluation(3*opt.grid[1]);
 		for(int k = 0; k < PsiVec.size(); k++){
+		totalResult.k += avResult[k].k;
 		totalResult.number += avResult[k].number;
+		totalResult.Ekin += avResult[k].Ekin;
+		totalResult.particle_count += avResult[k].particle_count;
 		}
 	
-	totalResult.k = avResult[0].k;
+	totalResult.k /= PsiVec.size();
 	totalResult.number /= PsiVec.size();
+	totalResult.Ekin /= PsiVec.size();
+	totalResult.particle_count /= PsiVec.size();
 	// if(opt.samplesize == PsiVec.size()){
 	// 	// for(int i = 0; totalResult.number.size();i++){
 	// 	// 	totalResult.number(i) /= (double)opt.samplesize;
@@ -45,11 +64,14 @@ void Averages::evaluateData(){
 	// totalResult /= (double)opt.samplesize;
 	// }else{cout << "Error in evaluationData() member."<<endl;}
 
-	plot(snapshot_time,totalResult);
 	// string pathnumber = "0";
 	// plot(pathnumber,snapshot_time,avResult[0]);
 	// pathnumber = "1";
 	// plot(pathnumber,snapshot_time,avResult[1]);
+}
+
+void Averages::plotTotalResult(){
+	plot(snapshot_time,totalResult);
 }
 
 void Averages::plot(const int &snapshot_time,Evaluation &eval)

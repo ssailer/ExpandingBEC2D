@@ -68,7 +68,7 @@ opt.name = "INIT";
 plotdatatopng(data,opt);
 
 // //====> Imaginary Time Propagation (ITP)
-itprun->itpToTime("ITP1", true);
+itprun->propagateToGroundState("ITP1");
 opt.name = "ITP1";
 plotdatatopng(data,opt);
 
@@ -94,7 +94,7 @@ cout << "Vortices added." << endl;
 ////// END VORTICES //////////
 
 //====> Imaginary Time Propagation (ITP)
-itprun->itpToTime("ITP2",true);
+itprun->formVortices("ITP2");
 opt.name = "ITP2";
 plotdatatopng(data,opt);
 saveDataToHDF5(data,opt);

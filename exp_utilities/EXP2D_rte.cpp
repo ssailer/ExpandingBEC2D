@@ -154,7 +154,7 @@ void RTE::cli_plot(string name,int counter_state, int counter_max, double start,
 
 			total = omp_get_wtime() - start;
 			hour = total / 3600;
-			min = total / 60;
+			min = (total / 60) % 60;
 			seconds = total % 60;
 
 			cout << "  " << name << " reached: "
@@ -191,7 +191,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 
 			total = omp_get_wtime() - start;
 			hour = total / 3600;
-			min = total / 60;
+			min = (total / 60) % 60;
 			seconds = total % 60;
 
 			cout << "\r" << flush;
@@ -258,7 +258,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
 	vector<MatrixXcd> k2(opt.samplesize);
 	vector<MatrixXcd> k3(opt.samplesize);
 
-	CopyComplexGridToEigen();
+	// CopyComplexGridToEigen();
 
 	for(int i = 0; i < opt.samplesize;i++){
 	wavefctVec[i] = MatrixXcd(opt.grid[1],opt.grid[2]);
@@ -284,8 +284,6 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
 		int slowestthread = 0;
 		int lambdaSteps = KeeperOfTime.lambdaSteps;
 
-
-		// omp_set_num_threads(4);
 		#pragma omp parallel for
 		for(int i = 0; i < opt.samplesize; i++){
 			// list of which thread is working which iteration
@@ -344,6 +342,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
    	plot(stepname,j,snapshot_times.size());
 	eval->saveData(wavefctVec,opt,snapshot_times[j]);
 	eval->evaluateData();
+	eval->plotTotalResult();
 }
 
 // update the ComplexGrid* DATA object outside of this.

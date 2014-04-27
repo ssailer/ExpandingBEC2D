@@ -11,6 +11,7 @@ set(SOURCES main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_rte.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_observables.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_tools.cpp
+					 ${CMAKE_SOURCE_DIR}/exp_utilities/plot_with_mgl.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/bh3binaryfile.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/complexgrid.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/gauss_random.cpp

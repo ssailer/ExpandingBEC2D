@@ -19,42 +19,52 @@ class Averages{
 public:
 	Averages();
 	~Averages();
+
 	class Evaluation {
-	public:
+		public:
+		
+		double Ekin, particle_count;
+		ArrayXd number;
+		ArrayXd k;
+		
+		Evaluation() {};
+		Evaluation(int avgrid);
+		~Evaluation() {};
 	
-	double Ekin, particle_count;
-	ArrayXd number;
-	ArrayXd k;
+		Evaluation operator+ (const Evaluation &a) const;
+		Evaluation operator- (const Evaluation &a) const;
+		Evaluation operator* (const Evaluation &a) const;
 	
-	Evaluation() {};
-	Evaluation(int avgrid);
-	~Evaluation() {};
-
-	Evaluation operator+ (const Evaluation &a) const;
-	Evaluation operator- (const Evaluation &a) const;
-	Evaluation operator* (const Evaluation &a) const;
-
-	Evaluation operator* (double d) const;
-	Evaluation operator/ (double d) const;
-
-	Evaluation &operator+= (const Evaluation &a);
-	Evaluation &operator-= (const Evaluation &a);
-	Evaluation &operator*= (const Evaluation &a);
+		Evaluation operator* (double d) const;
+		Evaluation operator/ (double d) const;
 	
-	Evaluation &operator/= (double d);
+		Evaluation &operator+= (const Evaluation &a);
+		Evaluation &operator-= (const Evaluation &a);
+		Evaluation &operator*= (const Evaluation &a);
+		
+		Evaluation &operator/= (double d);
+	
+		Evaluation &operator*= (double d);
+	};
 
-	Evaluation &operator*= (double d);
+	// wrapperfunctions 
+	void saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time); // If data comes as a vector(from statistics RTE)
+	void saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time); // If data comes only as on Matrix(from ITP)
+	void evaluateData(); // calculate the observables
+	void plotTotalResult(); // plot totalResult 
+	// public total Result of Evaluation
+	Evaluation totalResult;
 
-};
-	void saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time);
-	void evaluateData();
-	Evaluation evaluate(ComplexGrid &data);
-	void plot(const int &snapshot_time,Evaluation &eval);
 
 private:
+	// doing functinos
+	Evaluation evaluate(ComplexGrid &data);
+	void plot(const int &snapshot_time,Evaluation &eval);
+	// data savefiles
 	vector<ComplexGrid> PsiVec;
 	Options opt;
 	int snapshot_time;
+
 
 };
 
