@@ -7,10 +7,10 @@ include_directories( ${CMAKE_SOURCE_DIR}/exp_utilities
 					 ${CMAKE_SOURCE_DIR}/propagators
 					 ${CMAKE_SOURCE_DIR}/observables)
 
-set(SOURCES main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
-					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_rte.cpp
-					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_observables.cpp
+set(SOURCESMAIN main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
+					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_rte.cpp					 
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_tools.cpp
+					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_observables.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/plot_with_mgl.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/bh3binaryfile.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/complexgrid.cpp
@@ -20,10 +20,15 @@ set(SOURCES main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
 					 ${CMAKE_SOURCE_DIR}/observables/bh3observables.cpp
 					 )
 
+set(SOURCESPLOTTER plotter.cpp)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fopenmp -Ofast -funroll-loops -march=native ") #-ftree-vectorizer-verbose=1")
 
-add_executable(main ${SOURCES})
+add_executable(main ${SOURCESMAIN})
+add_executable(plotter ${SOURCESPLOTTER})
 
 target_link_libraries(main ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options)
+target_link_libraries(plotter ${OTHER_LIBRARIES} -lmgl -lgsl -lgslcblas -lgomp -lpthread -lm)
 
 install(TARGETS main RUNTIME DESTINATION bin)
+install(TARGETS plotter RUNTIME DESTINATION bin)

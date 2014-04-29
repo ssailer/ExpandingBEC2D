@@ -12,8 +12,10 @@
 #include <iomanip>
 #include <gauss_random.h>
 #include <stdlib.h>
+#include <eigen3/Eigen/Dense>
 
 using namespace std;
+using namespace Eigen;
 
 typedef struct {
         // From bh3binaryfile
@@ -48,10 +50,139 @@ typedef struct {
     
 } Options;
 
+class Evaluation {
+        public:
+        
+        double Ekin, particle_count, healing_length;
+        ArrayXd number;
+        ArrayXd k;
+        
+        Evaluation() {};
+        Evaluation(int avgrid);
+        ~Evaluation() {};
+    
+        Evaluation operator+ (const Evaluation &a) const;
+        Evaluation operator- (const Evaluation &a) const;
+        Evaluation operator* (const Evaluation &a) const;
+    
+        Evaluation operator* (double d) const;
+        Evaluation operator/ (double d) const;
+    
+        Evaluation &operator+= (const Evaluation &a);
+        Evaluation &operator-= (const Evaluation &a);
+        Evaluation &operator*= (const Evaluation &a);
+        
+        Evaluation &operator/= (double d);
+    
+        Evaluation &operator*= (double d);
+};
+
 void optToPath(Options &opt,PathOptions &pathopt);
 void pathToOpt(PathOptions &pathopt,Options &opt);
 void readDataFromHDF5(ComplexGrid* &g,Options &opt);
 void saveDataToHDF5(ComplexGrid* &g, Options &opt);
 void noiseTheGrid(ComplexGrid &g);
+
+
+
+inline Evaluation::Evaluation(int avgrid) :
+        number(avgrid),
+        k(avgrid)
+{
+    Ekin = particle_count = healing_length = 0.0;
+    number.setZero();
+    k.setZero();
+}
+
+inline Evaluation Evaluation::operator+ (const Evaluation &a) const
+{
+    Evaluation ret(number.size());  
+
+    ret.particle_count = particle_count + a.particle_count;
+    ret.healing_length = healing_length + a.healing_length; 
+    ret.Ekin = Ekin + a.Ekin;
+    ret.number = number + a.number; 
+    // ret.k = k + a.k;
+    
+    return ret;
+}
+
+inline Evaluation Evaluation::operator- (const Evaluation &a) const
+{
+    Evaluation ret(number.size());  
+
+    ret.particle_count = particle_count - a.particle_count;
+    ret.healing_length = healing_length - a.healing_length;     
+    ret.Ekin = Ekin - a.Ekin;
+    ret.number = number - a.number; 
+    ret.k = k - a.k;
+    
+    return ret;
+}
+
+inline Evaluation Evaluation::operator* (const Evaluation &a) const
+{
+    Evaluation ret(number.size());  
+
+    ret.particle_count = particle_count * a.particle_count;
+    ret.healing_length = healing_length * a.healing_length;     
+    ret.Ekin = Ekin * a.Ekin;
+    ret.number = number * a.number; 
+    ret.k = k * a.k;
+    
+    return ret;
+}
+
+inline Evaluation Evaluation::operator* (double d) const
+{  
+    Evaluation ret(number.size());
+
+    ret.particle_count = particle_count * d;
+    ret.healing_length = healing_length * d;    
+    ret.Ekin = Ekin * d;
+    ret.number = number * d;    
+    ret.k = k * d;
+}
+
+inline Evaluation Evaluation::operator/ (double d) const
+{  
+    Evaluation ret(number.size());
+
+    ret.particle_count = particle_count / d;
+    ret.healing_length = healing_length / d;    
+    ret.Ekin = Ekin / d;
+    ret.number = number / d;    
+    ret.k = k / d;
+}
+
+inline Evaluation & Evaluation::operator+= (const Evaluation &a)
+{
+    *this = *this + a;
+    return *this;
+}
+
+inline Evaluation & Evaluation::operator-= (const Evaluation &a)
+{
+    *this = *this - a;
+    return *this;
+}
+
+inline Evaluation & Evaluation::operator*= (const Evaluation &a)
+{
+    *this = *this * a;
+    return *this;
+}
+
+inline Evaluation & Evaluation::operator/= (double d)
+{
+    *this = *this / d;
+    return *this;
+}
+
+inline Evaluation & Evaluation::operator*= (double d)
+{
+    *this = *this * d;
+    return *this;
+}
 
 #endif // EXP2D_TOOLS_H__

@@ -51,12 +51,14 @@ void Averages::evaluateData(){
 		totalResult.number += avResult[k].number;
 		totalResult.Ekin += avResult[k].Ekin;
 		totalResult.particle_count += avResult[k].particle_count;
+		totalResult.healing_length += avResult[k].healing_length;
 		}
 	
 	totalResult.k /= PsiVec.size();
 	totalResult.number /= PsiVec.size();
 	totalResult.Ekin /= PsiVec.size();
 	totalResult.particle_count /= PsiVec.size();
+	totalResult.healing_length /= PsiVec.size();
 	// if(opt.samplesize == PsiVec.size()){
 	// 	// for(int i = 0; totalResult.number.size();i++){
 	// 	// 	totalResult.number(i) /= (double)opt.samplesize;
@@ -80,47 +82,39 @@ void Averages::plot(const int &snapshot_time,Evaluation &eval)
 	// d << dirname << "/" << "spectrum" << "/";
 	// string dir = d.str();
 	// system((string("mkdir -p ") + dir).c_str());
-
-	
-    ofstream plotfile;
-    vector<double> kval;
-	vector<double> numberval;
-	
-	plotfile.open(("Spectrum-Step-" + to_string(snapshot_time) + ".dat").c_str(), ios::out | ios::trunc);
-	
-	int sizeofvalues = 0;
-   	// cout << "Begin Copying to Plotfile" << endl;
-    for (int r = 0; r < eval.number.size(); r++)             
-	{		
-			if(eval.k(r) != 0.0){
-				sizeofvalues ++;
-				plotfile << r <<"\t"<< eval.k(r) <<"\t" << eval.number(r) <<"\t";
-				plotfile << endl;
-
-				kval.push_back(eval.k(r));
-				numberval.push_back(eval.number(r));
-           		
-           	}
-	}
-	plotfile << endl << endl;	
-	plotfile.close();
-
 	string filename = "Spectrum-Step-" + to_string(snapshot_time); 
-	plotspectrum(filename,kval,numberval);
+	plotspectrum(filename,eval);
 
 	// cout << "Particle count: " << eval.particle_count << "  " << "Total energy: " << eval.Ekin << endl;
 }
 
-Averages::Evaluation Averages::evaluate(ComplexGrid &data){
+Evaluation Averages::evaluate(ComplexGrid &data){
 
-	ComplexGrid::fft(data, data);
+Evaluation ares = Evaluation(3*opt.grid[1]);
+// R-Space
+double h_x = 2.*opt.min_x/opt.grid[1]; // FIXME not expanding! 
+double h_y = 2.*opt.min_y/opt.grid[2]; 
 
-	Evaluation ares(3*opt.grid[1]);
+double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
-	ArrayXd divisor(ares.number.size());
-    divisor.setZero();
 
-vector<vector<double> > kspace;
+double volume = 0.0;  
+for(int i=opt.grid[1];i<opt.grid[1];i++){
+    for(int j=opt.grid[2];j<opt.grid[2];j++){
+    	if(abs2(data(0,i,j,0))>threshold){
+      		volume += h_x*h_y*(abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
+      	}
+    }
+}
+
+
+// K-Space
+ComplexGrid::fft(data, data);
+
+ArrayXd divisor(ares.number.size());
+divisor.setZero();
+
+vector<vector<double>> kspace;
 
 kspace.resize(2);
 for(int d = 0; d < 2; d++)
@@ -160,15 +154,16 @@ for(int x = 0; x < data.width(); x++)
 	}
 }
 
-	#pragma omp parallel for schedule(guided,1)
-	for(int l = 0; l < ares.number.size(); l++)
-	{
-		if(divisor[l] == 0)
-			divisor[l] = 1;
+ares.healing_length = 1 / sqrt(ares.particle_count * opt.g / volume);
 
-		    ares.number[l] /= divisor[l];
-    		ares.k[l] /= divisor[l];
-	}
+#pragma omp parallel for schedule(guided,1)
+for(int l = 0; l < ares.number.size(); l++)
+{
+	if(divisor[l] == 0)
+		divisor[l] = 1;
+	    ares.number[l] /= divisor[l];
+   		ares.k[l] /= divisor[l];
+}
 
 
 return ares;

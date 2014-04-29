@@ -99,7 +99,7 @@ inline void ITP::rescale(MatrixXcd &wavefct)
 	for(int i=0;i<opt.grid[1]-1;i++){
     for(int j=0;j<opt.grid[2]-1;j++)
     {
-      Integral += h_x*h_y*(norm(wavefct(i,j))+norm(wavefct(i+1,j))+norm(wavefct(i,j+1))+norm(wavefct(i+1,j+1)))/four;      
+      Integral += h_x*h_y*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/four;      
     }}
 	opt.scale_factor=complex<double>(opt.N,0)/Integral;	
 	wavefct.array() *= sqrt(opt.scale_factor);

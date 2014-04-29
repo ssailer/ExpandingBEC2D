@@ -11,6 +11,7 @@
 #include <omp.h>
 #include <cstring>
 #include <EXP2D_tools.h>
+#include <EXP2D_observables.h>
 #include <eigen3/Eigen/Dense>
 
 
@@ -65,7 +66,7 @@ protected:
     return use_abs? abs(res) : arg(res);  }
 };
 
-void plotspectrum(string name,vector<double> &kvalue,vector<double> &numbervalue);
+void plotspectrum(string name,Evaluation& eval);
 void plotdatatopng(ComplexGrid* &g,Options &opt);
 void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt);
 void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt);
