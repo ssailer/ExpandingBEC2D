@@ -237,7 +237,7 @@ void RTE::ToEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct){
 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ wavefct(i,j) = g(0,i,j,0);}}
 }
 
-void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
+void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 {
 	double start;  // starttime of the run
 	// int t = 0;		// counter for the expanding lambdavectors with coefficients
@@ -338,11 +338,22 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Averages* &eval)
 			}
 	
 		}
+	complex<double> tmp = complex<double>(KeeperOfTime.absoluteSteps * opt.RTE_step,0.0);  
+
+	opt.stateInformation.resize(2);
+	if(opt.runmode.compare(1,1,"1") == 0){
+		opt.stateInformation[0] = real(lambda_x(tmp)); // needed for expansion and the computing of the gradient etc.
+		opt.stateInformation[1] = real(lambda_y(tmp));
+	}
+	if(opt.runmode.compare(1,1,"0") == 0){
+		opt.stateInformation[0] = 1.0;
+		opt.stateInformation[1] = 1.0;
+	}
 
    	plot(stepname,j,snapshot_times.size());
 	eval->saveData(wavefctVec,opt,snapshot_times[j]);
 	eval->evaluateData();
-	eval->plotTotalResult();
+	eval->plotData();
 }
 
 // update the ComplexGrid* DATA object outside of this.

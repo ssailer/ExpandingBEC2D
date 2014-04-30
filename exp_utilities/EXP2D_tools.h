@@ -23,7 +23,7 @@ typedef struct {
     int32_t grid[4];  // gridsize
     double klength[3];
         // my own
-
+    vector<double> stateInformation; // passing information to the observables atm FIXME : this is bad, but I don't know how to do it better atm
     complex<double> omega_x,omega_y; // Frequency of the harmonic trap
     complex<double> dispersion_x, dispersion_y; // dispersion relation for the expandion frame
     double min_x,min_y; // Coordinate boundaries
@@ -33,8 +33,8 @@ typedef struct {
     double g; // coupling constant
     double ITP_step, RTE_step; // stepsize for the timeiteration
     // int n_it_ITP; // number of timesteps
-    int n_it_ITP1; // number of timesteps
-    int n_it_ITP2; // number of timesteps
+    // int n_it_ITP1; // number of timesteps
+    // int n_it_ITP2; // number of timesteps
     int n_it_RTE; // number of timesteps
     string name; // naming of the datafile      // think about that naming system remove it from here
     string config; // name of the config file 
@@ -50,31 +50,31 @@ typedef struct {
     
 } Options;
 
-class Evaluation {
+class Observables {
         public:
         
         double Ekin, particle_count, healing_length;
         ArrayXd number;
         ArrayXd k;
         
-        Evaluation() {};
-        Evaluation(int avgrid);
-        ~Evaluation() {};
+        Observables() {};
+        Observables(int avgrid);
+        ~Observables() {};
     
-        Evaluation operator+ (const Evaluation &a) const;
-        Evaluation operator- (const Evaluation &a) const;
-        Evaluation operator* (const Evaluation &a) const;
+        Observables operator+ (const Observables &a) const;
+        Observables operator- (const Observables &a) const;
+        Observables operator* (const Observables &a) const;
     
-        Evaluation operator* (double d) const;
-        Evaluation operator/ (double d) const;
+        Observables operator* (double d) const;
+        Observables operator/ (double d) const;
     
-        Evaluation &operator+= (const Evaluation &a);
-        Evaluation &operator-= (const Evaluation &a);
-        Evaluation &operator*= (const Evaluation &a);
+        Observables &operator+= (const Observables &a);
+        Observables &operator-= (const Observables &a);
+        Observables &operator*= (const Observables &a);
         
-        Evaluation &operator/= (double d);
+        Observables &operator/= (double d);
     
-        Evaluation &operator*= (double d);
+        Observables &operator*= (double d);
 };
 
 void optToPath(Options &opt,PathOptions &pathopt);
@@ -85,7 +85,7 @@ void noiseTheGrid(ComplexGrid &g);
 
 
 
-inline Evaluation::Evaluation(int avgrid) :
+inline Observables::Observables(int avgrid) :
         number(avgrid),
         k(avgrid)
 {
@@ -94,9 +94,9 @@ inline Evaluation::Evaluation(int avgrid) :
     k.setZero();
 }
 
-inline Evaluation Evaluation::operator+ (const Evaluation &a) const
+inline Observables Observables::operator+ (const Observables &a) const
 {
-    Evaluation ret(number.size());  
+    Observables ret(number.size());  
 
     ret.particle_count = particle_count + a.particle_count;
     ret.healing_length = healing_length + a.healing_length; 
@@ -107,9 +107,9 @@ inline Evaluation Evaluation::operator+ (const Evaluation &a) const
     return ret;
 }
 
-inline Evaluation Evaluation::operator- (const Evaluation &a) const
+inline Observables Observables::operator- (const Observables &a) const
 {
-    Evaluation ret(number.size());  
+    Observables ret(number.size());  
 
     ret.particle_count = particle_count - a.particle_count;
     ret.healing_length = healing_length - a.healing_length;     
@@ -120,9 +120,9 @@ inline Evaluation Evaluation::operator- (const Evaluation &a) const
     return ret;
 }
 
-inline Evaluation Evaluation::operator* (const Evaluation &a) const
+inline Observables Observables::operator* (const Observables &a) const
 {
-    Evaluation ret(number.size());  
+    Observables ret(number.size());  
 
     ret.particle_count = particle_count * a.particle_count;
     ret.healing_length = healing_length * a.healing_length;     
@@ -133,9 +133,9 @@ inline Evaluation Evaluation::operator* (const Evaluation &a) const
     return ret;
 }
 
-inline Evaluation Evaluation::operator* (double d) const
+inline Observables Observables::operator* (double d) const
 {  
-    Evaluation ret(number.size());
+    Observables ret(number.size());
 
     ret.particle_count = particle_count * d;
     ret.healing_length = healing_length * d;    
@@ -144,9 +144,9 @@ inline Evaluation Evaluation::operator* (double d) const
     ret.k = k * d;
 }
 
-inline Evaluation Evaluation::operator/ (double d) const
+inline Observables Observables::operator/ (double d) const
 {  
-    Evaluation ret(number.size());
+    Observables ret(number.size());
 
     ret.particle_count = particle_count / d;
     ret.healing_length = healing_length / d;    
@@ -155,31 +155,31 @@ inline Evaluation Evaluation::operator/ (double d) const
     ret.k = k / d;
 }
 
-inline Evaluation & Evaluation::operator+= (const Evaluation &a)
+inline Observables & Observables::operator+= (const Observables &a)
 {
     *this = *this + a;
     return *this;
 }
 
-inline Evaluation & Evaluation::operator-= (const Evaluation &a)
+inline Observables & Observables::operator-= (const Observables &a)
 {
     *this = *this - a;
     return *this;
 }
 
-inline Evaluation & Evaluation::operator*= (const Evaluation &a)
+inline Observables & Observables::operator*= (const Observables &a)
 {
     *this = *this * a;
     return *this;
 }
 
-inline Evaluation & Evaluation::operator/= (double d)
+inline Observables & Observables::operator/= (double d)
 {
     *this = *this / d;
     return *this;
 }
 
-inline Evaluation & Evaluation::operator*= (double d)
+inline Observables & Observables::operator*= (double d)
 {
     *this = *this * d;
     return *this;

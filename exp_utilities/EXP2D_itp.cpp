@@ -91,6 +91,10 @@ void ITP::RunSetup(){
 	itp_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	itp_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
 
+	opt.stateInformation.resize(2);
+	opt.stateInformation[0] = 1.0;
+	opt.stateInformation[1] = 1.0;
+
 }
 
 inline void ITP::rescale(MatrixXcd &wavefct)
@@ -185,12 +189,12 @@ void ITP::propagateToGroundState(string runname)
 	bool finished = false;
 	int counter_finished = 0;
 	int state = 0;
-	int oldEkin = 0;
+	int old_Ekin = 0;
 
 	// load external Data into wavefct
 	CopyComplexGridToEigen();
 
-	Averages breakCondition;
+	Eval breakCondition;
 	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 	MatrixXcd k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 	MatrixXcd k1 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -227,14 +231,14 @@ void ITP::propagateToGroundState(string runname)
 		breakCondition.saveData(wavefct,opt,state);
 		breakCondition.evaluateData();
 
-		cli_groundState(runname,start,state,breakCondition.totalResult.Ekin);
-		int difference = breakCondition.totalResult.Ekin - oldEkin;
+		cli_groundState(runname,start,state,breakCondition.totalResult.Ekin,breakCondition.totalResult.particle_count);
+		int difference = breakCondition.totalResult.Ekin - old_Ekin;
 		if(difference == 0){
 			counter_finished++;
 		}else{
 			counter_finished = 0;
 		}
-		oldEkin = breakCondition.totalResult.Ekin;
+		old_Ekin = breakCondition.totalResult.Ekin;
 		if(counter_finished >= 3){
 			finished = true;
 		}		
@@ -249,7 +253,7 @@ void ITP::propagateToGroundState(string runname)
 	CopyEigenToComplexGrid();
 }
 
-void ITP::cli_groundState(string name, double start,int state,int Ekin){	
+void ITP::cli_groundState(string name, double start,int state,int Ekin,int particle_count){	
 
 			int seconds;
 			int min;
@@ -263,7 +267,8 @@ void ITP::cli_groundState(string name, double start,int state,int Ekin){
 
 		cout << "  " << name << ":"
 			<< std::setw(5) << std::setfill(' ') << state
-			<< " Ekin: " << std::setw(5) << std::setfill(' ') << Ekin << " "
+			<< " Kinetic Energy: " << std::setw(5) << std::setfill(' ') << Ekin << " "
+			<< " Particles: " << std::setw(12) << std::setfill(' ') << particle_count << " "
 			<< std::setw(2) << std::setfill('0') << hour << ":"
 			<< std::setw(2) << std::setfill('0') << min << ":"
 			<< std::setw(2) << std::setfill('0') << seconds  << "\r" << flush;

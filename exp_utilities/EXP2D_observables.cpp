@@ -4,10 +4,10 @@ using namespace std;
 using namespace Eigen;
 
 
- Averages::Averages() {};
- Averages::~Averages() {};
+ Eval::Eval() {};
+ Eval::~Eval() {};
 
-void Averages::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time){
+void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time){
 		opt = externalopt;
 		snapshot_time = external_snapshot_time;
 		PsiVec.resize(wavefctVec.size());
@@ -21,7 +21,7 @@ void Averages::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &
 		}
 }
 
-void Averages::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time){
+void Eval::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time){
 		opt = externalopt;
 		snapshot_time = external_snapshot_time;
 		PsiVec.resize(1);
@@ -35,17 +35,19 @@ void Averages::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_sn
 		}		
 }
 
-void Averages::evaluateData(){
-	vector<Evaluation> avResult(PsiVec.size());
+void Eval::evaluateData(){
+	vector<Observables> avResult(PsiVec.size());
 		
 	for(int k = 0; k < PsiVec.size(); k++){
-		avResult[k] = Evaluation(3*opt.grid[1]);
+		avResult[k] = Observables(3*opt.grid[1]);
 		avResult[k] = evaluate(PsiVec[k]);
 		// avResult + evaluate(PsiVec[k]);
 	}
 
+	findVortices(PsiVec[0]);
 
-	totalResult = Evaluation(3*opt.grid[1]);
+
+	totalResult = Observables(3*opt.grid[1]);
 		for(int k = 0; k < PsiVec.size(); k++){
 		totalResult.k += avResult[k].k;
 		totalResult.number += avResult[k].number;
@@ -72,27 +74,54 @@ void Averages::evaluateData(){
 	// plot(pathnumber,snapshot_time,avResult[1]);
 }
 
-void Averages::plotTotalResult(){
-	plot(snapshot_time,totalResult);
-}
-
-void Averages::plot(const int &snapshot_time,Evaluation &eval)
-{  
-	// stringstream d;
-	// d << dirname << "/" << "spectrum" << "/";
-	// string dir = d.str();
-	// system((string("mkdir -p ") + dir).c_str());
+void Eval::plotData(){
 	string filename = "Spectrum-Step-" + to_string(snapshot_time); 
-	plotspectrum(filename,eval);
-
-	// cout << "Particle count: " << eval.particle_count << "  " << "Total energy: " << eval.Ekin << endl;
+	plotspectrum(filename,totalResult);
+	filename = "Vortices-Step-" + to_string(snapshot_time);
+	plotVortexLocationMap(filename,vortexLocationMap);
+	filename = "TestPlot-Step-" + to_string(snapshot_time);
+	plotdatatopng(filename,PsiVec[0],opt);
 }
 
-Evaluation Averages::evaluate(ComplexGrid &data){
+void Eval::findVortices(ComplexGrid data){
 
-Evaluation ares = Evaluation(3*opt.grid[1]);
+double h_x = 2.*opt.min_x/opt.grid[1];
+double h_y = 2.*opt.min_y/opt.grid[2]; 
+
+RealGrid phase_grad_x(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+RealGrid phase_grad_y(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+vortexLocationMap = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+for(int x = 1; x < data.width() - 1; x++)
+{
+	for (int y = 1; y < data.height() - 1; y++)
+	{
+		phase_grad_x(0,x,y,0) = ( arg(data(0,x+1,y,0))- arg(data(0,x-1,y,0)) ) / (2.0 * h_x * opt.stateInformation[0]);
+		phase_grad_y(0,x,y,0) = ( arg(data(0,x,y+1,0))- arg(data(0,x,y+1,0)) ) / (2.0 * h_y * opt.stateInformation[1]);
+	}
+}
+for(int x = 0; x < data.width(); x++)
+{
+	for (int y = 0; y < data.height(); y++)
+	{
+		vortexLocationMap(0,x,y,0) = 0.0;
+	}
+}
+for(int x = 2; x < data.width() - 2; x++)
+{
+	for (int y = 2; y < data.height() - 2; y++)
+	{
+		vortexLocationMap(0,x,y,0) = ( phase_grad_y(0,x+1,y,0) - phase_grad_y(0,x-1,y,0) ) / (2.0 *h_x * opt.stateInformation[0]) - ( phase_grad_x(0,x,y+1,0) - phase_grad_x(0,x,y-1,0) ) / (2.0 *h_y * opt.stateInformation[1]);
+	}
+}
+}
+
+
+Observables Eval::evaluate(ComplexGrid data){
+
+Observables ares = Observables(3*opt.grid[1]);
 // R-Space
-double h_x = 2.*opt.min_x/opt.grid[1]; // FIXME not expanding! 
+double h_x = 2.*opt.min_x/opt.grid[1];
 double h_y = 2.*opt.min_y/opt.grid[2]; 
 
 double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
@@ -102,11 +131,10 @@ double volume = 0.0;
 for(int i=opt.grid[1];i<opt.grid[1];i++){
     for(int j=opt.grid[2];j<opt.grid[2];j++){
     	if(abs2(data(0,i,j,0))>threshold){
-      		volume += h_x*h_y*(abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
+      		volume += h_x*h_y*opt.stateInformation[0]*opt.stateInformation[1]*(abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
       	}
     }
 }
-
 
 // K-Space
 ComplexGrid::fft(data, data);

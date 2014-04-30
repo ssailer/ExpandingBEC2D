@@ -3,51 +3,51 @@
 
 #include <EXP2D_tools.h>
 
-void saveDataToHDF5(ComplexGrid* &g, Options &opt){ 
-	PathOptions pathopt;
+// void saveDataToHDF5(ComplexGrid* &g, Options &opt){ 
+// 	PathOptions pathopt;
 	
-	optToPath(opt,pathopt);
+// 	optToPath(opt,pathopt);
 	
-	double time = opt.n_it_ITP1 + opt.n_it_ITP2;
+// 	double time = opt.n_it_ITP1 + opt.n_it_ITP2;
 	
-	Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, pathopt, Bh3BinaryFile::out);
+// 	Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, pathopt, Bh3BinaryFile::out);
 	
-	vector<ComplexGrid> vectork(1);
-	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ vectork.at(0).at(0,i,j,0) = g->at(0,i,j,0) ;}}
-	bf->append_snapshot(time, vectork);
+// 	vector<ComplexGrid> vectork(1);
+// 	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ vectork.at(0).at(0,i,j,0) = g->at(0,i,j,0) ;}}
+// 	bf->append_snapshot(time, vectork);
 	
-	delete bf;
-}
+// 	delete bf;
+// }
 
-void readDataFromHDF5(ComplexGrid* &g,Options &opt){
-	try{
-	PathOptions pathopt;
+// void readDataFromHDF5(ComplexGrid* &g,Options &opt){
+// 	try{
+// 	PathOptions pathopt;
 
-  	double time = opt.n_it_ITP1 + opt.n_it_ITP2;
+//   	double time = opt.n_it_ITP1 + opt.n_it_ITP2;
 
-	Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, pathopt, Bh3BinaryFile::in);
+// 	Bh3BinaryFile *bf = new Bh3BinaryFile(opt.workingfile, pathopt, Bh3BinaryFile::in);
 
-	pathopt = bf->get_options();
+// 	pathopt = bf->get_options();
 
-	pathToOpt(pathopt,opt);
+// 	pathToOpt(pathopt,opt);
 
-	vector<ComplexGrid> vectork(1);
-	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 	vector<ComplexGrid> vectork(1);
+// 	vectork[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
-	bf->get_snapshot(time, vectork,0);
+// 	bf->get_snapshot(time, vectork,0);
 
-	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ g->at(0,i,j,0) = vectork.at(0).at(0,i,j,0) ;}}
+// 	for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){ g->at(0,i,j,0) = vectork.at(0).at(0,i,j,0) ;}}
 	
-	delete bf;
-	}
+// 	delete bf;
+// 	}
 
-	catch(std::exception& e) 
-	{ 
-  		std::cerr << "Reading from HDF5 File failed, whaaaat?: " 
-        		  << e.what() << ", application will now exit" << std::endl; 
-	} 
-}
+// 	catch(std::exception& e) 
+// 	{ 
+//   		std::cerr << "Reading from HDF5 File failed, whaaaat?: " 
+//         		  << e.what() << ", application will now exit" << std::endl; 
+// 	} 
+// }
 
 void noiseTheGrid(ComplexGrid &g){
    GaussRandom r (get_seed());

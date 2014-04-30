@@ -36,7 +36,7 @@ class RTE
     
     // Propagatoren
 
-    void rteToTime(string runname, vector<int> snapshot_times,Averages* &eval);    
+    void rteToTime(string runname, vector<int> snapshot_times,Eval* &eval);    
    
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;

@@ -65,12 +65,12 @@ data = set_grid_to_gaussian(data,opt,sigma_real[0],sigma_real[1]);
 // set the datafile identifier name and save the initial grid
 
 opt.name = "INIT";
-plotdatatopng(data,opt);
+plotdatatopng(opt.name,data,opt);
 
 // //====> Imaginary Time Propagation (ITP)
 itprun->propagateToGroundState("ITP1");
 opt.name = "ITP1";
-plotdatatopng(data,opt);
+plotdatatopng(opt.name,data,opt);
 
 //////////// VORTICES ////////////////
 
@@ -82,7 +82,7 @@ sigma_grid[0] = opt.grid[1]/8;
 sigma_grid[1] = opt.grid[2]/8;
 double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
-data = add_central_vortex(data,opt);	
+// data = add_central_vortex(data,opt);	
 // data = add_circle_vortex(data,opt,r,3);
 data = add_circle_vortex(data,opt,r/4.0,6);
 data = add_circle_vortex(data,opt,r*2.0/4.0,12);
@@ -96,8 +96,8 @@ cout << "Vortices added." << endl;
 //====> Imaginary Time Propagation (ITP)
 itprun->formVortices("ITP2");
 opt.name = "ITP2";
-plotdatatopng(data,opt);
-saveDataToHDF5(data,opt);
+plotdatatopng(opt.name,data,opt);
+// saveDataToHDF5(data,opt);
 }
 
 delete itprun;
@@ -105,7 +105,7 @@ RTE* rterun = new RTE(data,opt);
 
 if(opt.runmode.compare(0,1,"1") == 0)
 {
-	readDataFromHDF5(data,opt);	
+	// readDataFromHDF5(data,opt);	
 	rterun->setOptions(opt);
 	rterun->RunSetup();
 	printInitVar(opt);
@@ -120,20 +120,18 @@ for(int i = 0;i < 10;i++){
 ofstream runparameters;
 runparameters.open(("runparameters.txt")/*.c_str()*/, ios::out | ios::trunc);
 runparameters << "Parameters of this run:" << endl
-				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
-				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
+				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
+				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
 				<< "K-Length in x-direction: " << opt.klength[0] << endl
 				<< "K-Length in y-direction: " << opt.klength[1] << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
 				<< "Runmode: " << opt.runmode << endl
-				<< "Runtime of the ITP1: " << opt.n_it_ITP1 << " steps." << endl
-				<< "Runtime of the ITP2: " << opt.n_it_ITP2 << " steps." << endl
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
 runparameters.close();
 
 // run
 string runname = "RTE";
-Averages* eval = new Averages;
+Eval* eval = new Eval;
 rterun->rteToTime(runname,snapshot_times,eval);
 
 cout << "Run finished." << endl;

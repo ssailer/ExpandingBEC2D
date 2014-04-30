@@ -6,6 +6,7 @@
 #include <complex>
 #include <math.h>
 #include <complexgrid.h>
+#include <realgrid.h>
 #include <bh3binaryfile.h>
 #include <vector>
 #include <omp.h>
@@ -66,8 +67,10 @@ protected:
     return use_abs? abs(res) : arg(res);  }
 };
 
-void plotspectrum(string name,Evaluation& eval);
-void plotdatatopng(ComplexGrid* &g,Options &opt);
+void plotspectrum(string name,Observables& eval);
+void plotVortexLocationMap(string name,RealGrid &VortexLocationMap);
+void plotdatatopng(string filename,ComplexGrid* &g,Options &opt);
+void plotdatatopng(string filename,ComplexGrid &g,Options &opt);
 void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt);
 void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt);
 

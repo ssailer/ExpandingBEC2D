@@ -14,6 +14,7 @@ set(SOURCESMAIN main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/plot_with_mgl.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/bh3binaryfile.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/complexgrid.cpp
+					 ${CMAKE_SOURCE_DIR}/utilities/realgrid.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/gauss_random.cpp
 					 ${CMAKE_SOURCE_DIR}/utilities/realgrid.cpp
 					 ${CMAKE_SOURCE_DIR}/startgrids/bh3defaultgrid.cpp

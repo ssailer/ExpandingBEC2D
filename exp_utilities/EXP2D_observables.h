@@ -5,6 +5,7 @@
 #include <complex>
 #include <math.h>
 #include <complexgrid.h>
+#include <realgrid.h>
 #include <bh3binaryfile.h>
 #include <vector>
 #include <omp.h>
@@ -16,22 +17,22 @@
 using namespace std;
 using namespace Eigen;
 
-class Averages{
+class Eval{
 public:
-	Averages();
-	~Averages();
+	Eval();
+	~Eval();
 
 	// wrapperfunctions 
 	void saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time); // If data comes as a vector(from statistics RTE)
 	void saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time); // If data comes only as on Matrix(from ITP)
 	void evaluateData(); // calculate the observables
-	void plotTotalResult(); // plot totalResult 
+	void plotData(); // plot totalResult 
 	// public total Result of Evaluation
-	Evaluation totalResult;
+	Observables totalResult;
 
 		// doing functinos
-	Evaluation evaluate(ComplexGrid &data);
-	void plot(const int &snapshot_time,Evaluation &eval);
+	Observables evaluate(ComplexGrid data);
+	void findVortices(ComplexGrid data);
 
 
 private:
@@ -40,6 +41,7 @@ private:
 	vector<ComplexGrid> PsiVec;
 	Options opt;
 	int snapshot_time;
+	RealGrid vortexLocationMap;
 
 
 };

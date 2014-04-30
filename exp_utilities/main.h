@@ -18,14 +18,12 @@ void printInitVar(Options &opt)
 {
 	std::cout.setf(std::ios::boolalpha);
 	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
-				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << endl
-				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << endl
+				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
+				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
 				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << "Vortices will be added: " << opt.runmode[3] << endl
 				<< "RTE potential on: " << opt.runmode[2] << endl
 				<< "Runmode: " << opt.runmode << endl
-				<< "Runtime of the ITP1: " << opt.n_it_ITP1 << " steps." << endl
-				<< "Runtime of the ITP2: " << opt.n_it_ITP2 << " steps." << endl
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
 }
 
@@ -155,8 +153,8 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.g                    = root["RunOptions"]["g"]; 						
 	opt.n_it_RTE             = root["RunOptions"]["n_it_RTE"]; 				
 	// opt.n_save_RTE           = root["RunOptions"]["n_save_RTE"]; 			
-	opt.n_it_ITP1            = root["RunOptions"]["n_it_ITP1"];	
-	opt.n_it_ITP2            = root["RunOptions"]["n_it_ITP2"];				
+	// opt.n_it_ITP1            = root["RunOptions"]["n_it_ITP1"];	
+	// opt.n_it_ITP2            = root["RunOptions"]["n_it_ITP2"];				
 	// opt.n_save_ITP           = root["RunOptions"]["n_save_ITP"];   			
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
