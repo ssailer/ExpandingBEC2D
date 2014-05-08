@@ -33,6 +33,8 @@ public:
 		// doing functinos
 	Observables evaluate(ComplexGrid data);
 	RealGrid findVortices(ComplexGrid data);
+	RealGrid findDensity(ComplexGrid data)
+
 
 
 private:
@@ -42,6 +44,7 @@ private:
 	Options opt;
 	int snapshot_time;
 	vector<RealGrid> vortexLocationMap;
+	vector<RealGrid> densityLocationMap;
 
 
 };

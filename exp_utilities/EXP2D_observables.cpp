@@ -38,12 +38,14 @@ void Eval::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapsh
 void Eval::evaluateData(){
 	vector<Observables> avResult(PsiVec.size());
 	vortexLocationMap.resize(PsiVec.size());
+	densityLocationMap.resize(PsiVec.size());
 		
 	for(int k = 0; k < PsiVec.size(); k++){
 		avResult[k] = Observables(3*opt.grid[1]);
 		avResult[k] = evaluate(PsiVec[k]);
 		// avResult + evaluate(PsiVec[k]);
 		vortexLocationMap[k] = findVortices(PsiVec[k]);
+		densityLocationMap[k] = findDensity(PsiVec[k]);
 	}
 
 
@@ -78,7 +80,7 @@ void Eval::plotData(){
 	string filename = "Spectrum-Step-" + to_string(snapshot_time); 
 	plotspectrum(filename,totalResult);
 	filename = "Vortices-Step-" + to_string(snapshot_time);
-	plotVortexLocationMap(filename,vortexLocationMap);
+	plotVortexLocationMap(filename,vortexLocationMap[0]);
 	filename = "TestPlot-Step-" + to_string(snapshot_time);
 	plotdatatopng(filename,PsiVec[0],opt);
 }
@@ -111,6 +113,25 @@ RealGrid Eval::findVortices(ComplexGrid data){
 	return vortexLocationMap_local;
 }
 
+RealGrid Eval::findDensity(ComplexGrid data){
+
+	double threshold = 0.05; //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;	
+
+	RealGrid densityLocationMap_local(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+	for(int i = 0; i < opt.grid[1]; i++){
+	    for(int j = 0; j < opt.grid[2]; j++){
+	    	if(abs2(data(0,i,j,0)) > threshold){
+				densityLocationMap_local(0,i,j,0) = 1.;
+			}else{
+				densityLocationMap_local(0,i,j,0) = 0.;
+			}
+		}
+	}
+
+	return densityLocationMap_local;
+}
+
 
 Observables Eval::evaluate(ComplexGrid data){
 	
@@ -125,7 +146,10 @@ Observables Eval::evaluate(ComplexGrid data){
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
 	    	if(abs2(data(0,i,j,0)) > threshold){
+	    		
 	      		volume += h_x * h_y * (abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
+	      	}else{
+	      		densityLocationMap(0,i,j,0) = 0.;
 	      	}
 	    }
 	}
