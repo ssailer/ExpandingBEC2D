@@ -32,7 +32,7 @@ public:
 
 		// doing functinos
 	Observables evaluate(ComplexGrid data);
-	void findVortices(ComplexGrid data);
+	RealGrid findVortices(ComplexGrid data);
 
 
 private:
@@ -41,7 +41,7 @@ private:
 	vector<ComplexGrid> PsiVec;
 	Options opt;
 	int snapshot_time;
-	RealGrid vortexLocationMap;
+	vector<RealGrid> vortexLocationMap;
 
 
 };

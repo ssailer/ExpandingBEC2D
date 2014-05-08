@@ -23,7 +23,7 @@ typedef struct {
     int32_t grid[4];  // gridsize
     double klength[3];
         // my own
-    vector<double> stateInformation; // passing information to the observables atm FIXME : this is bad, but I don't know how to do it better atm
+    vector<double> stateInformation; // passing information about the state at the absolut time to the observable, lambda(time) FIXME : this is bad, but I don't know how to do it better atm
     complex<double> omega_x,omega_y; // Frequency of the harmonic trap
     complex<double> dispersion_x, dispersion_y; // dispersion relation for the expandion frame
     double min_x,min_y; // Coordinate boundaries
