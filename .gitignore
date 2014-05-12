@@ -1,4 +1,5 @@
 build/
 *~
 *.dat
+*.gch
 /.project
