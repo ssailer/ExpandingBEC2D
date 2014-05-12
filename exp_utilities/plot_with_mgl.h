@@ -71,6 +71,7 @@ void plotspectrum(string name,Observables& eval);
 void plotVortexLocationMap(string name,RealGrid &VortexLocationMap);
 void plotdatatopng(string filename,ComplexGrid* &g,Options &opt);
 void plotdatatopng(string filename,ComplexGrid &g,Options &opt);
+void plotdatatopng(string filename,RealGrid &g,Options &opt);
 void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt);
 void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt);
 

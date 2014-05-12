@@ -270,6 +270,55 @@ void plotdatatopng(string filename,ComplexGrid &g,Options &opt)
 
 }
 
+void plotdatatopng(string filename,RealGrid &g,Options &opt){
+
+	int n = opt.grid[1];
+	int m = opt.grid[2];
+
+	// mglComplex data(n,m);
+	mglData grid(n,m);
+
+
+	int i,j,k;
+
+	// data.Create(n,m);
+
+	// complex<double> data1;
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		k = i+n*j;
+		grid.a[k] = g(0,i,j,0);
+		// data.a[k] = abs2(g(0,i,j,0));
+	}
+
+	mglGraph gr;
+
+		
+		// gr.Light(0,true);
+		// gr.Alpha(true);
+
+	filename = filename + ".png";
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(filename.c_str());
+	// gr.Alpha(true);
+
+	// data.use_abs=true;
+	gr.SetRange('x',-opt.min_x,opt.min_x);
+	gr.SetRange('y',-opt.min_y,opt.min_y);
+	gr.SetRange('z',grid);
+	gr.SetRange('c',grid);
+
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(grid);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
 void plotdatatopngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 {
 	

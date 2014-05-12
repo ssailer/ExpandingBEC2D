@@ -83,6 +83,8 @@ void Eval::plotData(){
 	plotVortexLocationMap(filename,vortexLocationMap[0]);
 	filename = "TestPlot-Step-" + to_string(snapshot_time);
 	plotdatatopng(filename,PsiVec[0],opt);
+	filename = "Density-Step-" + to_string(snapshot_time);
+	plotdatatopng(filename,densityLocationMap[0],opt);
 }
 
 RealGrid Eval::findVortices(ComplexGrid data){
@@ -115,13 +117,27 @@ RealGrid Eval::findVortices(ComplexGrid data){
 
 RealGrid Eval::findDensity(ComplexGrid data){
 
-	double threshold = 0.05; //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;	
+	double lower_threshold = 10.; //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	double upper_threshold = 20.;
+
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 	
+
+	// RealGrid density_grad_x(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	// RealGrid density_grad_y(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	RealGrid densityLocationMap_local(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
+	// for(int x = 1; x < data.width() - 1; x++){
+	// 	for (int y = 1; y < data.height() - 1; y++){
+	// 		density_grad_x(0,x,y,0) = ( arg(data(0,x+1,y,0))- arg(data(0,x-1,y,0)) ) / (2.0 * h_x );
+	// 		density_grad_y(0,x,y,0) = ( arg(data(0,x,y+1,0))- arg(data(0,x,y+1,0)) ) / (2.0 * h_y );
+	// 	}
+	// }
+
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
-	    	if(abs2(data(0,i,j,0)) > threshold){
+	    	if((abs2(data(0,i,j,0)) > lower_threshold) && (abs(data(0,i,j,0)) < upper_threshold)){
 				densityLocationMap_local(0,i,j,0) = 1.;
 			}else{
 				densityLocationMap_local(0,i,j,0) = 0.;
@@ -148,8 +164,6 @@ Observables Eval::evaluate(ComplexGrid data){
 	    	if(abs2(data(0,i,j,0)) > threshold){
 	    		
 	      		volume += h_x * h_y * (abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
-	      	}else{
-	      		densityLocationMap(0,i,j,0) = 0.;
 	      	}
 	    }
 	}

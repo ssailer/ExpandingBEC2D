@@ -33,7 +33,7 @@ public:
 		// doing functinos
 	Observables evaluate(ComplexGrid data);
 	RealGrid findVortices(ComplexGrid data);
-	RealGrid findDensity(ComplexGrid data)
+	RealGrid findDensity(ComplexGrid data);
 
 
 
