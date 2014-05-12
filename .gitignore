@@ -3,3 +3,5 @@ build/
 *.dat
 *.gch
 /.project
+/results
+/resources/exp2d-obs-line-of-codes.cpp
