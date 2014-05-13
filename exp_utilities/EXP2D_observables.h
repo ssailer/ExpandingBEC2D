@@ -1,53 +1,150 @@
-#ifndef EXP2D_OBSERVABLES_H__
-#define EXP2D_OBSERVABLES_H__
+#ifndef EXP2D_OBSERVABLE_H__
+#define EXP2D_OBSERVABLE_H__
+
 
 #include <iostream>
 #include <complex>
 #include <math.h>
-#include <complexgrid.h>
-#include <realgrid.h>
-#include <bh3binaryfile.h>
 #include <vector>
 #include <omp.h>
 #include <string>
-#include <plot_with_mgl.h>
 #include <EXP2D_tools.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
 using namespace Eigen;
 
-class Eval{
-public:
-	Eval();
-	~Eval();
-
-	// wrapperfunctions 
-	void saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time); // If data comes as a vector(from statistics RTE)
-	void saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time); // If data comes only as on Matrix(from ITP)
-	void evaluateData(); // calculate the observables
-	void plotData(); // plot totalResult 
-	// public total Result of Evaluation
-	Observables totalResult;
-
-		// doing functinos
-	Observables evaluate(ComplexGrid data);
-	RealGrid findVortices(ComplexGrid data);
-	RealGrid findDensity(ComplexGrid data);
-
-
-
-private:
-
-	// data savefiles
-	vector<ComplexGrid> PsiVec;
-	Options opt;
-	int snapshot_time;
-	vector<RealGrid> vortexLocationMap;
-	vector<RealGrid> densityLocationMap;
-
-
+class Observables {
+        public:
+        
+        double Ekin, particle_count, healing_length;
+        ArrayXd number;
+        ArrayXd k;
+        
+        Observables() {};
+        Observables(int avgrid);
+    
+        Observables operator+ (const Observables &a) const;
+        Observables operator- (const Observables &a) const;
+        Observables operator* (const Observables &a) const;
+    
+        Observables operator* (double d) const;
+        Observables operator/ (double d) const;
+    
+        Observables &operator+= (const Observables &a);
+        Observables &operator-= (const Observables &a);
+        Observables &operator*= (const Observables &a);
+        
+        Observables &operator/= (double d);    
+        Observables &operator*= (double d);
 };
 
 
-#endif // EXP2D_OBSERVABLES_H__
+
+
+
+inline Observables::Observables(int avgrid) :
+        number(avgrid),
+        k(avgrid)
+{
+    Ekin = particle_count = healing_length = 0.0;
+    number.setZero();
+    k.setZero();
+}
+
+inline Observables Observables::operator+ (const Observables &a) const
+{
+    Observables ret(number.size());  
+
+    ret.particle_count = particle_count + a.particle_count;
+    ret.healing_length = healing_length + a.healing_length; 
+    ret.Ekin = Ekin + a.Ekin;
+    ret.number = number + a.number; 
+    ret.k = k + a.k;
+    
+    return ret;
+}
+
+inline Observables Observables::operator- (const Observables &a) const
+{
+    Observables ret(number.size());  
+
+    ret.particle_count = particle_count - a.particle_count;
+    ret.healing_length = healing_length - a.healing_length;     
+    ret.Ekin = Ekin - a.Ekin;
+    ret.number = number - a.number; 
+    ret.k = k - a.k;
+    
+    return ret;
+}
+
+inline Observables Observables::operator* (const Observables &a) const
+{
+    Observables ret(number.size());  
+
+    ret.particle_count = particle_count * a.particle_count;
+    ret.healing_length = healing_length * a.healing_length;     
+    ret.Ekin = Ekin * a.Ekin;
+    ret.number = number * a.number; 
+    ret.k = k * a.k;
+    
+    return ret;
+}
+
+inline Observables Observables::operator* (double d) const
+{  
+    Observables ret(number.size());
+
+    ret.particle_count = particle_count * d;
+    ret.healing_length = healing_length * d;    
+    ret.Ekin = Ekin * d;
+    ret.number = number * d;    
+    ret.k = k * d;
+
+    return ret;
+}
+
+inline Observables Observables::operator/ (double d) const
+{  
+    Observables ret(number.size());
+
+    ret.particle_count = particle_count / d;
+    ret.healing_length = healing_length / d;    
+    ret.Ekin = Ekin / d;
+    ret.number = number / d;    
+    ret.k = k / d;
+    
+    return ret;
+}
+
+inline Observables & Observables::operator+= (const Observables &a)
+{
+    *this = *this + a;
+    return *this;
+}
+
+inline Observables & Observables::operator-= (const Observables &a)
+{
+    *this = *this - a;
+    return *this;
+}
+
+inline Observables & Observables::operator*= (const Observables &a)
+{
+    *this = *this * a;
+    return *this;
+}
+
+inline Observables & Observables::operator/= (double d)
+{
+    *this = *this / d;
+    return *this;
+}
+
+inline Observables & Observables::operator*= (double d)
+{
+    *this = *this * d;
+    return *this;
+}
+
+#endif // EXP2D_OBSERVABLE_H__

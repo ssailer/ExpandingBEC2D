@@ -12,7 +12,7 @@
 #include <string>
 #include <iomanip>
 #include <EXP2D_tools.h>
-#include <EXP2D_observables.h>
+#include <EXP2D_evaluation.h>
 #include <plot_with_mgl.h>
 #include <eigen3/Eigen/Dense>
 
