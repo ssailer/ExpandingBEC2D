@@ -135,11 +135,38 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	    for(int j = 0; j < opt.grid[2]; j++){
 	    	if((abs2(data(0,i,j,0)) > lower_threshold)){
 				densityLocationMap_local(0,i,j,0) = 1.;
-				densityCoordinates.push_back(data.make_coord(i,j,0));
+				// densityCoordinates.push_back(data.make_coord(i,j,0));
 			}else{
 				densityLocationMap_local(0,i,j,0) = 0.;
 			}
 		}
+	}
+
+	double sum = 0;
+	for(int k = 0; k < 10; k++){
+	for(int x = 1; x < opt.grid[1]-1; x+=1){
+		for(int y = 1; y < opt.grid[2]-1; y+=1){
+
+
+			
+			for(int i = x-1; i <= x+1; i++){
+				for(int j = y-1; j <= y+1; j++){
+					sum += densityLocationMap_local(0,i,j,0);
+				}
+			}
+			if((sum = 8) && (densityLocationMap_local(0,x,y,0) == 0)){ // now it is surround by stuff, and instelf zero, so we assume this is a vortex | this is a good place for a counter of vortices
+					densityLocationMap_local(0,x,y,0) = 0; // 
+				}
+			else if(sum >= 5){ // Point is either half surrounded by stuff, or is itself stuff, so assume it is density, which we didn't catch before
+				densityLocationMap_local(0,x,y,0) = 1.;
+				// densityCoordinates.push_back(data.make_coord(i,j,0));
+			}else{
+				densityLocationMap_local(0,x,y,0) = 0.; //
+			}
+			if(sum > 9){cout << "HELP TO MUCH SUM" << endl;}
+			sum = 0;
+		}
+	}
 	}
 
 }
@@ -151,15 +178,13 @@ Observables Eval::calculator(ComplexGrid data){
 	// R-Space
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
+	double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
 	
 	double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;	
 	
-	double volume = 0.0;  
-	for(int i = 0; i < opt.grid[1]; i++){
-	    for(int j = 0; j < opt.grid[2]; j++){
-	    	if(abs2(data(0,i,j,0)) > threshold){	    		
-	      		volume += h_x * h_y * (abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
-	      	}
+	for(int i = 0; i < opt.grid[1]-1; i++){
+	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
+	      	ares.volume += h_x * h_y * (abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
 	    }
 	}
 	
@@ -176,10 +201,12 @@ Observables Eval::calculator(ComplexGrid data){
 		// set k-space
 		kspace[d].resize(opt.grid[d+1]);
 		for (int i=0; i<opt.grid[d+1]/2; i++){
-			kspace[d][i] = opt.klength[d]*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
 		}
-		for (int i=opt.grid[d]/2; i<opt.grid[d+1]; i++){
-			kspace[d][i] = opt.klength[d]*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+		for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
+			// kspace[d][i] = opt.klength[d]*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+			kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
 		}
 	}
 	
@@ -205,17 +232,21 @@ Observables Eval::calculator(ComplexGrid data){
 			}
 		}
 	}
+
+	ares.particle_count /= raw_volume;
+
 	
-	ares.healing_length = 1 / sqrt(ares.particle_count * opt.g / volume);
+	ares.healing_length = 1 / sqrt(ares.particle_count * opt.g / ares.volume);
 	
 	#pragma omp parallel for schedule(guided,1)
 	for(int l = 0; l < ares.number.size(); l++){
 		if(divisor[l] == 0){
 			divisor[l] = 1;
 		}
-		ares.number[l] /= divisor[l];
-		ares.k[l] /= divisor[l];
 	}
+
+	ares.number /= divisor;
+	ares.k /= divisor;
 	
 	
 	return ares;

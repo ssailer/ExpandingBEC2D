@@ -109,5 +109,5 @@ void optToPath(Options &opt,PathOptions &pathopt){
 	pathopt.g[8]         		= (double)opt.samplesize;
 	pathopt.g[9]         		= 10000 + atof(opt.runmode.c_str());
 	pathopt.g[10]        		= opt.n_it_RTE;
-	pathopt.g[11]        		= opt.scale_factor.real();
+	pathopt.g[11]        		= opt.scale_factor;
 };

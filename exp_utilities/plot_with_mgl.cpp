@@ -1,6 +1,6 @@
 #include <plot_with_mgl.h>
 
-#define COLOURBAR_MAX_VALUE 400
+#define COLOURBAR_MAX_VALUE 2500
 
 using namespace std;
 
@@ -93,9 +93,14 @@ void plotVortexLocationMap(string name,RealGrid &VortexLocationMap){
 	gr.SetRange('z',data);
 	gr.SetRange('c',data);
 
+	// gr.Axis();
+	// gr.Colorbar("_");
+	// gr.Dens(data);
+
+	gr.Rotate(40,40);
+	gr.Box();
 	gr.Axis();
-	gr.Colorbar("_");
-	gr.Dens(data);
+	gr.Surf(data);
 
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 }

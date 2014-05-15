@@ -99,13 +99,16 @@ void ITP::RunSetup(){
 
 inline void ITP::rescale(MatrixXcd &wavefct)
 {	
-	Integral= complex<double>(0,0);  
+	double Integral = 0.;  
 	for(int i=0;i<opt.grid[1]-1;i++){
-    for(int j=0;j<opt.grid[2]-1;j++)
-    {
-      Integral += h_x*h_y*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/four;      
-    }}
-	opt.scale_factor=complex<double>(opt.N,0)/Integral;	
+    	for(int j=0;j<opt.grid[2]-1;j++){
+      		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);      
+    	}
+    }
+    
+	opt.scale_factor = opt.N/Integral;	
+	cout << "Integral : " << Integral << " scalefactor: " << opt.scale_factor << " " << sqrt(opt.scale_factor) << endl;
+	// wavefct.array() *= sqrt(opt.scale_factor);
 	wavefct.array() *= sqrt(opt.scale_factor);
 }
 
@@ -205,10 +208,24 @@ void ITP::propagateToGroundState(string runname)
 
 	//start loop here
 	Eigen::initParallel();
+
+	// do{
+	// 	rescale(wavefct);
+	// 	if(opt.scale_factor == 1){
+	// 		finished = true;
+	// 	}
+	// } while (finished == false);
+
+	// finished = false;
+
 	// for(int m = 1; opt.scale_factor < 0.99 && opt.scale_factor > 1.01; m++){
 	do {
-
 		for(int m = 0; m < 100; m++){
+
+			if(m%3 == 0){
+				rescale(wavefct);
+			}
+
 			wavefctcp = wavefct;
 	
 			ITP_compute_k(k0,wavefctcp);
@@ -224,16 +241,19 @@ void ITP::propagateToGroundState(string runname)
 	
 			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
 	
-			rescale(wavefct);
+			
 	
 			state++;	
 		}
+		
+
 		breakCondition.saveData(wavefct,opt,state);
 		breakCondition.evaluateData();
 
-		cli_groundState(runname,start,state,breakCondition.totalResult.Ekin,breakCondition.totalResult.particle_count);
+		cli_groundState(runname,start,state,breakCondition.totalResult);
 		int difference = breakCondition.totalResult.Ekin - old_Ekin;
 		if(difference == 0){
+		// if(opt.scale_factor == 0){
 			counter_finished++;
 		}else{
 			counter_finished = 0;
@@ -253,7 +273,7 @@ void ITP::propagateToGroundState(string runname)
 	CopyEigenToComplexGrid();
 }
 
-void ITP::cli_groundState(string name, double start,int state,int Ekin,int particle_count){	
+void ITP::cli_groundState(string name, double start,int state,Observables totalResult){	
 
 			int seconds;
 			int min;
@@ -267,8 +287,10 @@ void ITP::cli_groundState(string name, double start,int state,int Ekin,int parti
 
 		cout << "  " << name << ":"
 			<< std::setw(5) << std::setfill(' ') << state
-			<< " Kinetic Energy: " << std::setw(5) << std::setfill(' ') << Ekin << " "
-			<< " Particles: " << std::setw(12) << std::setfill(' ') << particle_count << " "
+			<< " Kinetic Energy: " << std::setw(5) << std::setfill(' ') << totalResult.Ekin << " "
+			<< " Particles: " << std::setw(12) << std::setfill(' ') << totalResult.particle_count << " "
+			<< " Volume: " << std::setw(12) << std::setfill(' ') << totalResult.volume << " "
+			<< " Scaling Factor: " << std::setw(12) << std::setfill(' ') << opt.scale_factor << " "
 			<< std::setw(2) << std::setfill('0') << hour << ":"
 			<< std::setw(2) << std::setfill('0') << min << ":"
 			<< std::setw(2) << std::setfill('0') << seconds  << "\r" << flush;

@@ -46,7 +46,7 @@ public:
 
         // Plotting and progress functions 
     void cli(string name,int counter_state, int counter_max, double start);
-    void cli_groundState(string name, double start,int state,int Ekin,int particle_count);
+    void cli_groundState(string name, double start,int state,Observables totalResult);
 
         // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
@@ -60,7 +60,6 @@ private:
 
     // Variables
     complex<double> h_x, h_y;
-    complex<double> Integral;
     complex<double> itp_laplacian_x;
     complex<double> itp_laplacian_y;
 

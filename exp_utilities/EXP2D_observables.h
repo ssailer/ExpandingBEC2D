@@ -17,7 +17,7 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length;
+        double Ekin, particle_count, healing_length, volume;
         ArrayXd number;
         ArrayXd k;
         
@@ -47,7 +47,7 @@ inline Observables::Observables(int avgrid) :
         number(avgrid),
         k(avgrid)
 {
-    Ekin = particle_count = healing_length = 0.0;
+    Ekin = particle_count = healing_length = volume = 0.0;
     number.setZero();
     k.setZero();
 }
@@ -61,6 +61,7 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.Ekin = Ekin + a.Ekin;
     ret.number = number + a.number; 
     ret.k = k + a.k;
+    ret.volume = volume + a.volume;
     
     return ret;
 }
@@ -74,6 +75,7 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.Ekin = Ekin - a.Ekin;
     ret.number = number - a.number; 
     ret.k = k - a.k;
+    ret.volume = volume - a.volume;
     
     return ret;
 }
@@ -87,6 +89,7 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.Ekin = Ekin * a.Ekin;
     ret.number = number * a.number; 
     ret.k = k * a.k;
+    ret.volume = volume * a.volume;
     
     return ret;
 }
@@ -100,6 +103,7 @@ inline Observables Observables::operator* (double d) const
     ret.Ekin = Ekin * d;
     ret.number = number * d;    
     ret.k = k * d;
+    ret.volume = volume * d;
 
     return ret;
 }
@@ -113,6 +117,7 @@ inline Observables Observables::operator/ (double d) const
     ret.Ekin = Ekin / d;
     ret.number = number / d;    
     ret.k = k / d;
+    ret.volume = volume / d;
     
     return ret;
 }

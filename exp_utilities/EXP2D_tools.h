@@ -27,7 +27,7 @@ typedef struct {
     complex<double> omega_x,omega_y; // Frequency of the harmonic trap
     complex<double> dispersion_x, dispersion_y; // dispersion relation for the expandion frame
     double min_x,min_y; // Coordinate boundaries
-    complex<double> scale_factor; //Scale factor
+    double scale_factor; //Scale factor
     complex<double> t_abs; //Absolute time // remove from opt! put into the function, don't need it here
     complex<double> exp_factor; //Expansion factor
     double g; // coupling constant
