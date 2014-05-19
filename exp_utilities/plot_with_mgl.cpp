@@ -1,6 +1,6 @@
 #include <plot_with_mgl.h>
 
-#define COLOURBAR_MAX_VALUE 2500
+#define COLOURBAR_MAX_VALUE 10000
 
 using namespace std;
 
@@ -384,10 +384,10 @@ void plotdatatopngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 
 
 	data.use_abs=true;
-	string filename = opt.name + "-DENS.png";
+	string filename = "Density-NonExpanding-" + opt.name + ".png";
 	gr.SetRange('z',data);
 	// gr.SetRange('c',data);
-	gr.SetRange('c',0,COLOURBAR_MAX_VALUE);
+	gr.SetRange('c',data);
 
 	// gr.SubPlot(1,2,1);
 
@@ -442,7 +442,7 @@ void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,E
 		// gr.Light(0,true);
 		// gr.Alpha(true);
 
-	string filename = opt.name + "-DENS.png";
+	string filename = "Density-Expanding-" + opt.name + ".png";
 
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
@@ -474,7 +474,7 @@ void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,E
 	// data.use_abs=true;
 	gr.SetRange('z',data);
 	// gr.SetRange('c',data);
-	gr.SetRange('c',0,COLOURBAR_MAX_VALUE);
+	gr.SetRange('c',data);
 
 	// gr.SubPlot(2,2,1);
 
@@ -489,6 +489,74 @@ void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,E
 	gr.Axis();
 	gr.Colorbar("_");
 	gr.Dens(xaxis,yaxis,data);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
+
+void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
+
+	int x = v.size();
+	int y = w.size();
+
+	mglData x_data(x);
+	mglData y_data(y);
+
+	for(int i=0;i < x;i++){	
+		x_data.a[i] = v[i];
+	}
+	for(int j = 0; j < y; j++){
+		y_data.a[j] = w[j];
+	}
+
+	mglGraph gr;
+		
+	filename = filename + ".png";
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(filename.c_str());
+	// gr.Alpha(true);
+
+	gr.SubPlot(2,1,0);
+	gr.SetRange('x',-opt.min_x,opt.min_x);
+	gr.SetRange('y',x_data);
+	gr.Axis();
+	gr.Plot(x_data);
+
+	gr.SubPlot(2,1,1);
+	gr.SetRange('x',-opt.min_y,opt.min_y);
+	gr.SetRange('y',y_data);
+	gr.Axis();
+	gr.Plot(y_data);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
+void plotVector(string filename,vector<double> v,Options &opt){
+
+	int x = v.size();
+
+	mglData data(x);
+
+	for(int i=0;i < x;i++){	
+		data.a[i] = v[i];
+	}
+
+	mglGraph gr;
+		
+	filename = filename + ".png";
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(filename.c_str());
+
+	gr.SetRange('x',0,v.size());
+	gr.SetRange('y',data);
+	gr.Axis();
+	gr.Plot(data);
 
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 

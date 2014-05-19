@@ -1,0 +1,11 @@
+TODO:
+
+- why 512 working but 1024 not in ITP checkings?
+- radialDensity why these spikes?
+
+
+
+GENERAL:
+- the whole integral/rescaling thing
+- expanding speeds, maybe a dynamic system, like ITP things for expansion?
+- k-vector expanding definition

@@ -278,7 +278,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
-		string stepname = runname + "-Step-" + to_string(snapshot_times[j]);
+		string stepname = runname + "-" + to_string(snapshot_times[j]);
 		vector<int> stateOfLoops(opt.samplesize);
 		vector<int> threadinfo(opt.samplesize);
 		int slowestthread = 0;

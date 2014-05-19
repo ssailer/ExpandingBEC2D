@@ -73,14 +73,18 @@ void Eval::evaluateData(){
 }
 
 void Eval::plotData(){
-	string filename = "Spectrum-Step-" + to_string(snapshot_time); 
+	string filename = "Spectrum-" + to_string(snapshot_time); 
 	plotspectrum(filename,totalResult);
-	filename = "Vortices-Step-" + to_string(snapshot_time);
+	filename = "Vortices-" + to_string(snapshot_time);
 	plotVortexLocationMap(filename,vortexLocationMap[0]);
-	filename = "TestPlot-Step-" + to_string(snapshot_time);
+	filename = "Control-Plot-" + to_string(snapshot_time);
 	plotdatatopng(filename,PsiVec[0],opt);
-	filename = "Density-Step-" + to_string(snapshot_time);
+	filename = "Density-" + to_string(snapshot_time);
 	plotdatatopng(filename,densityLocationMap[0],opt);
+	filename = "Density-Distribution-" + to_string(snapshot_time);
+	plotVector(filename,x_dist,y_dist,opt);
+	filename = "Angular-Dens" + to_string(snapshot_time);
+	plotVector(filename,angularDensity,opt);
 }
 
 void Eval::findVortices(ComplexGrid &data, RealGrid &vortexLocationMap_local, vector<Coordinate<int32_t>> &vortexCoordinates){
@@ -122,6 +126,10 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	// RealGrid density_grad_x(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	// RealGrid density_grad_y(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
+
+
+
+
 	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	// for(int x = 1; x < data.width() - 1; x++){
@@ -131,43 +139,93 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	// 	}
 	// }
 
+	vector<double> polarDensity; // first entry is 
+	vector<int> phi_tmp;
+	vector<double> radius;
+
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
 	    	if((abs2(data(0,i,j,0)) > lower_threshold)){
 				densityLocationMap_local(0,i,j,0) = 1.;
 				// densityCoordinates.push_back(data.make_coord(i,j,0));
+				int x_shift = i - opt.grid[1]/2;
+				int y_shift = j - opt.grid[2]/2;
+				phi_tmp.push_back( atan2(x_shift,y_shift) * 360 / M_PI );
+				radius.push_back(sqrt(x_shift*x_shift + y_shift*y_shift));
+				polarDensity.push_back(abs2(data(0,i,j,0)));
+
 			}else{
 				densityLocationMap_local(0,i,j,0) = 0.;
 			}
 		}
 	}
+	
+	angularDensity.resize(360);
+	for(int i = 0; i < 360; i++){
+		for(int j = 0; j < phi_tmp.size(); j++){
+			if(phi_tmp[j] == i){
+				angularDensity[i] += polarDensity[j];
+			}
+		}
+	}
+
+
+
+
+
+	// x_dist.resize(opt.grid[1]);
+	// y_dist.resize(opt.grid[2]);
+
+	// for(int i = 0; i < opt.grid[1]; i++){
+	// 	double sum = 0;
+	// 	for(int j = 0; j < opt.grid[2]; j++){
+	// 		sum += densityLocationMap_local(0,i,j,0);			
+	// 	}
+	// 	x_dist[i] = sum;
+	// }
+	// for(int j = 0; j < opt.grid[2]; j++){
+	// 	double sum = 0;
+	// 	for(int i = 0; i < opt.grid[1]; i++){
+	// 		sum += densityLocationMap_local(0,i,j,0);
+	// 	}
+	// 	y_dist[j] = sum;
+	// }
+
+
+
+
+
+
+
+
+
+
 
 	double sum = 0;
 	for(int k = 0; k < 10; k++){
-	for(int x = 1; x < opt.grid[1]-1; x+=1){
-		for(int y = 1; y < opt.grid[2]-1; y+=1){
-
-
-			
-			for(int i = x-1; i <= x+1; i++){
-				for(int j = y-1; j <= y+1; j++){
-					sum += densityLocationMap_local(0,i,j,0);
+		for(int x = 1; x < opt.grid[1]-1; x+=1){
+			for(int y = 1; y < opt.grid[2]-1; y+=1){				
+				for(int i = x-1; i <= x+1; i++){
+					for(int j = y-1; j <= y+1; j++){
+						sum += densityLocationMap_local(0,i,j,0);
+					}
 				}
-			}
-			if((sum = 8) && (densityLocationMap_local(0,x,y,0) == 0)){ // now it is surround by stuff, and instelf zero, so we assume this is a vortex | this is a good place for a counter of vortices
-					densityLocationMap_local(0,x,y,0) = 0; // 
+				if((sum = 8) && (densityLocationMap_local(0,x,y,0) == 0)){ // now it is surround by stuff, and instelf zero, so we assume this is a vortex | this is a good place for a counter of vortices
+						densityLocationMap_local(0,x,y,0) = 0; // 
+					}
+				else if(sum >= 5){ // Point is either half surrounded by stuff, or is itself stuff, so assume it is density, which we didn't catch before
+					densityLocationMap_local(0,x,y,0) = 1.;
+					// densityCoordinates.push_back(data.make_coord(i,j,0));
+				}else{
+					densityLocationMap_local(0,x,y,0) = 0.; //
 				}
-			else if(sum >= 5){ // Point is either half surrounded by stuff, or is itself stuff, so assume it is density, which we didn't catch before
-				densityLocationMap_local(0,x,y,0) = 1.;
-				// densityCoordinates.push_back(data.make_coord(i,j,0));
-			}else{
-				densityLocationMap_local(0,x,y,0) = 0.; //
+				if(sum > 9){cout << "ERROR: TO MUCH SUM" << endl;}
+				sum = 0;
 			}
-			if(sum > 9){cout << "HELP TO MUCH SUM" << endl;}
-			sum = 0;
 		}
 	}
-	}
+
+
 
 }
 

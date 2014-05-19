@@ -107,7 +107,7 @@ inline void ITP::rescale(MatrixXcd &wavefct)
     }
     
 	opt.scale_factor = opt.N/Integral;	
-	cout << "Integral : " << Integral << " scalefactor: " << opt.scale_factor << " " << sqrt(opt.scale_factor) << endl;
+	// cout << "Integral : " << Integral << " scalefactor: " << opt.scale_factor << " " << sqrt(opt.scale_factor) << endl;
 	// wavefct.array() *= sqrt(opt.scale_factor);
 	wavefct.array() *= sqrt(opt.scale_factor);
 }

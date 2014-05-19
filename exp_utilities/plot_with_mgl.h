@@ -74,5 +74,7 @@ void plotdatatopng(string filename,ComplexGrid &g,Options &opt);
 void plotdatatopng(string filename,RealGrid &g,Options &opt);
 void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt);
 void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt);
+void plotVector(string filename,vector<double> v,Options &opt);
+void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
 
 #endif // PLOT_WITH_MGL_H__
