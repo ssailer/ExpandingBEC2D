@@ -139,33 +139,54 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	// 	}
 	// }
 
-	vector<double> polarDensity; // first entry is 
-	vector<int> phi_tmp;
-	vector<double> radius;
+
 
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
 	    	if((abs2(data(0,i,j,0)) > lower_threshold)){
 				densityLocationMap_local(0,i,j,0) = 1.;
 				// densityCoordinates.push_back(data.make_coord(i,j,0));
-				int x_shift = i - opt.grid[1]/2;
-				int y_shift = j - opt.grid[2]/2;
-				phi_tmp.push_back( atan2(x_shift,y_shift) * 360 / M_PI );
-				radius.push_back(sqrt(x_shift*x_shift + y_shift*y_shift));
-				polarDensity.push_back(abs2(data(0,i,j,0)));
-
 			}else{
 				densityLocationMap_local(0,i,j,0) = 0.;
 			}
 		}
 	}
+
+	vector<double> polarDensity; // first entry is 
+	vector<int> phi;
+	vector<double> radius;
+	vector<Coordinate<int32_t>> cartesianCoordinates;
+	// RealGrid conversionControl(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+
+	for(int i = 0; i < opt.grid[1]; i++){
+	    for(int j = 0; j < opt.grid[2]; j++){
+				int x_shift = i - opt.grid[1]/2;
+				int y_shift = j - opt.grid[2]/2;
+				phi.push_back( atan2(x_shift,y_shift) * 360 / M_PI );
+				radius.push_back(sqrt(x_shift*x_shift + y_shift*y_shift));
+				polarDensity.push_back(abs2(data(0,i,j,0)));
+				cartesianCoordinates.push_back(data.make_coord(i,j,0));
+		}
+	}
 	
-	angularDensity.resize(360);
+	int max_radius = (opt.grid[1] + opt.grid[2]) / 4;
+
+
+	angularDensity.resize(36);
+	vector<double>angularDensity_tmp(360);
 	for(int i = 0; i < 360; i++){
-		for(int j = 0; j < phi_tmp.size(); j++){
-			if(phi_tmp[j] == i){
-				angularDensity[i] += polarDensity[j];
+		for(int j = 0; j < phi.size(); j++){
+			if(phi[j] == i){
+				if(radius[j] <= max_radius){
+					angularDensity_tmp[i] += polarDensity[j];
+				}
 			}
+		}
+	}
+	for(int i = 1; i < 11; i++){
+		for(int j = 1; j < 37; j ++){
+			angularDensity[j-1] +=angularDensity_tmp[i*j - 1];
 		}
 	}
 
