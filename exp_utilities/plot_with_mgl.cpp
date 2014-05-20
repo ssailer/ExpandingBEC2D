@@ -500,14 +500,14 @@ void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
 	int x = v.size();
 	int y = w.size();
 
-	mglData x_data(x);
-	mglData y_data(y);
+	mglData v_data(x);
+	mglData w_data(y);
 
 	for(int i=0;i < x;i++){	
-		x_data.a[i] = v[i];
+		v_data.a[i] = v[i];
 	}
 	for(int j = 0; j < y; j++){
-		y_data.a[j] = w[j];
+		w_data.a[j] = w[j];
 	}
 
 	mglGraph gr;
@@ -521,15 +521,15 @@ void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
 
 	gr.SubPlot(2,1,0);
 	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',x_data);
+	gr.SetRange('y',v_data);
 	gr.Axis();
-	gr.Plot(x_data);
+	gr.Plot(v_data);
 
 	gr.SubPlot(2,1,1);
 	gr.SetRange('x',-opt.min_y,opt.min_y);
-	gr.SetRange('y',y_data);
+	gr.SetRange('y',w_data);
 	gr.Axis();
-	gr.Plot(y_data);
+	gr.Plot(w_data);
 
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 
@@ -557,6 +557,38 @@ void plotVector(string filename,vector<double> v,Options &opt){
 	gr.SetRange('y',data);
 	gr.Axis();
 	gr.Plot(data);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
+void plotAngularDensity(string filename,vector<double> phi,vector<double> density,Options &opt){
+
+	int x = phi.size();
+	int y = density.size();
+
+	mglData phi_data(x);
+	mglData density_data(y);
+
+	for(int i=0;i < x;i++){	
+		phi_data.a[i] = phi[i];
+	}
+	for(int j = 0; j < y; j++){
+		density_data.a[j] = density[j];
+	}
+
+	mglGraph gr;
+		
+	filename = filename + ".png";
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(filename.c_str());
+
+	gr.SetRange('x',phi_data);
+	gr.SetRange('y',density_data);
+	gr.Axis();
+	gr.Plot(phi_data,density_data);
 
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 

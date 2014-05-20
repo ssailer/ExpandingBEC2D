@@ -81,7 +81,7 @@ void Eval::plotData(){
 	plotdatatopng(filename,PsiVec[0],opt);
 	filename = "Density-" + to_string(snapshot_time);
 	plotdatatopng(filename,densityLocationMap[0],opt);
-	filename = "Density-Distribution-" + to_string(snapshot_time);
+	filename = "Density-Axial-Distribution-" + to_string(snapshot_time);
 	plotVector(filename,x_dist,y_dist,opt);
 	filename = "Angular-Dens" + to_string(snapshot_time);
 	plotVector(filename,angularDensity,opt);
@@ -121,14 +121,13 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	double upper_threshold = 20.;
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 	
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
+
+	angularDensity.clear();
+	phi.clear()	;
 
 	// RealGrid density_grad_x(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	// RealGrid density_grad_y(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-
-
-
 
 	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
@@ -138,8 +137,6 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	// 		density_grad_y(0,x,y,0) = ( arg(data(0,x,y+1,0))- arg(data(0,x,y+1,0)) ) / (2.0 * h_y );
 	// 	}
 	// }
-
-
 
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
@@ -153,7 +150,6 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	}
 
 	vector<double> polarDensity; // first entry is 
-	vector<int> phi;
 	vector<double> radius;
 	vector<Coordinate<int32_t>> cartesianCoordinates;
 	// RealGrid conversionControl(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -163,64 +159,76 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	    for(int j = 0; j < opt.grid[2]; j++){
 				int x_shift = i - opt.grid[1]/2;
 				int y_shift = j - opt.grid[2]/2;
-				phi.push_back( atan2(x_shift,y_shift) * 360 / M_PI );
-				radius.push_back(sqrt(x_shift*x_shift + y_shift*y_shift));
+				phi.push_back( atan2(x_shift * h_x ,y_shift * h_y) * 180 / M_PI + 180);
+				radius.push_back(sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y));
 				polarDensity.push_back(abs2(data(0,i,j,0)));
 				cartesianCoordinates.push_back(data.make_coord(i,j,0));
 		}
 	}
 	
-	int max_radius = (opt.grid[1] + opt.grid[2]) / 4;
+	double max_radius = (opt.grid[1] + opt.grid[2]) / 4;
+
+	// double bigger, smaller;
+	// bigger = smaller = 0;
+	// for(int i = 0; i < phi.size(); i++){
+	// 	if(phi[i] >= 0)
+	// 		bigger++;
+	// 	else if(phi[i] < 0)
+	// 		smaller++;
+	// 	else if(phi[i] >360)
+	// 		cout << "BIGGER WHAT?" << endl;
+	// }
+	// cout << "Results: " << bigger << "  " << smaller << endl;
 
 
-	angularDensity.resize(36);
-	vector<double>angularDensity_tmp(360);
-	for(int i = 0; i < 360; i++){
+	// angularDensity.resize(72);
+	vector<double>angularDensity_tmp(361);
+	for(int i = 0; i <= 360; i++){
 		for(int j = 0; j < phi.size(); j++){
-			if(phi[j] == i){
+			if(round(phi[j]) == i){
 				if(radius[j] <= max_radius){
 					angularDensity_tmp[i] += polarDensity[j];
 				}
 			}
 		}
 	}
-	for(int i = 1; i < 11; i++){
-		for(int j = 1; j < 37; j ++){
-			angularDensity[j-1] +=angularDensity_tmp[i*j - 1];
-		}
+	angularDensity_tmp[0] += angularDensity_tmp[360];
+	angularDensity_tmp.pop_back();
+	// angularDensity = angularDensity_tmp;
+
+	// for(int i = 1; i < 11; i++){
+	// 	for(int j = 1; j < 37; j ++){
+	// 		angularDensity[j-1] +=angularDensity_tmp[i*j - 1];
+	// 	}
+	// }
+	for(int i = 0; i <= 355; i += 5){
+		vector<double>::iterator beginning = angularDensity_tmp.begin() + i;
+		vector<double>::iterator ending = beginning + 5;
+		angularDensity.push_back(accumulate(beginning,ending,0));
 	}
 
+	// angularDensity = polarDensity;
 
+	// if(angularDensity.size() != phi.size())
+	// 	cout << "ERROR: Angular Density index problems." << endl;
 
+	x_dist.resize(opt.grid[1]);
+	y_dist.resize(opt.grid[2]);
 
-
-	// x_dist.resize(opt.grid[1]);
-	// y_dist.resize(opt.grid[2]);
-
-	// for(int i = 0; i < opt.grid[1]; i++){
-	// 	double sum = 0;
-	// 	for(int j = 0; j < opt.grid[2]; j++){
-	// 		sum += densityLocationMap_local(0,i,j,0);			
-	// 	}
-	// 	x_dist[i] = sum;
-	// }
-	// for(int j = 0; j < opt.grid[2]; j++){
-	// 	double sum = 0;
-	// 	for(int i = 0; i < opt.grid[1]; i++){
-	// 		sum += densityLocationMap_local(0,i,j,0);
-	// 	}
-	// 	y_dist[j] = sum;
-	// }
-
-
-
-
-
-
-
-
-
-
+	for(int i = 0; i < opt.grid[1]; i++){
+		double sum = 0;
+		for(int j = 0; j < opt.grid[2]; j++){
+			sum += densityLocationMap_local(0,i,j,0);			
+		}
+		x_dist[i] = sum;
+	}
+	for(int j = 0; j < opt.grid[2]; j++){
+		double sum = 0;
+		for(int i = 0; i < opt.grid[1]; i++){
+			sum += densityLocationMap_local(0,i,j,0);
+		}
+		y_dist[j] = sum;
+	}
 
 	double sum = 0;
 	for(int k = 0; k < 10; k++){

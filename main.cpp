@@ -77,16 +77,17 @@ plotdatatopng(opt.name,data,opt);
 	// if the given value is true, add vortices to the startgrid
 if(opt.runmode.compare(3,1,"1") == 0)
 {
-int sigma_grid[2];
-sigma_grid[0] = opt.grid[1]/8;
-sigma_grid[1] = opt.grid[2]/8;
-double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
+// int sigma_grid[2];
+// sigma_grid[0] = opt.grid[1]/8;
+// sigma_grid[1] = opt.grid[2]/8;
+// double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
 // data = add_central_vortex(data,opt);	
 // data = add_circle_vortex(data,opt,r,3);
-data = add_circle_vortex(data,opt,r/4.0,6);
-data = add_circle_vortex(data,opt,r*2.0/4.0,12);
-data = add_circle_vortex(data,opt,r*3.0/4.0,24);
+// data = add_circle_vortex(data,opt,r/4.0,6);
+// data = add_circle_vortex(data,opt,r*2.0/4.0,12);
+// data = add_circle_vortex(data,opt,r*3.0/4.0,24);
+data = addVortices(data,opt);
 
 cout << "Vortices added." << endl;
 }

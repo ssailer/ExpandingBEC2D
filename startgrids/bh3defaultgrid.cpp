@@ -321,6 +321,7 @@ ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vorte
     }
 
 
+
     for(int j = 0; j < opt.grid[0]; j++)
     {
         // int r = 0; 
@@ -356,11 +357,47 @@ ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vorte
                     */
                 }
             }
+
+
         } 
     }
     return g;
 
 }
+
+ComplexGrid *addVortices(ComplexGrid* &g, Options &opt){
+
+int x_jump = opt.grid[1] / 20;
+int y_jump = opt.grid[2] / 20;
+
+vector<Coordinate<int32_t>> c;
+
+for(int x = x_jump; x < opt.grid[1]; x += x_jump){
+    for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){
+        if(abs2(g->at(0,x,y,0)) >= 30){
+            c.push_back(g->make_coord(x,y,0));
+        }
+    }
+}
+for(int x = x_jump; x < opt.grid[1]; x += x_jump/2){
+    for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
+        if(abs2(g->at(0,x,y,0)) >= 30){
+            c.push_back(g->make_coord(x,y,0));
+        }
+    }
+}
+
+for(int i = 0; i < c.size(); i++){
+    for(int y = 0; y < opt.grid[2]; y++){
+        for(int x = 0; x < opt.grid[1]; x++){   
+            g->at(0,x,y,0) *= polar(1.0,(1.0/*<-windingnumber*/*mypow2(-1,i+1))*(vortex(y,c[i].y(),x,c[i].x())));
+        }
+    }
+}
+    return g;
+}
+
+
 
 
 ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g, const Options &opt,int Vortexnumber, int rows_y, int columns_x, int Q) 

@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <complex>
-#include <math.h>
+#include <cmath>
+#include <numeric>
 #include <complexgrid.h>
 #include <realgrid.h>
 #include <bh3binaryfile.h>
@@ -45,6 +46,7 @@ private:
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
 	vector<double> x_dist;
 	vector<double> y_dist;
+	vector<double> phi;
 	vector<double> angularDensity;
 
 	// doing functinos

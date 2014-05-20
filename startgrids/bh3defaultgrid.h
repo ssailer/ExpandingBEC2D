@@ -15,6 +15,7 @@ ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, double & sigma_
 ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r,int Vortexnumber);
 ComplexGrid *add_central_vortex(ComplexGrid* &g, Options &opt);
 ComplexGrid *create_noise_Start_Grid(ComplexGrid* &g,const Options &opt);
+ComplexGrid *addVortices(ComplexGrid* &g, Options &opt);
 
 
 ComplexGrid *create_Vortex_start_Grid3(ComplexGrid* &g,const Options &opt,int Vortexnumber, int rows_y, int columns_x, int Q) ;
