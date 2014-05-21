@@ -384,7 +384,7 @@ void plotdatatopngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 
 
 	data.use_abs=true;
-	string filename = "Density-NonExpanding-" + opt.name + ".png";
+	string filename = opt.name + "-Density-Expanding.png";
 	gr.SetRange('z',data);
 	// gr.SetRange('c',data);
 	gr.SetRange('c',data);
@@ -442,7 +442,7 @@ void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,E
 		// gr.Light(0,true);
 		// gr.Alpha(true);
 
-	string filename = "Density-Expanding-" + opt.name + ".png";
+	string filename = opt.name + "-Density-Expanding.png";
 
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);

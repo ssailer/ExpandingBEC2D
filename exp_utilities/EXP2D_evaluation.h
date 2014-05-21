@@ -25,8 +25,8 @@ public:
 	~Eval();
 
 	// wrapperfunctions 
-	void saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time); // If data comes as a vector of matrices (from statistics RTE)
-	void saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time); // If data comes only as a Matrix (from ITP)
+	void saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time,string runname_external); // If data comes as a vector of matrices (from statistics RTE)
+	void saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time,string runname_external); // If data comes only as a Matrix (from ITP)
 	void evaluateData(); // calculate the observables
 	void plotData(); // plot Results
 
@@ -37,6 +37,7 @@ public:
 private:
 
 	// data savefiles
+	string runname;
 	vector<ComplexGrid> PsiVec;
 	Options opt;
 	int snapshot_time;

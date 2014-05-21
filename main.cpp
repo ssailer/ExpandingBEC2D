@@ -131,8 +131,17 @@ runparameters << "Parameters of this run:" << endl
 runparameters.close();
 
 // run
-string runname = "RTE";
 Eval* eval = new Eval;
+
+string runname = "RT-noEx";
+opt.runmode = "0011";
+rterun->setOptions(opt);
+rterun->RunSetup();
+rterun->rteToTime(runname,snapshot_times,eval);
+runname = "RT-Ex";
+opt.runmode = "0101";
+rterun->setOptions(opt);
+rterun->RunSetup();
 rterun->rteToTime(runname,snapshot_times,eval);
 
 cout << "Run finished." << endl;

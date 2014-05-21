@@ -247,7 +247,7 @@ void ITP::propagateToGroundState(string runname)
 		}
 		
 
-		breakCondition.saveData(wavefct,opt,state);
+		breakCondition.saveData(wavefct,opt,state,runname);
 		breakCondition.evaluateData();
 
 		cli_groundState(runname,start,state,breakCondition.totalResult);

@@ -372,15 +372,15 @@ int y_jump = opt.grid[2] / 20;
 
 vector<Coordinate<int32_t>> c;
 
-for(int x = x_jump; x < opt.grid[1]; x += x_jump){
-    for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){
+for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){
+    for(int x = x_jump; x < opt.grid[1]; x += x_jump){
         if(abs2(g->at(0,x,y,0)) >= 30){
             c.push_back(g->make_coord(x,y,0));
         }
     }
 }
-for(int x = x_jump; x < opt.grid[1]; x += x_jump/2){
-    for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
+for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
+    for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){
         if(abs2(g->at(0,x,y,0)) >= 30){
             c.push_back(g->make_coord(x,y,0));
         }

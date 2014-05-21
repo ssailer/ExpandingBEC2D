@@ -7,7 +7,8 @@ using namespace Eigen;
  Eval::Eval() {};
  Eval::~Eval() {};
 
-void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time){
+void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time,string runname_external){
+		runname = runname_external;
 		opt = externalopt;
 		snapshot_time = external_snapshot_time;
 		PsiVec.resize(wavefctVec.size());
@@ -21,7 +22,8 @@ void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &exte
 		}
 }
 
-void Eval::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time){
+void Eval::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time,string runname_external){
+		runname = runname_external;
 		opt = externalopt;
 		snapshot_time = external_snapshot_time;
 		PsiVec.resize(1);
@@ -73,17 +75,17 @@ void Eval::evaluateData(){
 }
 
 void Eval::plotData(){
-	string filename = "Spectrum-" + to_string(snapshot_time); 
+	string filename = runname + "-Spectrum-" + to_string(snapshot_time); 
 	plotspectrum(filename,totalResult);
-	filename = "Vortices-" + to_string(snapshot_time);
+	filename = runname + "-Vortices-" + to_string(snapshot_time);
 	plotVortexLocationMap(filename,vortexLocationMap[0]);
-	filename = "Control-Plot-" + to_string(snapshot_time);
+	filename = runname + "-Control-Plot-" + to_string(snapshot_time);
 	plotdatatopng(filename,PsiVec[0],opt);
-	filename = "Density-" + to_string(snapshot_time);
+	filename = runname + "-Density-" + to_string(snapshot_time);
 	plotdatatopng(filename,densityLocationMap[0],opt);
-	filename = "Density-Axial-Distribution-" + to_string(snapshot_time);
+	filename = runname + "-Density-Axial-Distribution-" + to_string(snapshot_time);
 	plotVector(filename,x_dist,y_dist,opt);
-	filename = "Angular-Dens" + to_string(snapshot_time);
+	filename = runname + "-Angular-Dens" + to_string(snapshot_time);
 	plotVector(filename,angularDensity,opt);
 }
 
