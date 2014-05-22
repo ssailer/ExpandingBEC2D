@@ -76,6 +76,7 @@ void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt);
 void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt);
 void plotVector(string filename,vector<double> v,Options &opt);
 void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
+void plotVector(string filename,ArrayXd v,Options &opt);
 void plotAngularDensity(string filename,vector<double> phi,vector<double> density,Options &opt);
 
 #endif // PLOT_WITH_MGL_H__

@@ -113,9 +113,9 @@ if(opt.runmode.compare(0,1,"1") == 0)
 }
 
 //====> Real Time Expansion (RTE)
-vector<int> snapshot_times(100);
-for(int i = 0;i < 100;i++){
-	snapshot_times[i] = (i+1) *opt.n_it_RTE / 100.0;
+vector<int> snapshot_times(10);
+for(int i = 0;i < 10;i++){
+	snapshot_times[i] = (i+1) *opt.n_it_RTE / 10.0;
 }
 
 ofstream runparameters;
@@ -134,15 +134,15 @@ runparameters.close();
 Eval* eval = new Eval;
 
 string runname = "RT-noEx";
-opt.runmode = "0011";
-rterun->setOptions(opt);
-rterun->RunSetup();
+// opt.runmode = "0011";
+// rterun->setOptions(opt);
+// rterun->RunSetup();
 rterun->rteToTime(runname,snapshot_times,eval);
-runname = "RT-Ex";
-opt.runmode = "0101";
-rterun->setOptions(opt);
-rterun->RunSetup();
-rterun->rteToTime(runname,snapshot_times,eval);
+// runname = "RT-Ex";
+// opt.runmode = "0101";
+// rterun->setOptions(opt);
+// rterun->RunSetup();
+// rterun->rteToTime(runname,snapshot_times,eval);
 
 cout << "Run finished." << endl;
 

@@ -152,23 +152,13 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.grid[3]              = root["RunOptions"]["grid3"];				
 	opt.g                    = root["RunOptions"]["g"]; 						
 	opt.n_it_RTE             = root["RunOptions"]["n_it_RTE"]; 				
-	// opt.n_save_RTE           = root["RunOptions"]["n_save_RTE"]; 			
-	// opt.n_it_ITP1            = root["RunOptions"]["n_it_ITP1"];	
-	// opt.n_it_ITP2            = root["RunOptions"]["n_it_ITP2"];				
-	// opt.n_save_ITP           = root["RunOptions"]["n_save_ITP"];   			
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
-	// opt.Q                    = root["RunOptions"]["Q"];
-	// opt.RTE_only			 = root["RunOptions"]["RTE_only"];
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	// opt.workingfile			 = root["RunOptions"]["workingfile"]
 	cfg.lookupValue("RunOptions.workingfile",opt.workingfile);
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
 	// opt.name
-
-	// opt.startgrid[0]         = root["RunOptions"]["gaussian"];
-	// opt.startgrid[1]         = root["RunOptions"]["vortices"];
-	// opt.startgrid[2]		 = root["RunOptions"]["potential"];
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");

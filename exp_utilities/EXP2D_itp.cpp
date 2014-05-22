@@ -222,9 +222,7 @@ void ITP::propagateToGroundState(string runname)
 	do {
 		for(int m = 0; m < 100; m++){
 
-			if(m%3 == 0){
-				rescale(wavefct);
-			}
+			rescale(wavefct);
 
 			wavefctcp = wavefct;
 	
@@ -298,8 +296,7 @@ void ITP::cli_groundState(string name, double start,int state,Observables totalR
 
 }
 
-inline void ITP::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp)
-	{
+inline void ITP::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp){
 	Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
 	Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
 	

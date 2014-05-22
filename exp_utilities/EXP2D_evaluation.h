@@ -47,13 +47,11 @@ private:
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
 	vector<double> x_dist;
 	vector<double> y_dist;
-	vector<double> phi;
-	vector<double> angularDensity;
 
 	// doing functinos
-	Observables calculator(ComplexGrid data);
-	void findVortices(ComplexGrid &data, RealGrid &vortexLocationMap_local, vector<Coordinate<int32_t>> &vortexCoordinates);
-	void findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
+	Observables calculator(ComplexGrid data,int sampleindex);
+	void findVortices(ComplexGrid data, RealGrid &vortexLocationMap_local, vector<Coordinate<int32_t>> &vortexCoordinates);
+	void findDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
 
 
 

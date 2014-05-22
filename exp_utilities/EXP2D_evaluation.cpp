@@ -38,21 +38,18 @@ void Eval::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapsh
 }
 
 void Eval::evaluateData(){
-	vector<Observables> avResult(PsiVec.size());
+
 	vortexLocationMap.resize(PsiVec.size());
 	densityLocationMap.resize(PsiVec.size());
 	vortexCoordinates.resize(PsiVec.size());
 	densityCoordinates.resize(PsiVec.size());
 
-	totalResult = Observables(3*opt.grid[1]);
+	totalResult = Observables(opt.grid[1]*3);
 		
 	for(int k = 0; k < PsiVec.size(); k++){
-		// avResult[k] = Observables(3*opt.grid[1]);
-		// avResult[k] = calculator(PsiVec[k]);
-		totalResult += calculator(PsiVec[k]);
-		// avResult + evaluate(PsiVec[k]);
 		findVortices(PsiVec[k],vortexLocationMap[k],vortexCoordinates[k]);
 		findDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
+		totalResult += calculator(PsiVec[k],k);
 
 		for(int i = 0; i < opt.grid[1]; i++){
 			for(int j = 0; j < opt.grid[2]; j++){
@@ -60,10 +57,6 @@ void Eval::evaluateData(){
 			}
 		}
 	}
-
-
-
-
 	
 	// for(int k = 0; k < PsiVec.size(); k++){
 	// 	 totalResult = avResult[k];
@@ -86,10 +79,10 @@ void Eval::plotData(){
 	filename = runname + "-Density-Axial-Distribution-" + to_string(snapshot_time);
 	plotVector(filename,x_dist,y_dist,opt);
 	filename = runname + "-Angular-Dens" + to_string(snapshot_time);
-	plotVector(filename,angularDensity,opt);
+	plotVector(filename,totalResult.angularDensity,opt);
 }
 
-void Eval::findVortices(ComplexGrid &data, RealGrid &vortexLocationMap_local, vector<Coordinate<int32_t>> &vortexCoordinates){
+void Eval::findVortices(ComplexGrid data, RealGrid &vortexLocationMap_local, vector<Coordinate<int32_t>> &vortexCoordinates){
 	
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
@@ -117,7 +110,7 @@ void Eval::findVortices(ComplexGrid &data, RealGrid &vortexLocationMap_local, ve
 
 }
 
-void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates){
+void Eval::findDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates){
 
 	double lower_threshold = 10.; //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	double upper_threshold = 20.;
@@ -125,8 +118,7 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
 
-	angularDensity.clear();
-	phi.clear()	;
+
 
 	// RealGrid density_grad_x(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	// RealGrid density_grad_y(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -144,70 +136,13 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 	    for(int j = 0; j < opt.grid[2]; j++){
 	    	if((abs2(data(0,i,j,0)) > lower_threshold)){
 				densityLocationMap_local(0,i,j,0) = 1.;
-				// densityCoordinates.push_back(data.make_coord(i,j,0));
+				densityCoordinates.push_back(data.make_coord(i,j,0));
 			}else{
 				densityLocationMap_local(0,i,j,0) = 0.;
 			}
 		}
 	}
 
-	vector<double> polarDensity; // first entry is 
-	vector<double> radius;
-	vector<Coordinate<int32_t>> cartesianCoordinates;
-	// RealGrid conversionControl(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-
-	for(int i = 0; i < opt.grid[1]; i++){
-	    for(int j = 0; j < opt.grid[2]; j++){
-				int x_shift = i - opt.grid[1]/2;
-				int y_shift = j - opt.grid[2]/2;
-				phi.push_back( atan2(x_shift * h_x ,y_shift * h_y) * 180 / M_PI + 180);
-				radius.push_back(sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y));
-				polarDensity.push_back(abs2(data(0,i,j,0)));
-				cartesianCoordinates.push_back(data.make_coord(i,j,0));
-		}
-	}
-	
-	double max_radius = (opt.grid[1] + opt.grid[2]) / 4;
-
-	// double bigger, smaller;
-	// bigger = smaller = 0;
-	// for(int i = 0; i < phi.size(); i++){
-	// 	if(phi[i] >= 0)
-	// 		bigger++;
-	// 	else if(phi[i] < 0)
-	// 		smaller++;
-	// 	else if(phi[i] >360)
-	// 		cout << "BIGGER WHAT?" << endl;
-	// }
-	// cout << "Results: " << bigger << "  " << smaller << endl;
-
-
-	// angularDensity.resize(72);
-	vector<double>angularDensity_tmp(361);
-	for(int i = 0; i <= 360; i++){
-		for(int j = 0; j < phi.size(); j++){
-			if(round(phi[j]) == i){
-				if(radius[j] <= max_radius){
-					angularDensity_tmp[i] += polarDensity[j];
-				}
-			}
-		}
-	}
-	angularDensity_tmp[0] += angularDensity_tmp[360];
-	angularDensity_tmp.pop_back();
-	// angularDensity = angularDensity_tmp;
-
-	// for(int i = 1; i < 11; i++){
-	// 	for(int j = 1; j < 37; j ++){
-	// 		angularDensity[j-1] +=angularDensity_tmp[i*j - 1];
-	// 	}
-	// }
-	for(int i = 0; i <= 355; i += 5){
-		vector<double>::iterator beginning = angularDensity_tmp.begin() + i;
-		vector<double>::iterator ending = beginning + 5;
-		angularDensity.push_back(accumulate(beginning,ending,0));
-	}
 
 	// angularDensity = polarDensity;
 
@@ -261,21 +196,62 @@ void Eval::findDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, ve
 }
 
 
-Observables Eval::calculator(ComplexGrid data){
+Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	
-	Observables ares = Observables(3*opt.grid[1]);
+	Observables ares = Observables(opt.grid[1]*3);
 	// R-Space
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
-	double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
+	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
 	
-	double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;	
+	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+
+	ares.volume = h_x * h_y * densityCoordinates[sampleindex].size();
 	
-	for(int i = 0; i < opt.grid[1]-1; i++){
-	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
-	      	ares.volume += h_x * h_y * (abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
-	    }
+
+
+	// == Angular Density
+	// vector<double> angularDensity;
+	vector<double> phi;
+	vector<double> polarDensity; // first entry is 
+	vector<double> radius;
+	vector<Coordinate<int32_t>> cartesianCoordinates;
+	// RealGrid conversionControl(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+
+	for(int i = 0; i < opt.grid[1]; i++){
+	    for(int j = 0; j < opt.grid[2]; j++){
+				int x_shift = i - opt.grid[1]/2;
+				int y_shift = j - opt.grid[2]/2;
+				phi.push_back( atan2(x_shift * h_x ,y_shift * h_y) * 180 / M_PI + 180);
+				radius.push_back(sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y));
+				polarDensity.push_back(abs2(data(0,i,j,0)));
+				cartesianCoordinates.push_back(data.make_coord(i,j,0));
+		}
 	}
+	
+	double max_radius = (opt.grid[1] + opt.grid[2]) / 4;
+
+	vector<double>angularDensity_tmp(361);
+	for(int i = 0; i <= 360; i++){
+		for(int j = 0; j < phi.size(); j++){
+			if(round(phi[j]) == i){
+				if(radius[j] <= max_radius){
+					angularDensity_tmp[i] += polarDensity[j];
+				}
+			}
+		}
+	}
+	angularDensity_tmp[0] += angularDensity_tmp[360];
+	angularDensity_tmp.pop_back();
+
+	for(int i = 0; i < 360; i++){
+		// vector<double>::iterator beginning = angularDensity_tmp.begin() + i;
+		// vector<double>::iterator ending = beginning + 10;
+		ares.angularDensity(i) = angularDensity_tmp[i]; //(accumulate(beginning,ending,0));
+	}
+
+
 	
 	// K-Space
 	ComplexGrid::fft(data, data);
@@ -299,12 +275,12 @@ Observables Eval::calculator(ComplexGrid data){
 		}
 	}
 	
-	double kwidth2[3];
+	double kwidth2[2];
 	
-	for(int i = 0; i < 3; i++)
+	for(int i = 0; i < 2; i++)
 		kwidth2[i] = (opt.grid[i+1] == 1) ? 0 : opt.klength[i]*opt.klength[i];
 	
-	double index_factor = (ares.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1] + kwidth2[2]);
+	double index_factor = (ares.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
 	
 	for(int x = 0; x < data.width(); x++){
 		for (int y = 0; y < data.height(); y++){
@@ -322,10 +298,19 @@ Observables Eval::calculator(ComplexGrid data){
 		}
 	}
 
-	ares.particle_count /= raw_volume;
+	ares.density = ares.particle_count / ares.volume;
+
+	// double density_integrated = 0;
+	// for(int i = 0; i < opt.grid[1]-1; i++){
+	//     for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
+	//       	density_integrated += h_x * h_y * (abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
+	//     }
+	// }
+
+	// cout << "Testmethods: " << density_integrated << "  " << ares.density << endl;
 
 	
-	ares.healing_length = 1 / sqrt(ares.particle_count * opt.g / ares.volume);
+	// ares.healing_length = 1 / sqrt(ares.particle_count * opt.g / ares.volume);
 	
 	#pragma omp parallel for schedule(guided,1)
 	for(int l = 0; l < ares.number.size(); l++){
@@ -335,8 +320,7 @@ Observables Eval::calculator(ComplexGrid data){
 	}
 
 	ares.number /= divisor;
-	ares.k /= divisor;
-	
+	ares.k /= divisor;	
 	
 	return ares;
 }

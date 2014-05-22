@@ -5,21 +5,21 @@
 using namespace std;
 
 
-void plotspectrum(string name,Observables &eval){
+void plotspectrum(string name,Observables &ares){
 
 	ofstream plotfile;
     vector<double> kval;
 	vector<double> numberval;
 	
 	plotfile.open((name + ".dat").c_str(), ios::out | ios::trunc);
-    for (int r = 0; r < eval.number.size(); r++)             
+    for (int r = 0; r < ares.number.size(); r++)             
 	{	
-		if(eval.k(r) != 0.0){
-			plotfile << r <<"\t"<< eval.k(r) <<"\t" << eval.number(r) <<"\t";
+		if(ares.k(r) != 0.0){
+			plotfile << r <<"\t"<< ares.k(r) <<"\t" << ares.number(r) <<"\t";
 			plotfile << endl;
 
-			kval.push_back(eval.k(r));
-			numberval.push_back(eval.number(r));
+			kval.push_back(ares.k(r));
+			numberval.push_back(ares.number(r));
         }
 	}
 	plotfile << endl << endl;	
@@ -30,9 +30,9 @@ void plotspectrum(string name,Observables &eval){
 
 	mglData k(n);
 	mglData number(n);
-	mglData healing_length(2);
-	healing_length.a[0] = eval.healing_length;
-	healing_length.a[1] = 10000000;
+	// mglData healing_length(2);
+	// healing_length.a[0] = ares.healing_length;
+	// healing_length.a[1] = 10000000;
 
 	for(int i = 0; i < n; i++){
 		k.a[i] = kval[i];
@@ -60,7 +60,7 @@ void plotspectrum(string name,Observables &eval){
 	gr.FPlot("x^(-4.666)");
 	// gr.FPlot("x^(-5)");
 
-	gr.Stem(healing_length);
+	// gr.Stem(healing_length);
 	gr.Plot(k,number," .");
 
 	name = name + ".png";
@@ -536,6 +536,33 @@ void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
 }
 
 void plotVector(string filename,vector<double> v,Options &opt){
+
+	int x = v.size();
+
+	mglData data(x);
+
+	for(int i=0;i < x;i++){	
+		data.a[i] = v[i];
+	}
+
+	mglGraph gr;
+		
+	filename = filename + ".png";
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(filename.c_str());
+
+	gr.SetRange('x',0,v.size());
+	gr.SetRange('y',data);
+	gr.Axis();
+	gr.Plot(data);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
+void plotVector(string filename,ArrayXd v,Options &opt){
 
 	int x = v.size();
 
