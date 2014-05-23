@@ -237,9 +237,7 @@ void ITP::propagateToGroundState(string runname)
 			wavefctcp = wavefct + t_ITP * k2;
 			ITP_compute_k(k3,wavefctcp);
 	
-			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
-	
-			
+			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
 	
 			state++;	
 		}

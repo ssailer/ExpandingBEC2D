@@ -9,4 +9,4 @@ TODO:
 GENERAL:
 - the whole integral/rescaling thing
 - expanding speeds, maybe a dynamic system, like ITP things for expansion?
-- k-vector expanding definition
+- think about the radial k in terms of expansion, rest of k definition should be good now.

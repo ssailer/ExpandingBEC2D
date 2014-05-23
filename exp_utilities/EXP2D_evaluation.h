@@ -5,6 +5,7 @@
 #include <complex>
 #include <cmath>
 #include <numeric>
+#include <algorithm>
 #include <complexgrid.h>
 #include <realgrid.h>
 #include <bh3binaryfile.h>
