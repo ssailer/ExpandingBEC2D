@@ -270,17 +270,21 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	for(int d = 0; d < 2; d++){
 		// set k-space
 		kspace[d].resize(opt.grid[d+1]);
-		for (int i=0; i<opt.grid[d+1]/2; i++){
+		// for (int i=0; i<opt.grid[d+1]/2; i++){
+		for(int i = 0; i < opt.grid[d+1]/2; i++){
 		// for (int32_t i = 0; i < kspace[d].size()/2; i++){
 			// kspace[d][i] = opt.klength[d]*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
-			kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)i) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)i) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			kspace[d][i] = opt.klength[d] * M_PI / ( (double)(opt.grid[d+1]/2 - i) * h[d] );
 		}
-		for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
+		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
+		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
 		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
 			// kspace[d][i] = opt.klength[d]*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
-			kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			kspace[d][i] = - opt.klength[d] * M_PI / ( (double)(i - opt.grid[d+1]/2 + 1) * h[d]);
 		}
 	}
 
