@@ -112,6 +112,83 @@ void Eval::findVortices(ComplexGrid data, RealGrid &vortexLocationMap_local, vec
 
 }
 
+
+void Eval::findVortices(ComplexGrid data){
+	calc_fields(data);
+	pres.vlist.clear();
+	find_vortices(phase,zeros,pres.vlist);
+	// calc_vortex_veloctities();
+	// calc_vortex_discances();
+	// calc_g2();
+}
+
+inline int Eval::get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase) const
+{
+	if(phase->at(0,c + v) + M_PI < phase->at(0,c))	// Phase ueberschreitet 0/2pi von unten
+		return 1;
+	else if(phase->at(0,c) + M_PI < phase->at(0,c + v))	// Phase ueberschreitet 0/2pi von oben
+		return -1;
+	else
+		return 0;
+}
+
+void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, list<VortexData> &vlist) const
+{
+	// Nullstellen zaehlen
+	vector< vector< vector<bool > > > checked(phase->width(), vector< vector<bool> >(phase->height(), vector<bool>(phase->depth(),false)));	// Welche felder schon ueberprueft wurden
+	VortexData vortex;								// Charakteristika eines gefundenen Vortex
+	vortex.n = 0;
+	for (int z = 0; z < phase->depth(); z++)
+	{
+		for (int x = 0; x < phase->width(); x++)
+		{
+			for (int y = 0; y < phase->height(); y++)
+			{
+				Coordinate<int32_t> c = phase->make_coord(x,y,z);
+				Vector<int32_t> down = phase->make_vector(0,-1,0);
+				Vector<int32_t> right = phase->make_vector(1,0,0);
+				Vector<int32_t> up = phase->make_vector(0,1,0);
+				Vector<int32_t> left = phase->make_vector(-1,0,0);
+					
+				int phase_winding = get_phase_jump(c, down, phase) + get_phase_jump(c+down, right, phase) + get_phase_jump(c+down+right, up, phase) + get_phase_jump(c+right, left, phase);
+				
+				if(phase_winding != 0)
+				{
+					vortex.n = phase_winding;
+					vortex.x = c + phase->make_vector(0.5, -0.5, 0);
+					vortex.points.clear();
+					vortex.points.push_back(c);
+					vortex.num_points = 1;
+					vlist.push_back(vortex);
+				}
+				/*if(get_vortex(phase->make_coord(x,y,z), phase, zeros, mass_zeros, checked, vortex)) // prueft auf Vortices
+				{
+					vlist.push_back(vortex);					// und er wird in der Liste zurueckgegeben
+				}*/
+			}
+		}
+	}
+}
+
+void Eval::calc_fields(const ComplexGrid &data)
+{
+	double zero_threshold = options.N * 0.05 / data.width() / data.height() / data.depth();
+	for(int x = 0; x < data.width(); x++)
+	{
+		for(int y = 0; y < data.height(); y++)
+		{
+			for(int z = 0; z < data.depth(); z++)
+			{
+				phase->at(0,x,y,z) = arg(data(0,x,y,z));
+				if(abs2(data(0,x,y,z)) < zero_threshold)
+					zeros->at(0,x,y,z) = 0.0;
+				else
+					zeros->at(0,x,y,z) = 1.0;
+			}
+		}
+	}
+}
+
 void Eval::findDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates){
 
 	double lower_threshold = 10.; //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;

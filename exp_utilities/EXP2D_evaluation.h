@@ -35,9 +35,17 @@ public:
 	Observables totalResult;
 
 
+
+	PathResults pres;
+
+	
+
+
 private:
 
 	// data savefiles
+
+	RealGrid *phase, *zeros;
 	string runname;
 	vector<ComplexGrid> PsiVec;
 	Options opt;
