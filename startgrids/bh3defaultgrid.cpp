@@ -374,14 +374,14 @@ vector<Coordinate<int32_t>> c;
 
 for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){
     for(int x = x_jump; x < opt.grid[1]; x += x_jump){
-        if(abs2(g->at(0,x,y,0)) >= 30){
+        if(abs2(g->at(0,x,y,0)) >= 2){
             c.push_back(g->make_coord(x,y,0));
         }
     }
 }
 for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
     for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){
-        if(abs2(g->at(0,x,y,0)) >= 30){
+        if(abs2(g->at(0,x,y,0)) >= 2){
             c.push_back(g->make_coord(x,y,0));
         }
     }
@@ -390,9 +390,10 @@ for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
 for(int i = 0; i < c.size(); i++){
     for(int y = 0; y < opt.grid[2]; y++){
         for(int x = 0; x < opt.grid[1]; x++){   
-            g->at(0,x,y,0) *= polar(1.0,(1.0/*<-windingnumber*/*mypow2(-1,i+1))*(vortex(y,c[i].y(),x,c[i].x())));
+            g->at(0,x,y,0) *= polar(1.0,(5.0/*<-windingnumber*/*mypow2(-1,i+1))*(vortex(y,c[i].y(),x,c[i].x())));
         }
     }
+    // g->at(0,c) = complex<double>(0.0,0.0);
 }
     return g;
 }

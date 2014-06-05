@@ -44,7 +44,7 @@ void plotspectrum(string name,Observables &ares){
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
 	gr.Title(name.c_str());
-	gr.SetRange('x',0.01,4);
+	gr.SetRange('x',0.01,100000);
 	gr.SetRange('y',0.1,10000000);
 	gr.SetCoor(11); // log-log-coordinates
 

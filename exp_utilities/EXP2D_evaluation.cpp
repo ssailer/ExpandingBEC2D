@@ -82,6 +82,35 @@ void Eval::plotData(){
 	plotVector(filename,x_dist,y_dist,opt);
 	filename = runname + "-Angular-Dens" + to_string(snapshot_time);
 	plotVector(filename,totalResult.angularDensity,opt);
+
+	
+	filename = runname + "-Observables" + ".dat";
+	struct stat buffer;   
+  	if(stat (filename.c_str(), &buffer) != 0){
+  		ofstream datafile;
+  		datafile.open(filename.c_str(), ios::out | ios::app);
+  		datafile << left << std::setw(10) << "Timestep"
+  						 << std::setw(10) << "X_max"
+  						 << std::setw(10) << "Y_max"
+  						 << std::setw(10) << "N"
+  						 << std::setw(10) << "V"
+  						 << std::setw(10) << "N/V"
+  						 << std::setw(10) << "E_kin"
+  				 << endl;
+  		datafile.close();
+  	} 
+
+  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
+	// datafile.open;
+	datafile << left << std::setw(10) << snapshot_time
+					 << std::setw(10) << opt.min_x * opt.stateInformation[0]
+					 << std::setw(10) << opt.min_y * opt.stateInformation[1]
+					 << std::setw(10) << totalResult.particle_count
+					 << std::setw(10) << totalResult.volume
+					 << std::setw(10) << totalResult.density
+					 << std::setw(10) << totalResult.Ekin 
+			 << endl;
+	datafile.close();
 }
 
 void Eval::findVortices(ComplexGrid data, RealGrid &vortexLocationMap_local, vector<Coordinate<int32_t>> &vortexCoordinates){
@@ -172,7 +201,7 @@ void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, list<Vort
 
 void Eval::calc_fields(const ComplexGrid &data)
 {
-	double zero_threshold = options.N * 0.05 / data.width() / data.height() / data.depth();
+	double zero_threshold = opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)
@@ -191,7 +220,7 @@ void Eval::calc_fields(const ComplexGrid &data)
 
 void Eval::findDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates){
 
-	double lower_threshold = 10.; //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	double lower_threshold = 1.; //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	double upper_threshold = 20.;
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
@@ -210,12 +239,14 @@ void Eval::findDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vec
 	// 		density_grad_y(0,x,y,0) = ( arg(data(0,x,y+1,0))- arg(data(0,x,y+1,0)) ) / (2.0 * h_y );
 	// 	}
 	// }
-
+	densityCounter = 0;
+	densityCoordinates.clear();
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
 	    	if((abs2(data(0,i,j,0)) > lower_threshold)){
 				densityLocationMap_local(0,i,j,0) = 1.;
 				densityCoordinates.push_back(data.make_coord(i,j,0));
+				densityCounter++;
 			}else{
 				densityLocationMap_local(0,i,j,0) = 0.;
 			}
@@ -288,7 +319,16 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	
 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
-	ares.volume = h_x * h_y * densityCoordinates[sampleindex].size();
+	ares.volume = h_x * h_y * densityCounter;
+	for(int i = 0; i < opt.grid[1]-1; i++){
+	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
+	      	ares.particle_count += h_x * h_y * abs2(data(0,i,j,0));
+	    }
+	}
+
+	ares.density = ares.particle_count / ares.volume;
+
+	// cout << "Testmethods: " << ares.volume << "  " << ares.particle_count << "  " << ares.density << endl;
 	
 
 
@@ -374,7 +414,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	// }
 	
 	double kwidth2[2];
-	
+
 	for(int i = 0; i < 2; i++)
 		kwidth2[i] = (opt.grid[i+1] == 1) ? 0 : kspace[i][opt.grid[i+1]/2] * kspace[i][opt.grid[i+1]/2];
 	
@@ -391,22 +431,13 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 				divisor(index)++;
 				double number = abs2(data(0,x,y,z));
 				ares.number(index) += number;
-				ares.particle_count += number;
+				// ares.particle_count += number;
 				ares.Ekin += number * k * k;
 			}
 		}
 	}
 
-	ares.density = ares.particle_count / ares.volume;
 
-	// double density_integrated = 0;
-	// for(int i = 0; i < opt.grid[1]-1; i++){
-	//     for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
-	//       	density_integrated += h_x * h_y * (abs2(data(0,i,j,0))+abs2(data(0,i+1,j,0))+abs2(data(0,i,j+1,0))+abs2(data(0,i+1,j+1,0)))/4.0;
-	//     }
-	// }
-
-	// cout << "Testmethods: " << density_integrated << "  " << ares.density << endl;
 
 	
 	// ares.healing_length = 1 / sqrt(ares.particle_count * opt.g / ares.volume);

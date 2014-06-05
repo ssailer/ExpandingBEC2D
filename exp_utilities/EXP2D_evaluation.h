@@ -2,6 +2,7 @@
 #define EXP2D_EVALUATION_H__
 
 #include <iostream>
+#include <sys/stat.h>
 #include <complex>
 #include <cmath>
 #include <numeric>
@@ -56,11 +57,17 @@ private:
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
 	vector<double> x_dist;
 	vector<double> y_dist;
+	int densityCounter;
 
 	// doing functinos
 	Observables calculator(ComplexGrid data,int sampleindex);
 	void findVortices(ComplexGrid data, RealGrid &vortexLocationMap_local, vector<Coordinate<int32_t>> &vortexCoordinates);
 	void findDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
+
+	void findVortices(ComplexGrid data);
+	inline int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase) const;
+	void find_vortices(const RealGrid *phase, const RealGrid *zeros, list<VortexData> &vlist) const;
+	void calc_fields(const ComplexGrid &data);
 
 
 

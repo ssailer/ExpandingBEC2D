@@ -4,7 +4,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 500
+#define VORTICES_BUILD_TIME 5000
 
 using namespace std;
 using namespace Eigen;
@@ -286,6 +286,7 @@ void ITP::cli_groundState(string name, double start,int state,Observables totalR
 			<< " Kinetic Energy: " << std::setw(5) << std::setfill(' ') << totalResult.Ekin << " "
 			<< " Particles: " << std::setw(12) << std::setfill(' ') << totalResult.particle_count << " "
 			<< " Volume: " << std::setw(12) << std::setfill(' ') << totalResult.volume << " "
+			<< " Density: " << std::setw(12) << std::setfill(' ') << totalResult.density << " "
 			<< " Scaling Factor: " << std::setw(12) << std::setfill(' ') << opt.scale_factor << " "
 			<< std::setw(2) << std::setfill('0') << hour << ":"
 			<< std::setw(2) << std::setfill('0') << min << ":"
