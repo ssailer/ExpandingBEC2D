@@ -55,8 +55,7 @@ private:
 	vector<RealGrid> densityLocationMap;
 	vector<vector<Coordinate<int32_t>>> vortexCoordinates;
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
-	vector<double> x_dist;
-	vector<double> y_dist;
+	vector<double> x_dist,y_dist,x_dist_grad,y_dist_grad;
 	int densityCounter;
 
 	// doing functinos

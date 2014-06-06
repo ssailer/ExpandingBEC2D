@@ -1,6 +1,7 @@
 #include <EXP2D_evaluation.h>
 
 #define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]
+#define ANGULAR_AVERAGING_LENGTH 10
 
 using namespace std;
 using namespace Eigen;
@@ -78,8 +79,8 @@ void Eval::plotData(){
 	plotdatatopng(filename,PsiVec[0],opt);
 	filename = runname + "-Density-" + to_string(snapshot_time);
 	plotdatatopng(filename,densityLocationMap[0],opt);
-	filename = runname + "-Density-Axial-Distribution-" + to_string(snapshot_time);
-	plotVector(filename,x_dist,y_dist,opt);
+	filename = runname + "-Density-Axial-Distribution-Gradient" + to_string(snapshot_time);
+	plotVector(filename,x_dist_grad,y_dist_grad,opt);
 	filename = runname + "-Angular-Dens" + to_string(snapshot_time);
 	plotVector(filename,totalResult.angularDensity,opt);
 
@@ -263,19 +264,25 @@ void Eval::findDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vec
 	y_dist.resize(opt.grid[2]);
 
 	for(int i = 0; i < opt.grid[1]; i++){
-		double sum = 0;
 		for(int j = 0; j < opt.grid[2]; j++){
-			sum += densityLocationMap_local(0,i,j,0);			
+			x_dist[i] += densityLocationMap_local(0,i,j,0);			
 		}
-		x_dist[i] = sum;
 	}
 	for(int j = 0; j < opt.grid[2]; j++){
-		double sum = 0;
 		for(int i = 0; i < opt.grid[1]; i++){
-			sum += densityLocationMap_local(0,i,j,0);
+			y_dist[j] += densityLocationMap_local(0,i,j,0);
 		}
-		y_dist[j] = sum;
 	}
+
+	x_dist_grad.resize(opt.grid[1]);
+	y_dist_grad.resize(opt.grid[2]);
+	for(int x = 1; x < x_dist.size() - 1; x++){
+		x_dist_grad[x] = (x_dist[x+1] - x_dist[x-1] ) / (2.0 * h_x );
+	}
+	for(int y = 1; y < y_dist.size() - 1; y++){
+		y_dist_grad[y] = (y_dist[y+1] - y_dist[y-1] ) / (2.0 * h_y );
+	}
+	x_dist_grad[0] = x_dist_grad[opt.grid[1]-1] = y_dist_grad[0] = y_dist_grad[opt.grid[2]] = 0.0;
 
 	double sum = 0;
 	for(int k = 0; k < 10; k++){
@@ -352,26 +359,38 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		}
 	}
 	
-	double max_radius = (opt.grid[1] + opt.grid[2]) / 4;
+	// double max_radius = (opt.grid[1] + opt.grid[2]) / 4;
 
-	vector<double>angularDensity_tmp(361);
-	for(int i = 0; i <= 360; i++){
-		for(int j = 0; j < phi.size(); j++){
-			if(round(phi[j]) == i){
-				if(radius[j] <= max_radius){
-					angularDensity_tmp[i] += polarDensity[j];
-				}
-			}
-		}
+	// vector<double>angularDensity_tmp(361);
+	vector<vector<int>> index(361);
+	int phiSize = phi.size();
+	for(int j = 0; j < phiSize; j++){
+		int i = round(phi[j]);
+		index[i].push_back(j);
 	}
-	angularDensity_tmp[0] += angularDensity_tmp[360];
-	angularDensity_tmp.pop_back();
-
+	for(int j = 0; j < index[360].size(); j++){
+		index[0].push_back(index[360][j]);
+	}
+	index.pop_back();
 	for(int i = 0; i < 360; i++){
-		// vector<double>::iterator beginning = angularDensity_tmp.begin() + i;
-		// vector<double>::iterator ending = beginning + 10;
-		ares.angularDensity(i) = angularDensity_tmp[i]; //(accumulate(beginning,ending,0));
+		double sum = 0;
+		for(int k = -ANGULAR_AVERAGING_LENGTH; k <= ANGULAR_AVERAGING_LENGTH; k++){
+			int l = i + k;
+			l = (l < 0)        ? l + 360 : (l >= 360) ? l - 360 : l;			
+			for(int m = 0; m < index[l].size(); m++){
+				ares.angularDensity(i) += polarDensity[index[l][m]];
+			}
+		}					
 	}
+	ares.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
+
+	// angularDensity_tmp[0] += angularDensity_tmp[360];	
+
+	// for(int i = 0; i < 360; i++){
+	// 	// vector<double>::iterator beginning = angularDensity_tmp.begin() + i;
+	// 	// vector<double>::iterator ending = beginning + 10;
+	// 	ares.angularDensity(i) = angularDensity_tmp[i]; //(accumulate(beginning,ending,0));
+	// }
 
 
 	
