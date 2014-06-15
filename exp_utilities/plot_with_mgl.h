@@ -68,7 +68,7 @@ protected:
 };
 
 void plotspectrum(string name,Observables& eval);
-void plotVortexLocationMap(string name,RealGrid &VortexLocationMap);
+void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt);
 void plotdatatopng(string filename,ComplexGrid* &g,Options &opt);
 void plotdatatopng(string filename,ComplexGrid &g,Options &opt);
 void plotdatatopng(string filename,RealGrid &g,Options &opt);

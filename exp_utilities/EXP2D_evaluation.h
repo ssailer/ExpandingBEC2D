@@ -51,21 +51,20 @@ private:
 	vector<ComplexGrid> PsiVec;
 	Options opt;
 	int snapshot_time;
-	vector<RealGrid> vortexLocationMap;
+	// vector<RealGrid> vortexLocationMap;
 	vector<RealGrid> densityLocationMap;
-	vector<vector<Coordinate<int32_t>>> vortexCoordinates;
+	// vector<vector<Coordinate<int32_t>>> vortexCoordinates;
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
 	vector<double> x_dist,y_dist,x_dist_grad,y_dist_grad;
 	int densityCounter;
 
 	// doing functinos
 	Observables calculator(ComplexGrid data,int sampleindex);
-	void findVortices(ComplexGrid data, RealGrid &vortexLocationMap_local, vector<Coordinate<int32_t>> &vortexCoordinates);
-	void findDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
+	void getVortices(ComplexGrid data, vector<Coordinate<int32_t>> &densityCoordinates);
+	void getDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
 
-	void findVortices(ComplexGrid data);
-	inline int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase) const;
-	void find_vortices(const RealGrid *phase, const RealGrid *zeros, list<VortexData> &vlist) const;
+	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase);
+	void find_vortices(const RealGrid *phase, vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
 	void calc_fields(const ComplexGrid &data);
 
 

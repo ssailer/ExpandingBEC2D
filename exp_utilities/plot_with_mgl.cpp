@@ -68,18 +68,31 @@ void plotspectrum(string name,Observables &ares){
 	gr.WritePNG(name.c_str(),"Spectrum",false);
 }
 
-void plotVortexLocationMap(string name,RealGrid &VortexLocationMap){
+void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
 
-	int n = VortexLocationMap.width();
-	int m = VortexLocationMap.height();
+	int n = opt.grid[1];
+	int m = opt.grid[2];
 
-	mglData data(n,m);
+	int size = pres.vlist.size();
+
+	mglData phaseData(n,m);
+	mglData v_x(size);
+	mglData v_y(size);
+
+	int l = 0;
+	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
+		v_x.a[l] = it->x.x();
+		v_y.a[l] = it->x.y();
+		cout << v_x.a[l] << " " << v_y.a[l] << endl;
+		l++;
+	}
+
 	int i,j,k;
 
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
-	{
+	{	
 		k = i+n*j;
-		data.a[k] = VortexLocationMap(0,i,j,0);		
+		phaseData.a[k] = phase->at(0,i,j,0);
 	}
 
 	mglGraph gr;
@@ -88,19 +101,17 @@ void plotVortexLocationMap(string name,RealGrid &VortexLocationMap){
 	gr.SetQuality(3);
 	gr.Title(name.c_str());
 
-	gr.SetRange('x',-2,2);
-	gr.SetRange('y',-2,2);
-	gr.SetRange('z',data);
-	gr.SetRange('c',data);
+	// gr.SetRange('x',-opt.min_x,opt.min_x);
+	// gr.SetRange('y',-opt.min_y,opt.min_y);
+	// gr.SetRange('z',phaseData);
+	// gr.SetRange('c',phaseData);
+	gr.SetRange('x',0,opt.grid[1]);
+	gr.SetRange('y',0,opt.grid[2]);
 
-	// gr.Axis();
-	// gr.Colorbar("_");
-	// gr.Dens(data);
-
-	gr.Rotate(40,40);
-	gr.Box();
 	gr.Axis();
-	gr.Surf(data);
+	gr.Colorbar();
+	gr.Dens(phaseData);
+	gr.Plot(v_x,v_y," #xw");
 
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 }
