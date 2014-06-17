@@ -7,17 +7,26 @@ using namespace std;
 using namespace Eigen;
 
 
- Eval::Eval() {};
- Eval::~Eval() {};
+Eval::Eval() {
+
+
+
+};
+
+Eval::~Eval() {};
 
 void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time,string runname_external){
 		runname = runname_external;
 		opt = externalopt;
 		snapshot_time = external_snapshot_time;
 		PsiVec.resize(wavefctVec.size());
+		v_down = Vector<int32_t>(0,-1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
+		v_right = Vector<int32_t>(1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
+		v_up = Vector<int32_t>(0,1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
+		v_left = Vector<int32_t>(-1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
 
 
-		#pragma parallel for
+		#pragma omp parallel for
 		for(int k = 0; k < wavefctVec.size(); k++){
 			PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
@@ -59,8 +68,10 @@ void Eval::evaluateData(){
 	for(int k = 0; k < PsiVec.size(); k++){
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);		
 		totalResult += calculator(PsiVec[k],k);
-	}	
+	}
 	getVortices(PsiVec[0],densityCoordinates[0]);
+
+
 	
 	// for(int k = 0; k < PsiVec.size(); k++){
 	// 	 totalResult = avResult[k];
@@ -85,13 +96,20 @@ void Eval::plotData(){
 	filename = runname + "-Angular-Dens" + to_string(snapshot_time);
 	plotVector(filename,totalResult.angularDensity,opt);
 
+	cout << "HERE COMES THE KILLED" << endl;
+	// EXPERIMENTAL
+	list<Coordinate<int32_t>> contour = trackContour(PsiVec[0],opt);
+	filename = runname + "-Contour" + to_string(snapshot_time);
+	plotContour(filename,phase,contour,opt);
+	// EXPERIMENTAL END
+
 	
 	filename = runname + "-Observables" + ".dat";
 	struct stat buffer;   
   	if(stat (filename.c_str(), &buffer) != 0){
   		ofstream datafile;
   		datafile.open(filename.c_str(), ios::out | ios::app);
-  		datafile << left << std::setw(10) << "Timestep"
+  		datafile << std::left << std::setw(10) << "Timestep"
   						 << std::setw(10) << "X_max"
   						 << std::setw(10) << "Y_max"
   						 << std::setw(10) << "N"
@@ -104,7 +122,7 @@ void Eval::plotData(){
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
-	datafile << left << std::setw(10) << snapshot_time
+	datafile << std::left << std::setw(10) << snapshot_time
 					 << std::setw(10) << opt.min_x * opt.stateInformation[0]
 					 << std::setw(10) << opt.min_y * opt.stateInformation[1]
 					 << std::setw(10) << totalResult.particle_count
@@ -115,7 +133,7 @@ void Eval::plotData(){
 	datafile.close();
 }
 
-void Eval::getVortices(ComplexGrid data, vector<Coordinate<int32_t>> &densityCoordinates){
+void Eval::getVortices(const ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates){
 	
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
@@ -123,15 +141,19 @@ void Eval::getVortices(ComplexGrid data, vector<Coordinate<int32_t>> &densityCoo
 	// vortexLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 
-	calc_fields(data);
+	calc_fields(data,opt);
 	pres.vlist.clear();
-	find_vortices(phase,densityCoordinates,pres.vlist);
+	find_vortices(phase,zeros,densityCoordinates,pres.vlist);
 
+	cout << endl << "Vortices: " << endl;
 	double number = 0;
 	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
+		int x = it->x.x();
+		int y = it->x.y();
 		number += it->num_points;
+		cout << " " << x << " " << y << "  " << abs2(PsiVec[0](0,x,y,0)) << " " << arg(PsiVec[0](0,x,y,0)) << endl;
 	}
-	cout << endl << "Number of Vortices counted: " << number << "  " << endl;
+	cout << "Number of Vortices counted: " << number << "  " << endl;
 
 	// calc_vortex_veloctities();
 	// calc_vortex_discances();
@@ -149,7 +171,7 @@ int Eval::get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v,
 		return 0;
 }
 
-void Eval::find_vortices(const RealGrid *phase, vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) 
+void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) 
 {
 	// Nullstellen zaehlen
 	// vector< vector< vector<bool > > > checked(phase->width(), vector< vector<bool> >(phase->height(), vector<bool>(phase->depth(),false)));	// Welche felder schon ueberprueft wurden
@@ -171,7 +193,9 @@ void Eval::find_vortices(const RealGrid *phase, vector<Coordinate<int32_t>> &den
 				Vector<int32_t> left = phase->make_vector(-1,0,0);
 					
 				int phase_winding = get_phase_jump(c, down, phase) + get_phase_jump(c+down, right, phase) + get_phase_jump(c+down+right, up, phase) + get_phase_jump(c+right, left, phase);
+				// int mass_zeros = zeros->at(0,c) + zeros->at(0,c+down) + zeros->at(0,c+down+right) + zeros->at(0,c+right);
 				
+				// if(mass_zeros < 4 && mass_zeros >= 0)
 				if(phase_winding != 0)
 				{
 					vortex.n = phase_winding;
@@ -180,7 +204,7 @@ void Eval::find_vortices(const RealGrid *phase, vector<Coordinate<int32_t>> &den
 					vortex.points.clear();
 					vortex.points.push_back(c);
 					vortex.num_points = 1;
-					vlist.push_back(vortex);
+					vlist.push_back(vortex);					
 				}
 				/*if(get_vortex(phase->make_coord(x,y,z), phase, zeros, mass_zeros, checked, vortex)) // prueft auf Vortices
 				{
@@ -191,9 +215,12 @@ void Eval::find_vortices(const RealGrid *phase, vector<Coordinate<int32_t>> &den
 	}
 }
 
-void Eval::calc_fields(const ComplexGrid &data)
+
+
+
+void Eval::calc_fields(const ComplexGrid &data, Options &opt)
 {
-	// double zero_threshold = 1;//opt.N * 0.05 / data.width() / data.height() / data.depth();
+	double zero_threshold = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ;//opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)
@@ -201,20 +228,144 @@ void Eval::calc_fields(const ComplexGrid &data)
 			for(int z = 0; z < data.depth(); z++)
 			{
 				phase->at(0,x,y,z) = arg(data(0,x,y,z));
-				// if(abs2(data(0,x,y,z)) < zero_threshold)
-				// 	zeros->at(0,x,y,z) = 0.0;
-				// else
-				// 	zeros->at(0,x,y,z) = 1.0;
+				if(abs2(data(0,x,y,z)) < zero_threshold)
+					zeros->at(0,x,y,z) = 0.0;
+				else
+					zeros->at(0,x,y,z) = 1.0;
 			}
 		}
 	}
+
+
 }
 
-void Eval::getDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local){
+inline void Eval::setDirection(int32_t &direction){
+		switch(direction){
+			case 0:
+				direction = 6;
+				break;
+			case 1:
+				direction = 0;
+				break;
+			case 2:
+				direction = 0;
+				break;
+			case 3:
+				direction = 2;
+				break;
+			case 4:
+				direction = 2;
+				break;
+			case 5:
+				direction = 4;
+				break;
+			case 6:
+				direction = 4;
+				break;
+			case 7:
+				direction = 6;
+				break;
+			default:
+				cout << "Function setDirection() ERROR!" << endl;
+				break;
+		}
+};
+
+inline Coordinate<int32_t> Eval::nextClockwise(Coordinate<int32_t> &s, int32_t &direction){
+
+		Coordinate<int32_t> c;
+
+		switch(direction){
+			case 0 :
+				c = s + v_up;
+				break;
+			case 1 :
+				c = s + v_right;
+				break;
+			case 2 :
+				c = s + v_right;
+				break;
+			case 3 :
+				c = s + v_down;
+				break;
+			case 4 :
+				c = s + v_down;
+				break;
+			case 5 :
+				c = s + v_left;
+				break;
+			case 6 :
+				c = s + v_left;
+				break;
+			case 7 :
+				c = s + v_up;
+				break;
+			default :
+				cout << "Function nextClockwise() ERROR!" << endl;
+		}
+		return c; 
+
+	};
+
+
+
+list<Coordinate<int32_t>> Eval::trackContour(const ComplexGrid &data, const Options &opt){
+
+	RealGrid density(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	
+	for(int x = 0; x < opt.grid[1]; x++){
+		for(int y = 0; y < opt.grid[2]; y++){
+				density(0,x,y,0) = abs2(data(0,x,y,0));
+		}
+	}
+
+	list<Coordinate<int32_t>> contour;
+	Coordinate<int32_t> s;
+	Coordinate<int32_t> p;
+	Coordinate<int32_t> initial[2];
+	
+	for(int y = 0; y < opt.grid[2]; y++){
+		if(density(0,opt.grid[1]/2,y,0) > 0.0){
+			p = density.make_coord(opt.grid[1]/2,y,0);
+			contour.push_back(p);
+			s = p + v_left;
+			initial[0] = p;
+			initial[1] = s;
+		}
+	}
+
+
+	int direction = 0;
+	int overall_counter = 0;
+	cout << endl;
+	do{
+		int32_t counter = 0;
+		
+		while(counter < 8){
+			Coordinate<int32_t> c = nextClockwise(s,direction);		
+			if(density(0,c) > 0){
+				p = c;
+				contour.push_back(p);
+				setDirection(direction);
+				break;
+			}
+		s = c;
+		counter++;
+		}
+		overall_counter++;
+		cout << "\r" << flush;
+		cout << "Counter of tracking: " << overall_counter;
+	}while((initial[0] != p && initial[1] != s) || (overall_counter < OBSERVABLES_DATA_POINTS_SIZE));
+	cout << endl;
+
+}
+
+
+void Eval::getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local){
 
 	double lower_threshold =  opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
-	cout << lower_threshold << "+++" << endl;
+	// cout << lower_threshold << "+++" << endl;
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
@@ -231,7 +382,7 @@ void Eval::getDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vect
 	// 		density_grad_x(0,x,y,0) = ( arg(data(0,x+1,y,0))- arg(data(0,x-1,y,0)) ) / (2.0 * h_x );
 	// 		density_grad_y(0,x,y,0) = ( arg(data(0,x,y+1,0))- arg(data(0,x,y+1,0)) ) / (2.0 * h_y );
 	// 	}
-	// }
+	// }gi
 	densityCounter = 0;
 	densityCoordinates_local.clear();
 	for(int i = 0; i < opt.grid[1]; i++){
@@ -276,30 +427,30 @@ void Eval::getDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vect
 	}
 	x_dist_grad[0] = x_dist_grad[opt.grid[1]-1] = y_dist_grad[0] = y_dist_grad[opt.grid[2]] = 0.0;
 
-	double sum = 0;
+	// double sum = 0;
 	// for(int k = 0; k < 10; k++){
-		for(int x = 1; x < opt.grid[1]-1; x+=1){
-			for(int y = 1; y < opt.grid[2]-1; y+=1){				
-				for(int i = x-1; i <= x+1; i++){
-					for(int j = y-1; j <= y+1; j++){
-						sum += densityLocationMap_local(0,i,j,0);
-					}
-				}
-				if((sum = 8) && (densityLocationMap_local(0,x,y,0) == 0)){ // now it is surround by stuff, and instelf zero, so we assume this is a vortex | this is a good place for a counter of vortices
-						densityLocationMap_local(0,x,y,0) = 0; //
-						// IMPORTANT PART HERE: I assume, I found a vortex, so I'm adding it to the densityCoordinates_local, because I want the phase of this point checked in getVortices and find_Vortices!
-						// densityCoordinates_local.push_back(data.make_coord(x,y,0));
-					}
-				else if(sum >= 5){ // Point is either half surrounded by stuff, or is itself stuff, so assume it is density, which we didn't catch before
-					densityLocationMap_local(0,x,y,0) = 1.;
-					// densityCoordinates_local.push_back(data.make_coord(i,j,0));
-				}else{
-					densityLocationMap_local(0,x,y,0) = 0.; //
-				}
-				if(sum > 9){cout << "ERROR: TO MUCH SUM" << endl;}
-				sum = 0;
-			}
-		}
+	// 	for(int x = 1; x < opt.grid[1]-1; x+=1){
+	// 		for(int y = 1; y < opt.grid[2]-1; y+=1){				
+	// 			for(int i = x-1; i <= x+1; i++){
+	// 				for(int j = y-1; j <= y+1; j++){
+	// 					sum += densityLocationMap_local(0,i,j,0);
+	// 				}
+	// 			}
+	// 			if((sum = 8) && (densityLocationMap_local(0,x,y,0) == 0)){ // now it is surround by stuff, and instelf zero, so we assume this is a vortex | this is a good place for a counter of vortices
+	// 					densityLocationMap_local(0,x,y,0) = 0; //
+	// 					// IMPORTANT PART HERE: I assume, I found a vortex, so I'm adding it to the densityCoordinates_local, because I want the phase of this point checked in getVortices and find_Vortices!
+	// 					// densityCoordinates_local.push_back(data.make_coord(x,y,0));
+	// 				}
+	// 			else if(sum >= 5){ // Point is either half surrounded by stuff, or is itself stuff, so assume it is density, which we didn't catch before
+	// 				densityLocationMap_local(0,x,y,0) = 1.;
+	// 				// densityCoordinates_local.push_back(data.make_coord(i,j,0));
+	// 			}else{
+	// 				densityLocationMap_local(0,x,y,0) = 0.; //
+	// 			}
+	// 			if(sum > 9){cout << "ERROR: TO MUCH SUM" << endl;}
+	// 			sum = 0;
+	// 		}
+	// 	}
 	// }
 
 

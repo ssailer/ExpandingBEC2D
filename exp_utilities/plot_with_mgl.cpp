@@ -83,7 +83,6 @@ void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
 	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
 		v_x.a[l] = it->x.x();
 		v_y.a[l] = it->x.y();
-		cout << v_x.a[l] << " " << v_y.a[l] << endl;
 		l++;
 	}
 
@@ -114,6 +113,52 @@ void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
 	gr.Plot(v_x,v_y," #xw");
 
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
+}
+
+void plotContour(string name, RealGrid *phase, list<Coordinate<int32_t>> &contour, Options &opt){
+	int n = opt.grid[1];
+	int m = opt.grid[2];
+	int size = contour.size();
+
+	mglData phaseData(n,m);
+	mglData v_x(size);
+	mglData v_y(size);
+
+	int l = 0;
+	for(list<Coordinate<int32_t>>::const_iterator it = contour.begin(); it != contour.end(); ++it){
+		v_x.a[l] = it->x();
+		v_y.a[l] = it->y();
+		l++;
+	}
+
+	int i,j,k;
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		k = i+n*j;
+		phaseData.a[k] = phase->at(0,i,j,0);
+	}
+
+	mglGraph gr;
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(name.c_str());
+
+	// gr.SetRange('x',-opt.min_x,opt.min_x);
+	// gr.SetRange('y',-opt.min_y,opt.min_y);
+	// gr.SetRange('z',phaseData);
+	// gr.SetRange('c',phaseData);
+	gr.SetRange('x',0,opt.grid[1]);
+	gr.SetRange('y',0,opt.grid[2]);
+
+	gr.Axis();
+	gr.Colorbar();
+	gr.Dens(phaseData);
+	gr.Plot(v_x,v_y," #xw");
+
+	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
+
 }
 
 void plotdatatopng(string filename,ComplexGrid* &g,Options &opt)

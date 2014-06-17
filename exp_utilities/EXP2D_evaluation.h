@@ -60,17 +60,22 @@ private:
 
 	// doing functinos
 	Observables calculator(ComplexGrid data,int sampleindex);
-	void getVortices(ComplexGrid data, vector<Coordinate<int32_t>> &densityCoordinates);
-	void getDensity(ComplexGrid data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
+	void getVortices(const ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates);
+	void getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
+	
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase);
-	void find_vortices(const RealGrid *phase, vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
-	void calc_fields(const ComplexGrid &data);
+	void find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
+	void calc_fields(const ComplexGrid &data, Options &opt);
 
-
-
+	// Contour Tracking Algorithm
+	list<Coordinate<int32_t>> trackContour(const ComplexGrid &data, const Options &opt);
+	Vector<int32_t> v_left,v_right, v_up, v_down;
+	inline Coordinate<int32_t> nextClockwise(Coordinate<int32_t> &s, int32_t &direction);
+	inline void setDirection(int32_t &direction);
 
 };
+
 
 
 #endif // EXP2D_EVALUATION_H__
