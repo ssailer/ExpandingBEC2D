@@ -11,6 +11,7 @@
 #include <realgrid.h>
 #include <bh3binaryfile.h>
 #include <vector>
+#include <unordered_set>
 #include <omp.h>
 #include <string>
 #include <plot_with_mgl.h>
@@ -69,10 +70,12 @@ private:
 	void calc_fields(const ComplexGrid &data, Options &opt);
 
 	// Contour Tracking Algorithm
-	list<Coordinate<int32_t>> trackContour(const ComplexGrid &data, const Options &opt);
+	std::unordered_set<Coordinate<int32_t>> trackContour(const ComplexGrid &data, const Options &opt);
 	Vector<int32_t> v_left,v_right, v_up, v_down;
 	inline Coordinate<int32_t> nextClockwise(Coordinate<int32_t> &s, int32_t &direction);
 	inline void setDirection(int32_t &direction);
+	void findInitialP(Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial,const Options &opt);
+
 
 };
 

@@ -98,7 +98,7 @@ void Eval::plotData(){
 
 	cout << "HERE COMES THE KILLED" << endl;
 	// EXPERIMENTAL
-	list<Coordinate<int32_t>> contour = trackContour(PsiVec[0],opt);
+	std::unordered_set<Coordinate<int32_t>> contour = trackContour(PsiVec[0],opt);
 	filename = runname + "-Contour" + to_string(snapshot_time);
 	plotContour(filename,phase,contour,opt);
 	// EXPERIMENTAL END
@@ -220,7 +220,7 @@ void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Co
 
 void Eval::calc_fields(const ComplexGrid &data, Options &opt)
 {
-	double zero_threshold = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ;//opt.N * 0.05 / data.width() / data.height() / data.depth();
+	double zero_threshold = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)
@@ -307,55 +307,80 @@ inline Coordinate<int32_t> Eval::nextClockwise(Coordinate<int32_t> &s, int32_t &
 
 	};
 
-
-
-list<Coordinate<int32_t>> Eval::trackContour(const ComplexGrid &data, const Options &opt){
-
-	RealGrid density(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	
-	for(int x = 0; x < opt.grid[1]; x++){
-		for(int y = 0; y < opt.grid[2]; y++){
-				density(0,x,y,0) = abs2(data(0,x,y,0));
-		}
-	}
-
-	list<Coordinate<int32_t>> contour;
-	Coordinate<int32_t> s;
-	Coordinate<int32_t> p;
-	Coordinate<int32_t> initial[2];
-	
-	for(int y = 0; y < opt.grid[2]; y++){
-		if(density(0,opt.grid[1]/2,y,0) > 0.0){
-			p = density.make_coord(opt.grid[1]/2,y,0);
-			contour.push_back(p);
+void Eval::findInitialP(Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial,const Options &opt){
+	for(int x = p.x(); x < opt.grid[1]; x++){
+		if(zeros->at(0,x,opt.grid[2]/2,0) > 0.0){
+			p = zeros->make_coord(x,opt.grid[2]/2,0);
+			// contour.push_back(p);
 			s = p + v_left;
 			initial[0] = p;
 			initial[1] = s;
 		}
 	}
 
+}
 
+std::unordered_set<Coordinate<int32_t>> Eval::trackContour(const ComplexGrid &data, const Options &opt){
+
+	std::unordered_set<Coordinate<int32_t>> contour;
+	std::unordered_set<Coordinate<int32_t>> it;
+	std::pair<std::unordered_set<Coordinate<int32_t>>::iterator,bool> ret;
+
+	// IMPLEMENT OWN HASH FUNCTION FOR unordered_set<Coordinate<int32_t>>
+	
+	Coordinate<int32_t> s;
+	Coordinate<int32_t> p = zeros->make_coord(0,opt.grid[2]/2,0);
+	Coordinate<int32_t> initial[2];
+
+	findInitialP(p,s,initial,opt);
+	
 	int direction = 0;
-	int overall_counter = 0;
+	int insert_counter = 0;
+	bool singlepoint = false;
+	bool stop = false;
 	cout << endl;
 	do{
 		int32_t counter = 0;
-		
 		while(counter < 8){
-			Coordinate<int32_t> c = nextClockwise(s,direction);		
-			if(density(0,c) > 0){
+			Coordinate<int32_t> c = nextClockwise(s,direction);
+			if(zeros->at(0,c) > 0){
 				p = c;
-				contour.push_back(p);
 				setDirection(direction);
+				ret = contour.insert(p);
+				insert_counter++;
+				cout << "Added Coordinate: " << p << endl;
 				break;
 			}
-		s = c;
-		counter++;
+			s = c;
+			counter++;
+			if(counter == 8){
+				singlepoint = true;
+				break;
+			}
 		}
-		overall_counter++;
-		cout << "\r" << flush;
-		cout << "Counter of tracking: " << overall_counter;
-	}while((initial[0] != p && initial[1] != s) || (overall_counter < OBSERVABLES_DATA_POINTS_SIZE));
+
+		if(singlepoint == true){
+			cout << "Found single point, continuing the search." << endl;
+			contour.clear();
+			Coordinate<int32_t> p_old = p;
+			p = p + v_right;
+			findInitialP(p,p_old,initial,opt);
+			break;
+		}
+
+		if(insert_counter >= 2 * contour.size()){
+			cout << "Surrounded the contour two times. Stopping now." << endl;
+			stop = true;
+			break;
+		}
+		
+		if((initial[0] != p) && (initial[1] != s)){
+			cout << "Found initial conditions, seems like a good run." << endl;
+			stop = true;(initial[0] != p) && (initial[1] != s)
+			break;
+		}
+
+	}while(stop == false);
 	cout << endl;
 
 }

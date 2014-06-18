@@ -9,6 +9,7 @@
 #include <realgrid.h>
 #include <bh3binaryfile.h>
 #include <vector>
+#include <unordered_set>
 #include <omp.h>
 #include <cstring>
 #include <EXP2D_tools.h>
@@ -69,7 +70,7 @@ protected:
 
 void plotspectrum(string name,Observables& eval);
 void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt);
-void plotContour(string name, RealGrid *phase, list<Coordinate<int32_t>> &contour, Options &opt);
+void plotContour(string name, RealGrid *phase, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt);
 void plotdatatopng(string filename,ComplexGrid* &g,Options &opt);
 void plotdatatopng(string filename,ComplexGrid &g,Options &opt);
 void plotdatatopng(string filename,RealGrid &g,Options &opt);

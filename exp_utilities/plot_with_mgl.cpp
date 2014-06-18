@@ -115,7 +115,7 @@ void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 }
 
-void plotContour(string name, RealGrid *phase, list<Coordinate<int32_t>> &contour, Options &opt){
+void plotContour(string name, RealGrid *phase, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt){
 	int n = opt.grid[1];
 	int m = opt.grid[2];
 	int size = contour.size();
@@ -125,7 +125,7 @@ void plotContour(string name, RealGrid *phase, list<Coordinate<int32_t>> &contou
 	mglData v_y(size);
 
 	int l = 0;
-	for(list<Coordinate<int32_t>>::const_iterator it = contour.begin(); it != contour.end(); ++it){
+	for(std:unordered_set<Coordinate<int32_t>>::const_iterator it = contour.begin(); it != contour.end(); ++it){
 		v_x.a[l] = it->x();
 		v_y.a[l] = it->y();
 		l++;
