@@ -115,17 +115,17 @@ void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 }
 
-void plotContour(string name, RealGrid *phase, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt){
+void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
 	int n = opt.grid[1];
 	int m = opt.grid[2];
 	int size = contour.size();
 
-	mglData phaseData(n,m);
+	mglData densData(n,m);
 	mglData v_x(size);
 	mglData v_y(size);
 
 	int l = 0;
-	for(std:unordered_set<Coordinate<int32_t>>::const_iterator it = contour.begin(); it != contour.end(); ++it){
+	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){
 		v_x.a[l] = it->x();
 		v_y.a[l] = it->y();
 		l++;
@@ -136,7 +136,7 @@ void plotContour(string name, RealGrid *phase, std::unordered_set<Coordinate<int
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
 	{	
 		k = i+n*j;
-		phaseData.a[k] = phase->at(0,i,j,0);
+		densData.a[k] = abs2(Psi(0,i,j,0));
 	}
 
 	mglGraph gr;
@@ -147,15 +147,15 @@ void plotContour(string name, RealGrid *phase, std::unordered_set<Coordinate<int
 
 	// gr.SetRange('x',-opt.min_x,opt.min_x);
 	// gr.SetRange('y',-opt.min_y,opt.min_y);
-	// gr.SetRange('z',phaseData);
-	// gr.SetRange('c',phaseData);
+	// gr.SetRange('z',densData);
+	gr.SetRange('c',densData);
 	gr.SetRange('x',0,opt.grid[1]);
 	gr.SetRange('y',0,opt.grid[2]);
 
 	gr.Axis();
 	gr.Colorbar();
-	gr.Dens(phaseData);
-	gr.Plot(v_x,v_y," #xw");
+	gr.Dens(densData);
+	gr.Plot(v_x,v_y," .w");
 
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 

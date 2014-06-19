@@ -9,6 +9,8 @@
 
 using namespace std;
 
+
+
 template <typename T>
 class Vector;
 
@@ -399,5 +401,15 @@ inline void read(istream &i, Vector<T> &v)
 		read(i, v.ix[pos]);
 	}
 }
+
+struct Hash{
+	size_t operator() (const Coordinate<int32_t> &c) const{
+		string tmp = to_string(c.x()) + to_string(c.y()); // + to_string(c.z()); // OBVIOUS 2D ONLY
+		std::istringstream istr(tmp);
+		size_t hash;
+		istr >> hash;
+		return hash;
+	}
+};
 
 #endif

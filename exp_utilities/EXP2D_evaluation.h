@@ -10,10 +10,12 @@
 #include <complexgrid.h>
 #include <realgrid.h>
 #include <bh3binaryfile.h>
+#include <coordinate.h>
 #include <vector>
 #include <unordered_set>
 #include <omp.h>
 #include <string>
+#include <sstream>
 #include <plot_with_mgl.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_observables.h>
@@ -21,6 +23,8 @@
 
 using namespace std;
 using namespace Eigen;
+
+typedef std::unordered_set<Coordinate<int32_t>,Hash> c_set;
 
 class Eval{
 public:
@@ -70,14 +74,17 @@ private:
 	void calc_fields(const ComplexGrid &data, Options &opt);
 
 	// Contour Tracking Algorithm
-	std::unordered_set<Coordinate<int32_t>> trackContour(const ComplexGrid &data, const Options &opt);
+	c_set trackContour(const ComplexGrid &data, const Options &opt);
 	Vector<int32_t> v_left,v_right, v_up, v_down;
 	inline Coordinate<int32_t> nextClockwise(Coordinate<int32_t> &s, int32_t &direction);
 	inline void setDirection(int32_t &direction);
 	void findInitialP(Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial,const Options &opt);
+	void findMostRightP(c_set &contour, Coordinate<int32_t> &p);
 
 
 };
+
+
 
 
 
