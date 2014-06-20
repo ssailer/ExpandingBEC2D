@@ -43,8 +43,8 @@ class Observables {
 typedef struct {
     int32_t n;
     Coordinate<double> x;
-    vector<Vector<double> > velocity;
-    list<Coordinate<int32_t> > points;
+    vector<Vector<double>> velocity;
+    list<Coordinate<int32_t>> points;
     int32_t num_points;
     double pair_distance;
 } VortexData;

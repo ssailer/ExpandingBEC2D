@@ -49,11 +49,18 @@ public:
 
 private:
 
+	typedef struct{
+		int32_t length;
+		Coordinate<int32_t> start;
+		Coordinate<int32_t> stop;
+	} lineData;
+
 	// data savefiles
 
 	RealGrid *phase, *zeros;
 	string runname;
 	vector<ComplexGrid> PsiVec;
+	vector<c_set> contour;
 	Options opt;
 	int snapshot_time;
 	// vector<RealGrid> vortexLocationMap;
@@ -74,11 +81,12 @@ private:
 	void calc_fields(const ComplexGrid &data, Options &opt);
 
 	// Contour Tracking Algorithm
-	c_set trackContour(const ComplexGrid &data, const Options &opt);
 	Vector<int32_t> v_left,v_right, v_up, v_down;
+	c_set trackContour(int k);
+	
 	inline Coordinate<int32_t> nextClockwise(Coordinate<int32_t> &s, int32_t &direction);
 	inline void setDirection(int32_t &direction);
-	void findInitialP(Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial,const Options &opt);
+	void findInitialP(Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial,int k);
 	void findMostRightP(c_set &contour, Coordinate<int32_t> &p);
 
 

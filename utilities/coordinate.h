@@ -151,7 +151,7 @@ inline T Coordinate<T>::operator[] (int index) const
 {
 	if(dim[index] == 0)
 	{
-		cout << "Warning: operator[" << index << "] with invalid dimension!" << endl;
+		cout << "Warning: Coordinate operator[" << index << "] with invalid dimension!" << endl;
 		return 0;
 	}
 	
@@ -289,7 +289,7 @@ inline T Vector<T>::operator[] (int index) const
 
 	if(dim[index] == 0)
 	{
-		cout << "Warning: operator[" << index << "] with invalid dimension!" << endl;
+		cout << "Warning: Vector operator[" << index << "] with invalid dimension!" << endl;
 		return 0;
 	}
 	
