@@ -47,6 +47,7 @@ typedef struct {
     list<Coordinate<int32_t>> points;
     int32_t num_points;
     double pair_distance;
+    double surroundDens;
 } VortexData;
 
 struct PathResults {

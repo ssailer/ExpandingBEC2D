@@ -147,13 +147,16 @@ void Eval::getVortices(const ComplexGrid &data, vector<Coordinate<int32_t>> &den
 	pres.vlist.clear();
 	find_vortices(phase,zeros,densityCoordinates,pres.vlist);
 
+
+
 	cout << endl << "Vortices: " << endl;
 	double number = 0;
 	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
 		int x = it->x.x();
 		int y = it->x.y();
 		number += it->num_points;
-		cout << " " << x << " " << y << "  " << abs2(PsiVec[0](0,x,y,0)) << " " << arg(PsiVec[0](0,x,y,0)) << endl;
+		double sD = it->surroundDens;
+		cout << " " << x << " " << y << "  " << abs2(PsiVec[0](0,x,y,0)) << " " << arg(PsiVec[0](0,x,y,0)) << " " << sD << endl;
 	}
 	cout << "Number of Vortices counted: " << number << "  " << endl;
 
@@ -178,9 +181,13 @@ int Eval::get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v,
 // }
 
 void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) {
+
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 	// Nullstellen zaehlen
 	// vector< vector< vector<bool > > > checked(phase->width(), vector< vector<bool> >(phase->height(), vector<bool>(phase->depth(),false)));	// Welche felder schon ueberprueft wurden
-	VortexData vortex;								// Charakteristika eines gefundenen Vortex
+	VortexData vortex;
+					// Charakteristika eines gefundenen Vortex
 
 	for(vector<Coordinate<int32_t>>::const_iterator it = densityCoordinates.begin(); it != densityCoordinates.end(); ++it){
 		// if()
@@ -218,6 +225,40 @@ void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Co
 				}*/
 	// 		}
 		// }
+		
+		vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
+		if(vlist.size() > 4){
+			list<VortexData>::iterator it1 = vlist.begin();
+			advance(it1,5);
+			vlist.erase(it1,vlist.end());
+		}
+
+
+	}
+
+	// CHECK DENSITY AROUND VORTEX
+	int max_radius = 10;
+	
+
+	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
+		vector<double> polarDensity;
+		vector<double> radius;	
+		for(int x_shift = - max_radius; x_shift < max_radius; x_shift++){
+		    for(int y_shift = - max_radius; y_shift < max_radius; y_shift++){
+				radius.push_back(sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y));
+				int x = it->points.front().x() + x_shift;
+				int y = it->points.front().y() + y_shift;
+				polarDensity.push_back(abs2(PsiVec[0](0,x,y,0)));
+			}
+		}
+		double sum = 0;
+		for(int i = 0; i < radius.size(); i++){
+			if(radius[i] < max_radius){
+				sum += polarDensity[i];
+			}
+
+		}
+		it->surroundDens = sum;
 	}
 }
 

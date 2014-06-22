@@ -338,7 +338,6 @@ ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vorte
             {
                 for(int x = 0; x < opt.grid[1]; x++)
                 {   
-
                     g->at(j,x,y,0) *= polar(1.0,(1.0/*<-windingnumber*/*mypow2(-1,i+1))*(vortex(y,V_y[i],x,V_x[i])));
                     /*
                     if(i==0)
