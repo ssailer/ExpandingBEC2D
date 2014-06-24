@@ -16,6 +16,7 @@
 #include <omp.h>
 #include <string>
 #include <sstream>
+#include <EXP2D_Contour.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_observables.h>
@@ -24,7 +25,7 @@
 using namespace std;
 using namespace Eigen;
 
-typedef std::unordered_set<Coordinate<int32_t>,Hash> c_set;
+
 
 class Eval{
 public:
@@ -32,8 +33,8 @@ public:
 	~Eval();
 
 	// wrapperfunctions 
-	void saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time,string runname_external); // If data comes as a vector of matrices (from statistics RTE)
-	void saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time,string runname_external); // If data comes only as a Matrix (from ITP)
+	void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)
+	void saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
 	void evaluateData(); // calculate the observables
 	void plotData(); // plot Results
 
@@ -54,6 +55,12 @@ private:
 		Coordinate<int32_t> start;
 		Coordinate<int32_t> stop;
 	} lineData;
+
+	typedef struct{
+		Coordinate<int32_t> c;
+		double phi;
+		double r;
+	} contourData;
 
 	// data savefiles
 
@@ -81,13 +88,13 @@ private:
 	void calc_fields(const ComplexGrid &data, Options &opt);
 
 	// Contour Tracking Algorithm
-	Vector<int32_t> v_left,v_right, v_up, v_down;
-	c_set trackContour(int k);
+
+	// c_set trackContour(const RealGrid &data);
 	
-	inline Coordinate<int32_t> nextClockwise(Coordinate<int32_t> &s, int32_t &direction);
-	inline void setDirection(int32_t &direction);
-	void findInitialP(Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial,int k);
-	void findMostRightP(c_set &contour, Coordinate<int32_t> &p);
+	// inline Coordinate<int32_t> nextClockwise(Coordinate<int32_t> &s, int32_t &direction);
+	// inline void setDirection(int32_t &direction);
+	// void findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial);
+	// void findMostRightP(c_set &contour, Coordinate<int32_t> &p);
 
 
 };

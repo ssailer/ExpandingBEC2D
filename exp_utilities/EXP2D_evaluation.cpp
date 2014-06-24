@@ -13,38 +13,28 @@ Eval::Eval() {
 
 Eval::~Eval() {};
 
-void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &externalopt,int &external_snapshot_time,string runname_external){
-		runname = runname_external;
-		opt = externalopt;
+void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &external_snapshot_time,string external_runname){
+		runname = external_runname;
+		opt = external_opt;
 		snapshot_time = external_snapshot_time;
 		PsiVec.resize(wavefctVec.size());
-
-		v_down = Vector<int32_t>(0,-1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-		v_right = Vector<int32_t>(1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-		v_up = Vector<int32_t>(0,1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-		v_left = Vector<int32_t>(-1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-
-
 
 		#pragma omp parallel for
 		for(int k = 0; k < wavefctVec.size(); k++){
 			PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-			for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){		
-			PsiVec[k](0,i,j,0) = wavefctVec[k](i,j);}}
+			for(int i = 0; i < opt.grid[1]; i++){
+				for(int j = 0; j < opt.grid[2]; j++){		
+					PsiVec[k](0,i,j,0) = wavefctVec[k](i,j);
+				}
+			}
 		}
 }
 
-void Eval::saveData(MatrixXcd &wavefct,Options &externalopt,int &external_snapshot_time,string runname_external){
-		runname = runname_external;
-		opt = externalopt;
+void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snapshot_time,string external_runname){
+		runname = external_runname;
+		opt = external_opt;
 		snapshot_time = external_snapshot_time;
 		PsiVec.resize(1);
-
-		v_down = Vector<int32_t>(0,-1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-		v_right = Vector<int32_t>(1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-		v_up = Vector<int32_t>(0,1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-		v_left = Vector<int32_t>(-1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
 
 		PsiVec[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
@@ -61,31 +51,22 @@ void Eval::evaluateData(){
 	densityCoordinates.clear();
 	contour.resize(PsiVec.size());
 
-	// vortexLocationMap.resize(PsiVec.size());
 	densityLocationMap.resize(PsiVec.size());
-	// vortexCoordinates.resize(PsiVec.size());
 	densityCoordinates.resize(PsiVec.size());
 	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	Contour tracker(opt);
 
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
-	for(int k = 0; k < PsiVec.size(); k++){		
-		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);	
-					
-		totalResult += calculator(PsiVec[k],k);
-		
-	}
-	contour[0] = trackContour(0);
+	for(int k = 0; k < PsiVec.size(); k++){
+		cout << endl << "Eval #" << k << endl;
+		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
+		contour[k] = tracker.trackContour(densityLocationMap[k]);						
+		totalResult += calculator(PsiVec[k],k);		
+	}	
 	getVortices(PsiVec[0],densityCoordinates[0]);
-
-
-	
-	// for(int k = 0; k < PsiVec.size(); k++){
-	// 	 totalResult = avResult[k];
-	// }
-
 	totalResult /= PsiVec.size();
 }
 
@@ -114,6 +95,7 @@ void Eval::plotData(){
   		datafile << std::left << std::setw(10) << "Timestep"
   						 << std::setw(10) << "X_max"
   						 << std::setw(10) << "Y_max"
+  						 << std::setw(10) << "A/R"
   						 << std::setw(10) << "N"
   						 << std::setw(10) << "V"
   						 << std::setw(10) << "N/V"
@@ -127,10 +109,11 @@ void Eval::plotData(){
 	datafile << std::left << std::setw(10) << snapshot_time
 					 << std::setw(10) << opt.min_x * opt.stateInformation[0]
 					 << std::setw(10) << opt.min_y * opt.stateInformation[1]
+ 					 << std::setw(10) << totalResult.aspectRatio 
 					 << std::setw(10) << totalResult.particle_count
 					 << std::setw(10) << totalResult.volume
 					 << std::setw(10) << totalResult.density
-					 << std::setw(10) << totalResult.Ekin 
+					 << std::setw(10) << totalResult.Ekin
 			 << endl;
 	datafile.close();
 }
@@ -140,16 +123,13 @@ void Eval::getVortices(const ComplexGrid &data, vector<Coordinate<int32_t>> &den
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
 	
-	// vortexLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-
 	calc_fields(data,opt);
 	pres.vlist.clear();
 	find_vortices(phase,zeros,densityCoordinates,pres.vlist);
 
 
 
-	cout << endl << "Vortices: " << endl;
+	cout << "Vortices: " << endl;
 	double number = 0;
 	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
 		int x = it->x.x();
@@ -226,20 +206,13 @@ void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Co
 	// 		}
 		// }
 		
-		vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
-		if(vlist.size() > 4){
-			list<VortexData>::iterator it1 = vlist.begin();
-			advance(it1,5);
-			vlist.erase(it1,vlist.end());
-		}
+
 
 
 	}
 
 	// CHECK DENSITY AROUND VORTEX
 	int max_radius = 10;
-	
-
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		vector<double> polarDensity;
 		vector<double> radius;	
@@ -260,6 +233,15 @@ void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Co
 		}
 		it->surroundDens = sum;
 	}
+
+	// This Number is set at the start, maybe set this in run.cfg -> Options struct
+	int numberOfVortices = 4;
+	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
+	if(vlist.size() > numberOfVortices){
+		list<VortexData>::iterator it1 = vlist.begin();
+		advance(it1,numberOfVortices);
+		vlist.erase(it1,vlist.end());
+	}
 }
 
 void Eval::calc_fields(const ComplexGrid &data, Options &opt){
@@ -278,180 +260,6 @@ void Eval::calc_fields(const ComplexGrid &data, Options &opt){
 			}
 		}
 	}
-}
-
-inline void Eval::setDirection(int32_t &direction){
-		switch(direction){
-			case 0:
-				direction = 6;
-				break;
-			case 1:
-				direction = 0;
-				break;
-			case 2:
-				direction = 0;
-				break;
-			case 3:
-				direction = 2;
-				break;
-			case 4:
-				direction = 2;
-				break;
-			case 5:
-				direction = 4;
-				break;
-			case 6:
-				direction = 4;
-				break;
-			case 7:
-				direction = 6;
-				break;
-			default:
-				cout << "Function setDirection() ERROR!" << endl;
-				break;
-		}
-}
-
-inline Coordinate<int32_t> Eval::nextClockwise(Coordinate<int32_t> &s, int32_t &direction){
-		Coordinate<int32_t> c;
-
-		switch(direction){
-			case 0 :
-				c = s + v_up;
-				break;
-			case 1 :
-				c = s + v_right;
-				break;
-			case 2 :
-				c = s + v_right;
-				break;
-			case 3 :
-				c = s + v_down;
-				break;
-			case 4 :
-				c = s + v_down;
-				break;
-			case 5 :
-				c = s + v_left;
-				break;
-			case 6 :
-				c = s + v_left;
-				break;
-			case 7 :
-				c = s + v_up;
-				break;
-			default :
-				cout << "Function nextClockwise() ERROR!" << endl;
-		}
-		// cout << "nextClockwise: " << s << " -> " << c << endl;
-		return c; 
-}
-
-void Eval::findInitialP(Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial,int k){
-
-	Coordinate<int32_t> tmp = p;
-
-
-	for(int x = tmp.x(); x < opt.grid[1]; x++){
-
-		if(densityLocationMap[k](0,x,tmp.y(),0) == 1){
-			p = densityLocationMap[k].make_coord(x,tmp.y(),0);
-			s = p + v_left;
-			initial[0] = p;
-			initial[1] = s;
-			// cout << "Found Intitial p: " << p << endl;
-			
-			break;
-		}
-	}
-}
-
-void Eval::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
-	Coordinate<int32_t> max_p;
-	c_set::iterator max_it = contour.begin();
-	for(c_set::const_iterator it = contour.begin(); it != contour.end(); ++it){
-		if(it->x() > max_it->x())
-			max_p = *it;
-	}
-	p = max_p;
-}
-
-c_set Eval::trackContour(int k){
-
-	c_set contour;
-	c_set::iterator it;
-	std::pair<c_set::iterator,bool> ret;
-
-	Coordinate<int32_t> s;
-	Coordinate<int32_t> p = zeros->make_coord(0,opt.grid[2]/2,0);
-	Coordinate<int32_t> initial[2];
-
-	findInitialP(p,s,initial,k);
-	contour.insert(p);
-	
-	int32_t counter = 0;
-	int direction = 0;
-	int insert_counter = 0;
-	bool singlepoint = false;
-	bool stop = false;
-	cout << endl;
-	do{
-		
-		while(counter < 8){
-			Coordinate<int32_t> c = nextClockwise(s,direction);
-			if(densityLocationMap[k](0,c) == 1){
-				p = c;
-				setDirection(direction);
-				ret = contour.insert(p);
-				insert_counter++;
-				// cout << "Added Coordinate: " << p << " with direction: " << direction << endl;
-				break;
-			}
-			
-			counter++;
-			if(counter == 8){
-				singlepoint = true;
-				break;
-			}
-			s = c;
-			direction = (direction+1)%8;
-		}
-		counter = 0;
-
-		if(singlepoint == true){
-			cout << "Found single point, continuing the search." << endl;
-			contour.clear();			
-			s = p;
-			p = p + v_right;			
-			findInitialP(p,s,initial,k);
-			contour.insert(p);
-			insert_counter = 1;
-			break;
-		}
-
-		if(insert_counter >= 2 * contour.size()){
-			cout << "Surrounded the contour two times. Searching new contour." << endl;
-			findMostRightP(contour,p);
-			s = p;
-			p = p + v_right;
-			contour.clear();
-			findInitialP(p,s,initial,k);
-			contour.insert(p);
-			insert_counter = 1;			
-		}
-
-		int break_condition = (opt.grid[1]/2 - p.x()) * 2 * M_PI * 0.9; // Circumference of a circle going through p, 90%
-		if(insert_counter > break_condition){
-			if((initial[0] == p) && (initial[1] == s)){
-				cout << "Found initial conditions, seems like a good run." << endl;
-				stop = true;
-			}
-		}
-
-	}while(stop == false);
-	cout << endl;
-
-	return contour;
 }
 
 
@@ -526,14 +334,11 @@ void Eval::getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_loca
 
 	for(int i = 0; i < opt.grid[1]; i++){
 		for(int j = 0; j < opt.grid[2]; j++){
-			x_dist[i] += densityLocationMap_local(0,i,j,0);			
+			x_dist[i] += densityLocationMap_local(0,i,j,0);
+			y_dist[j] += densityLocationMap_local(0,i,j,0);			
 		}
 	}
-	for(int j = 0; j < opt.grid[2]; j++){
-		for(int i = 0; i < opt.grid[1]; i++){
-			y_dist[j] += densityLocationMap_local(0,i,j,0);
-		}
-	}
+
 
 	x_dist_grad.resize(opt.grid[1]);
 	y_dist_grad.resize(opt.grid[2]);
@@ -574,7 +379,7 @@ void Eval::getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_loca
 
 Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	
-	Observables ares = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 	// R-Space
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
@@ -585,18 +390,55 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	
 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
-	ares.volume = h_x * h_y * densityCounter;
+	obs.volume = h_x * h_y * densityCounter;
 	for(int i = 0; i < opt.grid[1]-1; i++){
 	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
-	      	ares.particle_count += h_x * h_y * abs2(data(0,i,j,0));
+	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
 	    }
 	}
+	obs.density = obs.particle_count / obs.volume;
 
-	ares.density = ares.particle_count / ares.volume;
-
-	// cout << "Testmethods: " << ares.volume << "  " << ares.particle_count << "  " << ares.density << endl;
+	// cout << "Testmethods: " << obs.volume << "  " << obs.particle_count << "  " << obs.density << endl;
 	
+	// Aspect-Ratio
 
+
+	vector<contourData> cData;
+
+	for(c_set::iterator it = contour[sampleindex].begin(); it != contour[sampleindex].end(); ++it){
+		contourData tmp;
+		tmp.c = *it;
+		int x_shift = tmp.c.x() - opt.grid[1]/2;
+		int y_shift = tmp.c.y() - opt.grid[2]/2;
+		tmp.phi = atan2(x_shift * h_x,y_shift * h_y) * 180 /M_PI + 180;
+		tmp.r = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
+		cData.push_back(tmp);
+	}
+
+	std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
+
+	vector<double> cRadius(360);
+	vector<int> divisor_counter(360);
+	for(vector<contourData>::iterator it = cData.begin(); it != cData.end(); ++it){
+		int index = (int)(it->phi);
+		cRadius[index] += it->r;
+		divisor_counter[index]++;
+	}
+
+	for(int i = 0; i < 360; i++){
+		if(divisor_counter[i] == 0){
+			divisor_counter[i] = 1;
+		}
+		cRadius[i] /= divisor_counter[i];
+	}
+
+	vector<double> cDistance(180);
+	for(int i = 0; i < 180; i++){
+		cDistance[i] = abs(cRadius[i] - cRadius[i+180]);
+	}
+
+	obs.aspectRatio = cDistance[0] / cDistance[90]; // zwischen 0 und 90 grad, also effektiv x und y richtung
+	// FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
 
 	// == Angular Density
 	// vector<double> angularDensity;
@@ -637,18 +479,18 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 			int l = i + k;
 			l = (l < 0)        ? l + 360 : (l >= 360) ? l - 360 : l;			
 			for(int m = 0; m < index[l].size(); m++){
-				ares.angularDensity(i) += polarDensity[index[l][m]];
+				obs.angularDensity(i) += polarDensity[index[l][m]];
 			}
 		}					
 	}
-	ares.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
+	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
 
 	// angularDensity_tmp[0] += angularDensity_tmp[360];	
 
 	// for(int i = 0; i < 360; i++){
 	// 	// vector<double>::iterator beginning = angularDensity_tmp.begin() + i;
 	// 	// vector<double>::iterator ending = beginning + 10;
-	// 	ares.angularDensity(i) = angularDensity_tmp[i]; //(accumulate(beginning,ending,0));
+	// 	obs.angularDensity(i) = angularDensity_tmp[i]; //(accumulate(beginning,ending,0));
 	// }
 
 
@@ -656,7 +498,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	// K-Space
 	ComplexGrid::fft(data, data);
 	
-	ArrayXd divisor(ares.number.size());
+	ArrayXd divisor(obs.number.size());
 	divisor.setZero();
 	
 	vector<vector<double>> kspace;
@@ -696,7 +538,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	for(int i = 0; i < 2; i++)
 		kwidth2[i] = (opt.grid[i+1] == 1) ? 0 : kspace[i][opt.grid[i+1]/2] * kspace[i][opt.grid[i+1]/2];
 	
-	double index_factor = (ares.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
+	double index_factor = (obs.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
 
 	for(int x = 0; x < data.width(); x++){
 		for (int y = 0; y < data.height(); y++){
@@ -705,12 +547,12 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 				// Coordinate<int32_t> c = data.make_coord(x,y,z);
 				int index = index_factor * k;
 				// cout << k << "*" << index_factor << "=" << index << "/" << OBSERVABLES_DATA_POINTS_SIZE << endl;
-				ares.k(index) += k;
+				obs.k(index) += k;
 				divisor(index)++;
 				double number = abs2(data(0,x,y,z));
-				ares.number(index) += number;
-				// ares.particle_count += number;
-				ares.Ekin += number * k * k;
+				obs.number(index) += number;
+				// obs.particle_count += number;
+				obs.Ekin += number * k * k;
 			}
 		}
 	}
@@ -718,19 +560,19 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 
 
 	
-	// ares.healing_length = 1 / sqrt(ares.particle_count * opt.g / ares.volume);
+	// obs.healing_length = 1 / sqrt(obs.particle_count * opt.g / obs.volume);
 	
 	#pragma omp parallel for schedule(guided,1)
-	for(int l = 0; l < ares.number.size(); l++){
+	for(int l = 0; l < obs.number.size(); l++){
 		if(divisor[l] == 0){
 			divisor[l] = 1;
 		}
 	}
 
-	ares.number /= divisor;
-	ares.k /= divisor;	
+	obs.number /= divisor;
+	obs.k /= divisor;	
 	
-	return ares;
+	return obs;
 }
 	
 	

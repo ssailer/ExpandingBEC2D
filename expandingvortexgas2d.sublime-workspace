@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"sur",
+				"surroundDens"
+			],
+			[
 				"p",
 				"polarDensity"
 			],
@@ -510,10 +514,6 @@
 			[
 				"x_",
 				"x_axis"
-			],
-			[
-				"work",
-				"workingdirectory"
 			]
 		]
 	},
@@ -524,6 +524,14 @@
 			"settings":
 			{
 				"buffer_size": 4445,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "startgrids/bh3defaultgrid.cpp",
+			"settings":
+			{
+				"buffer_size": 22634,
 				"line_ending": "Unix"
 			}
 		},
@@ -579,34 +587,15 @@
 			"file": "exp_utilities/EXP2D_evaluation.cpp",
 			"settings":
 			{
-				"buffer_size": 21883,
+				"buffer_size": 22117,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/nhrjr/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+			"file": "/etc/mailcap.order",
 			"settings":
 			{
-				"buffer_size": 124,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "-- {{{ License\n--\n-- Awesome configuration, using awesome 3.4.14 on Arch GNU/Linux\n--   * Adrian C. <anrxc@sysphere.org>\n\n-- Screenshot: http://sysphere.org/gallery/snapshots\n\n-- This work is licensed under the Creative Commons Attribution-Share\n-- Alike License: http://creativecommons.org/licenses/by-sa/3.0/\n-- }}}\n\n\n-- {{{ Libraries\nawful = require(\"awful\")\nawful.rules = require(\"awful.rules\")\nawful.autofocus = require(\"awful.autofocus\")\nwibox = require(\"wibox\")\nbeautiful = require(\"beautiful\")\n-- User libraries\nvicious = require(\"vicious\")\nscratch = require(\"scratch\")\nmenubar = require(\"menubar\")\n-- }}}\n\n\n-- {{{ Variable definitions\nlocal altkey = \"Mod1\"\nlocal modkey = \"Mod4\"\n\nlocal home   = os.getenv(\"HOME\")\nlocal exec   = awful.util.spawn\nlocal sexec  = awful.util.spawn_with_shell\nlocal scount = screen.count()\n\n-- Beautiful theme\nbeautiful.init(home .. \"/.config/awesome/zenburn.lua\")\n\n-- Window management layouts\nlayouts = {\n  awful.layout.suit.tile,        -- 1\n  awful.layout.suit.tile.bottom, -- 2\n  awful.layout.suit.fair,        -- 3\n  awful.layout.suit.max,         -- 4\n  awful.layout.suit.magnifier,   -- 5\n  awful.layout.suit.floating,     -- 6\n}\n-- }}}\n\n\n-- {{{ Tags\ntags = {\n  names  = { \"term\", \"subl\", \"web\", \"file\", \"stuff\", \"steam\", \"im\", \"mail\", \"media\" },\n  layout = { layouts[2], layouts[1], layouts[3], layouts[3], layouts[3],\n             layouts[3], layouts[3], layouts[3], layouts[6]\n}}\n\nfor s = 1, scount do\n  tags[s] = awful.tag(tags.names, s, tags.layout)\nend\n-- }}}\n\n-- Menubar configuration\nmenubar.utils.terminal = \"gnome-terminal\" -- Set the terminal for applications that require it\n-- }}}\n\n-- {{{ Wibox\n--\n-- {{{ Widgets configuration\n--\n-- {{{ Reusable separator\nseparator = wibox.widget.imagebox()\nseparator:set_image(beautiful.widget_sep)\n-- }}}\n\n-- {{{ CPU usage and temperature\ncpuicon = wibox.widget.imagebox()\ncpuicon:set_image(beautiful.widget_cpu)\n-- Initialize widgets\ncpugraph  = awful.widget.graph()\ntzswidget = wibox.widget.textbox()\n-- Graph properties\ncpugraph:set_width(60):set_height(14)\ncpugraph:set_background_color(beautiful.fg_off_widget)\ncpugraph:set_color({ type = \"linear\", from = { 0, 0 }, to = { 0, 20 }, stops = { { 0, beautiful.fg_end_widget }, { 0.5, beautiful.fg_center_widget }, { 1, beautiful.fg_widget } }})\n -- Register widgets\nvicious.register(cpugraph,  vicious.widgets.cpu,      \"$1\")\nvicious.register(tzswidget, vicious.widgets.thermal, \" $1C\", 20, {\"coretemp.0\",\"core\"})\n-- }}}\n\n-- {{{ Memory usage\nmemicon = wibox.widget.imagebox()\nmemicon:set_image(beautiful.widget_mem)\n-- Initialize widget\nmembar = awful.widget.progressbar()\n-- Pogressbar properties\nmembar:set_vertical(true):set_ticks(true)\nmembar:set_height(16):set_width(8):set_ticks_size(2)\nmembar:set_background_color(beautiful.fg_off_widget)\nmembar:set_color({ type = \"linear\", from = { 0, 0 }, to = { 0, 20 }, stops = { { 0, beautiful.fg_end_widget }, { 0.5, beautiful.fg_center_widget }, { 1, beautiful.fg_widget } }})\n -- Register widget\nvicious.register(membar, vicious.widgets.mem, \"$1\", 13)\n-- }}}\n\n-- {{{ Network usage\ndnicon = wibox.widget.imagebox()\nupicon = wibox.widget.imagebox()\ndnicon:set_image(beautiful.widget_net)\nupicon:set_image(beautiful.widget_netup)\n-- Initialize widget\nnetwidget = wibox.widget.textbox()\n-- Register widget\nvicious.register(netwidget, vicious.widgets.net, '<span color=\"'\n  .. beautiful.fg_netdn_widget ..'\">${eth0 down_kb}</span> <span color=\"'\n  .. beautiful.fg_netup_widget ..'\">${eth0 up_kb}</span>', 3)\n-- }}}\n\n-- {{{ Volume level\nvolicon = wibox.widget.imagebox()\nvolicon:set_image(beautiful.widget_vol)\n-- Initialize widgets\nvolbar    = awful.widget.progressbar()\nvolwidget = wibox.widget.textbox()\n-- Progressbar properties\nvolbar:set_vertical(true):set_ticks(true)\nvolbar:set_height(14):set_width(10):set_ticks_size(2)\nvolbar:set_background_color(beautiful.fg_off_widget)\nvolbar:set_color({ type = \"linear\", from = { 0, 0 }, to = { 0, 20 }, stops = { { 0, beautiful.fg_widget }, { 0.5, beautiful.fg_center_widget }, { 1, beautiful.fg_end_widget } }})\n -- Enable caching\nvicious.cache(vicious.widgets.volume)\n-- Register widgets\nvicious.register(volbar,    vicious.widgets.volume,  \"$1\",  2, \"PCM\")\nvicious.register(volwidget, vicious.widgets.volume, \" $1%\", 2, \"PCM\")\n-- Register buttons\nvolbar:buttons(awful.util.table.join(\n   awful.button({ }, 1, function () exec(\"pavucontrol\") end),\n   awful.button({ }, 4, function () exec(\"amixer -q set PCM 1dB+\", false) end),\n   awful.button({ }, 5, function () exec(\"amixer -q set PCM 1dB-\", false) end)\n)) -- Register assigned buttons\n-- volwidget:buttons(volbar.widget:buttons())\n-- }}}\n\n-- {{{ Date and time\ndateicon = wibox.widget.imagebox()\ndateicon:set_image(beautiful.widget_date)\n-- Initialize widget\ndatewidget = wibox.widget.textbox()\n-- Register widget\nvicious.register(datewidget, vicious.widgets.date, \"%R %d.%m.%y \", 61)\n-- Register buttons\ndatewidget:buttons(awful.util.table.join(\n  awful.button({ }, 1, function () exec(\"pylendar.py\") end)\n))\n-- }}}\n\n-- {{{ Wibox initialisation\nmywibox   = {}\npromptbox = {}\nlayoutbox = {}\ntaglist   = {}\ntaglist.buttons = awful.util.table.join(\n    awful.button({ },        1, awful.tag.viewonly),\n    awful.button({ modkey }, 1, awful.client.movetotag),\n    awful.button({ },        3, awful.tag.viewtoggle),\n    awful.button({ modkey }, 3, awful.client.toggletag),\n    awful.button({ },        4, awful.tag.viewnext),\n    awful.button({ },        5, awful.tag.viewprev\n))\n\nfor s = 1, scount do\n    -- Create a promptbox\n    promptbox[s] = awful.widget.prompt()\n    -- Create a layoutbox\n    layoutbox[s] = awful.widget.layoutbox(s)\n    layoutbox[s]:buttons(awful.util.table.join(\n        awful.button({ }, 1, function () awful.layout.inc(layouts,  1) end),\n        awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),\n        awful.button({ }, 4, function () awful.layout.inc(layouts,  1) end),\n        awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)\n    ))\n\n    -- Create the taglist\n    taglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist.buttons)\n    -- Create the wibox\n    mywibox[s] = awful.wibox({position = \"top\", screen = s})\n\n    -- Widgets that are aligned to the left\n    local left_layout = wibox.layout.fixed.horizontal()\n    left_layout:add(taglist[s])\n    left_layout:add(layoutbox[s])\n    left_layout:add(separator)\n    left_layout:add(promptbox[s])\n\n    -- Widgets that are aligned to the right\n    local right_layout = wibox.layout.fixed.horizontal()\n    if s == 1 then right_layout:add(wibox.widget.systray()) end\n    right_layout:add(separator)\n    right_layout:add(upicon)\n    right_layout:add(netwidget)\n    right_layout:add(dnicon)\n    right_layout:add(separator)    \n    right_layout:add(cpugraph)\n    right_layout:add(tzswidget)\n    right_layout:add(separator)\n    right_layout:add(volicon)\n    right_layout:add(volbar)\n    right_layout:add(volwidget)\n    right_layout:add(separator)\n    \n\n\n    -- Now bring it all together (with the tasklist in the middle)\n    local layout = wibox.layout.align.horizontal()\n    layout:set_left(left_layout)\n    layout:set_middle(datewidget)\n    layout:set_right(right_layout)\n\n    mywibox[s]:set_widget(layout)\nend\n-- }}}\n-- }}}\n\n\n-- {{{ Mouse bindings\nroot.buttons(awful.util.table.join(\n    awful.button({ }, 4, awful.tag.viewnext),\n    awful.button({ }, 5, awful.tag.viewprev)\n))\n\n-- Client bindings\nclientbuttons = awful.util.table.join(\n    awful.button({ },        1, function (c) client.focus = c; c:raise() end),\n    awful.button({ modkey }, 1, awful.mouse.client.move),\n    awful.button({ modkey }, 3, awful.mouse.client.resize)\n)\n-- }}}\n\n\n-- {{{ Key bindings\n--x\n-- {{{ Global keys\nglobalkeys = awful.util.table.join(\n    -- {{{ Applications\n    awful.key({ altkey }, \"x\", function () exec(\"mono /usr/lib/keepass2/KeePass.exe --auto-type\") end),\n    awful.key({ modkey }, \"e\", function () exec(\"nautilus\") end),\n    awful.key({ modkey }, \"r\", function () exec(\"subl\") end),\n    awful.key({ modkey }, \"w\", function () exec(\"chromium-browser\") end),\n    awful.key({ altkey }, \"F1\",  function () exec(\"gnome-terminal\") end),\n    awful.key({ }, \"F1\", function () scratch.drop(\"konsole\", \"top\", nil, nil, 0.50) end),\n    awful.key({ modkey }, \"a\", function () exec(\"gnome-terminal -T Alpine -e alpine.exp\") end),\n    awful.key({ modkey }, \"g\", function () sexec(\"GTK2_RC_FILES=~/.gtkrc-gajim gajim\") end),\n    awful.key({ modkey }, \"q\", function () exec(\"emacsclient --eval '(make-remember-frame)'\") end),\n    awful.key({ altkey }, \"#51\", function () if boosk then osk(nil, mouse.screen)\n        else boosk, osk = pcall(require, \"osk\") end\n    end),\n    -- }}}\n\n    -- {{{ Multimedia keys\n\n    awful.key({ }, \"XF86AudioRaiseVolume\", function ()awful.util.spawn(\"amixer -q -D pulse set Master 5%+\", false) end),\n    awful.key({ }, \"XF86AudioLowerVolume\", function ()awful.util.spawn(\"amixer -q -D pulse set Master 5%-\", false) end),\n    awful.key({ }, \"XF86AudioMute\", function () awful.util.spawn(\"amixer -q -D pulse set Master toggle\", false) end),\n\n  --awful.key({}, \"#160\", function () exec(\"kscreenlocker --forcelock\") end),\n  -- awful.key({}, \"#121\", function () exec(\"pvol.py -m\") end),\n  -- awful.key({}, \"#122\", function () exec(\"amixer -q set PCM 1dB+\", false),\n  --awful.key({}, \"#122\", function () exec(\"pvol.py -p -c -2\") end),\n  -- awful.key({}, \"#123\", function () exec(\"amixer -q set PCM 1dB+\", false),\n  --awful.key({}, \"#123\", function () exec(\"pvol.py -p -c  2\") end),\n    awful.key({}, \"#232\", function () exec(\"plight.py -s\") end),\n    awful.key({}, \"#233\", function () exec(\"plight.py -s\") end),\n  --awful.key({}, \"#150\", function () exec(\"sudo /usr/bin/pm-suspend\")   end),\n    awful.key({}, \"#213\", function () exec(\"sudo /usr/bin/pm-hibernate\") end),\n  --awful.key({}, \"#235\", function () exec(\"xset dpms force off\") end),\n    awful.key({}, \"#235\", function () exec(\"pypres.py\") end),\n    awful.key({}, \"#244\", function () sexec(\"acpitool -b | xmessage -timeout 10 -file -\")   end),\n    -- }}}\n\n    -- {{{ Prompt menus\n    awful.key({ altkey }, \"F2\", function ()\n        awful.prompt.run({ prompt = \"Run: \" }, promptbox[mouse.screen].widget,\n            function (...) promptbox[mouse.screen].text = exec(unpack(arg), false) end,\n            awful.completion.shell, awful.util.getdir(\"cache\") .. \"/history\")\n    end),\n    -- awful.key({ altkey }, \"F3\", function ()\n    --     awful.prompt.run({ prompt = \"Dictionary: \" }, promptbox[mouse.screen].widget,\n    --         function (words)\n    --             sexec(\"crodict \"..words..\" | \"..\"xmessage -timeout 10 -file -\")\n    --         end)\n    -- end),\n    -- awful.key({ altkey }, \"F4\", function ()\n    --     awful.prompt.run({ prompt = \"Web: \" }, promptbox[mouse.screen].widget,\n    --         function (command)\n    --             sexec(\"firefox 'http://yubnub.org/parser/parse?command=\"..command..\"'\")\n    --             awful.tag.viewonly(tags[scount][3])\n    --         end)\n    -- end),\n    awful.key({ altkey }, \"F5\", function ()\n        awful.prompt.run({ prompt = \"Lua: \" }, promptbox[mouse.screen].widget,\n        awful.util.eval, nil, awful.util.getdir(\"cache\") .. \"/history_eval\")\n    end),\n    awful.key({ modkey }, \"v\", function() menubar.show() end),\n    -- }}}\n\n    -- {{{ Awesome controls\n    awful.key({ modkey }, \"b\", function ()\n        wibox[mouse.screen].visible = not wibox[mouse.screen].visible\n    end),\n    awful.key({ modkey, \"Shift\" }, \"q\", awesome.quit),\n    awful.key({ modkey, \"Shift\" }, \"r\", function ()\n        promptbox[mouse.screen].text = awful.util.escape(awful.util.restart())\n    end),\n    -- }}}\n\n    -- {{{ Tag browsing\n    awful.key({ altkey }, \"n\",   awful.tag.viewnext),\n    awful.key({ altkey }, \"p\",   awful.tag.viewprev),\n    awful.key({ altkey }, \"Tab\", awful.tag.history.restore),\n    -- }}}\n\n    -- {{{ Layout manipulation\n    awful.key({ modkey }, \"l\",          function () awful.tag.incmwfact( 0.05) end),\n    awful.key({ modkey }, \"h\",          function () awful.tag.incmwfact(-0.05) end),\n    awful.key({ modkey, \"Shift\" }, \"l\", function () awful.client.incwfact(-0.05) end),\n    awful.key({ modkey, \"Shift\" }, \"h\", function () awful.client.incwfact( 0.05) end),\n    awful.key({ modkey, \"Shift\" }, \"space\", function () awful.layout.inc(layouts, -1) end),\n    awful.key({ modkey },          \"space\", function () awful.layout.inc(layouts,  1) end),\n    -- }}}\n\n    -- {{{ Focus controls\n    awful.key({ modkey }, \"p\", function () awful.screen.focus_relative(1) end),\n    awful.key({ modkey }, \"s\", function () scratch.pad.toggle() end),\n    awful.key({ modkey }, \"u\", awful.client.urgent.jumpto),\n    awful.key({ modkey }, \"j\", function ()\n        awful.client.focus.byidx(1)\n        if client.focus then client.focus:raise() end\n    end),\n    awful.key({ modkey }, \"k\", function ()\n        awful.client.focus.byidx(-1)\n        if client.focus then client.focus:raise() end\n    end),\n    awful.key({ modkey }, \"Tab\", function ()\n        awful.client.focus.history.previous()\n        if client.focus then client.focus:raise() end\n    end),\n    awful.key({ altkey }, \"Escape\", function ()\n        awful.menu.menu_keys.down = { \"Down\", \"Alt_L\" }\n        local cmenu = awful.menu.clients({theme = {width=230}}, { keygrabber=true, coords={x=525, y=330} })\n    end),\n    awful.key({ modkey, \"Shift\" }, \"j\", function () awful.client.swap.byidx(1)  end),\n    awful.key({ modkey, \"Shift\" }, \"k\", function () awful.client.swap.byidx(-1) end)\n    -- }}}\n)\n\n-- }}}\n\n-- {{{ Client manipulation\nclientkeys = awful.util.table.join(\n    awful.key({ modkey }, \"c\", function (c) c:kill() end),\n    awful.key({ modkey }, \"d\", function (c) scratch.pad.set(c, 0.60, 0.60, true) end),\n    awful.key({ modkey }, \"f\", function (c) c.fullscreen = not c.fullscreen end),\n    awful.key({ modkey }, \"m\", function (c)\n        c.maximized_horizontal = not c.maximized_horizontal\n        c.maximized_vertical   = not c.maximized_vertical\n    end),\n    awful.key({ modkey }, \"o\",     awful.client.movetoscreen),\n    awful.key({ modkey }, \"Next\",  function () awful.client.moveresize( 20,  20, -40, -40) end),\n    awful.key({ modkey }, \"Prior\", function () awful.client.moveresize(-20, -20,  40,  40) end),\n    awful.key({ modkey }, \"Down\",  function () awful.client.moveresize(  0,  20,   0,   0) end),\n    awful.key({ modkey }, \"Up\",    function () awful.client.moveresize(  0, -20,   0,   0) end),\n    awful.key({ modkey }, \"Left\",  function () awful.client.moveresize(-20,   0,   0,   0) end),\n    awful.key({ modkey }, \"Right\", function () awful.client.moveresize( 20,   0,   0,   0) end),\n    awful.key({ modkey, \"Control\"},\"r\", function (c) c:redraw() end),\n    awful.key({ modkey, \"Shift\" }, \"0\", function (c) c.sticky = not c.sticky end),\n    awful.key({ modkey, \"Shift\" }, \"m\", function (c) c:swap(awful.client.getmaster()) end),\n    awful.key({ modkey, \"Shift\" }, \"c\", function (c) exec(\"kill -CONT \" .. c.pid) end),\n    awful.key({ modkey, \"Shift\" }, \"s\", function (c) exec(\"kill -STOP \" .. c.pid) end),\n    awful.key({ modkey, \"Shift\" }, \"t\", function (c)\n        if   c.titlebar then awful.titlebar.remove(c)\n        else awful.titlebar.add(c, { modkey = modkey }) end\n    end),\n    awful.key({ modkey, \"Shift\" }, \"f\", function (c) if awful.client.floating.get(c)\n        then awful.client.floating.delete(c);    awful.titlebar.remove(c)\n        else awful.client.floating.set(c, true); awful.titlebar.add(c) end\n    end)\n)\n-- }}}\n\n-- {{{ Keyboard digits\nlocal keynumber = 0\nfor s = 1, scount do\n   keynumber = math.min(9, math.max(#tags[s], keynumber));\nend\n-- }}}\n\n-- {{{ Tag controls\nfor i = 1, keynumber do\n    globalkeys = awful.util.table.join( globalkeys,\n        awful.key({ modkey }, \"#\" .. i + 9, function ()\n            local screen = mouse.screen\n            if tags[screen][i] then awful.tag.viewonly(tags[screen][i]) end\n        end),\n        awful.key({ modkey, \"Control\" }, \"#\" .. i + 9, function ()\n            local screen = mouse.screen\n            if tags[screen][i] then awful.tag.viewtoggle(tags[screen][i]) end\n        end),\n        awful.key({ modkey, \"Shift\" }, \"#\" .. i + 9, function ()\n            if client.focus and tags[client.focus.screen][i] then\n                awful.client.movetotag(tags[client.focus.screen][i])\n            end\n        end),\n        awful.key({ modkey, \"Control\", \"Shift\" }, \"#\" .. i + 9, function ()\n            if client.focus and tags[client.focus.screen][i] then\n                awful.client.toggletag(tags[client.focus.screen][i])\n            end\n        end))\nend\n-- }}}\n\n-- Set keys\nroot.keys(globalkeys)\n-- }}}\n\n\n-- {{{ Rules\nawful.rules.rules = {    { rule = { }, properties = {\n      focus = true,      size_hints_honor = false,\n      keys = clientkeys, buttons = clientbuttons,\n      border_width = beautiful.border_width,\n      border_color = beautiful.border_normal }\n    },\n    { rule = { class = \"Chromium-browser\"},\n      properties = { tag = tags[1][3] , switchtotag = true } },\n    { rule = { class = \"Subl\" },\n      properties = { tag = tags[1][2] } },\n    { rule = { class = \"Thunderbird\" },\n      properties = { tag = tags[1][8] } }, \n    { rule = { class = \"Totem\" },\n      properties = { tag = tags[1][9] } },\n    -- { rule = { class = \"Skype\" },\n      -- properties = { tag = tags[2][7], switchtotag = true } },\n    -- { rule = { class = \"Pidgin\" },\n      -- properties = { tag = tags[2][7] } },\n    { rule = { class = \"Konversation\" },\n      properties = { tag = tags[1][7] } },  \n    -- { rule = { class = \"Emacs\",    instance = \"_Remember_\" },\n    --   properties = { floating = true }, callback = awful.titlebar.add  },\n    -- { rule = { class = \"Xmessage\", instance = \"xmessage\" },\n    --   properties = { floating = true }, callback = awful.titlebar.add  },\n    -- { rule = { instance = \"plugin-container\" },\n    --   properties = { floating = true }, callback = awful.titlebar.add  },\n    -- { rule = { class = \"Akregator\" },   properties = { tag = tags[scount][8]}},\n    -- { rule = { name  = \"Alpine\" },      properties = { tag = tags[1][4]} },\n    -- { rule = { class = \"Gajim\" },       properties = { tag = tags[1][5]} },\n    -- { rule = { class = \"Ark\" },         properties = { floating = true } },\n    -- { rule = { class = \"Geeqie\" },      properties = { floating = true } },\n    -- { rule = { class = \"ROX-Filer\" },   properties = { floating = true } },\n    -- { rule = { class = \"Pinentry.*\" },  properties = { floating = true } },\n}\n-- }}}\n\n\n-- {{{ Signals\n--\n-- {{{ Manage signal handler\nclient.add_signal(\"manage\", function (c, startup)\n    -- Add titlebar to floaters, but remove those from rule callback\n    if awful.client.floating.get(c)\n    or awful.layout.get(c.screen) == awful.layout.suit.floating then\n        if   c.titlebar then awful.titlebar.remove(c)\n        else awful.titlebar.add(c, {modkey = modkey}) end\n    end\n\n    -- Enable sloppy focus\n    c:add_signal(\"mouse::enter\", function (c)\n        if  awful.layout.get(c.screen) ~= awful.layout.suit.magnifier\n        and awful.client.focus.filter(c) then\n            client.focus = c\n        end\n    end)\n\n    -- Client placement\n    if not startup then\n        awful.client.setslave(c)\n\n        if  not c.size_hints.program_position\n        and not c.size_hints.user_position then\n            awful.placement.no_overlap(c)\n            awful.placement.no_offscreen(c)\n        end\n    end\nend)\n-- }}}\n\n-- {{{ Focus signal handlers\nclient.add_signal(\"focus\",   function (c) c.border_color = beautiful.border_focus  end)\nclient.add_signal(\"unfocus\", function (c) c.border_color = beautiful.border_normal end)\n-- }}}\n\n-- {{{ Arrange signal handler\nfor s = 1, scount do screen[s]:add_signal(\"arrange\", function ()\n    local clients = awful.client.visible(s)\n    local layout = awful.layout.getname(awful.layout.get(s))\n\n    for _, c in pairs(clients) do -- Floaters are always on top\n        if   awful.client.floating.get(c) or layout == \"floating\"\n        then if not c.fullscreen then c.above       =  true  end\n        else                          c.above       =  false end\n    end\n  end)\nend\n-- }}}\n-- }}}\n\n--awful.util.spawn(\"chromium-browser\")\n--awful.util.spawn(\"subl\")\n--awful.util.spawn(\"thunderbird\")\n--awful.util.spawn(\"skype\")\n--awful.util.spawn(\"pidgin\")\n",
-			"file": "/home/nhrjr/.config/awesome/rc.lua",
-			"file_size": 20261,
-			"file_write_time": 130478992370521926,
-			"settings":
-			{
-				"buffer_size": 20261,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/plot_with_mgl.h",
-			"settings":
-			{
-				"buffer_size": 3380,
+				"buffer_size": 469,
 				"line_ending": "Unix"
 			}
 		},
@@ -619,10 +608,18 @@
 			}
 		},
 		{
+			"file": "exp_utilities/plot_with_mgl.h",
+			"settings":
+			{
+				"buffer_size": 3380,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "results/run.cfg",
 			"settings":
 			{
-				"buffer_size": 861,
+				"buffer_size": 862,
 				"line_ending": "Unix"
 			}
 		},
@@ -808,15 +805,16 @@
 	},
 	"file_history":
 	[
-		"/home/nhrjr/.config/sublime-text-3/Packages/User/Colorsublime.sublime-settings",
+		"/etc/mailcap",
 		"/home/nhrjr/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/nhrjr/.config/awesome/rc.lua",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/Colorsublime.sublime-settings",
 		"/home/nhrjr/.config/sublime-text-3/Packages/Solarized Toggle/SolarizedToggle.sublime-settings",
 		"/home/nhrjr/.config/sublime-text-3/Packages/User/SolarizedToggle.sublime-settings",
 		"/home/nhrjr/projects/expandingvortexgas2d/observables/bh3observables.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/observables/bh3observables.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/utilities/realgrid.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/utilities/realgrid.cpp",
-		"/home/nhrjr/.config/awesome/rc.lua",
 		"/etc/X11/xorg.conf",
 		"/var/log/Xorg.0.log",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_itp.cpp",
@@ -934,8 +932,7 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_defaultgrid.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_defaultgrid.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/exp_binaryfile.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3propagator.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3propagator.h"
+		"/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3propagator.cpp"
 	],
 	"find":
 	{
@@ -953,6 +950,11 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"webbrowser-app",
+			"http",
+			"menu",
+			"cmenu",
+			"4",
 			"radius",
 			"restart",
 			"Coordinate",
@@ -1075,12 +1077,7 @@
 			"mPsi",
 			".at",
 			"z",
-			" KeeperOfTime.absoluteSteps)",
-			"rotValue",
-			"- 0",
-			"1",
-			"particle_count",
-			"Evaluation"
+			" KeeperOfTime.absoluteSteps)"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1114,8 +1111,8 @@
 						"selection":
 						[
 							[
-								2048,
-								2048
+								2349,
+								2349
 							]
 						],
 						"settings":
@@ -1123,38 +1120,6 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1163,24 +1128,135 @@
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
-								"bh_round_close"
+								"bh_round_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 679.0,
+						"translation.y": 904.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "startgrids/bh3defaultgrid.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 22634,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11340,
+								11340
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"syntax_mgr_loaded": true,
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5544.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "exp_utilities/EXP2D_itp.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1201,50 +1277,50 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close"
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
@@ -1254,11 +1330,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
 					"file": "exp_utilities/main.h",
 					"semi_transient": false,
 					"settings":
@@ -1335,7 +1411,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 4,
 					"file": "exp_utilities/EXP2D_tools.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1409,11 +1485,11 @@
 						"translation.y": 450.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 5,
 					"file": "utilities/coordinate.h",
 					"semi_transient": false,
 					"settings":
@@ -1487,11 +1563,11 @@
 						"translation.y": 1557.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 6,
 					"file": "exp_utilities/EXP2D_observables.h",
 					"semi_transient": false,
 					"settings":
@@ -1566,11 +1642,11 @@
 						"translation.y": 225.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 7,
 					"file": "exp_utilities/EXP2D_evaluation.h",
 					"semi_transient": false,
 					"settings":
@@ -1644,102 +1720,24 @@
 						"translation.y": 791.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "exp_utilities/EXP2D_evaluation.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 21883,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5287,
-								5287
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1893.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
 					"buffer": 8,
-					"file": "/home/nhrjr/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+					"file": "exp_utilities/EXP2D_evaluation.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 124,
+						"buffer_size": 22117,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								113,
-								113
+								7450,
+								7450
 							]
 						],
 						"settings":
@@ -1751,10 +1749,10 @@
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
@@ -1763,186 +1761,30 @@
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close"
-							],
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
-							"syntax_mgr_loaded": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "/home/nhrjr/.config/awesome/rc.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 20261,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								11304,
-								11304
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
 								"bh_tag",
 								"bh_tag_center",
 								"bh_tag_open",
 								"bh_tag_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close"
-							],
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4635.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "exp_utilities/plot_with_mgl.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3380,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2448,
-								2448
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
@@ -1950,18 +1792,94 @@
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 468.0,
+						"translation.y": 2910.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 9,
+					"file": "/etc/mailcap.order",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 469,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								469,
+								469
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close"
+							],
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax_mgr_loaded": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
 					"file": "exp_utilities/plot_with_mgl.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1982,60 +1900,139 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
-								"bh_curly_close"
+								"bh_curly_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1727.0,
+						"translation.y": 917.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "exp_utilities/plot_with_mgl.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3380,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2448,
+								2448
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"syntax_mgr_loaded": true,
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 468.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -2044,15 +2041,19 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 861,
+						"buffer_size": 862,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								207,
-								207
+								343,
+								343
+							],
+							[
+								387,
+								387
 							]
 						],
 						"settings":
@@ -2060,46 +2061,50 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
-								"bh_angle_close"
+								"bh_angle_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
 							],
 							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"syntax_mgr_loaded": true,
@@ -2109,7 +2114,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -2221,7 +2226,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 334.0
+		"height": 187.0
 	},
 	"output.find_results":
 	{

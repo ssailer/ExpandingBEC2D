@@ -17,7 +17,7 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length, volume, density;
+        double Ekin, particle_count, healing_length, volume, density, aspectRatio;
         ArrayXd number;
         ArrayXd k;
         ArrayXd angularDensity;
@@ -76,6 +76,7 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.particle_count = particle_count + a.particle_count;
     ret.healing_length = healing_length + a.healing_length; 
     ret.Ekin = Ekin + a.Ekin;
+    ret.aspectRatio = aspectRatio + a.aspectRatio;
     ret.density = density + a.density;
     ret.number = number + a.number; 
     ret.k = k + a.k;
@@ -92,6 +93,7 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.particle_count = particle_count - a.particle_count;
     ret.healing_length = healing_length - a.healing_length;     
     ret.Ekin = Ekin - a.Ekin;
+     ret.aspectRatio = aspectRatio - a.aspectRatio;
     ret.density = density - a.density;
     ret.number = number - a.number; 
     ret.k = k - a.k;
@@ -108,6 +110,7 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.particle_count = particle_count * a.particle_count;
     ret.healing_length = healing_length * a.healing_length;     
     ret.Ekin = Ekin * a.Ekin;
+     ret.aspectRatio = aspectRatio * a.aspectRatio;
     ret.density = density * a.density;
     ret.number = number * a.number; 
     ret.k = k * a.k;
@@ -124,6 +127,7 @@ inline Observables Observables::operator* (double d) const
     ret.particle_count = particle_count * d;
     ret.healing_length = healing_length * d;    
     ret.Ekin = Ekin * d;
+     ret.aspectRatio = aspectRatio * d;
     ret.density = density * d;
     ret.number = number * d;    
     ret.k = k * d;
@@ -140,6 +144,7 @@ inline Observables Observables::operator/ (double d) const
     ret.particle_count = particle_count / d;
     ret.healing_length = healing_length / d;    
     ret.Ekin = Ekin / d;
+    ret.aspectRatio = aspectRatio / d;
     ret.density = density / d;
     ret.number = number / d;    
     ret.k = k / d;
