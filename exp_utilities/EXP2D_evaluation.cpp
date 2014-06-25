@@ -417,27 +417,37 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 
 	std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
 
-	vector<double> cRadius(360);
-	vector<int> divisor_counter(360);
+	vector<double> cRadius(361);
+	vector<int> divisor_counter(361);
 	for(vector<contourData>::iterator it = cData.begin(); it != cData.end(); ++it){
-		int index = (int)(it->phi);
+		int index = round(it->phi);
 		cRadius[index] += it->r;
 		divisor_counter[index]++;
 	}
+	cRadius.erase(cRadius.begin());
+	divisor_counter.erase(divisor_counter.begin());
+	// cRadius[0] += cRadius[360]; cRadius.pop_back();
+	// divisor_counter[0] += cRadius[360]; divisor_counter.pop_back();
 
 	for(int i = 0; i < 360; i++){
 		if(divisor_counter[i] == 0){
 			divisor_counter[i] = 1;
 		}
+
 		cRadius[i] /= divisor_counter[i];
 	}
 
 	vector<double> cDistance(180);
 	for(int i = 0; i < 180; i++){
-		cDistance[i] = abs(cRadius[i] - cRadius[i+180]);
+		cDistance[i] = fabs(cRadius[i] - cRadius[i+180]);
 	}
-
-	obs.aspectRatio = cDistance[0] / cDistance[90]; // zwischen 0 und 90 grad, also effektiv x und y richtung
+	double tmp_ratio = 0;
+	for(int i = 0; i < 89; i++){
+		double tmp1 = cDistance[i] / cDistance[i+90];
+		double tmp2 = cDistance[i+1] / cDistance[i+91];
+		tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
+	}
+	obs.aspectRatio = tmp_ratio; // zwischen 0 und 90 grad, also effektiv x und y richtung
 	// FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
 
 	// == Angular Density

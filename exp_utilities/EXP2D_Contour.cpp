@@ -122,6 +122,8 @@ c_set Contour::trackContour(const RealGrid &data){
 	bool stop = false;
 	cout << endl;
 	do{
+		cout << "\r" << flush;
+		cout << initial[0] << " | " << initial[1] << " | " << p << " | " << s << " | " << insert_counter << " ";
 		
 		while(counter < 8){
 			Coordinate<int32_t> c = nextClockwise(s,direction);
@@ -140,11 +142,14 @@ c_set Contour::trackContour(const RealGrid &data){
 			}
 			s = c;
 			direction = (direction+1)%8;
+
 		}
 		counter = 0;
 
 		if(singlepoint == true){
-			cout << "Found single point, continuing the search." << endl;
+			cout << endl << "Found single point, continuing the search." << endl;
+			string name = "singlepoint" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_"+ to_string(p.y());
+			plotContourSurround(name, data,contour,opt);
 			contour.clear();			
 			s = p;
 			p = p + v_right;			
@@ -156,25 +161,29 @@ c_set Contour::trackContour(const RealGrid &data){
 
 		}
 
-		// if(insert_counter >= 2 * contour.size()){
-		// 	cout << "Surrounded the contour two times. Searching new contour." << endl;
-		// 	findMostRightP(contour,p);
-		// 	s = p;
-		// 	p = p + v_right;
-		// 	contour.clear();
-		// 	findInitialP(data,p,s,initial);
-		// 	contour.insert(p);
-		// 	insert_counter = 1;			
-		// }
+		if(insert_counter >= 2 * contour.size()){
+			cout << "Surrounded the contour two times. Searching new contour." << endl;
+			string name = "twotimes" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_"+ to_string(p.y());
+			plotContourSurround(name, data,contour,opt);
+			findMostRightP(contour,p);
+			s = p;
+			p = p + v_right;
+			contour.clear();
+			findInitialP(data,p,s,initial);
+			contour.insert(p);
+			insert_counter = 1;			
+		}
 
 		int size_condition = (data.width()/2 - p.x()) * 2 * M_PI * 0.9; // Circumference of a circle going through p, 90%
 		if(insert_counter > size_condition){
 			if((initial[0] == p) && (initial[1] == s)){
-				cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
+				cout << endl << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
 				stop = true;
 			}
 		}else if((initial[0] == p) && (initial[1] == s)){
-			cout << "Found intial conditions with small contour. Size:" << contour.size() << " Searching new contour." << endl;
+			cout << endl << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour." << endl;
+			string name = "toosmall" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_"+ to_string(p.y());
+			plotContourSurround(name, data,contour,opt);
 			findMostRightP(contour,p);
 			s = p;
 			p = p + v_right;

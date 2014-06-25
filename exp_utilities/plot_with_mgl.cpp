@@ -161,6 +161,78 @@ void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<in
 
 }
 
+void plotContourSurround(string name, const RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
+
+	int size = contour.size();
+
+	
+	mglData v_x(size);
+	mglData v_y(size);
+
+	int l = 0;
+	int x_max = 0; 
+	int y_max = 0;
+	int x_min = opt.grid[1];
+	int y_min = opt.grid[2];
+	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){
+		v_x.a[l] = it->x();
+		v_y.a[l] = it->y();
+		l++;
+		x_max = (it->x() > x_max) ? it->x() : x_max;
+		y_max = (it->y() > y_max) ? it->y() : y_max;
+		x_min = (it->x() < x_min) ? it->x() : x_min;
+		y_min = (it->y() < y_min) ? it->y() : y_min;
+	}
+
+	cout << "Plot: " << name << " with " << x_min << " " << y_min << " | " << x_max << " " << y_max << endl;
+
+	int n = x_max;
+	int m = y_max;
+	// mglData densData(n,m);
+
+	int i,j,k;
+
+	vector<int> dens_x;
+	vector<int> dens_y;
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		if(Psi(0,i+x_min,j+y_min,0) == 1){
+			dens_x.push_back(i+x_min);
+			dens_y.push_back(j+y_min);
+		}
+	}
+
+	mglData densX(dens_x.size());
+	mglData densY(dens_y.size());
+	for(i = 0; i < dens_x.size(); i ++){
+		densX.a[i] = dens_x[i];
+		densY.a[i] = dens_x[i];
+	}
+
+	mglGraph gr;
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(name.c_str());
+
+	// gr.SetRange('x',-opt.min_x,opt.min_x);
+	// gr.SetRange('y',-opt.min_y,opt.min_y);
+	// gr.SetRange('z',densData);
+	// gr.SetRange('c',densData);
+	gr.SetRange('x',densX);
+	gr.SetRange('y',densY);
+
+	gr.Axis();
+	// gr.Colorbar();
+	// gr.Plot(densData," ");
+	gr.Plot(densX,densY," .");
+	gr.Plot(v_x,v_y," #xk");
+
+	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
 void plotdatatopng(string filename,ComplexGrid* &g,Options &opt)
 {
 	
