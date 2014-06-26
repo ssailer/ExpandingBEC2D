@@ -76,7 +76,7 @@ inline Coordinate<int32_t> Contour::nextClockwise(Coordinate<int32_t> &s, int32_
 	return c; 
 }
 
-inline void Contour::findInitialP(const RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial){
+inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial){
 
 	Coordinate<int32_t> tmp = p;
 
@@ -102,7 +102,7 @@ inline void Contour::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
 	p = *max_it;
 }
 
-c_set Contour::trackContour(const RealGrid &data){
+c_set Contour::trackContour(RealGrid &data){
 
 	c_set contour;
 	// c_set::iterator it;
@@ -121,6 +121,12 @@ c_set Contour::trackContour(const RealGrid &data){
 	bool singlepoint = false;
 	bool stop = false;
 	cout << endl;
+	cout << "Test1: " << endl;
+	string name2 = "Test1";
+	string name3 = "Test2";
+	plotdatatopng(name3,data,opt);
+	plotContourSurround(name2,data,contour,opt);
+
 	do{
 		cout << "\r" << flush;
 		cout << initial[0] << " | " << initial[1] << " | " << p << " | " << s << " | " << insert_counter << " ";
@@ -148,7 +154,7 @@ c_set Contour::trackContour(const RealGrid &data){
 
 		if(singlepoint == true){
 			cout << endl << "Found single point, continuing the search." << endl;
-			string name = "singlepoint" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_"+ to_string(p.y());
+			string name = "singlepoint" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
 			plotContourSurround(name, data,contour,opt);
 			contour.clear();			
 			s = p;
@@ -163,7 +169,7 @@ c_set Contour::trackContour(const RealGrid &data){
 
 		if(insert_counter >= 2 * contour.size()){
 			cout << "Surrounded the contour two times. Searching new contour." << endl;
-			string name = "twotimes" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_"+ to_string(p.y());
+			string name = "twotimes" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
 			plotContourSurround(name, data,contour,opt);
 			findMostRightP(contour,p);
 			s = p;

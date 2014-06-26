@@ -161,54 +161,60 @@ void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<in
 
 }
 
-void plotContourSurround(string name, const RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
+void plotContourSurround(string name, RealGrid Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
 
 	int size = contour.size();
 
-	
+	cout << "point 1"<< endl;
 	mglData v_x(size);
 	mglData v_y(size);
 
 	int l = 0;
-	int x_max = 0; 
-	int y_max = 0;
-	int x_min = opt.grid[1];
-	int y_min = opt.grid[2];
+	// int x_max = 0; 
+	// int y_max = 0;
+	// int x_min = opt.grid[1];
+	// int y_min = opt.grid[2];
 	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){
 		v_x.a[l] = it->x();
 		v_y.a[l] = it->y();
 		l++;
-		x_max = (it->x() > x_max) ? it->x() : x_max;
-		y_max = (it->y() > y_max) ? it->y() : y_max;
-		x_min = (it->x() < x_min) ? it->x() : x_min;
-		y_min = (it->y() < y_min) ? it->y() : y_min;
+		// x_max = (it->x() > x_max) ? it->x() : x_max;
+		// y_max = (it->y() > y_max) ? it->y() : y_max;
+		// x_min = (it->x() < x_min) ? it->x() : x_min;
+		// y_min = (it->y() < y_min) ? it->y() : y_min;
 	}
 
-	cout << "Plot: " << name << " with " << x_min << " " << y_min << " | " << x_max << " " << y_max << endl;
+		cout << "point 2"<< endl;
 
-	int n = x_max;
-	int m = y_max;
-	// mglData densData(n,m);
-
-	int i,j,k;
-
+	int x_max = opt.grid[1]-5;
+	int x_min = 5;
+	int y_max = opt.grid[2]-5;
+	int y_min = 5;
 	vector<int> dens_x;
 	vector<int> dens_y;
 
-	for(i=0;i<n;i++) for(j=0;j<m;j++)
-	{	
-		if(Psi(0,i+x_min,j+y_min,0) == 1){
-			dens_x.push_back(i+x_min);
-			dens_y.push_back(j+y_min);
+		cout << "point 3"<< endl;
+
+	for(int i = 0; i < opt.grid[1]; i++){
+	 	for(int j = 0; j < opt.grid[2]; j++){	
+			if(Psi(0,i,j,0) > 0){
+				dens_x.push_back(i);
+				dens_y.push_back(j);
+			}
 		}
 	}
 
+		cout << "point 4"<< endl;
+
 	mglData densX(dens_x.size());
 	mglData densY(dens_y.size());
-	for(i = 0; i < dens_x.size(); i ++){
+	for(int i = 0; i < dens_x.size(); i++){
 		densX.a[i] = dens_x[i];
 		densY.a[i] = dens_x[i];
+		// cout << "Density: " << densX.a[i] << " " << densY.a[i] << endl;
 	}
+
+		cout << "point 5"<< endl;
 
 	mglGraph gr;
 
@@ -226,8 +232,8 @@ void plotContourSurround(string name, const RealGrid &Psi, std::unordered_set<Co
 	gr.Axis();
 	// gr.Colorbar();
 	// gr.Plot(densData," ");
-	gr.Plot(densX,densY," .");
-	gr.Plot(v_x,v_y," #xk");
+	gr.Plot(densX,densY," #.r");
+	// gr.Plot(v_x,v_y," #.b");
 
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 
@@ -403,7 +409,7 @@ void plotdatatopng(string filename,ComplexGrid &g,Options &opt)
 
 }
 
-void plotdatatopng(string filename,RealGrid &g,Options &opt){
+void plotdatatopng(string filename,RealGrid g,Options &opt){
 
 	int n = opt.grid[1];
 	int m = opt.grid[2];
