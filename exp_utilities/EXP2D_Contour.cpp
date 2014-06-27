@@ -3,7 +3,7 @@
 using namespace std;
 
 Contour::Contour(Options &external_opt){
-	Options opt = external_opt;
+	opt = external_opt;
 	v_down = Vector<int32_t>(0,-1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
 	v_right = Vector<int32_t>(1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
 	v_up = Vector<int32_t>(0,1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -123,8 +123,8 @@ c_set Contour::trackContour(RealGrid &data){
 	cout << endl;
 	cout << "Test1: " << endl;
 	string name2 = "Test1";
-	string name3 = "Test2";
-	plotdatatopng(name3,data,opt);
+	// string name3 = "Test2";
+	// plotdatatopng(name3,data,opt);
 	plotContourSurround(name2,data,contour,opt);
 
 	do{

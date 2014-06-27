@@ -63,7 +63,7 @@ inline Observables::Observables(int avgrid) :
         k(avgrid),
         angularDensity(360)
 {
-    Ekin = particle_count = healing_length = volume = density = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = 0.0;
     number.setZero();
     k.setZero();
     angularDensity.setZero();

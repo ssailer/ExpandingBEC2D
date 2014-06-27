@@ -78,7 +78,7 @@ private:
 	int densityCounter;
 
 	// doing functinos
-	Observables calculator(ComplexGrid data,int sampleindex);
+	Observables calculator(ComplexGrid &data,int sampleindex);
 	void getVortices(const ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates);
 	void getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
 	

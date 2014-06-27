@@ -377,7 +377,7 @@ void Eval::getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_loca
 	// }
 }
 
-Observables Eval::calculator(ComplexGrid data,int sampleindex){
+Observables Eval::calculator(ComplexGrid &data,int sampleindex){
 	
 	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 	// R-Space
