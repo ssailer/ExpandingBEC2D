@@ -78,14 +78,14 @@ private:
 	int densityCounter;
 
 	// doing functinos
-	Observables calculator(ComplexGrid &data,int sampleindex);
-	void getVortices(const ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates);
-	void getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
+	Observables calculator(ComplexGrid data,int sampleindex);
+	void getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates);
+	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
 	
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase);
-	void find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
-	void calc_fields(const ComplexGrid &data, Options &opt);
+	void find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
+	void calc_fields(ComplexGrid &data, Options &opt);
 
 	// Contour Tracking Algorithm
 

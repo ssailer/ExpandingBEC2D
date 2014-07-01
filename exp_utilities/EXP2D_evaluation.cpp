@@ -28,6 +28,7 @@ void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &ext
 				}
 			}
 		}
+
 }
 
 void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snapshot_time,string external_runname){
@@ -63,7 +64,7 @@ void Eval::evaluateData(){
 	for(int k = 0; k < PsiVec.size(); k++){
 		cout << endl << "Eval #" << k << endl;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
-		contour[k] = tracker.trackContour(densityLocationMap[k]);						
+		contour[k] = tracker.trackContour(densityLocationMap[k]);
 		totalResult += calculator(PsiVec[k],k);		
 	}	
 	getVortices(PsiVec[0],densityCoordinates[0]);
@@ -118,14 +119,14 @@ void Eval::plotData(){
 	datafile.close();
 }
 
-void Eval::getVortices(const ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates){
+void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates){
 	
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
 	
 	calc_fields(data,opt);
 	pres.vlist.clear();
-	find_vortices(phase,zeros,densityCoordinates,pres.vlist);
+	find_vortices(densityCoordinates,pres.vlist);
 
 
 
@@ -160,7 +161,7 @@ int Eval::get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v,
 // 	}
 // }
 
-void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) {
+void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) {
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
@@ -244,7 +245,7 @@ void Eval::find_vortices(const RealGrid *phase, const RealGrid *zeros, vector<Co
 	}
 }
 
-void Eval::calc_fields(const ComplexGrid &data, Options &opt){
+void Eval::calc_fields(ComplexGrid &data, Options &opt){
 	double zero_threshold = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
@@ -298,7 +299,7 @@ void Eval::calc_fields(const ComplexGrid &data, Options &opt){
 // 	}
 // }
 
-void Eval::getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local){
+void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local){
 	double lower_threshold = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
 	// cout << lower_threshold << "+++" << endl;
@@ -377,7 +378,7 @@ void Eval::getDensity(const ComplexGrid &data, RealGrid &densityLocationMap_loca
 	// }
 }
 
-Observables Eval::calculator(ComplexGrid &data,int sampleindex){
+Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	
 	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 	// R-Space

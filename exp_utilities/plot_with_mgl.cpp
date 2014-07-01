@@ -400,7 +400,7 @@ void plotdatatopng(string filename,ComplexGrid &g,Options &opt)
 
 }
 
-void plotdatatopng(string filename,RealGrid &g,Options &opt){
+void plotdatatopng(string filename,RealGrid g,Options &opt){
 
 	int n = opt.grid[1];
 	int m = opt.grid[2];

@@ -150,15 +150,23 @@ delete eval;
 delete rterun;
 delete data;
 
-// Everything finished here
- 
+// Everything finished here 
 }  // exceptions catcher
-catch(std::exception& e) 
+catch(const std::exception& e) 
 { 
-  std::cerr << "Unhandled Exception reached the top of main: " 
-            << e.what() << ", application will now exit" << std::endl; 
-  return ERROR_UNHANDLED_EXCEPTION; 
-}  
+  	std::cerr << "Unhandled Exception reached the top of main: " 
+    	      << e.what() << ", application will now exit" << std::endl; 
+	return ERROR_UNHANDLED_EXCEPTION; 
+}
+catch (const std::string& errorMessage) 
+{ 
+	std::cout << errorMessage.c_str(); 
+	std::cout << ". Terminating now"; 
+	std::cout << endl; 
+	return ERROR_UNHANDLED_EXCEPTION; 
+// the code could be different depending on the exception message 
+} 
+
 return SUCCESS; 	
 }
 
