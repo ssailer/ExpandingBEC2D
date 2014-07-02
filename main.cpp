@@ -65,12 +65,12 @@ data = set_grid_to_gaussian(data,opt,sigma_real[0],sigma_real[1]);
 // set the datafile identifier name and save the initial grid
 
 opt.name = "INIT";
-plotdatatopng(opt.name,data,opt);
+plotDataToPng(opt.name,data,opt);
 
 // //====> Imaginary Time Propagation (ITP)
 itprun->propagateToGroundState("ITP1");
 opt.name = "ITP1";
-plotdatatopng(opt.name,data,opt);
+plotDataToPng(opt.name,data,opt);
 
 //////////// VORTICES ////////////////
 
@@ -97,7 +97,7 @@ cout << "Vortices added." << endl;
 //====> Imaginary Time Propagation (ITP)
 itprun->formVortices("ITP2");
 opt.name = "ITP2";
-plotdatatopng(opt.name,data,opt);
+plotDataToPng(opt.name,data,opt);
 // saveDataToHDF5(data,opt);
 }
 

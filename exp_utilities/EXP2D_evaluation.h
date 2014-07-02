@@ -38,11 +38,9 @@ public:
 	void evaluateData(); // calculate the observables
 	void plotData(); // plot Results
 
-	// public total Result of Evaluation
+
+	// Observables.h
 	Observables totalResult;
-
-
-
 	PathResults pres;
 
 	

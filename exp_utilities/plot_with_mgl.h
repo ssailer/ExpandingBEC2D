@@ -69,15 +69,15 @@ protected:
     return use_abs? abs(res) : arg(res);  }
 };
 
-void plotspectrum(string name,Observables& eval);
+void plotSpectrum(string name,Observables& eval);
 void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt);
 void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
 void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
-void plotdatatopng(string filename,ComplexGrid* &g,Options &opt);
-void plotdatatopng(string filename,ComplexGrid &g,Options &opt);
-void plotdatatopng(string filename,RealGrid g,Options &opt);
-void plotdatatopngEigen(Eigen::MatrixXcd& mPsi,Options &opt);
-void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt);
+void plotDataToPng(string filename,ComplexGrid* &g,Options &opt);
+void plotDataToPng(string filename,ComplexGrid &g,Options &opt);
+void plotDataToPng(string filename,RealGrid g,Options &opt);
+void plotDataToPngEigen(Eigen::MatrixXcd& mPsi,Options &opt);
+void plotDataToPngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt);
 void plotVector(string filename,vector<double> v,Options &opt);
 void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
 void plotVector(string filename,ArrayXd v,Options &opt);

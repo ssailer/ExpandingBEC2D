@@ -73,13 +73,13 @@ void Eval::evaluateData(){
 
 void Eval::plotData(){
 	string filename = runname + "-Spectrum-" + to_string(snapshot_time); 
-	plotspectrum(filename,totalResult);
+	plotSpectrum(filename,totalResult);
 	filename = runname + "-Vortices-" + to_string(snapshot_time);
 	plotVortexList(filename,phase,pres,opt);	
 	filename = runname + "-Control-Plot-" + to_string(snapshot_time);
-	plotdatatopng(filename,PsiVec[0],opt);
+	plotDataToPng(filename,PsiVec[0],opt);
 	filename = runname + "-Density-" + to_string(snapshot_time);
-	plotdatatopng(filename,densityLocationMap[0],opt);
+	plotDataToPng(filename,densityLocationMap[0],opt);
 	filename = runname + "-Density-Axial-Distribution-Gradient" + to_string(snapshot_time);
 	plotVector(filename,x_dist_grad,y_dist_grad,opt);
 	filename = runname + "-Angular-Dens" + to_string(snapshot_time);
@@ -235,26 +235,25 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 		it->surroundDens = sum;
 	}
 
-	// This Number is set at the start, maybe set this in run.cfg -> Options struct
-	int numberOfVortices = 4;
+	// This Number is set at the start, maybe set this in run.cfg -> Options struct, or check how many got set inside the contour, if equal spacing vortices are used.
+	const int NUMBER_OF_VORTICES = 4;
 	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
-	if(vlist.size() > numberOfVortices){
+	if(vlist.size() > NUMBER_OF_VORTICES){
 		list<VortexData>::iterator it1 = vlist.begin();
-		advance(it1,numberOfVortices);
+		advance(it1,NUMBER_OF_VORTICES);
 		vlist.erase(it1,vlist.end());
 	}
 }
 
 void Eval::calc_fields(ComplexGrid &data, Options &opt){
-	double zero_threshold = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
+	const double ZERO_THRESHOLD = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)
 		{
 			for(int z = 0; z < data.depth(); z++)
 			{
-				phase->at(0,x,y,z) = arg(data(0,x,y,z));
-				if(abs2(data(0,x,y,z)) < zero_threshold)
+				if(abs2(data(0,x,y,z)) < ZERO_THRESHOLD)
 					zeros->at(0,x,y,z) = 0.0;
 				else
 					zeros->at(0,x,y,z) = 1.0;
@@ -300,9 +299,9 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 // }
 
 void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local){
-	double lower_threshold = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	const double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
-	// cout << lower_threshold << "+++" << endl;
+	// cout << LOWER_THRESHOLD << "+++" << endl;
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
@@ -314,7 +313,7 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 	densityCoordinates_local.clear();
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
-	    	if((abs2(data(0,i,j,0)) > lower_threshold)){
+	    	if((abs2(data(0,i,j,0)) > LOWER_THRESHOLD)){
 				densityLocationMap_local(0,i,j,0) = 1.;
 				densityCoordinates_local.push_back(data.make_coord(i,j,0));
 				densityCounter++;
@@ -399,11 +398,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	}
 	obs.density = obs.particle_count / obs.volume;
 
-	// cout << "Testmethods: " << obs.volume << "  " << obs.particle_count << "  " << obs.density << endl;
-	
 	// Aspect-Ratio
-
-
 	vector<contourData> cData;
 
 	for(c_set::iterator it = contour[sampleindex].begin(); it != contour[sampleindex].end(); ++it){
@@ -425,10 +420,10 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		cRadius[index] += it->r;
 		divisor_counter[index]++;
 	}
-	cRadius.erase(cRadius.begin());
-	divisor_counter.erase(divisor_counter.begin());
-	// cRadius[0] += cRadius[360]; cRadius.pop_back();
-	// divisor_counter[0] += cRadius[360]; divisor_counter.pop_back();
+	// cRadius.erase(cRadius.begin());
+	// divisor_counter.erase(divisor_counter.begin());
+	cRadius[0] += cRadius[360]; cRadius.pop_back();
+	divisor_counter[0] += cRadius[360]; divisor_counter.pop_back();
 
 	for(int i = 0; i < 360; i++){
 		if(divisor_counter[i] == 0){
@@ -438,9 +433,12 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		cRadius[i] /= divisor_counter[i];
 	}
 
+	// string name = "cRadius_" + to_string(sampleindex) + "_" + to_string(sampleindex);
+	// plotVector(name,cRadius,opt);
+
 	vector<double> cDistance(180);
 	for(int i = 0; i < 180; i++){
-		cDistance[i] = fabs(cRadius[i] - cRadius[i+180]);
+		cDistance[i] = fabs(cRadius[i] + cRadius[i+180]);
 	}
 	double tmp_ratio = 0;
 	for(int i = 0; i < 89; i++){

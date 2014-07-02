@@ -139,7 +139,6 @@ c_set Contour::trackContour(RealGrid &data){
 				setDirection(direction);
 				contour.insert(p);
 				insert_counter++;
-
 				break;
 			}
 			
@@ -154,7 +153,7 @@ c_set Contour::trackContour(RealGrid &data){
 		}
 
 		if(singlepoint == true){
-			cout << endl << "Found single point, continuing the search. " << p << endl;
+			// cout << "Found single point, continuing the search. " << p << endl;
 			// string name = "Single point." + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
 			// plotContourSurround(name, data,contour,opt);
 			s = p;
@@ -171,13 +170,13 @@ c_set Contour::trackContour(RealGrid &data){
 			int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * 0.9; // Circumference of a circle going through p, 90%
 			if(contour.size() > size_condition){
 				if((initial[0] == p) && (initial[1] == s)){
-					cout << endl << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
+					cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
 					stop = true;
 				}
 			}else if((initial[0] == p) && (initial[1] == s)){
-				cout << endl << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
-				string name = "-1-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
-				plotContourSurround(name, data,contour,opt);
+				// cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
+				// string name = "-1-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
+				// plotContourSurround(name, data,contour,opt);
 				findMostRightP(contour,p);
 				s = p;
 				p = p + v_right;
@@ -189,14 +188,14 @@ c_set Contour::trackContour(RealGrid &data){
 			}
 		}
 
-		if(contour.size() == 2){
+		if(insert_counter == 2){
 			initial[0] = p;
 			initial[1] = s;
 		}
 
-		if(insert_counter >= 2 * contour.size()){
-			cout << "Surrounded the contour two times. Searching new contour. Size:" << contour.size() << " Coordinates: " << p << " with initial " << initial[0] << " | " << initial[1] << endl;
-			string name = "-3-SurroundedTwoTimes_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
+		if(insert_counter >= (2 * contour.size() + 1)){
+			cout << "Surrounded the contour two times. Size:" << contour.size() << " Coordinates: " << p << " with initial " << initial[0] << " | " << initial[1] << endl;
+			string name = "ERROR_1-SurroundedTwoTimes_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
 			plotContourSurround(name, data,contour,opt);
 
 			throw std::string("Contour::trackContour error #1: Surrounded the contour two times."); 

@@ -5,7 +5,7 @@
 using namespace std;
 
 
-void plotspectrum(string name,Observables &ares){
+void plotSpectrum(string name,Observables &ares){
 
 	ofstream plotfile;
     vector<double> kval;
@@ -230,7 +230,7 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 
 }
 
-void plotdatatopng(string filename,ComplexGrid* &g,Options &opt)
+void plotDataToPng(string filename,ComplexGrid* &g,Options &opt)
 {
 	
 
@@ -315,7 +315,7 @@ void plotdatatopng(string filename,ComplexGrid* &g,Options &opt)
 
 }
 
-void plotdatatopng(string filename,ComplexGrid &g,Options &opt)
+void plotDataToPng(string filename,ComplexGrid &g,Options &opt)
 {
 	
 
@@ -400,7 +400,7 @@ void plotdatatopng(string filename,ComplexGrid &g,Options &opt)
 
 }
 
-void plotdatatopng(string filename,RealGrid g,Options &opt){
+void plotDataToPng(string filename,RealGrid g,Options &opt){
 
 	int n = opt.grid[1];
 	int m = opt.grid[2];
@@ -449,7 +449,7 @@ void plotdatatopng(string filename,RealGrid g,Options &opt){
 
 }
 
-void plotdatatopngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
+void plotDataToPngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 {
 	
 
@@ -532,7 +532,7 @@ void plotdatatopngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 
 }
 
-void plotdatatopngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt)
+void plotDataToPngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt)
 {
 	
 

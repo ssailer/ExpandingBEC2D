@@ -140,14 +140,14 @@ void RTE::cli_plot(string name,int counter_state, int counter_max, double start,
 			if(plot == true)
 				{
 					opt.name = name; //+ "-" + std::to_string(counter_state/(counter_max/100));
-					// plotdatatopng(pPsi,opt);
-					plotdatatopngEigen(wavefct,opt);
+					// plotDataToPng(pPsi,opt);
+					plotDataToPngEigen(wavefct,opt);
 
 					// // kvalue analysis
 					// CopyEigenToComplexGrid();
 					// ComplexGrid::fft(*pPsi,*pK,true);
 					// opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
-					// plotdatatopng(pK,opt);
+					// plotDataToPng(pK,opt);
 
 
 				}
@@ -216,10 +216,10 @@ void RTE::plot(string name,int counter_state, int counter_max){
 		complex<double> tmp = complex<double>(KeeperOfTime.absoluteSteps,0.0) * t_RTE;
 		Xexpanding = x_expand(tmp);
 		Yexpanding = y_expand(tmp);
-		plotdatatopngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
+		plotDataToPngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
 	}
 	if(opt.runmode.compare(1,1,"0") == 0){
-		plotdatatopngEigen(wavefct,opt);
+		plotDataToPngEigen(wavefct,opt);
 	}
 }
 
