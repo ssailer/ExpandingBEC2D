@@ -14,36 +14,36 @@ Eval::Eval() {
 Eval::~Eval() {};
 
 void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &external_snapshot_time,string external_runname){
-		runname = external_runname;
-		opt = external_opt;
-		snapshot_time = external_snapshot_time;
-		PsiVec.resize(wavefctVec.size());
+	runname = external_runname;
+	opt = external_opt;
+	snapshot_time = external_snapshot_time;
+	PsiVec.resize(wavefctVec.size());
 
-		#pragma omp parallel for
-		for(int k = 0; k < wavefctVec.size(); k++){
-			PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-			for(int i = 0; i < opt.grid[1]; i++){
-				for(int j = 0; j < opt.grid[2]; j++){		
-					PsiVec[k](0,i,j,0) = wavefctVec[k](i,j);
-				}
+	#pragma omp parallel for
+	for(int k = 0; k < wavefctVec.size(); k++){
+		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+		for(int i = 0; i < opt.grid[1]; i++){
+			for(int j = 0; j < opt.grid[2]; j++){		
+				PsiVec[k](0,i,j,0) = wavefctVec[k](i,j);
 			}
 		}
+	}
 
 }
 
 void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snapshot_time,string external_runname){
-		runname = external_runname;
-		opt = external_opt;
-		snapshot_time = external_snapshot_time;
-		PsiVec.resize(1);
+	runname = external_runname;
+	opt = external_opt;
+	snapshot_time = external_snapshot_time;
+	PsiVec.resize(1);
 
-		PsiVec[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-		for(int i = 0; i < opt.grid[1]; i++){
-			for(int j = 0; j < opt.grid[2]; j++){		
-				PsiVec[0](0,i,j,0) = wavefct(i,j);
-			}
-		}		
+	PsiVec[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	
+	for(int i = 0; i < opt.grid[1]; i++){
+		for(int j = 0; j < opt.grid[2]; j++){		
+			PsiVec[0](0,i,j,0) = wavefct(i,j);
+		}
+	}		
 }
 
 void Eval::evaluateData(){
@@ -236,7 +236,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 	}
 
 	// This Number is set at the start, maybe set this in run.cfg -> Options struct, or check how many got set inside the contour, if equal spacing vortices are used.
-	const int NUMBER_OF_VORTICES = 4;
+	int NUMBER_OF_VORTICES = 4;
 	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
 	if(vlist.size() > NUMBER_OF_VORTICES){
 		list<VortexData>::iterator it1 = vlist.begin();
@@ -246,14 +246,14 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 }
 
 void Eval::calc_fields(ComplexGrid &data, Options &opt){
-	const double ZERO_THRESHOLD = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
+	double ZERO_THRESHOLD = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)
 		{
 			for(int z = 0; z < data.depth(); z++)
 			{
-				if(abs2(data(0,x,y,z)) < ZERO_THRESHOLD)
+				if(abs2(data(0,x,y,z)) <= ZERO_THRESHOLD)
 					zeros->at(0,x,y,z) = 0.0;
 				else
 					zeros->at(0,x,y,z) = 1.0;
@@ -299,7 +299,7 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 // }
 
 void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local){
-	const double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
 	// cout << LOWER_THRESHOLD << "+++" << endl;
 
