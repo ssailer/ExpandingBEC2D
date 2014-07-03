@@ -84,8 +84,10 @@ inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordina
 	for(int x = tmp.x(); x < data.width(); x++){
 
 		if(data(0,x,tmp.y(),0) > 0){
+
 			p = data.make_coord(x,tmp.y(),0);
 			s = p + v_left;
+			cout <<  p << " | " << s << endl;
 			// initial[0] = p;
 			// initial[1] = s;			
 			break;
@@ -116,7 +118,7 @@ c_set Contour::trackContour(RealGrid &data){
 
 	findInitialP(data,p,s/*,initial*/);
 	contour.insert(p);
-	
+
 	int32_t counter = 0;
 	int direction = 0;
 	int insert_counter = 1;
@@ -130,7 +132,7 @@ c_set Contour::trackContour(RealGrid &data){
 
 	do{ 
 		// cout << "\r" << flush;
-		// cout <<  p << " | " << s << " | " << insert_counter << " ";
+		// cout <<  p << " | " << s << " | " << insert_counter << " " << endl;
 		counter = 0;
 		while(counter < 8){
 			Coordinate<int32_t> c = nextClockwise(s,direction);
@@ -153,9 +155,9 @@ c_set Contour::trackContour(RealGrid &data){
 		}
 
 		if(singlepoint == true){
-			// cout << "Found single point, continuing the search. " << p << endl;
-			// string name = "Single point." + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
-			// plotContourSurround(name, data,contour,opt);
+			cout << "Found single point, continuing the search. " << p << endl;
+			string name = "ERROR_3-SinglePoint_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
+			plotContourSurround(name, data,contour,opt);
 			s = p;
 			p = p + v_right;			
 			contour.clear();
@@ -174,9 +176,9 @@ c_set Contour::trackContour(RealGrid &data){
 					stop = true;
 				}
 			}else if((initial[0] == p) && (initial[1] == s)){
-				// cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
-				// string name = "-1-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
-				// plotContourSurround(name, data,contour,opt);
+				cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
+				string name = "ERROR_2-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
+				plotContourSurround(name, data,contour,opt);
 				findMostRightP(contour,p);
 				s = p;
 				p = p + v_right;

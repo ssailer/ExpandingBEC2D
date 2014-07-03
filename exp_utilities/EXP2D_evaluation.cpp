@@ -2,14 +2,14 @@
 
 #define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]
 #define ANGULAR_AVERAGING_LENGTH 12
+#define NUMBER_OF_VORTICES 7
+#define VORTEX_SURROUND_DENSITY_RADIUS 10
 
 using namespace std;
 using namespace Eigen;
 
 
-Eval::Eval() {
-
-		};
+Eval::Eval() {};
 
 Eval::~Eval() {};
 
@@ -66,24 +66,30 @@ void Eval::evaluateData(){
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
 		totalResult += calculator(PsiVec[k],k);		
-	}	
+	}
 	getVortices(PsiVec[0],densityCoordinates[0]);
 	totalResult /= PsiVec.size();
 }
 
 void Eval::plotData(){
-	string filename = runname + "-Spectrum-" + to_string(snapshot_time); 
+	string filename = runname + "-Control-Plot-" + to_string(snapshot_time);
+	plotDataToPng(filename,PsiVec[0],opt);
+
+	filename = runname + "-Spectrum-" + to_string(snapshot_time); 
 	plotSpectrum(filename,totalResult);
+
 	filename = runname + "-Vortices-" + to_string(snapshot_time);
 	plotVortexList(filename,phase,pres,opt);	
-	filename = runname + "-Control-Plot-" + to_string(snapshot_time);
-	plotDataToPng(filename,PsiVec[0],opt);
+
 	filename = runname + "-Density-" + to_string(snapshot_time);
 	plotDataToPng(filename,densityLocationMap[0],opt);
+
 	filename = runname + "-Density-Axial-Distribution-Gradient" + to_string(snapshot_time);
 	plotVector(filename,x_dist_grad,y_dist_grad,opt);
+
 	filename = runname + "-Angular-Dens" + to_string(snapshot_time);
 	plotVector(filename,totalResult.angularDensity,opt);	
+
 	filename = runname + "-Contour" + to_string(snapshot_time);
 	plotContour(filename,PsiVec[0],contour[0],opt);
 
@@ -122,24 +128,22 @@ void Eval::plotData(){
 void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates){
 	
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
-	
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+
 	calc_fields(data,opt);
 	pres.vlist.clear();
 	find_vortices(densityCoordinates,pres.vlist);
 
-
-
-	cout << "Vortices: " << endl;
-	double number = 0;
-	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
-		int x = it->x.x();
-		int y = it->x.y();
-		number += it->num_points;
-		double sD = it->surroundDens;
-		cout << " " << x << " " << y << "  " << abs2(PsiVec[0](0,x,y,0)) << " " << arg(PsiVec[0](0,x,y,0)) << " " << sD << endl;
-	}
-	cout << "Number of Vortices counted: " << number << "  " << endl;
+	// cout << "Vortices: " << endl;
+	// double number = 0;
+	// for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
+	// 	int x = it->x.x();
+	// 	int y = it->x.y();
+	// 	number += it->num_points;
+	// 	double sD = it->surroundDens;
+	// 	cout << " " << x << " " << y << "  " << abs2(PsiVec[0](0,x,y,0)) << " " << arg(PsiVec[0](0,x,y,0)) << " " << sD << endl;
+	// }
+	// cout << "Number of Vortices counted: " << number << "  " << endl;
 
 	// calc_vortex_veloctities();
 	// calc_vortex_discances();
@@ -213,12 +217,12 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 	}
 
 	// CHECK DENSITY AROUND VORTEX
-	int max_radius = 10;
+
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		vector<double> polarDensity;
 		vector<double> radius;	
-		for(int x_shift = - max_radius; x_shift < max_radius; x_shift++){
-		    for(int y_shift = - max_radius; y_shift < max_radius; y_shift++){
+		for(int x_shift = - VORTEX_SURROUND_DENSITY_RADIUS; x_shift < VORTEX_SURROUND_DENSITY_RADIUS; x_shift++){
+		    for(int y_shift = - VORTEX_SURROUND_DENSITY_RADIUS; y_shift < VORTEX_SURROUND_DENSITY_RADIUS; y_shift++){
 				radius.push_back(sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y));
 				int x = it->points.front().x() + x_shift;
 				int y = it->points.front().y() + y_shift;
@@ -227,7 +231,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 		}
 		double sum = 0;
 		for(int i = 0; i < radius.size(); i++){
-			if(radius[i] < max_radius){
+			if(radius[i] < VORTEX_SURROUND_DENSITY_RADIUS){
 				sum += polarDensity[i];
 			}
 
@@ -236,7 +240,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 	}
 
 	// This Number is set at the start, maybe set this in run.cfg -> Options struct, or check how many got set inside the contour, if equal spacing vortices are used.
-	int NUMBER_OF_VORTICES = 4;
+	
 	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
 	if(vlist.size() > NUMBER_OF_VORTICES){
 		list<VortexData>::iterator it1 = vlist.begin();
@@ -246,14 +250,15 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 }
 
 void Eval::calc_fields(ComplexGrid &data, Options &opt){
-	double ZERO_THRESHOLD = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
+	double LOWER_THRESHOLD = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)
 		{
 			for(int z = 0; z < data.depth(); z++)
-			{
-				if(abs2(data(0,x,y,z)) <= ZERO_THRESHOLD)
+			{	
+				phase->at(0,x,y,z) = arg(data(0,x,y,z));
+				if(abs2(data(0,x,y,z)) <= LOWER_THRESHOLD)
 					zeros->at(0,x,y,z) = 0.0;
 				else
 					zeros->at(0,x,y,z) = 1.0;
@@ -299,9 +304,9 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 // }
 
 void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local){
-	double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	double minimumDensity = 0.1; // opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
-	// cout << LOWER_THRESHOLD << "+++" << endl;
+	// cout << minimumDensity << "+++" << endl;
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
@@ -309,11 +314,12 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 
+
 	densityCounter = 0;
 	densityCoordinates_local.clear();
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
-	    	if((abs2(data(0,i,j,0)) > LOWER_THRESHOLD)){
+	    	if((abs2(data(0,i,j,0)) > minimumDensity)){
 				densityLocationMap_local(0,i,j,0) = 1.;
 				densityCoordinates_local.push_back(data.make_coord(i,j,0));
 				densityCounter++;
@@ -322,6 +328,11 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 			}
 		}
 	}
+
+	string testname = "ERROR_0-test";
+	plotDataToPng(testname,densityLocationMap_local,opt);
+
+
 
 
 	// angularDensity = polarDensity;

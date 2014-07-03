@@ -83,7 +83,7 @@ sigma_grid[1] = opt.grid[2]/8;
 double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
 
 data = add_central_vortex(data,opt);	
-data = add_circle_vortex(data,opt,r,3);
+data = add_circle_vortex(data,opt,r,6);
 // data = add_circle_vortex(data,opt,r/4.0,6);
 // data = add_circle_vortex(data,opt,r*2.0/4.0,12);
 // data = add_circle_vortex(data,opt,r*3.0/4.0,24);
@@ -133,7 +133,7 @@ runparameters.close();
 // run
 Eval* eval = new Eval;
 
-string runname = "RT-noEx";
+string runname = "RT-Ex";
 // opt.runmode = "0011";
 // rterun->setOptions(opt);
 // rterun->RunSetup();
