@@ -303,15 +303,15 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 // 	}
 // }
 
-void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local){
-	double minimumDensity = 0.1; // opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates_local){
+	double minimumDensity = 10;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
 	// cout << minimumDensity << "+++" << endl;
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
 
-	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	RealGrid densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 
 
@@ -329,8 +329,10 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 		}
 	}
 
-	string testname = "ERROR_0-test";
-	plotDataToPng(testname,densityLocationMap_local,opt);
+	// string testname = "ERROR_0-getDensity"+to_string(omp_get_wtime());
+	// plotDataToPng(testname,densityLocationMap_local,opt);
+	// testname = "ERROR_0-data"+to_string(omp_get_wtime());
+	// plotDataToPng(testname,data,opt);
 
 
 
@@ -386,6 +388,8 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 	// 		}
 	// 	}
 	// }
+
+	densityLocationMap = densityLocationMap_local;
 }
 
 Observables Eval::calculator(ComplexGrid data,int sampleindex){
@@ -466,7 +470,6 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	vector<double> polarDensity; // first entry is 
 	vector<double> radius;
 	vector<Coordinate<int32_t>> cartesianCoordinates;
-	// RealGrid conversionControl(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 
 	for(int i = 0; i < opt.grid[1]; i++){
@@ -480,9 +483,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		}
 	}
 	
-	// double max_radius = (opt.grid[1] + opt.grid[2]) / 4;
 
-	// vector<double>angularDensity_tmp(361);
 	vector<vector<int>> index(361);
 	int phiSize = phi.size();
 	for(int j = 0; j < phiSize; j++){
@@ -505,16 +506,6 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
 
-	// angularDensity_tmp[0] += angularDensity_tmp[360];	
-
-	// for(int i = 0; i < 360; i++){
-	// 	// vector<double>::iterator beginning = angularDensity_tmp.begin() + i;
-	// 	// vector<double>::iterator ending = beginning + 10;
-	// 	obs.angularDensity(i) = angularDensity_tmp[i]; //(accumulate(beginning,ending,0));
-	// }
-
-
-	
 	// K-Space
 	ComplexGrid::fft(data, data);
 	
@@ -576,11 +567,6 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 			}
 		}
 	}
-
-
-
-	
-	// obs.healing_length = 1 / sqrt(obs.particle_count * opt.g / obs.volume);
 	
 	#pragma omp parallel for schedule(guided,1)
 	for(int l = 0; l < obs.number.size(); l++){

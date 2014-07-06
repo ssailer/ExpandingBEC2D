@@ -169,7 +169,9 @@ c_set Contour::trackContour(RealGrid &data){
 		}
 		
 		if(contour.size() >= 2){
-			int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * 0.9; // Circumference of a circle going through p, 90%
+			double scalingFromRatio;
+			scalingFromRatio = (opt.omega_x.real() > opt.omega_y.real()) ? opt.omega_y.real()/opt.omega_x.real() : opt.omega_x.real()/opt.omega_y.real();
+			int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.9; // Circumference of a circle going through p, 90%
 			if(contour.size() > size_condition){
 				if((initial[0] == p) && (initial[1] == s)){
 					cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;

@@ -350,8 +350,6 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 		opt.stateInformation[1] = 1.0;
 	}
 
-	cout << opt.stateInformation[0] << " " << opt.stateInformation[1] << endl;
-
    	// plot(stepname,j,snapshot_times.size());
 	eval->saveData(wavefctVec,opt,snapshot_times[j],runname);
 	eval->evaluateData();

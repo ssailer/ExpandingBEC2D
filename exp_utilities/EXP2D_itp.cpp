@@ -4,7 +4,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 3000
+#define VORTICES_BUILD_TIME 1000
 
 using namespace std;
 using namespace Eigen;
@@ -163,6 +163,13 @@ void ITP::formVortices(string runname){
 	Eigen::initParallel();
 
 	for(int m = 1; m <= VORTICES_BUILD_TIME; m++){
+
+		wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
+		wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+		wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
+		wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
+
+
 		wavefctcp = wavefct;
 
 		ITP_compute_k(k0,wavefctcp);
@@ -177,6 +184,8 @@ void ITP::formVortices(string runname){
 		ITP_compute_k(k3,wavefctcp);
 
 		wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
+
+
 
 		rescale(wavefct);
 
@@ -221,6 +230,11 @@ void ITP::propagateToGroundState(string runname)
 	// for(int m = 1; opt.scale_factor < 0.99 && opt.scale_factor > 1.01; m++){
 	do {
 		for(int m = 0; m < 100; m++){
+
+			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
+			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+			wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
+			wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
 
 			rescale(wavefct);
 

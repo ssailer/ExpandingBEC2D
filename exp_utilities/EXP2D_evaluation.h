@@ -68,9 +68,7 @@ private:
 	vector<c_set> contour;
 	Options opt;
 	int snapshot_time;
-	// vector<RealGrid> vortexLocationMap;
 	vector<RealGrid> densityLocationMap;
-	// vector<vector<Coordinate<int32_t>>> vortexCoordinates;
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
 	vector<double> x_dist,y_dist,x_dist_grad,y_dist_grad;
 	int densityCounter;
@@ -78,7 +76,7 @@ private:
 	// doing functinos
 	Observables calculator(ComplexGrid data,int sampleindex);
 	void getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates);
-	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates);
+	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates);
 	
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase);

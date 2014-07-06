@@ -113,9 +113,9 @@ if(opt.runmode.compare(0,1,"1") == 0)
 }
 
 //====> Real Time Expansion (RTE)
-vector<int> snapshot_times(10);
-for(int i = 0;i < 10;i++){
-	snapshot_times[i] = (i+1) *opt.n_it_RTE / 10.0;
+vector<int> snapshot_times(50);
+for(int i = 0;i < 50;i++){
+	snapshot_times[i] = (i+1) *opt.n_it_RTE / 50.0;
 }
 
 ofstream runparameters;
