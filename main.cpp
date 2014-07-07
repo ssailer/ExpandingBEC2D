@@ -158,6 +158,10 @@ catch(const std::exception& e)
     	      << e.what() << ", application will now exit" << std::endl; 
 	return ERROR_UNHANDLED_EXCEPTION; 
 }
+catch(expException& e){
+	e.printString();
+	return ERROR_UNHANDLED_EXCEPTION;
+}
 catch (const std::string& errorMessage) 
 { 
 	std::cout << errorMessage.c_str(); 

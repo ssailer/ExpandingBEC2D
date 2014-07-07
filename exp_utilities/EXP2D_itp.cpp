@@ -4,7 +4,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 1000
+#define VORTICES_BUILD_TIME 3000
 
 using namespace std;
 using namespace Eigen;
@@ -258,7 +258,7 @@ void ITP::propagateToGroundState(string runname)
 		
 
 		breakCondition.saveData(wavefct,opt,state,runname);
-		breakCondition.evaluateData();
+		breakCondition.evaluateDataITP();
 
 		cli_groundState(runname,start,state,breakCondition.totalResult);
 		int difference = breakCondition.totalResult.Ekin - old_Ekin;

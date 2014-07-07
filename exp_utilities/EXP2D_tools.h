@@ -56,4 +56,32 @@ void readDataFromHDF5(ComplexGrid* &g,Options &opt);
 void saveDataToHDF5(ComplexGrid* &g, Options &opt);
 void noiseTheGrid(ComplexGrid &g);
 
+class expException {
+public:
+    inline expException(std::string const& info);    
+    inline void setString(std::string const& info);
+    inline void addString(std::string const& info);
+    inline std::string printString();
+private:
+    std::string stringException;
+};
+
+inline expException::expException(std::string const& info){
+    stringException = info;
+}
+
+inline void expException::setString(std::string const& info){
+    stringException = info;
+}
+
+inline void expException::addString(std::string const& info){
+    stringException += info;
+}
+
+inline std::string expException::printString(){
+    cout << stringException.c_str() << endl;
+}
+
+
+
 #endif // EXP2D_TOOLS_H__

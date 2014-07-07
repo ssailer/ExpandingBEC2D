@@ -1,5 +1,5 @@
-#ifndef INIT_BH3_H__
-#define INIT_BH3_H__
+#ifndef MAIN_H__
+#define MAIN_H__
 
 #include <libconfig.h++>
 #include <string>
@@ -200,4 +200,8 @@ int read_config(int argc, char** argv, Options &opt)
 	
 }
 
-#endif // INIT_BH3_H__
+
+
+
+
+#endif // MAIN_H__

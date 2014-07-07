@@ -350,10 +350,17 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 		opt.stateInformation[1] = 1.0;
 	}
 
-   	// plot(stepname,j,snapshot_times.size());
-	eval->saveData(wavefctVec,opt,snapshot_times[j],runname);
-	eval->evaluateData();
-	eval->plotData();
+	try{
+   		// plot(stepname,j,snapshot_times.size());
+		eval->saveData(wavefctVec,opt,snapshot_times[j],runname);
+		eval->evaluateData();
+		eval->plotData();
+	}
+	catch(expException& e){
+		int step = j / opt.n_it_RTE;
+		e.addString(to_string(step));
+		throw;
+	}
 }
 
 // update the ComplexGrid* DATA object outside of this.
