@@ -76,6 +76,7 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 void plotDataToPng(string filename,ComplexGrid* &g,Options &opt);
 void plotDataToPng(string filename,ComplexGrid &g,Options &opt);
 void plotDataToPng(string filename,RealGrid g,Options &opt);
+void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt);
 void plotDataToPngEigen(Eigen::MatrixXcd& mPsi,Options &opt);
 void plotDataToPngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt);
 void plotVector(string filename,vector<double> v,Options &opt);

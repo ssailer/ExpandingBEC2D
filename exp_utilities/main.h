@@ -173,6 +173,8 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
+
+
 	}
 	catch(const SettingNotFoundException &nfex)
 	{
@@ -186,6 +188,9 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.scale_factor = 0; //Scale factor
 	opt.t_abs = complex<double>(0,0); //Absolute time 
 	opt.name       = "run";
+	opt.stateInformation.resize(2);
+	opt.stateInformation[0] = 1;
+	opt.stateInformation[1] = 1;
 
     // Set Parameters manually (default values)
 	//opt.timestepsize = 0.2;

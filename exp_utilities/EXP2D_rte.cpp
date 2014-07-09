@@ -357,9 +357,8 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 		eval->plotData();
 	}
 	catch(expException& e){
-		int step = j / opt.n_it_RTE;
-		e.addString(to_string(step));
-		throw;
+		e.addString(to_string(snapshot_times[j]));
+		throw e;
 	}
 }
 

@@ -159,15 +159,15 @@ catch(const std::exception& e)
 	return ERROR_UNHANDLED_EXCEPTION; 
 }
 catch(expException& e){
-	e.printString();
+	std::cout << e.stringException.c_str() << endl;
+	std::cout << " Terminating now." << endl;
 	return ERROR_UNHANDLED_EXCEPTION;
 }
 catch (const std::string& errorMessage) 
 { 
 	std::cout << errorMessage.c_str(); 
-	std::cout << ". Terminating now"; 
-	std::cout << endl; 
-	return ERROR_UNHANDLED_EXCEPTION; 
+	std::cout << " Terminating now." << endl; 
+	return SUCCESS; 
 // the code could be different depending on the exception message 
 } 
 

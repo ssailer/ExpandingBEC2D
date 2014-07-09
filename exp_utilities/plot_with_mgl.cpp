@@ -44,7 +44,7 @@ void plotSpectrum(string name,Observables &ares){
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
 	gr.Title(name.c_str());
-	gr.SetRange('x',0.01,100000);
+	gr.SetRange('x',0.01,4);
 	gr.SetRange('y',0.1,10000000);
 	gr.SetCoor(11); // log-log-coordinates
 
@@ -272,8 +272,10 @@ void plotDataToPng(string filename,ComplexGrid* &g,Options &opt)
 
 
 	// data.use_abs=false;
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);
+	double xrange = opt.min_x*opt.stateInformation[0];
+	double yrange = opt.min_y*opt.stateInformation[1];
+	gr.SetRange('x',-xrange,xrange);
+	gr.SetRange('y',-yrange,yrange);
 	gr.SetRange('z',phase);
 	gr.SetRange('c',phase);
 
@@ -292,8 +294,8 @@ void plotDataToPng(string filename,ComplexGrid* &g,Options &opt)
 
 
 	// data.use_abs=true;
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);
+	gr.SetRange('x',-xrange,xrange);
+	gr.SetRange('y',-yrange,yrange);
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
 
@@ -355,10 +357,11 @@ void plotDataToPng(string filename,ComplexGrid &g,Options &opt)
 	// gr.Alpha(true);
 
 
-
+	double xrange = opt.min_x*opt.stateInformation[0];
+	double yrange = opt.min_y*opt.stateInformation[1];
 	// data.use_abs=false;
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);
+	gr.SetRange('x',-xrange,xrange);
+	gr.SetRange('y',-yrange,yrange);
 	gr.SetRange('z',phase);
 	gr.SetRange('c',phase);
 
@@ -377,8 +380,8 @@ void plotDataToPng(string filename,ComplexGrid &g,Options &opt)
 
 
 	// data.use_abs=true;
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);
+	gr.SetRange('x',-xrange,xrange);
+	gr.SetRange('y',-yrange,yrange);
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
 
@@ -435,15 +438,112 @@ void plotDataToPng(string filename,RealGrid g,Options &opt){
 	gr.Title(filename.c_str());
 	// gr.Alpha(true);
 
+	double xrange = opt.min_x*opt.stateInformation[0];
+	double yrange = opt.min_y*opt.stateInformation[1];
 	// data.use_abs=true;
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);
+	gr.SetRange('x',-xrange,xrange);
+	gr.SetRange('y',-yrange,yrange);
 	gr.SetRange('z',grid);
 	gr.SetRange('c',grid);
 
 	gr.Axis();
 	gr.Colorbar("_");
 	gr.Dens(grid);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
+void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt)
+{
+	
+
+	int n = opt.grid[1];
+	int m = opt.grid[2];
+
+	// mglComplex data(n,m);
+	mglData density(n,m);
+	mglData xaxis(n);
+	mglData yaxis(m);
+	// mglData phase(n,m);
+
+	int i,j,k;
+
+	// data.Create(n,m);
+
+	// complex<double> data1;
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		k = i+n*j;
+		density.a[k] = abs2(g(0,i,j,0));
+		// phase.a[k] = arg(g(0,i,j,0));
+
+		// data.a[k] = abs2(g(0,i,j,0));
+	}
+
+	mglGraph gr;
+
+		
+		// gr.Light(0,true);
+		// gr.Alpha(true);
+
+	filename = filename + ".png";
+
+	gr.SetSize(1800,1800);
+	gr.SetQuality(3);
+	gr.Title(filename.c_str());
+	// gr.Alpha(true);
+
+
+	double xrange = opt.min_x*opt.stateInformation[0];
+	double yrange = opt.min_y*opt.stateInformation[1];
+
+	for( i = 0; i < n; i++){
+		xaxis.a[i] = -xrange/2 + i * xrange / opt.grid[1];
+	}
+	for( j = 0; j < m; j++){
+		yaxis.a[j] = -yrange/2 + j * yrange / opt.grid[2];
+	}
+	// data.use_abs=false;
+	gr.SetRange('x',xaxis);
+	gr.SetRange('y',yaxis);
+	gr.SetRange('z',density);
+	gr.SetRange('c',density);
+
+	// gr.SubPlot(2,2,0);
+
+	// gr.Rotate(40,40);
+	// gr.Box();
+	// gr.Axis();
+	// gr.Surf(phase);
+
+
+	// gr.SubPlot(2,2,2);
+	// gr.Axis();
+	// gr.Colorbar("_");
+	// gr.Dens(phase);
+
+
+	// data.use_abs=true;
+	// gr.SetRange('x',-xrange,xrange);
+	// gr.SetRange('y',-yrange,yrange);
+	// gr.SetRange('z',density);
+	// gr.SetRange('c',density);
+
+	// gr.SubPlot(2,2,1);
+
+	// gr.Light(true);
+	// gr.Rotate(40,40);
+	// gr.Box();
+	// gr.Axis();
+
+	// gr.Surf(density);
+
+	// gr.SubPlot(2,2,3);
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(xaxis,yaxis,density);
 
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 
@@ -477,9 +577,10 @@ void plotDataToPngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 		// gr.Light(0,true);
 		// gr.Alpha(true);
 
-	
-	gr.SetRange('x',-opt.min_x,opt.min_x);
-	gr.SetRange('y',-opt.min_y,opt.min_y);
+	double xrange = opt.min_x*opt.stateInformation[0];
+	double yrange = opt.min_y*opt.stateInformation[1];
+	gr.SetRange('x',-xrange,xrange);
+	gr.SetRange('y',-yrange,yrange);
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
 	gr.Title(opt.name.c_str());

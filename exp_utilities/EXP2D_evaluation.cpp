@@ -48,8 +48,11 @@ void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snaps
 }
 
 void Eval::checkEdges(){
-	double threshold = 2 * (EDGE_RANGE_CHECK * opt.grid[1] + EDGE_RANGE_CHECK * opt.grid[2]) * opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);
+	int numberOfEdgePoints = 2 * EDGE_RANGE_CHECK * opt.grid[1] + 2 * EDGE_RANGE_CHECK * opt.grid[2] - 4 * EDGE_RANGE_CHECK * EDGE_RANGE_CHECK;
+	double threshold = numberOfEdgePoints * opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);
 
+
+	// cout << "Size of checkEdges::sum " << PsiVec.size() << endl;
 	vector<double> sum(PsiVec.size());
 	for(int k = 0; k < PsiVec.size(); k++){
 		sum[k] = 0;
@@ -74,19 +77,20 @@ void Eval::checkEdges(){
 			}
 		}
 	}
-	for(int k = 0; PsiVec.size(); k++){
-		if(sum[k] > threshold){
-			cout << "checkEdges result: " << sum[k] << "/" << threshold << endl;
-			expException e("Gas reached the edges of the grid, aborting. The simulation failed in step: ");
+	for(int k = 0; k < PsiVec.size(); k++){
+		std::string error = "Gas reached the edges of the grid, with a density of " + to_string(sum[k]) + "/" + to_string(threshold) + ".  The simulation failed in step: ";
+		// cout << "checkEdges[" << k << "] result: " << sum[k] << "/" << threshold << " with " << numberOfEdgePoints << " of points on the edge." << endl;
+		if(sum[k] > threshold){			
+			expException e(error);
 			throw e;
 		}
 	}
 }
 
 void Eval::evaluateData(){
-	cout << "evaluateData" << endl;
-
-	
+	// cout << "evaluateData" << endl;	
+	// cout << "checkEdges call: " << endl;
+	// checkEdges();
 
 	pres.vlist.clear();
 	densityCoordinates.clear();
@@ -102,19 +106,19 @@ void Eval::evaluateData(){
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
 	for(int k = 0; k < PsiVec.size(); k++){
-		cout << endl << "Eval #" << k << endl;
+		// cout << endl << "Eval #" << k << endl;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
-		cout << "getDensity" << endl;
+		// cout << "getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		cout << "trackContour" << endl;
+		// cout << "trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
-		cout << "calculator" << endl;		
+		// cout << "calculator" << endl;		
 	}
 	getVortices(PsiVec[0],densityCoordinates[0]);
-	cout << "getVortices" << endl;
+	// cout << "getVortices" << endl;
 	totalResult /= PsiVec.size();
 
-	// checkEdges();
+	
 }
 
 void Eval::evaluateDataITP(){
@@ -127,21 +131,18 @@ void Eval::evaluateDataITP(){
 	densityCoordinates.resize(PsiVec.size());
 	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	Contour tracker(opt);
-
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
 	for(int k = 0; k < PsiVec.size(); k++){
 		totalResult += calculator(PsiVec[k],k);
 	}
-
 	totalResult /= PsiVec.size();
 }
 
 void Eval::plotData(){
 	string filename = runname + "-Control-Plot-" + to_string(snapshot_time);
-	plotDataToPng(filename,PsiVec[0],opt);
+	plotDataToPngExpanding(filename,PsiVec[0],opt);
 
 	filename = runname + "-Spectrum-" + to_string(snapshot_time); 
 	plotSpectrum(filename,totalResult);
@@ -199,7 +200,7 @@ void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCo
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 
 	calc_fields(data,opt);
-	cout << "calc_fields" << endl;
+	// cout << "calc_fields" << endl;
 	pres.vlist.clear();
 	find_vortices(densityCoordinates,pres.vlist);
 
@@ -243,7 +244,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 	VortexData vortex;
 					// Charakteristika eines gefundenen Vortex
 
-	cout << "find_vortices_before iterator" << endl;
+	// cout << "find_vortices_before iterator" << endl;
 
 
 
@@ -290,7 +291,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 	// CHECK DENSITY AROUND VORTEX
 
 
-	cout << "find_vortices before denscheck" << endl;
+	// cout << "find_vortices before denscheck" << endl;
 
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		vector<double> polarDensity;
@@ -314,7 +315,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 	}
 
 	// This Number is set at the start, maybe set this in run.cfg -> Options struct, or check how many got set inside the contour, if equal spacing vortices are used.
-	 cout << "find_vortices before sorting" << endl;
+	 // cout << "find_vortices before sorting" << endl;
 	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
 	if(vlist.size() > NUMBER_OF_VORTICES){
 		list<VortexData>::iterator it1 = vlist.begin();
@@ -324,7 +325,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 }
 
 void Eval::calc_fields(ComplexGrid &data, Options &opt){
-	double LOWER_THRESHOLD = 0;//opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
+	double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)
@@ -382,7 +383,7 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates_local){
 	double threshold = 10;//opt.N * 0.10 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
-	cout << "Threshold " << threshold << endl;
+	// cout << "Threshold " << threshold << endl;
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 

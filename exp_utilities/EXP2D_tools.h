@@ -62,8 +62,9 @@ public:
     inline void setString(std::string const& info);
     inline void addString(std::string const& info);
     inline std::string printString();
-private:
     std::string stringException;
+private:
+    
 };
 
 inline expException::expException(std::string const& info){
