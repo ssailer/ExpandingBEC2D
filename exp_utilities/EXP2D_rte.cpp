@@ -176,14 +176,14 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 		slowestthread = (stateOfLoops[slowestthread] <= stateOfLoops[i]) ? slowestthread : threadinfo[i];
 	}
 	
-	if(stateOfLoops[slowestthread]%(counter_max/100)==0)
+	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/100))==0)
 		{
 			int seconds;
 			int min;
 			int hour;
 			int total;
-			int totalstate = 0;
-			int totalmaxpercent = counter_max * opt.samplesize / 100;
+			double totalstate = 0;
+			double totalmaxpercent = (double)counter_max * (double)opt.samplesize / 100;
 			for(int i = 0; i < opt.samplesize; i++){
 				totalstate += stateOfLoops[i];
 			}
@@ -199,10 +199,10 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 			 	 << std::setw(2) << std::setfill('0') << hour << ":"
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
-				 << std::setw(3) << std::setfill('0') << (totalstate/totalmaxpercent) << "% || ";
+				 << std::setw(3) << std::setfill('0') << (totalstate/totalmaxpercent) << "% | ";
 
 			for(int k = 0; k < stateOfLoops.size(); k++){
-				cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (stateOfLoops[k]/(counter_max/100)) << "% ";
+				cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
 			}
 			
 		}
@@ -275,7 +275,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 
 	//start loop here
 	Eigen::initParallel();
-
+	int previousTimes = 1;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
 		string stepname = runname + "-" + to_string(snapshot_times[j]);
@@ -288,7 +288,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 		for(int i = 0; i < opt.samplesize; i++){
 			// list of which thread is working which iteration
 			threadinfo[i] = omp_get_thread_num();
-			for(int m = 1; m <= snapshot_times[j]; m++){
+			for(int m = previousTimes; m <= snapshot_times[j]; m++){
 		
 				wavefctcp[i] = wavefctVec[i];
 		
@@ -326,15 +326,17 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 				// // Boundaries
 		
 				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
-   				stateOfLoops.at(i) = m;
+   				stateOfLoops[i]= m - previousTimes + 1;
    				if(omp_get_thread_num() == slowestthread){
-   					cli(stepname,slowestthread,threadinfo,stateOfLoops,snapshot_times[j],start);
+   					int counter_max = snapshot_times[j] - previousTimes + 1;
+   					cli(stepname,slowestthread,threadinfo,stateOfLoops,counter_max,start);
    				}
 	
 			}
 			if(omp_get_thread_num() == 0){
 				KeeperOfTime.lambdaSteps = 2 * snapshot_times[j];
 				KeeperOfTime.absoluteSteps = snapshot_times[j];	
+				previousTimes = snapshot_times[j]+1;
 			}
 	
 		}
@@ -358,7 +360,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 	}
 	catch(expException& e){
 		e.addString(to_string(snapshot_times[j]));
-		throw e;
+		throw;
 	}
 }
 

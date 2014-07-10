@@ -17,9 +17,10 @@ void plotSpectrum(string name,Observables &ares){
 		if(ares.k(r) != 0.0){
 			plotfile << r <<"\t"<< ares.k(r) <<"\t" << ares.number(r) <<"\t";
 			plotfile << endl;
-
-			kval.push_back(ares.k(r));
-			numberval.push_back(ares.number(r));
+			if(r%2 == 0){ // reduce the number of k's plotted, because it gets cluttered.
+				kval.push_back(ares.k(r));
+				numberval.push_back(ares.number(r));
+			}
         }
 	}
 	plotfile << endl << endl;	
@@ -27,17 +28,21 @@ void plotSpectrum(string name,Observables &ares){
 
 
 	int n = kval.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
-
 	mglData k(n);
 	mglData number(n);
 	// mglData healing_length(2);
 	// healing_length.a[0] = ares.healing_length;
 	// healing_length.a[1] = 10000000;
 
+	// cout << "mgl Reached" << endl;
+
+
 	for(int i = 0; i < n; i++){
 		k.a[i] = kval[i];
 		number.a[i] = numberval[i];
 	}
+
+	// cout << "copied" << endl;
 
 	mglGraph gr;
 
@@ -499,15 +504,17 @@ void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt)
 	double xrange = opt.min_x*opt.stateInformation[0];
 	double yrange = opt.min_y*opt.stateInformation[1];
 
+	double range = (xrange > yrange) ? xrange : yrange;
+
 	for( i = 0; i < n; i++){
-		xaxis.a[i] = -xrange/2 + i * xrange / opt.grid[1];
+		xaxis.a[i] = -xrange + i * 2 * xrange / opt.grid[1];
 	}
 	for( j = 0; j < m; j++){
-		yaxis.a[j] = -yrange/2 + j * yrange / opt.grid[2];
+		yaxis.a[j] = -yrange + j * 2 * yrange / opt.grid[2];
 	}
 	// data.use_abs=false;
-	gr.SetRange('x',xaxis);
-	gr.SetRange('y',yaxis);
+	gr.SetRange('x',-range,range);
+	gr.SetRange('y',-range,range);
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
 

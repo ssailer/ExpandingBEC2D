@@ -268,7 +268,7 @@ ComplexGrid *set_grid_to_gaussian(ComplexGrid* &g, Options &opt, double & sigma_
     {
         for(int i=0; i < opt.grid[1]; i++){
             for(int j=0; j < opt.grid[2]; j++){
-                value = complex<double> ( exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), 0.0 );                
+                value = complex<double>((opt.N/(4 * opt.min_x * opt.min_y)) * exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), 0.0 );                
             g->at(k,i,j,0) = value;
             }
         }

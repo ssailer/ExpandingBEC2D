@@ -2,7 +2,7 @@
 
 #define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]
 #define ANGULAR_AVERAGING_LENGTH 12
-#define NUMBER_OF_VORTICES 7
+#define NUMBER_OF_VORTICES 46
 #define VORTEX_SURROUND_DENSITY_RADIUS 10
 #define EDGE_RANGE_CHECK 10
 
@@ -171,6 +171,9 @@ void Eval::plotData(){
   		datafile << std::left << std::setw(10) << "Timestep"
   						 << std::setw(10) << "X_max"
   						 << std::setw(10) << "Y_max"
+  						 << std::setw(10) << "R_max"
+  						 << std::setw(10) << "R_min"
+  						 << std::setw(10) << "R_max/R_min"
   						 << std::setw(10) << "A/R"
   						 << std::setw(10) << "N"
   						 << std::setw(10) << "V"
@@ -185,7 +188,10 @@ void Eval::plotData(){
 	datafile << std::left << std::setw(10) << snapshot_time
 					 << std::setw(10) << opt.min_x * opt.stateInformation[0]
 					 << std::setw(10) << opt.min_y * opt.stateInformation[1]
- 					 << std::setw(10) << totalResult.aspectRatio 
+ 					 << std::setw(10) << totalResult.r_max
+ 					 << std::setw(10) << totalResult.r_min
+ 					 << std::setw(10) << totalResult.r_max / totalResult.r_min  
+ 					 << std::setw(10) << totalResult.aspectRatio  
 					 << std::setw(10) << totalResult.particle_count
 					 << std::setw(10) << totalResult.volume
 					 << std::setw(10) << totalResult.density
@@ -202,7 +208,7 @@ void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCo
 	calc_fields(data,opt);
 	// cout << "calc_fields" << endl;
 	pres.vlist.clear();
-	find_vortices(densityCoordinates,pres.vlist);
+	findVortices(densityCoordinates,pres.vlist);
 
 	// cout << "Vortices: " << endl;
 	// double number = 0;
@@ -235,7 +241,7 @@ int Eval::get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v,
 // 	}
 // }
 
-void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) {
+void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) {
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
@@ -244,7 +250,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 	VortexData vortex;
 					// Charakteristika eines gefundenen Vortex
 
-	// cout << "find_vortices_before iterator" << endl;
+	// cout << "findVortices_before iterator" << endl;
 
 
 
@@ -291,7 +297,7 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 	// CHECK DENSITY AROUND VORTEX
 
 
-	// cout << "find_vortices before denscheck" << endl;
+	// cout << "findVortices before denscheck" << endl;
 
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		vector<double> polarDensity;
@@ -305,18 +311,22 @@ void Eval::find_vortices(vector<Coordinate<int32_t>> &densityCoordinates, list<V
 			}
 		}
 		double sum = 0;
+		double zeroDensity = 0;
 		for(int i = 0; i < radius.size(); i++){
 			if(radius[i] < VORTEX_SURROUND_DENSITY_RADIUS){
 				sum += polarDensity[i];
 			}
-
+			if(radius[i] < 2){
+				zeroDensity += polarDensity[i];
+			}
 		}
+		it->zeroDensity = zeroDensity;
 		it->surroundDens = sum;
 	}
 
 	// This Number is set at the start, maybe set this in run.cfg -> Options struct, or check how many got set inside the contour, if equal spacing vortices are used.
-	 // cout << "find_vortices before sorting" << endl;
-	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
+	 // cout << "findVortices before sorting" << endl;
+	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.zeroDensity < rhs.zeroDensity;});
 	if(vlist.size() > NUMBER_OF_VORTICES){
 		list<VortexData>::iterator it1 = vlist.begin();
 		advance(it1,NUMBER_OF_VORTICES);
@@ -340,8 +350,8 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 			}
 		}
 	}
-	string name = "Test Zeros";
-	plotDataToPng(name, *zeros, opt);
+	// string name = "Test Zeros";
+	// plotDataToPng(name, *zeros, opt);
 }
 
 
@@ -491,8 +501,9 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	obs.density = obs.particle_count / obs.volume;
 
 	// Aspect-Ratio
+	obs.r_max = 0;
+	obs.r_min = (opt.grid[1] * h_x >= opt.grid[2] * h_y) ? opt.grid[1] * h_x : opt.grid[2] * h_y;
 	vector<contourData> cData;
-
 	for(c_set::iterator it = contour[sampleindex].begin(); it != contour[sampleindex].end(); ++it){
 		contourData tmp;
 		tmp.c = *it;
@@ -501,6 +512,15 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		tmp.phi = atan2(x_shift * h_x,y_shift * h_y) * 180 /M_PI + 180;
 		tmp.r = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
 		cData.push_back(tmp);
+		if(obs.r_max <= tmp.r){
+			obs.r_max = tmp.r;
+			obs.r_max_phi = tmp.phi;
+		}
+		if(obs.r_min >= tmp.r){
+			obs.r_min = tmp.r;
+			obs.r_min_phi = tmp.phi;
+		}
+
 	}
 
 	std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
@@ -598,7 +618,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		// for (int i=0; i<opt.grid[d+1]/2; i++){
 		for(int i = 0; i < opt.grid[d+1]/2; i++){
 		// for (int32_t i = 0; i < kspace[d].size()/2; i++){
-			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			kspace[d][i] = opt.klength[d]/**opt.stateInformation[0]*/*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
 			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)i) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
 			// kspace[d][i] = opt.klength[d] * M_PI / ( (double)(opt.grid[d+1]/2 - i) * h[d] );
@@ -606,7 +626,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
 		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
 		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
-			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+			kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
 			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
 			// kspace[d][i] = - opt.klength[d] * M_PI / ( (double)(i - opt.grid[d+1]/2 + 1) * h[d]);
