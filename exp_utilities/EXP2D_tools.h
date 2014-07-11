@@ -56,6 +56,9 @@ void readDataFromHDF5(ComplexGrid* &g,Options &opt);
 void saveDataToHDF5(ComplexGrid* &g, Options &opt);
 void noiseTheGrid(ComplexGrid &g);
 
+void saveEigenMatrixToHDF5();
+void loadEigenMatrixFromHDF5();
+
 class expException {
 public:
     inline expException(std::string const& info);    
