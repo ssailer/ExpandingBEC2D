@@ -17,7 +17,7 @@ void plotSpectrum(string name,Observables &ares){
 		if(ares.k(r) != 0.0){
 			plotfile << r <<"\t"<< ares.k(r) <<"\t" << ares.number(r) <<"\t";
 			plotfile << endl;
-			if(r%2 == 0){ // reduce the number of k's plotted, because it gets cluttered.
+			if(r%5 == 0){ // reduce the number of k's plotted, because it gets cluttered.
 				kval.push_back(ares.k(r));
 				numberval.push_back(ares.number(r));
 			}

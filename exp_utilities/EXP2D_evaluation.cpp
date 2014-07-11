@@ -2,7 +2,7 @@
 
 #define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]
 #define ANGULAR_AVERAGING_LENGTH 12
-#define NUMBER_OF_VORTICES 46
+#define NUMBER_OF_VORTICES 100
 #define VORTEX_SURROUND_DENSITY_RADIUS 10
 #define EDGE_RANGE_CHECK 10
 
@@ -82,7 +82,7 @@ void Eval::checkEdges(){
 		// cout << "checkEdges[" << k << "] result: " << sum[k] << "/" << threshold << " with " << numberOfEdgePoints << " of points on the edge." << endl;
 		if(sum[k] > threshold){			
 			expException e(error);
-			throw e;
+			throw;
 		}
 	}
 }
@@ -106,16 +106,16 @@ void Eval::evaluateData(){
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
 	for(int k = 0; k < PsiVec.size(); k++){
-		// cout << endl << "Eval #" << k << endl;
+		cout << endl << "Eval #" << k << endl;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
-		// cout << "getDensity" << endl;
+		cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		// cout << "trackContour" << endl;
+		cout << "-trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
-		// cout << "calculator" << endl;		
+		cout << "-calculator" << endl;		
 	}
 	getVortices(PsiVec[0],densityCoordinates[0]);
-	// cout << "getVortices" << endl;
+	cout << endl << "-getVortices" << endl;
 	totalResult /= PsiVec.size();
 
 	
@@ -141,25 +141,30 @@ void Eval::evaluateDataITP(){
 }
 
 void Eval::plotData(){
-	string filename = runname + "-Control-Plot-" + to_string(snapshot_time);
+	std::string snapShotString = to_string(snapshot_time);
+	std::stringstream ss;
+	ss << std::setfill('0') << std::setw(4) << snapShotString;
+	snapShotString = ss.str();
+
+	string filename = runname + "-Control-Plot-" + snapShotString;
 	plotDataToPngExpanding(filename,PsiVec[0],opt);
 
-	filename = runname + "-Spectrum-" + to_string(snapshot_time); 
+	filename = runname + "-Spectrum-" + snapShotString; 
 	plotSpectrum(filename,totalResult);
 
-	filename = runname + "-Vortices-" + to_string(snapshot_time);
+	filename = runname + "-Vortices-" + snapShotString;
 	plotVortexList(filename,phase,pres,opt);	
 
-	filename = runname + "-Density-" + to_string(snapshot_time);
+	filename = runname + "-Density-" + snapShotString;
 	plotDataToPng(filename,densityLocationMap[0],opt);
 
-	filename = runname + "-Density-Axial-Distribution-Gradient" + to_string(snapshot_time);
-	plotVector(filename,x_dist_grad,y_dist_grad,opt);
+	// filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	// plotVector(filename,x_dist_grad,y_dist_grad,opt);
 
-	filename = runname + "-Angular-Dens" + to_string(snapshot_time);
+	filename = runname + "-Angular-Dens-" + snapShotString;
 	plotVector(filename,totalResult.angularDensity,opt);	
 
-	filename = runname + "-Contour" + to_string(snapshot_time);
+	filename = runname + "-Contour-" + snapShotString;
 	plotContour(filename,PsiVec[0],contour[0],opt);
 
 	

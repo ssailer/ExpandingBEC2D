@@ -155,9 +155,9 @@ c_set Contour::trackContour(RealGrid &data){
 		}
 
 		if(singlepoint == true){
-			// cout << "Found single point, continuing the search. " << p << endl;
-			// string name = "ERROR_3-SinglePoint_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
-			// plotContourSurround(name, data,contour,opt);
+			cout << "Found single point, continuing the search. " << p << endl;
+			string name = "ERROR_3-SinglePoint_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
+			plotContourSurround(name, data,contour,opt);
 			s = p;
 			p = p + v_right;			
 			contour.clear();
@@ -174,13 +174,13 @@ c_set Contour::trackContour(RealGrid &data){
 			int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.9; // Circumference of a circle going through p, 90%
 			if(contour.size() > size_condition){
 				if((initial[0] == p) && (initial[1] == s)){
-					// cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
+					cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
 					stop = true;
 				}
 			}else if((initial[0] == p) && (initial[1] == s)){
-				// cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
-				// string name = "ERROR_2-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
-				// plotContourSurround(name, data,contour,opt);
+				cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
+				string name = "ERROR_2-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
+				plotContourSurround(name, data,contour,opt);
 				findMostRightP(contour,p);
 				s = p;
 				p = p + v_right;
