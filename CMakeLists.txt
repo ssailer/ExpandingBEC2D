@@ -20,6 +20,7 @@ set(SOURCESMAIN main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
 					 ${CMAKE_SOURCE_DIR}/startgrids/bh3defaultgrid.cpp
 					 ${CMAKE_SOURCE_DIR}/observables/bh3observables.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_Contour.cpp
+					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_binaryfile.cpp
 					 )
 
 set(SOURCESPLOTTER tester.cpp)

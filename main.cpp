@@ -41,13 +41,21 @@ using namespace std;
 
 int main( int argc, char** argv) 
 {	
-try{ 
+try{
 
+ std::streambuf *psbuf, *backup;
+ std::ofstream logstream;
+ backup = std::cout.rdbuf();     // back up cout's streambuf
+ // std::cout.rdbuf(backup);        // restore cout's original streambuf
 Options opt;
 
 read_cli_options(argc,argv,opt);
 read_config(argc,argv,opt);
 set_workingdirectory(opt);
+
+logstream.open ("run.log");
+psbuf = logstream.rdbuf();        // get file's streambuf
+std::cout.rdbuf(psbuf);         // assign streambuf to cout
 
 // Initialize the needed grid object 
 ComplexGrid* data = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -113,10 +121,10 @@ if(opt.runmode.compare(0,1,"1") == 0)
 }
 
 //====> Real Time Expansion (RTE)
-int snapshots = 10;
+int snapshots = 20;
 vector<int> snapshot_times(snapshots);
-for(int i = 0; i <= snapshots; i++){
-	snapshot_times[i] = (i+1) *opt.n_it_RTE / snapshots;
+for(int i = 0; i < snapshots; i++){
+	snapshot_times[i] = (i+1) * opt.n_it_RTE / snapshots;
 }
 
 ofstream runparameters;
@@ -149,6 +157,9 @@ delete eval;
 delete rterun;
 delete data;
 
+cout << "Terminating successfully." << endl;
+logstream.close();
+
 // Everything finished here 
 }  // exceptions catcher
 catch(const std::exception& e) 
@@ -168,9 +179,8 @@ catch (const std::string& errorMessage)
 	std::cout << " Terminating now." << endl; 
 	return SUCCESS; 
 // the code could be different depending on the exception message 
-} 
-
-cout << "Terminating successfully.";
+}
+cout << "Run complete. Terminating successfully." << endl; 
 return SUCCESS; 	
 }
 

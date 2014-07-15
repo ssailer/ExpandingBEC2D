@@ -63,21 +63,21 @@ bool initialize_path_options(int argc, char** argv, PathOptions &opt, vector<dou
 list<string> get_file_list(const list<string> args);
 void convert_bin_file(const string &filename, bool forward, bool compression = false);
 
-template <typename T>
-inline bool operator== (const vector<T> &v1, const vector<T> &v2)
-{
-	if(v1.size() == v2.size())
-	{
-		bool result = true;
-		for(int i = 0; i < v1.size(); i++)
-		{
-			result = result && (v1[i] == v2[i]);
-		}
-		return result;
-	}
-	else
-		return false;
-}
+// template <typename T>
+// inline bool operator== (const vector<T> &v1, const vector<T> &v2)
+// {
+// 	if(v1.size() == v2.size())
+// 	{
+// 		bool result = true;
+// 		for(int i = 0; i < v1.size(); i++)
+// 		{
+// 			result = result && (v1[i] == v2[i]);
+// 		}
+// 		return result;
+// 	}
+// 	else
+// 		return false;
+// }
 
 inline bool operator== (const PathOptions &p1, const PathOptions &p2)
 {

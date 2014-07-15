@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <EXP2D_tools.h>
 #include <EXP2D_evaluation.h>
+#include <EXP2D_binaryfile.h>
 #include <plot_with_mgl.h>
 #include <eigen3/Eigen/Dense>
 
@@ -22,7 +23,7 @@ using namespace Eigen;
 typedef struct {
         int absoluteSteps;
         int lambdaSteps;
-    } StepCounter;
+    } stepCounter;
 
 class RTE
 {
@@ -88,7 +89,7 @@ class RTE
     MatrixXcd PotentialGrid;
     VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
 
-    StepCounter KeeperOfTime;
+    stepCounter keeperOfTime;
     
     
     // some used constants

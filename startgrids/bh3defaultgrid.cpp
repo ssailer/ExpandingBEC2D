@@ -294,27 +294,28 @@ for(int j = 0; j < opt.grid[0]; j++)
                 g->at(j,x,y,0) *= polar(1.0,(1.0/*<-windingnumber*/*mypow2(1,1))*(vortex(y,V_y,x,V_x)));
             }
         }
-}
+}   
+    opt.vortexnumber++;
     return g;
 }
 
 
 
-ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vortexnumber)
+ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int vortexnumber)
 {
     // What to do: get (x,y) of vortices from polar coordinates x = r * cos(alpha) and y = r * sin(alpha)
     // increment alpha by 60 Degrees, remember alpha = degrees * PI / 180
     // r should be of order of full width at half maximum of the underlying gaussian, think about this, and test. 
     // Build the gaussian into this function, down below, when g is set, in polar function, instead of 1.0 use the gaussian.
     //  think about rotations of the vortices and the winding number Q
-    // int Vortexnumber = 6;
-    int V_x[Vortexnumber]; 
-    int V_y[Vortexnumber]; // Coordinates of all Vortices.
-    double alpha = (360 / Vortexnumber) * M_PI / 180.0; // const-angle between all vortices
+    // int vortexnumber = 6;
+    int V_x[vortexnumber]; 
+    int V_y[vortexnumber]; // Coordinates of all Vortices.
+    double alpha = (360 / vortexnumber) * M_PI / 180.0; // const-angle between all vortices
 // Radius of the Cookie
 
     // cout << "Vortex Coordinates:\n";
-    for(int i = 0; i < Vortexnumber; i++)
+    for(int i = 0; i < vortexnumber; i++)
     {
     V_x[i] = opt.grid[1]/2 + (int)(r * cos(i*alpha));
     V_y[i] = opt.grid[2]/2 + (int)(r * sin(i*alpha)); 
@@ -325,7 +326,7 @@ ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vorte
     for(int j = 0; j < opt.grid[0]; j++)
     {
         // int r = 0; 
-        for(int i = 0; i < Vortexnumber; i++)
+        for(int i = 0; i < vortexnumber; i++)
         {
             // if()
             // {    
@@ -345,7 +346,7 @@ ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vorte
                         g->at(j,x,y,0)= polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
             
                     }
-                    else if(i==Vortexnumber-1)
+                    else if(i==vortexnumber-1)
                     {
                         g->at(j,x,y,0)*= sqrt(rho)*polar(1.0,(Q*mypow2(-1,i+r))*(atan2(y-V_y[i],x-V_x[i])));
                     }
@@ -360,7 +361,9 @@ ComplexGrid *add_circle_vortex(ComplexGrid* &g, Options &opt,double r, int Vorte
 
         } 
     }
+    opt.vortexnumber += vortexnumber;
     return g;
+    
 
 }
 
@@ -368,6 +371,9 @@ ComplexGrid *addVortices(ComplexGrid* &g, Options &opt){
 
 int x_jump = opt.grid[1] / 20;
 int y_jump = opt.grid[2] / 20;
+int windingnumber = 5;
+
+
 
 vector<Coordinate<int32_t>> c;
 
@@ -389,11 +395,12 @@ for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
 for(int i = 0; i < c.size(); i++){
     for(int y = 0; y < opt.grid[2]; y++){
         for(int x = 0; x < opt.grid[1]; x++){   
-            g->at(0,x,y,0) *= polar(1.0,(5.0/*<-windingnumber*/*mypow2(-1,i+1))*(vortex(y,c[i].y(),x,c[i].x())));
+            g->at(0,x,y,0) *= polar(1.0,(windingnumber/*<-windingnumber*/*mypow2(-1,i+1))*(vortex(y,c[i].y(),x,c[i].x())));
         }
     }
     // g->at(0,c) = complex<double>(0.0,0.0);
 }
+opt.vortexnumber += c.size() * windingnumber;
     return g;
 }
 

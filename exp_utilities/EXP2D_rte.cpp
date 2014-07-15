@@ -104,14 +104,14 @@ void RTE::RunSetup(){
 	// The laplacian and gradient coefficient needed for the RTE scheme.
 	// These are precomputed here, to simplify the computations later
 
-   	laplacian_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE);
-   	laplacian_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE);
-   	gradient_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE);
-   	gradient_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE);
+   	laplacian_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
+   	laplacian_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
+   	gradient_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
+   	gradient_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
 
    	complex<double> tmp;  	
-   	for(int t = 0; t< ( 2* opt.n_it_RTE); t++){
-   	tmp = half * complex<double>(t,0.0) * t_RTE;   	
+   	for(int t = 0; t < ( 2 * opt.n_it_RTE); t++){
+   	tmp = half * complex<double>(t+1,0.0) * t_RTE;   	
    	laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
    	laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
    	gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
@@ -172,40 +172,34 @@ void RTE::cli_plot(string name,int counter_state, int counter_max, double start,
 void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start)
 {	
 	for(int i = 0;i < stateOfLoops.size();i++){
-
 		slowestthread = (stateOfLoops[slowestthread] <= stateOfLoops[i]) ? slowestthread : threadinfo[i];
 	}
 	
-	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/100))==0)
-		{
-			int seconds;
-			int min;
-			int hour;
-			int total;
-			double totalstate = 0;
-			double totalmaxpercent = (double)counter_max * (double)opt.samplesize / 100;
-			for(int i = 0; i < opt.samplesize; i++){
-				totalstate += stateOfLoops[i];
-			}
-
-
-			total = omp_get_wtime() - start;
-			hour = total / 3600;
-			min = (total / 60) % 60;
-			seconds = total % 60;
-
-			cout << "\r" << flush;
-			cout << "  " << name << "  "
-			 	 << std::setw(2) << std::setfill('0') << hour << ":"
-				 << std::setw(2) << std::setfill('0') << min << ":"
-				 << std::setw(2) << std::setfill('0') << seconds  << "    "
-				 << std::setw(3) << std::setfill('0') << (totalstate/totalmaxpercent) << "% | ";
-
-			for(int k = 0; k < stateOfLoops.size(); k++){
-				cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
-			}
-			
+	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/100))==0){
+		int seconds;
+		int min;
+		int hour;
+		int total;
+		double totalstate = 0;
+		double totalmaxpercent = (double)counter_max * (double)opt.samplesize / 100;
+		for(int i = 0; i < opt.samplesize; i++){
+			totalstate += stateOfLoops[i];
 		}
+
+		total = omp_get_wtime() - start;
+		hour = total / 3600;
+		min = (total / 60) % 60;
+		seconds = total % 60;
+		cout << "\r" << flush;
+		cout << "  " << name << "  "
+		 	 << std::setw(2) << std::setfill('0') << hour << ":"
+			 << std::setw(2) << std::setfill('0') << min << ":"
+			 << std::setw(2) << std::setfill('0') << seconds  << "    "
+			 << std::setw(3) << std::setfill('0') << (totalstate/totalmaxpercent) << "% | ";
+			for(int k = 0; k < stateOfLoops.size(); k++){
+			cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
+		}			
+	}
 }
 
 void RTE::plot(string name,int counter_state, int counter_max){
@@ -213,7 +207,7 @@ void RTE::plot(string name,int counter_state, int counter_max){
 	wavefct = wavefctVec[0];
 
 	if(opt.runmode.compare(1,1,"1") == 0){
-		complex<double> tmp = complex<double>(KeeperOfTime.absoluteSteps,0.0) * t_RTE;
+		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
 		Xexpanding = x_expand(tmp);
 		Yexpanding = y_expand(tmp);
 		plotDataToPngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
@@ -242,8 +236,8 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 	double start;  // starttime of the run
 	// int t = 0;		// counter for the expanding lambdavectors with coefficients
 	// int step_counter = 0;
-	KeeperOfTime.absoluteSteps = 0;
-	KeeperOfTime.lambdaSteps = 0;
+	keeperOfTime.absoluteSteps = 0;
+	keeperOfTime.lambdaSteps = 0;
 
 	wavefctVec.resize(opt.samplesize);
 
@@ -269,26 +263,42 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 	k2[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 	k3[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);	
 	}
+
+
+	// Starting Evaluation
+	try{
+   		// plot(stepname,j,snapshot_times.size());
+		eval->saveData(wavefctVec,opt,keeperOfTime.absoluteSteps,runname);
+		eval->evaluateData();
+		eval->plotData();
+	}
+	catch(expException& e){
+		e.addString(to_string(keeperOfTime.absoluteSteps));
+		throw;
+	}
+
+	binaryFile dataFile("run.h5",opt,binaryFile::out);
+	dataFile.appendSnapshot("RTE",snapshot_times[0],wavefctVec);
 	
 	start = omp_get_wtime();
 
 
 	//start loop here
 	Eigen::initParallel();
-	int previousTimes = 1;
+	int previousTimes = 0;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
 		string stepname = runname + "-" + to_string(snapshot_times[j]);
 		vector<int> stateOfLoops(opt.samplesize);
 		vector<int> threadinfo(opt.samplesize);
 		int slowestthread = 0;
-		int lambdaSteps = KeeperOfTime.lambdaSteps;
 
 		#pragma omp parallel for
 		for(int i = 0; i < opt.samplesize; i++){
 			// list of which thread is working which iteration
+			int lambdaSteps = keeperOfTime.lambdaSteps;
 			threadinfo[i] = omp_get_thread_num();
-			for(int m = previousTimes; m <= snapshot_times[j]; m++){
+			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
 		
 				wavefctcp[i] = wavefctVec[i];
 		
@@ -326,43 +336,52 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 				// // Boundaries
 		
 				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
-   				stateOfLoops[i]= m - previousTimes + 1;
+   				stateOfLoops[i]= m - previousTimes;
    				if(omp_get_thread_num() == slowestthread){
-   					int counter_max = snapshot_times[j] - previousTimes + 1;
+   					int counter_max = snapshot_times[j] - previousTimes;
    					cli(stepname,slowestthread,threadinfo,stateOfLoops,counter_max,start);
    				}
 	
 			}
-			if(omp_get_thread_num() == 0){
-				KeeperOfTime.lambdaSteps = 2 * snapshot_times[j];
-				KeeperOfTime.absoluteSteps = snapshot_times[j];	
-				previousTimes = snapshot_times[j]+1;
-			}
+			// if(omp_get_thread_num() == 0){
+				
+			// }
 	
 		}
-	complex<double> tmp = complex<double>(KeeperOfTime.absoluteSteps * opt.RTE_step,0.0);  
+		keeperOfTime.lambdaSteps = 2 * snapshot_times[j];
+		keeperOfTime.absoluteSteps = snapshot_times[j];	
+		previousTimes = snapshot_times[j];
 
-	opt.stateInformation.resize(2);
-	if(opt.runmode.compare(1,1,"1") == 0){
-		opt.stateInformation[0] = real(lambda_x(tmp)); // needed for expansion and the computing of the gradient etc.
-		opt.stateInformation[1] = real(lambda_y(tmp));
-	}
-	if(opt.runmode.compare(1,1,"0") == 0){
-		opt.stateInformation[0] = 1.0;
-		opt.stateInformation[1] = 1.0;
-	}
+		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps * opt.RTE_step,0.0);  
 
-	try{
-   		// plot(stepname,j,snapshot_times.size());
-		eval->saveData(wavefctVec,opt,snapshot_times[j],runname);
-		eval->evaluateData();
-		eval->plotData();
+		opt.stateInformation.resize(2);
+		if(opt.runmode.compare(1,1,"1") == 0){
+			opt.stateInformation[0] = real(lambda_x(tmp)); // needed for expansion and the computing of the gradient etc.
+			opt.stateInformation[1] = real(lambda_y(tmp));
+		}
+		if(opt.runmode.compare(1,1,"0") == 0){
+			opt.stateInformation[0] = 1.0;
+			opt.stateInformation[1] = 1.0;
+		}
+
+		try{
+   			// plot(stepname,j,snapshot_times.size());
+			// eval->saveData(wavefctVec,opt,snapshot_times[j],runname);
+			// eval->evaluateData();
+			// eval->plotData();
+			dataFile.appendSnapshot("RTE",snapshot_times[j],wavefctVec);
+
+		}
+		catch(const std::exception& e) { 
+			  	std::cerr << "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
+			    	      << e.what() << ", application will now exit" << std::endl; 
+				throw; 
+			}
+		catch(expException& e){
+			e.addString(to_string(snapshot_times[j]));
+			throw;
+		}
 	}
-	catch(expException& e){
-		e.addString(to_string(snapshot_times[j]));
-		throw;
-	}
-}
 
 // update the ComplexGrid* DATA object outside of this.
 if(opt.samplesize == 1){

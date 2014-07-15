@@ -33,19 +33,21 @@ void set_workingdirectory(Options &opt)
 	struct stat wd_stat;
 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cout << "Changed to existing directory: " << "\"" << opt.workingdirectory << "\"" << endl;
+			cout << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
+			cout << "Check \"run.log\" for output of this run." << endl;
 		}
 	}else
 	{
 		char command[256];
 		sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
 		if(system(command) == 0){
-			cout << "Created directory: " << "\"" << opt.workingdirectory << "\"";
+			cout << "Creating directory: " << "\"" << opt.workingdirectory << "\"";
 		}
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cout << " and changed into it.";
+			cout << "Switchting to "<< "\"" << opt.workingdirectory << "\"";
 		}
 		cout << endl;
+		cout << "Check \"run.log\" for output of this run." << endl;
 	}
 }
 
@@ -191,6 +193,7 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.stateInformation.resize(2);
 	opt.stateInformation[0] = 1;
 	opt.stateInformation[1] = 1;
+	opt.vortexnumber = 0;
 
     // Set Parameters manually (default values)
 	//opt.timestepsize = 0.2;
