@@ -49,7 +49,7 @@ RTE::RTE(ComplexGrid* &c,Options &externaloptions)
  	// setting up multithreading. Output to see what Eigen is doing.
 	omp_set_num_threads(omp_get_max_threads());
 	cout << "Max Number of Threads: " << omp_get_max_threads() << endl;	
-	cout << "Eigenthreads: " << Eigen::nbThreads() << endl;
+	// cout << "Eigenthreads: " << Eigen::nbThreads() << endl;
 
 	// Using the setter function to initialize the stuff.
 	RunSetup();
@@ -79,10 +79,11 @@ void RTE::RunSetup(){
 	complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
 	ranges[0] = opt.min_x * real(lambda_x(tmp3));
 	ranges[1] = opt.min_y * real(lambda_y(tmp3));
-	if(ranges[0] > ranges[1]){ ranges[1] = ranges[0];
-		cout << "range 1 bigger than 2" << endl;}
-		else if(ranges[1] > ranges[0]){ranges[0] = ranges[1];
-			cout << "range 2 bigger than 1" << endl;}
+
+	if(ranges[0] > ranges[1])
+		ranges[1] = ranges[0];
+	else if(ranges[1] > ranges[0])
+		ranges[0] = ranges[1];
 
 	// Grid Spacing variables
 	h_x = complex<double>((2.*opt.min_x/opt.grid[1]),0.0);
@@ -128,46 +129,47 @@ void RTE::RunSetup(){
 
 }
 
-void RTE::cli_plot(string name,int counter_state, int counter_max, double start,bool plot)
-{
-	if(counter_state%(counter_max/100)==0)
-		{
-			int seconds;
-			int min;
-			int hour;
-			int total;
+// void RTE::cli_plot(string name,int counter_state, int counter_max, double start,bool plot)
+// {
+// 	if(counter_state%(counter_max/100)==0)
+// 		{
+// 			int seconds;
+// 			int min;
+// 			int hour;
+// 			int total;
 
-			if(plot == true)
-				{
-					opt.name = name; //+ "-" + std::to_string(counter_state/(counter_max/100));
-					// plotDataToPng(pPsi,opt);
-					plotDataToPngEigen(wavefct,opt);
+// 			if(plot == true)
+// 				{
+// 					opt.name = name; //+ "-" + std::to_string(counter_state/(counter_max/100));
+// 					// plotDataToPng(pPsi,opt);
+// 					plotDataToPngEigen(wavefct,opt);
 
-					// // kvalue analysis
-					// CopyEigenToComplexGrid();
-					// ComplexGrid::fft(*pPsi,*pK,true);
-					// opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
-					// plotDataToPng(pK,opt);
+// 					// // kvalue analysis
+// 					// CopyEigenToComplexGrid();
+// 					// ComplexGrid::fft(*pPsi,*pK,true);
+// 					// opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
+// 					// plotDataToPng(pK,opt);
 
 
-				}
+// 				}
 
-			total = omp_get_wtime() - start;
-			hour = total / 3600;
-			min = (total / 60) % 60;
-			seconds = total % 60;
+// 			total = omp_get_wtime() - start;
+// 			hour = total / 3600;
+// 			min = (total / 60) % 60;
+// 			seconds = total % 60;
 
-			cout << "  " << name << " reached: "
-				 << std::setw(2) << std::setfill('0') << hour << ":"
-				 << std::setw(2) << std::setfill('0') << min << ":"
-				 << std::setw(2) << std::setfill('0') << seconds  << "    "
-				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
-		}
-	if(counter_state == counter_max)
-	{
-		cout << endl;
-	}
-}
+// 			cout << 
+// 				 << "  " << name << " reached: "
+// 				 << std::setw(2) << std::setfill('0') << hour << ":"
+// 				 << std::setw(2) << std::setfill('0') << min << ":"
+// 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
+// 				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
+// 		}
+// 	if(counter_state == counter_max)
+// 	{
+// 		cout << endl;
+// 	}
+// }
 
 void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start)
 {	
@@ -175,7 +177,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 		slowestthread = (stateOfLoops[slowestthread] <= stateOfLoops[i]) ? slowestthread : threadinfo[i];
 	}
 	
-	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/100))==0){
+	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/10))==0){
 		int seconds;
 		int min;
 		int hour;
@@ -191,14 +193,15 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 		min = (total / 60) % 60;
 		seconds = total % 60;
 		cout << "\r" << flush;
-		cout << "  " << name << "  "
+		cout << currentTime() <<  " " << name << " "
 		 	 << std::setw(2) << std::setfill('0') << hour << ":"
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    "
 			 << std::setw(3) << std::setfill('0') << (totalstate/totalmaxpercent) << "% | ";
-			for(int k = 0; k < stateOfLoops.size(); k++){
-			cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
-		}			
+		// cout << " Slowest Thread: " << std::setw(3) << std::setfill('0') << (float)(stateOfLoops[slowestthread])/(float)(counter_max/100) << "% ";
+			// for(int k = 0; k < stateOfLoops.size(); k++){
+			// cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
+		// }			
 	}
 }
 
@@ -226,12 +229,12 @@ void RTE::CopyEigenToComplexGrid(){
 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ pPsi->at(0,i,j,0) = wavefct(i,j);}}
 }
 
-void RTE::ToEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct){
+void RTE::toEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct){
 	noiseTheGrid(g);
 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ wavefct(i,j) = g(0,i,j,0);}}
 }
 
-void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
+void RTE::rteToTime(string runname, vector<int> snapshot_times)
 {
 	double start;  // starttime of the run
 	// int t = 0;		// counter for the expanding lambdavectors with coefficients
@@ -256,7 +259,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 
 	for(int i = 0; i < opt.samplesize;i++){
 	wavefctVec[i] = MatrixXcd(opt.grid[1],opt.grid[2]);
-	ToEigenAndNoise(Psi,wavefctVec[i]);
+	toEigenAndNoise(Psi,wavefctVec[i]);
 	wavefctcp[i] = MatrixXcd(opt.grid[1],opt.grid[2]);
 	k0[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 	k1[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -265,20 +268,9 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 	}
 
 
-	// Starting Evaluation
-	try{
-   		// plot(stepname,j,snapshot_times.size());
-		eval->saveData(wavefctVec,opt,keeperOfTime.absoluteSteps,runname);
-		eval->evaluateData();
-		eval->plotData();
-	}
-	catch(expException& e){
-		e.addString(to_string(keeperOfTime.absoluteSteps));
-		throw;
-	}
-
-	binaryFile dataFile("run.h5",opt,binaryFile::out);
-	dataFile.appendSnapshot("RTE",snapshot_times[0],wavefctVec);
+	binaryFile *dataFile = new binaryFile("runData.h5",binaryFile::out);
+	dataFile->appendSnapshot("RTE",0,wavefctVec,opt);
+	delete dataFile;
 	
 	start = omp_get_wtime();
 
@@ -365,28 +357,174 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times, Eval* &eval)
 		}
 
 		try{
-   			// plot(stepname,j,snapshot_times.size());
-			// eval->saveData(wavefctVec,opt,snapshot_times[j],runname);
-			// eval->evaluateData();
-			// eval->plotData();
-			dataFile.appendSnapshot("RTE",snapshot_times[j],wavefctVec);
+			binaryFile *dataFile = new binaryFile("runData.h5",binaryFile::append);
+			dataFile->appendSnapshot("RTE",snapshot_times[j],wavefctVec,opt);
+			delete dataFile;
+			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
 
 		}
 		catch(const std::exception& e) { 
-			  	std::cerr << "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
-			    	      << e.what() << ", application will now exit" << std::endl; 
-				throw; 
-			}
-		catch(expException& e){
-			e.addString(to_string(snapshot_times[j]));
-			throw;
+			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
+					    << e.what() << ", application will now exit" << std::endl; 
+			throw; 
 		}
+
 	}
 
 // update the ComplexGrid* DATA object outside of this.
-if(opt.samplesize == 1){
-	CopyEigenToComplexGrid();
+// if(opt.samplesize == 1){
+// 	CopyEigenToComplexGrid();
+// }
+	delete dataFile;
+
 }
+
+void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
+{
+	double start;  // starttime of the run
+	// int t = 0;		// counter for the expanding lambdavectors with coefficients
+	// int step_counter = 0;
+	keeperOfTime.absoluteSteps = 0;
+	keeperOfTime.lambdaSteps = 0;
+
+	binaryFile *dataLoading = new binaryFile("runData.h5",binaryFile::in);
+	dataLoading->getSnapshot("RTE",0,wavefctVec,opt);
+	delete dataLoading;
+
+	// wavefctVec.resize(opt.samplesize);
+
+	// ComplexGrid Psi(*pPsi);
+
+	// ComplexGrid Psi(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	// for(int i = 0; i < opt.grid[1];i++){for(int j = 0; j < opt.grid[2]; j++){Psi(0,i,j,0) = pPsi->at(0,i,j,0);}}
+
+	vector<MatrixXcd> wavefctcp(opt.samplesize);	
+	vector<MatrixXcd> k0(opt.samplesize);
+	vector<MatrixXcd> k1(opt.samplesize);
+	vector<MatrixXcd> k2(opt.samplesize);
+	vector<MatrixXcd> k3(opt.samplesize);
+
+	// CopyComplexGridToEigen();
+
+	for(int i = 0; i < opt.samplesize;i++){
+	// wavefctVec[i] = MatrixXcd(opt.grid[1],opt.grid[2]);
+	// toEigenAndNoise(Psi,wavefctVec[i]);
+	wavefctcp[i] = MatrixXcd(opt.grid[1],opt.grid[2]);
+	k0[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k1[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k2[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k3[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);	
+	}
+
+
+	binaryFile *dataFile = new binaryFile("runDataNew.h5",binaryFile::out);
+	dataFile->appendSnapshot("RTE",0,wavefctVec,opt);
+	delete dataFile;
+	
+	start = omp_get_wtime();
+
+
+	//start loop here
+	Eigen::initParallel();
+	int previousTimes = 0;
+	for(int j = 0; j < snapshot_times.size(); j++){
+		// some information about the computation status and stuff
+		string stepname = runname + "-" + to_string(snapshot_times[j]);
+		vector<int> stateOfLoops(opt.samplesize);
+		vector<int> threadinfo(opt.samplesize);
+		int slowestthread = 0;
+
+		#pragma omp parallel for
+		for(int i = 0; i < opt.samplesize; i++){
+			// list of which thread is working which iteration
+			int lambdaSteps = keeperOfTime.lambdaSteps;
+			threadinfo[i] = omp_get_thread_num();
+			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
+		
+				wavefctcp[i] = wavefctVec[i];
+		
+				// boundary conditions -- Dirichlet
+		
+				wavefctVec[i].row(0) = VectorXcd::Zero(opt.grid[1]);
+				wavefctVec[i].row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+				wavefctVec[i].col(0) = VectorXcd::Zero(opt.grid[2]);
+				wavefctVec[i].col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
+		
+				// boundary conditions end
+		
+				RTE_compute_k(k0[i],wavefctcp[i],lambdaSteps);
+				wavefctcp[i] = wavefctVec[i] + half * t_RTE * k0[i];
+
+				lambdaSteps++;
+				RTE_compute_k(k1[i],wavefctcp[i],lambdaSteps);
+				wavefctcp[i] = wavefctVec[i] + half * t_RTE * k1[i];
+		
+				RTE_compute_k(k2[i],wavefctcp[i],lambdaSteps);		
+				wavefctcp[i] = wavefctVec[i] + t_RTE * k2[i];
+		
+				lambdaSteps++;
+				RTE_compute_k(k3[i],wavefctcp[i],lambdaSteps);
+		
+				wavefctVec[i] += (t_RTE/six) * ( k0[i] + two * k1[i] + two * k2[i] + k3[i]);
+		
+				// // Neumann Boundaries
+		
+				// wavefctVec[i].col(0).real() = wavefctVec[i].col(1).real();
+				// wavefctVec[i].col(opt.grid[2]-1).real() = wavefctVec[i].col(opt.grid[2]-2).real();
+				// wavefctVec[i].row(0).real() = wavefctVec[i].row(0).real();
+				// wavefctVec[i].row(opt.grid[1]-1).real() = wavefctVec[i].row(opt.grid[1]-2).real();
+		
+				// // Boundaries
+		
+				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
+   				stateOfLoops[i]= m - previousTimes;
+   				if(omp_get_thread_num() == slowestthread){
+   					int counter_max = snapshot_times[j] - previousTimes;
+   					cli(stepname,slowestthread,threadinfo,stateOfLoops,counter_max,start);
+   				}
+	
+			}
+			// if(omp_get_thread_num() == 0){
+				
+			// }
+	
+		}
+		keeperOfTime.lambdaSteps = 2 * snapshot_times[j];
+		keeperOfTime.absoluteSteps = snapshot_times[j];	
+		previousTimes = snapshot_times[j];
+
+		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps * opt.RTE_step,0.0);  
+
+		opt.stateInformation.resize(2);
+		if(opt.runmode.compare(1,1,"1") == 0){
+			opt.stateInformation[0] = real(lambda_x(tmp)); // needed for expansion and the computing of the gradient etc.
+			opt.stateInformation[1] = real(lambda_y(tmp));
+		}
+		if(opt.runmode.compare(1,1,"0") == 0){
+			opt.stateInformation[0] = 1.0;
+			opt.stateInformation[1] = 1.0;
+		}
+
+		try{
+			binaryFile *dataFile = new binaryFile("runDataNew.h5",binaryFile::append);
+			dataFile->appendSnapshot("RTE",snapshot_times[j],wavefctVec,opt);
+			delete dataFile;
+			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
+
+		}
+		catch(const std::exception& e) { 
+			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
+					    << e.what() << ", application will now exit" << std::endl; 
+			throw; 
+		}
+
+	}
+
+// update the ComplexGrid* DATA object outside of this.
+// if(opt.samplesize == 1){
+// 	CopyEigenToComplexGrid();
+// }
+	delete dataFile;
 
 }
 

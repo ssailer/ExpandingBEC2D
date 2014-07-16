@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <gauss_random.h>
 #include <stdlib.h>
+#include <time.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
@@ -82,6 +83,30 @@ inline void expException::addString(std::string const& info){
 
 inline std::string expException::printString(){
     cout << stringException.c_str() << endl;
+}
+
+inline const std::string currentDate() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d", &tstruct);
+
+    return buf;
+}
+
+inline const std::string currentTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%X", &tstruct);
+
+    return buf;
 }
 
 

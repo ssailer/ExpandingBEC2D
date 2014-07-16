@@ -155,7 +155,7 @@ c_set Contour::trackContour(RealGrid &data){
 		}
 
 		if(singlepoint == true){
-			cout << "Found single point, continuing the search. " << p << endl;
+			std::cout << "Found single point, continuing the search. " << p << endl;
 			string name = "ERROR_3-SinglePoint_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
 			plotContourSurround(name, data,contour,opt);
 			s = p;

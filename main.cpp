@@ -36,9 +36,6 @@ Last Update: 22/07/13
 
 using namespace std;
 
-
-
-
 int main( int argc, char** argv) 
 {	
 try{
@@ -59,11 +56,13 @@ std::cout.rdbuf(psbuf);         // assign streambuf to cout
 
 // Initialize the needed grid object 
 ComplexGrid* data = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-ITP* itprun = new ITP(data,opt);
+
 
 printInitVar(opt); 
 
 if(opt.runmode.compare(0,1,"0") == 0){
+
+ITP* itprun = new ITP(data,opt);
 
 double sigma_real[2];
 sigma_real[0] = opt.min_x/4;
@@ -107,25 +106,29 @@ itprun->formVortices("ITP2");
 opt.name = "ITP2";
 plotDataToPng(opt.name,data,opt);
 // saveDataToHDF5(data,opt);
+delete itprun;
 }
 
-delete itprun;
+
+//====> Real Time Expansion (RTE)
+int snapshots = 10;
+vector<int> snapshot_times(snapshots);
+for(int i = 0; i < snapshots; i++){
+	snapshot_times[i] = (i+1) * opt.n_it_RTE / snapshots;
+}
+
 RTE* rterun = new RTE(data,opt);
+string runname = "RT-Ex";
 
 if(opt.runmode.compare(0,1,"1") == 0)
 {
 	// readDataFromHDF5(data,opt);	
 	rterun->setOptions(opt);
 	rterun->RunSetup();
+	rterun->rteFromDataToTime(runname,snapshot_times);
 	printInitVar(opt);
 }
 
-//====> Real Time Expansion (RTE)
-int snapshots = 20;
-vector<int> snapshot_times(snapshots);
-for(int i = 0; i < snapshots; i++){
-	snapshot_times[i] = (i+1) * opt.n_it_RTE / snapshots;
-}
 
 ofstream runparameters;
 runparameters.open(("runparameters.txt")/*.c_str()*/, ios::out | ios::trunc);
@@ -140,20 +143,20 @@ runparameters << "Parameters of this run:" << endl
 runparameters.close();
 
 // run
-Eval* eval = new Eval;
+// Eval* eval = new Eval;
 
-string runname = "RT-Ex";
+
 // opt.runmode = "0011";
 // rterun->setOptions(opt);
 // rterun->RunSetup();
-rterun->rteToTime(runname,snapshot_times,eval);
+rterun->rteToTime(runname,snapshot_times);
 // runname = "RT-Ex";
 // opt.runmode = "0101";
 // rterun->setOptions(opt);
 // rterun->RunSetup();
 // rterun->rteToTime(runname,snapshot_times,eval);
 
-delete eval;
+// delete eval;
 delete rterun;
 delete data;
 

@@ -37,7 +37,8 @@ class RTE
     
     // Propagatoren
 
-    void rteToTime(string runname, vector<int> snapshot_times,Eval* &eval);    
+    void rteToTime(string runname, vector<int> snapshot_times);
+    void rteFromDataToTime(string runname, vector<int> snapshot_times);    
    
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;
@@ -58,7 +59,7 @@ class RTE
 
     // Plotting and progress functions 
     
-    void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
+    // void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(string name,int counter_state, int counter_max);
     
@@ -66,18 +67,12 @@ class RTE
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
 
-    
-
-    
-
-
   private:
 
     //
     inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    void ToEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct);
-
+    void toEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct);
 
     // Variables
     complex<double> h_x, h_y;

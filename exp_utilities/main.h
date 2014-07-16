@@ -41,13 +41,13 @@ void set_workingdirectory(Options &opt)
 		char command[256];
 		sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
 		if(system(command) == 0){
-			cout << "Creating directory: " << "\"" << opt.workingdirectory << "\"";
+			cout << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
 		}
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cout << "Switchting to "<< "\"" << opt.workingdirectory << "\"";
+			cout << "Switchting to "<< "\"" << opt.workingdirectory << "\"" << endl;
 		}
 		cout << endl;
-		cout << "Check \"run.log\" for output of this run." << endl;
+		cout << "Check \"run.log\" for information about this run." << endl;
 	}
 }
 
