@@ -7,10 +7,10 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define SUCCESS 0; 
-#define ERROR_IN_COMMAND_LINE 1;
-#define ERROR_IN_CONFIG_FILE 2;
-#define ERROR_UNHANDLED_EXCEPTION 3;
+#define SUCCESS 0 
+#define ERROR_IN_COMMAND_LINE 1
+#define ERROR_IN_CONFIG_FILE 2
+#define ERROR_UNHANDLED_EXCEPTION 3
 
 using namespace libconfig;
 

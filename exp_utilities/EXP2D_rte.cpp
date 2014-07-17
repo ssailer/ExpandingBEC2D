@@ -357,9 +357,9 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 		}
 
 		try{
-			binaryFile *dataFile = new binaryFile("runData.h5",binaryFile::append);
-			dataFile->appendSnapshot("RTE",snapshot_times[j],wavefctVec,opt);
-			delete dataFile;
+			binaryFile *dataFile1 = new binaryFile("runData.h5",binaryFile::append);
+			dataFile1->appendSnapshot("RTE",snapshot_times[j],wavefctVec,opt);
+			delete dataFile1;
 			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
 
 		}
@@ -375,7 +375,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 // if(opt.samplesize == 1){
 // 	CopyEigenToComplexGrid();
 // }
-	delete dataFile;
+	
 
 }
 
@@ -524,7 +524,7 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 // if(opt.samplesize == 1){
 // 	CopyEigenToComplexGrid();
 // }
-	delete dataFile;
+	
 
 }
 

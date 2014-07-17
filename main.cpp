@@ -29,10 +29,11 @@ Last Update: 22/07/13
 
 // #include <typeinfo>
 
-#define SUCCESS 0; 
-#define ERROR_IN_COMMAND_LINE 1;
-#define ERROR_IN_CONFIG_FILE 2;
-#define ERROR_UNHANDLED_EXCEPTION 3;
+#define SUCCESS 0
+#define ERROR_IN_COMMAND_LINE 1
+#define ERROR_IN_CONFIG_FILE 2
+#define ERROR_UNHANDLED_EXCEPTION 3
+#define DEBUG_LOG 0
 
 using namespace std;
 
@@ -40,19 +41,23 @@ int main( int argc, char** argv)
 {	
 try{
 
- std::streambuf *psbuf, *backup;
- std::ofstream logstream;
- backup = std::cout.rdbuf();     // back up cout's streambuf
- // std::cout.rdbuf(backup);        // restore cout's original streambuf
+
+ 	std::streambuf *psbuf, *backup;
+ 	std::ofstream logstream;
+ 	backup = std::cout.rdbuf();     // back up cout's streambuf
+ 	// std::cout.rdbuf(backup);        // restore cout's original streambuf
+
 Options opt;
 
 read_cli_options(argc,argv,opt);
 read_config(argc,argv,opt);
 set_workingdirectory(opt);
 
-logstream.open ("run.log");
-psbuf = logstream.rdbuf();        // get file's streambuf
-std::cout.rdbuf(psbuf);         // assign streambuf to cout
+if(DEBUG_LOG == 1){
+	logstream.open ("run.log");
+	psbuf = logstream.rdbuf();        // get file's streambuf
+	std::cout.rdbuf(psbuf);         // assign streambuf to cout
+}
 
 // Initialize the needed grid object 
 ComplexGrid* data = new ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -155,16 +160,20 @@ rterun->rteToTime(runname,snapshot_times);
 // rterun->setOptions(opt);
 // rterun->RunSetup();
 // rterun->rteToTime(runname,snapshot_times,eval);
-
+cout << "Deleting RTERUN and DATA" << endl;
 // delete eval;
 delete rterun;
 delete data;
 
 cout << "Terminating successfully." << endl;
-logstream.close();
-
+if(DEBUG_LOG == 1){
+	logstream.close();
+}
+cout << "Now come the heros!" << endl;
 // Everything finished here 
 }  // exceptions catcher
+
+
 catch(const std::exception& e) 
 { 
   	std::cerr << "Unhandled Exception reached the top of main: " 
@@ -172,14 +181,14 @@ catch(const std::exception& e)
 	return ERROR_UNHANDLED_EXCEPTION; 
 }
 catch(expException& e){
-	std::cout << e.stringException.c_str() << endl;
-	std::cout << " Terminating now." << endl;
+	std::cerr << e.stringException.c_str() << endl;
+	std::cerr << " Terminating now." << endl;
 	return ERROR_UNHANDLED_EXCEPTION;
 }
 catch (const std::string& errorMessage) 
 { 
-	std::cout << errorMessage.c_str(); 
-	std::cout << " Terminating now." << endl; 
+	std::cerr << errorMessage.c_str(); 
+	std::cerr << " Terminating now." << endl; 
 	return SUCCESS; 
 // the code could be different depending on the exception message 
 }
