@@ -23,7 +23,7 @@ set(SOURCESMAIN main.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_binaryfile.cpp
 					 )
 
-set(SOURCESPLOTTER tester.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
+set(SOURCESPLOTTER evaluator.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_rte.cpp					 
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_tools.cpp
 					 ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_evaluation.cpp
@@ -42,10 +42,10 @@ set(SOURCESPLOTTER tester.cpp ${CMAKE_SOURCE_DIR}/exp_utilities/EXP2D_itp.cpp
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fopenmp -Ofast -funroll-loops -march=native ") #-ftree-vectorizer-verbose=1")
 
 add_executable(main ${SOURCESMAIN})
-add_executable(tester ${SOURCESPLOTTER})
+add_executable(evaluator ${SOURCESPLOTTER})
 
-target_link_libraries(main ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options)
-target_link_libraries(tester ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options)
+target_link_libraries(main ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options -Wnarrowing)
+target_link_libraries(evaluator ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options -Wnarrowing)
 
 install(TARGETS main RUNTIME DESTINATION bin)
-install(TARGETS tester RUNTIME DESTINATION bin)
+install(TARGETS evaluator RUNTIME DESTINATION bin)

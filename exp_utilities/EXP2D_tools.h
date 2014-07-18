@@ -18,7 +18,9 @@
 using namespace std;
 using namespace Eigen;
 
-typedef struct {
+typedef struct Options {
+
+    Options () : stateInformation(2) {}
 
     double N; // Number of particles    
     double klength[3];
@@ -49,6 +51,29 @@ typedef struct {
     
 } Options;
 
+class matrixData {
+public:
+
+    vector<MatrixXcd> wavefunction;
+    double timeState;
+    vector<double> coordinateBoundaries;
+
+    matrixData() : wavefunction(0), timeState(0), coordinateBoundaries(2) {}
+    matrixData(const int &samplesize,const int &gridx, const int &gridy,const int &tmpTime, const int &xsize, const int &ysize) {
+        
+        wavefunction.resize(samplesize);
+        for(int i = 0; wavefunction.size(); ++i)
+            wavefunction[i] = MatrixXcd(gridx,gridy);
+
+        coordinateBoundaries.resize(2);
+        coordinateBoundaries[0] = xsize;
+        coordinateBoundaries[1] = ysize;
+
+        timeState = tmpTime;
+    }
+};
+
+
 void optToPath(Options &opt,PathOptions &pathopt);
 void pathToOpt(PathOptions &pathopt,Options &opt);
 void readDataFromHDF5(ComplexGrid* &g,Options &opt);
@@ -60,30 +85,22 @@ void loadEigenMatrixFromHDF5();
 
 class expException {
 public:
-    inline expException(std::string const& info);    
-    inline void setString(std::string const& info);
-    inline void addString(std::string const& info);
-    inline std::string printString();
+    inline expException(std::string const& info){
+        stringException = info;
+    }    
+    inline void setString(std::string const& info){
+        stringException = info;
+    };
+    inline void addString(std::string const& info){
+        stringException += info;
+    };
+    inline std::string printString(){
+        cout << stringException.c_str() << endl;
+    };
     std::string stringException;
 private:
     
 };
-
-inline expException::expException(std::string const& info){
-    stringException = info;
-}
-
-inline void expException::setString(std::string const& info){
-    stringException = info;
-}
-
-inline void expException::addString(std::string const& info){
-    stringException += info;
-}
-
-inline std::string expException::printString(){
-    cout << stringException.c_str() << endl;
-}
 
 inline const std::string currentDate() {
     time_t     now = time(0);

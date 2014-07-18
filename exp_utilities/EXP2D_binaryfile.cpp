@@ -482,56 +482,7 @@ bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<Mat
     {
       hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
 
-      // if(H5Iget_type(test_id) == H5I_DATASET)
-      //   {
-      //     hid_t dataspace = H5Dget_space(test_id);
-
-      //     hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
-      //     hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
-      //     H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-
-      //     dimf[0] /= 2;
-      //     dimf[1] /= 2;
-      //     k[0].resize(dimf[0],dimf[1]);
-          
-
-      //     H5Dread(test_id,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[0].data());
-
-      //     free(dimf);
-      //     H5Dclose(test_id);
-      //   }
-      // else
-      //   {
-          hsize_t vecsize;
-          H5Gget_num_objs(test_id, &vecsize);
-          k.resize(vecsize);
-
-          for(int i = 0; i < vecsize; i++)
-            {
-              stringstream comp;
-              comp << i;
-
-              hid_t dataset = H5Dopen(test_id, (comp.str()).c_str(), H5P_DEFAULT);
-              hid_t dataspace = H5Dget_space(dataset);
-
-              hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
-              hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
-              H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-
-          	  dimf[0] /= 2;
-          	  // dimf[1] /= 2;
-              k[i].resize(dimf[0],dimf[1]);
-
-              H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[i].data());
-
-              free(dimf);
-              H5Dclose(dataset);
-            }
-          H5Gclose(test_id);
-        // }
-    }
-
-               hid_t h5a_options;
+              hid_t h5a_options;
               h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
 
               double tmpOpt1[24];
@@ -565,6 +516,58 @@ bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<Mat
               options.vortexnumber = (int)tmpOpt1[23];              
 
               H5Aclose(h5a_options);
+
+      // if(H5Iget_type(test_id) == H5I_DATASET)
+      //   {
+      //     hid_t dataspace = H5Dget_space(test_id);
+
+      //     hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
+      //     hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
+      //     H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+
+      //     dimf[0] /= 2;
+      //     dimf[1] /= 2;
+      //     k[0].resize(dimf[0],dimf[1]);
+          
+
+      //     H5Dread(test_id,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[0].data());
+
+      //     free(dimf);
+      //     H5Dclose(test_id);
+      //   }
+      // else
+      //   {
+          hsize_t vecsize;
+          H5Gget_num_objs(test_id, &vecsize);
+          k.resize(vecsize);
+
+          for(int i = 0; i < vecsize; i++)
+            {
+              k[i] = MatrixXcd(options.grid[1],options.grid[2]);
+              stringstream comp;
+              comp << i;
+
+              hid_t dataset = H5Dopen(test_id, (comp.str()).c_str(), H5P_DEFAULT);
+              hid_t dataspace = H5Dget_space(dataset);
+
+              hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
+              hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
+              H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+
+          	  dimf[0] /= 2;
+          	  // dimf[1] /= 2;
+              k[i].resize(dimf[0],dimf[1]);
+
+              H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[i].data());
+
+              free(dimf);
+              H5Dclose(dataset);
+            }
+          H5Gclose(test_id);
+        // }
+    }
+
+
 
   H5Gclose(h5_timegroup);
 

@@ -416,10 +416,12 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 	k3[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);	
 	}
 
+	Options dummy;
 
 	binaryFile *dataFile = new binaryFile("runDataNew.h5",binaryFile::out);
-	dataFile->appendSnapshot("RTE",0,wavefctVec,opt);
+	dataFile->appendSnapshot("RTE",0,wavefctVec,dummy);
 	delete dataFile;
+
 	
 	start = omp_get_wtime();
 
