@@ -106,16 +106,16 @@ void Eval::evaluateData(){
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
 	for(int k = 0; k < PsiVec.size(); k++){
-		cout << endl << "Eval #" << k << endl;
+		// cout << endl << "Eval #" << k << endl;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
-		cout << "-getDensity" << endl;
+		// cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		cout << "-trackContour" << endl;
+		// cout << "-trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
-		cout << "-calculator" << endl;		
+		// cout << "-calculator" << endl;		
 	}
 	getVortices(PsiVec[0],densityCoordinates[0]);
-	cout << endl << "-getVortices" << endl;
+	// cout << endl << "-getVortices" << endl;
 	totalResult /= PsiVec.size();
 
 	
@@ -143,7 +143,7 @@ void Eval::evaluateDataITP(){
 void Eval::plotData(){
 	std::string snapShotString = to_string(snapshot_time);
 	std::stringstream ss;
-	ss << std::setfill('0') << std::setw(4) << snapShotString;
+	ss << std::setfill('0') << std::setw(5) << snapShotString;
 	snapShotString = ss.str();
 
 	string filename = runname + "-Control-Plot-" + snapShotString;
@@ -158,8 +158,8 @@ void Eval::plotData(){
 	filename = runname + "-Density-" + snapShotString;
 	plotDataToPng(filename,densityLocationMap[0],opt);
 
-	// filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	// plotVector(filename,x_dist_grad,y_dist_grad,opt);
+	filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	plotVector(filename,x_dist_grad,y_dist_grad,opt);
 
 	filename = runname + "-Angular-Dens-" + snapShotString;
 	plotVector(filename,totalResult.angularDensity,opt);	

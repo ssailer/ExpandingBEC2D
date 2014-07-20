@@ -418,7 +418,7 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 
 	Options dummy;
 
-	binaryFile *dataFile = new binaryFile("runDataNew.h5",binaryFile::out);
+	binaryFile *dataFile = new binaryFile("runData.h5",binaryFile::out);
 	dataFile->appendSnapshot("RTE",0,wavefctVec,dummy);
 	delete dataFile;
 
@@ -508,7 +508,7 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 		}
 
 		try{
-			binaryFile *dataFile = new binaryFile("runDataNew.h5",binaryFile::append);
+			binaryFile *dataFile = new binaryFile("runData.h5",binaryFile::append);
 			dataFile->appendSnapshot("RTE",snapshot_times[j],wavefctVec,opt);
 			delete dataFile;
 			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;

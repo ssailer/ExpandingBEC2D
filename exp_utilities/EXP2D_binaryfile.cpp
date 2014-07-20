@@ -455,8 +455,6 @@ bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<Mat
   time_name.precision(2);
   time_name << snapShotTime;
 
-  cout << snapShotTime << endl;
-
   if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT))
     {
       h5_timegroup = H5Gopen(h5_file, (time_name.str()).c_str(), H5P_DEFAULT);
