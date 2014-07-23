@@ -45,9 +45,6 @@ typedef struct Options {
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
     string workingfile;
-   
-
-    double scale_factor; //Scale factor
     
 } Options;
 

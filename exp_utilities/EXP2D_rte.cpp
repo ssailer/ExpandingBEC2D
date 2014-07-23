@@ -197,8 +197,9 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 		 	 << std::setw(2) << std::setfill('0') << hour << ":"
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    "
-			 << std::setw(3) << std::setfill('0') << (totalstate/totalmaxpercent) << "% | ";
-		// cout << " Slowest Thread: " << std::setw(3) << std::setfill('0') << (float)(stateOfLoops[slowestthread])/(float)(counter_max/100) << "% ";
+			 << std::setw(3) << std::setfill('0') << (totalstate/totalmaxpercent) << "% | "
+			 << "Number of Threads: " << stateOfLoops.size() ;
+		cout << " | Slowest Thread: " << std::setw(3) << std::setfill('0') << (float)(stateOfLoops[slowestthread])/(float)(counter_max/10) << "% ";
 			// for(int k = 0; k < stateOfLoops.size(); k++){
 			// cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
 		// }			
@@ -268,8 +269,8 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 	}
 
 
-	binaryFile *dataFile = new binaryFile("runData.h5",binaryFile::out);
-	dataFile->appendSnapshot("RTE",0,wavefctVec,opt);
+	binaryFile *dataFile = new binaryFile("runData00000.h5",binaryFile::out);
+	dataFile->appendSnapshot(runname,0,wavefctVec,opt);
 	delete dataFile;
 	
 	start = omp_get_wtime();
@@ -357,8 +358,13 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 		}
 
 		try{
+			std::string h5name = "runData" + to_string(snapshot_times[j]);
+			std::stringstream ss;
+			ss << std::setfill('0') << std::setw(5) << h5name;
+			h5name = ss.str();
+
 			binaryFile *dataFile1 = new binaryFile("runData.h5",binaryFile::append);
-			dataFile1->appendSnapshot("RTE",snapshot_times[j],wavefctVec,opt);
+			dataFile1->appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
 			delete dataFile1;
 			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
 
@@ -387,8 +393,8 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 	keeperOfTime.absoluteSteps = 0;
 	keeperOfTime.lambdaSteps = 0;
 
-	binaryFile *dataLoading = new binaryFile("runData.h5",binaryFile::in);
-	dataLoading->getSnapshot("RTE",0,wavefctVec,opt);
+	binaryFile *dataLoading = new binaryFile("runData00000.h5",binaryFile::in);
+	dataLoading->getSnapshot(runname,0,wavefctVec,opt);
 	delete dataLoading;
 
 	// wavefctVec.resize(opt.samplesize);
@@ -416,13 +422,6 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 	k3[i] = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);	
 	}
 
-	Options dummy;
-
-	binaryFile *dataFile = new binaryFile("runData.h5",binaryFile::out);
-	dataFile->appendSnapshot("RTE",0,wavefctVec,dummy);
-	delete dataFile;
-
-	
 	start = omp_get_wtime();
 
 
@@ -508,8 +507,13 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 		}
 
 		try{
-			binaryFile *dataFile = new binaryFile("runData.h5",binaryFile::append);
-			dataFile->appendSnapshot("RTE",snapshot_times[j],wavefctVec,opt);
+			std::string h5name = "runData" + to_string(snapshot_times[j]);
+			std::stringstream ss;
+			ss << std::setfill('0') << std::setw(5) << h5name;
+			h5name = ss.str();
+			
+			binaryFile *dataFile = new binaryFile(h5name,binaryFile::append);
+			dataFile->appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
 			delete dataFile;
 			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
 

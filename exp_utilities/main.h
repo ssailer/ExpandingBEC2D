@@ -187,7 +187,6 @@ int read_config(int argc, char** argv, Options &opt)
 	}
 
 	// runspecific Values, just initilized here
-	opt.scale_factor = 0; //Scale factor
 	opt.t_abs = complex<double>(0,0); //Absolute time 
 	opt.name       = "run";
 	opt.stateInformation.resize(2);

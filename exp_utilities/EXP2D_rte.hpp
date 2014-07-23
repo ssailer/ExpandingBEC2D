@@ -29,7 +29,7 @@ class RTE
 {
   public:
     RTE();
-    RTE(ComplexGrid* &c,Options &opt);    
+    RTE(ComplexGrid* &c,Options &opt);  
     ~RTE();
 
     void setOptions(Options &externaloptions);

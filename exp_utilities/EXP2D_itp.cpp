@@ -13,6 +13,7 @@ ITP::ITP()
 {
   	// some constants used in computations to shorten stuff
 	pi = M_PI;
+	scaleFactor = 1;
  	zero=complex<double>(0,0);
  	half=complex<double>(0.5,0);
  	one=complex<double>(1,0);
@@ -30,6 +31,7 @@ ITP::ITP(ComplexGrid* &c,Options &externaloptions)
 
 
   	// some constants used in computations to shorten stuff
+  	scaleFactor = 1;
 	pi = M_PI;
  	zero=complex<double>(0,0);
  	half=complex<double>(0.5,0);
@@ -106,10 +108,10 @@ inline void ITP::rescale(MatrixXcd &wavefct)
     	}
     }
     
-	opt.scale_factor = opt.N/Integral;	
-	// cout << "Integral : " << Integral << " scalefactor: " << opt.scale_factor << " " << sqrt(opt.scale_factor) << endl;
-	// wavefct.array() *= sqrt(opt.scale_factor);
-	wavefct.array() *= sqrt(opt.scale_factor);
+	scaleFactor = opt.N/Integral;	
+	// cout << "Integral : " << Integral << " scalefactor: " << scaleFactor << " " << sqrt(scaleFactor) << endl;
+	// wavefct.array() *= sqrt(scaleFactor);
+	wavefct.array() *= sqrt(scaleFactor);
 }
 
 void ITP::cli(string name,int counter_state, int counter_max, double start)
@@ -220,14 +222,14 @@ void ITP::propagateToGroundState(string runname)
 
 	// do{
 	// 	rescale(wavefct);
-	// 	if(opt.scale_factor == 1){
+	// 	if(scaleFactor == 1){
 	// 		finished = true;
 	// 	}
 	// } while (finished == false);
 
 	// finished = false;
 
-	// for(int m = 1; opt.scale_factor < 0.99 && opt.scale_factor > 1.01; m++){
+	// for(int m = 1; scaleFactor < 0.99 && scaleFactor > 1.01; m++){
 	do {
 		for(int m = 0; m < 100; m++){
 
@@ -263,7 +265,7 @@ void ITP::propagateToGroundState(string runname)
 		cli_groundState(runname,start,state,breakCondition.totalResult);
 		int difference = breakCondition.totalResult.Ekin - old_Ekin;
 		if(difference == 0){
-		// if(opt.scale_factor == 0){
+		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
 			counter_finished = 0;
@@ -301,7 +303,7 @@ void ITP::cli_groundState(string name, double start,int state,Observables totalR
 			<< " Particles: " << std::setw(12) << std::setfill(' ') << totalResult.particle_count << " "
 			<< " Volume: " << std::setw(12) << std::setfill(' ') << totalResult.volume << " "
 			<< " Density: " << std::setw(12) << std::setfill(' ') << totalResult.density << " "
-			<< " Scaling Factor: " << std::setw(12) << std::setfill(' ') << opt.scale_factor << " "
+			<< " Scaling Factor: " << std::setw(12) << std::setfill(' ') << scaleFactor << " "
 			<< std::setw(2) << std::setfill('0') << hour << ":"
 			<< std::setw(2) << std::setfill('0') << min << ":"
 			<< std::setw(2) << std::setfill('0') << seconds  << "\r" << flush;
