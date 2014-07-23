@@ -129,48 +129,6 @@ void RTE::RunSetup(){
 
 }
 
-// void RTE::cli_plot(string name,int counter_state, int counter_max, double start,bool plot)
-// {
-// 	if(counter_state%(counter_max/100)==0)
-// 		{
-// 			int seconds;
-// 			int min;
-// 			int hour;
-// 			int total;
-
-// 			if(plot == true)
-// 				{
-// 					opt.name = name; //+ "-" + std::to_string(counter_state/(counter_max/100));
-// 					// plotDataToPng(pPsi,opt);
-// 					plotDataToPngEigen(wavefct,opt);
-
-// 					// // kvalue analysis
-// 					// CopyEigenToComplexGrid();
-// 					// ComplexGrid::fft(*pPsi,*pK,true);
-// 					// opt.name = "kvalues -" + std::to_string(counter_state/(counter_max/100));
-// 					// plotDataToPng(pK,opt);
-
-
-// 				}
-
-// 			total = omp_get_wtime() - start;
-// 			hour = total / 3600;
-// 			min = (total / 60) % 60;
-// 			seconds = total % 60;
-
-// 			cout << 
-// 				 << "  " << name << " reached: "
-// 				 << std::setw(2) << std::setfill('0') << hour << ":"
-// 				 << std::setw(2) << std::setfill('0') << min << ":"
-// 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
-// 				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
-// 		}
-// 	if(counter_state == counter_max)
-// 	{
-// 		cout << endl;
-// 	}
-// }
-
 void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start)
 {	
 	for(int i = 0;i < stateOfLoops.size();i++){
@@ -197,27 +155,27 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 		 	 << std::setw(2) << std::setfill('0') << hour << ":"
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    "
-			 << std::setw(3) << std::setfill('0') << (totalstate/totalmaxpercent) << "% | "
+			 << std::setw(3) << std::setfill('0') << std::setprecision(2) << (totalstate/totalmaxpercent) << "% | "
 			 << "Number of Threads: " << stateOfLoops.size() ;
 		cout << " | Slowest Thread: " << std::setw(3) << std::setfill('0') << (float)(stateOfLoops[slowestthread])/(float)(counter_max/10) << "% ";
 			// for(int k = 0; k < stateOfLoops.size(); k++){
 			// cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
-		// }			
+		// }
+		cout << "                          ";
 	}
 }
 
 void RTE::plot(string name,int counter_state, int counter_max){
-	opt.name = name;
 	wavefct = wavefctVec[0];
 
 	if(opt.runmode.compare(1,1,"1") == 0){
 		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
 		Xexpanding = x_expand(tmp);
 		Yexpanding = y_expand(tmp);
-		plotDataToPngEigenExpanding(wavefct,ranges,Xexpanding,Yexpanding,opt);
+		plotDataToPngEigenExpanding(name, wavefct,ranges,Xexpanding,Yexpanding,opt);
 	}
 	if(opt.runmode.compare(1,1,"0") == 0){
-		plotDataToPngEigen(wavefct,opt);
+		plotDataToPngEigen(name, wavefct,opt);
 	}
 }
 
@@ -358,14 +316,14 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 		}
 
 		try{
-			std::string h5name = "runData" + to_string(snapshot_times[j]);
+			std::string h5name = to_string(snapshot_times[j]);
 			std::stringstream ss;
 			ss << std::setfill('0') << std::setw(5) << h5name;
-			h5name = ss.str();
+			h5name = "runData" + ss.str() + ".h5";
 
-			binaryFile *dataFile1 = new binaryFile("runData.h5",binaryFile::append);
-			dataFile1->appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
-			delete dataFile1;
+			binaryFile dataFile(h5name,binaryFile::out);
+			dataFile.appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
+			// dataFile.close();
 			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
 
 		}
@@ -507,14 +465,14 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 		}
 
 		try{
-			std::string h5name = "runData" + to_string(snapshot_times[j]);
+			std::string h5name = to_string(snapshot_times[j]);
 			std::stringstream ss;
 			ss << std::setfill('0') << std::setw(5) << h5name;
-			h5name = ss.str();
+			h5name = "runData" + ss.str() + ".h5";
 			
-			binaryFile *dataFile = new binaryFile(h5name,binaryFile::append);
-			dataFile->appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
-			delete dataFile;
+			binaryFile dataFile(h5name,binaryFile::out);
+			dataFile.appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
+			// dataFile.close();
 			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
 
 		}

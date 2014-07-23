@@ -41,10 +41,8 @@ typedef struct Options {
     string runmode; // Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
                      // second char determines if expanding coordinates are used or not
                      // third char determines if potential is switch on for the differential equation
-    string name; // naming of the datafile      // think about that naming system remove it from here
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
-    string workingfile;
     
 } Options;
 
@@ -70,15 +68,7 @@ public:
     }
 };
 
-
-void optToPath(Options &opt,PathOptions &pathopt);
-void pathToOpt(PathOptions &pathopt,Options &opt);
-void readDataFromHDF5(ComplexGrid* &g,Options &opt);
-void saveDataToHDF5(ComplexGrid* &g, Options &opt);
 void noiseTheGrid(ComplexGrid &g);
-
-void saveEigenMatrixToHDF5();
-void loadEigenMatrixFromHDF5();
 
 class expException {
 public:

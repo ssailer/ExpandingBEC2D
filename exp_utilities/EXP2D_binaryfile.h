@@ -25,7 +25,7 @@ protected:
   // Options options;
   fstream stream;
   mode m;
-  vector<double> time_list;
+  vector<int> time_list;
 
 
 public:
@@ -34,22 +34,22 @@ public:
 
   void close();
 
-  bool appendSnapshot(const string &name, double time, const vector<MatrixXcd> &k, Options &options);
+  bool appendSnapshot(const string &name, int time, const vector<MatrixXcd> &k, Options &options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
 
-  bool appendEval(const string &vec_name, double *vec, int vec_dim, int* vec_rank, double time);
+  bool appendEval(const string &vec_name, double *vec, int vec_dim, int* vec_rank, int time);
   // bool appendDocString(const string &group, const string &docstring, double time);
 
-  bool getSnapshot(const string &name, double time, vector<MatrixXcd> &k, Options &options);
+  bool getSnapshot(const string &name, int time, vector<MatrixXcd> &k, Options &options);
   // bool getSnapshot(const string &name, double time, vector<RealGrid> &k);
 
-  const vector<double> & getTimelist() const {return time_list;}
+  const vector<int> & getTimelist() const {return time_list;}
 
   // const Options & getOptions() const {return options;}
 
 protected:
   binaryFile() {}
-  bool checkTime(double time);
+  bool checkTime(int snapShotTime);
 
 };
 
@@ -100,10 +100,8 @@ inline bool operator== (const Options &p1, const Options &p2)
   		  (p1.samplesize == p2.samplesize) &&
   		  (p1.vortexnumber == p2.vortexnumber) &&
   		  (p1.runmode == p2.runmode) &&
-  		  (p1.name == p2.name) &&
   		  (p1.config == p2.config) &&
-  		  (p1.workingdirectory == p2.workingdirectory) &&
-  		  (p1.workingfile == p2.workingfile));
+  		  (p1.workingdirectory == p2.workingdirectory));
 }
 
 inline bool operator!= (const Options &p1, const Options &p2)

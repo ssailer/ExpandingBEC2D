@@ -556,7 +556,7 @@ void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt)
 
 }
 
-void plotDataToPngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
+void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options &opt)
 {
 	
 
@@ -590,13 +590,13 @@ void plotDataToPngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 	gr.SetRange('y',-yrange,yrange);
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
-	gr.Title(opt.name.c_str());
+	gr.Title(filename.c_str());
 	// gr.Alpha(true);
 
 
 
 	// data.use_abs=false;
-	// string filename = "PHASE-" + opt.name + ".png";
+	// string filename = "PHASE-" + filename + ".png";
 
 	// gr.SetRange('z',data);
 	// gr.SetRange('c',data);
@@ -617,7 +617,7 @@ void plotDataToPngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 
 
 	data.use_abs=true;
-	string filename = opt.name + "-Density-Expanding.png";
+	filename = filename + "-Density-Expanding.png";
 	gr.SetRange('z',data);
 	// gr.SetRange('c',data);
 	gr.SetRange('c',data);
@@ -640,7 +640,7 @@ void plotDataToPngEigen(Eigen::MatrixXcd& wavefct,Options &opt)
 
 }
 
-void plotDataToPngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt)
+void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt)
 {
 	
 
@@ -675,11 +675,11 @@ void plotDataToPngEigenExpanding(Eigen::MatrixXcd& mPsi,vector<double> &ranges,E
 		// gr.Light(0,true);
 		// gr.Alpha(true);
 
-	string filename = opt.name + "-Density-Expanding.png";
+	filename = filename + "-Density-Expanding.png";
 
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
-	gr.Title(opt.name.c_str());
+	gr.Title(filename.c_str());
 	gr.SetRange('x',xaxis);
 	gr.SetRange('y',yaxis);
 	// gr.Alpha(true);

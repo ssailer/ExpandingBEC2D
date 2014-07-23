@@ -268,12 +268,12 @@ void binaryFile::close()
   filename = "";
 }
 
-bool binaryFile::checkTime(double snapShotTime)
+bool binaryFile::checkTime(int snapShotTime)
 {
   stringstream time_name;
-  // snapShotTime will always be formatted with two decimal digits
-  time_name.setf(ios_base::fixed);
-  time_name.precision(2);
+  // // snapShotTime will always be formatted with two decimal digits
+  // time_name.setf(ios_base::fixed);
+  // time_name.precision(2);
   time_name << snapShotTime;
 
   if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
@@ -294,7 +294,7 @@ bool binaryFile::checkTime(double snapShotTime)
 }
 
 
-bool binaryFile::appendSnapshot(const string &name, double snapShotTime, const vector<MatrixXcd> &k, Options &options)
+bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vector<MatrixXcd> &k, Options &options)
 {
   if(m == in)
     {
@@ -441,7 +441,7 @@ bool binaryFile::appendSnapshot(const string &name, double snapShotTime, const v
 }
 
 
-bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<MatrixXcd> &k, Options &options)
+bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<MatrixXcd> &k, Options &options)
 {
   if(m == out)
     {
@@ -573,7 +573,7 @@ bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<Mat
 }
 
 
-bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, int* vec_dim, double snapShotTime)
+bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, int* vec_dim, int snapShotTime)
 {
   if(m == in)
     {
