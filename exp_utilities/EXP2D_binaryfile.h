@@ -43,7 +43,7 @@ public:
   bool getSnapshot(const string &name, int time, vector<MatrixXcd> &k, Options &options);
   // bool getSnapshot(const string &name, double time, vector<RealGrid> &k);
 
-  const vector<int> & getTimelist() const {return time_list;}
+  const vector<int> & getTimeList() const {return time_list;}
 
   // const Options & getOptions() const {return options;}
 

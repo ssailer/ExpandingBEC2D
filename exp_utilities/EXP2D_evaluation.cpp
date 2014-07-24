@@ -293,9 +293,6 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 				}*/
 	// 		}
 		// }
-		
-
-
 
 	}
 
@@ -331,7 +328,17 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 
 	// This Number is set at the start, maybe set this in run.cfg -> Options struct, or check how many got set inside the contour, if equal spacing vortices are used.
 	 // cout << "findVortices before sorting" << endl;
+	// list<VortexData> vlistCopy(vlist);
+	// list<VortexData> vlistCopy1(vlist);
+	// vlistCopy.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
 	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.zeroDensity < rhs.zeroDensity;});
+
+	// for(list<VortexData>::iterator it = vlistCopy.begin(); it != vlistCopy.end(); ++it){
+	// 	for(list<VortexData>::iterator et = vlistCopy1.begin(); et != vlistCopy.end(); ++et){
+	// 		if(it->x == et->x)
+	// 			vlist.push_back(*it);
+	// 	}
+	// }
 	if(vlist.size() > opt.vortexnumber){
 		list<VortexData>::iterator it1 = vlist.begin();
 		advance(it1,opt.vortexnumber);

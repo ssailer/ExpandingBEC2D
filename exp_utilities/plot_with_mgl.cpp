@@ -11,7 +11,7 @@ void plotSpectrum(string name,Observables &ares){
     vector<double> kval;
 	vector<double> numberval;
 	
-	plotfile.open((name + ".dat").c_str(), ios::out | ios::trunc);
+	plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
     for (int r = 0; r < ares.number.size(); r++)             
 	{	
 		if(ares.k(r) != 0.0){

@@ -136,10 +136,9 @@ try{
 	
 	
 	//====> Real Time Expansion (RTE)
-	int snapshots = 100;
-	vector<int> snapshot_times(snapshots);	
-	for(int i = 0; i < snapshots; i++){
-		snapshot_times[i] = (i+1) * opt.n_it_RTE / snapshots;
+	vector<int> snapshot_times(opt.snapshots);	
+	for(int i = 0; i < opt.snapshots; i++){
+		snapshot_times[i] = (i+1) * opt.n_it_RTE / opt.snapshots;
 	}
 	
 	RTE* rterun = new RTE(data,opt);

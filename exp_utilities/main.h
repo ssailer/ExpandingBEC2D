@@ -153,7 +153,8 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.grid[2]              = root["RunOptions"]["grid2"];	   			
 	opt.grid[3]              = root["RunOptions"]["grid3"];				
 	opt.g                    = root["RunOptions"]["g"]; 						
-	opt.n_it_RTE             = root["RunOptions"]["n_it_RTE"]; 				
+	opt.n_it_RTE             = root["RunOptions"]["numberOfIterations"]; 				
+	opt.snapshots            = root["RunOptions"]["numberOfSnapshots"];
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.samplesize			 = root["RunOptions"]["samplesize"];

@@ -15,7 +15,7 @@
 // Class implementation
 binaryFile::binaryFile(const string &file, mode nm)
 {
-  filename = file;
+  filename = "runData/" + file;
   // options = opt;
   m = nm;
 
@@ -140,7 +140,22 @@ binaryFile::binaryFile(const string &file, mode nm)
     }
   else
     {
-        // cerr << "Reached ERROR location #4" << endl;
+      string dirname = "runData";
+      struct stat st;
+      if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+      }
+
+      string fileNameListName = "runData/fileNameList.dat";
+      // struct stat buffer;   
+      // if(stat (filename.c_str(), &buffer) != 0){
+        ofstream fileNameListFile;
+        fileNameListFile.open(fileNameListName.c_str(), ios::out | ios::app);
+        fileNameListFile << std::left << file << endl;
+        fileNameListFile.close();
+    // } 
+
+
 
       h5_file = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 

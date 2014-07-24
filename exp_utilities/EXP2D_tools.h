@@ -20,7 +20,7 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : stateInformation(2) {}
+    Options () : stateInformation(2), vortexnumber(20), snapshots(100) {}
 
     double N; // Number of particles    
     double klength[3];
@@ -34,7 +34,8 @@ typedef struct Options {
     double ITP_step, RTE_step; // stepsize for the timeiteration
 
     int32_t grid[4];  // gridsize
-    int n_it_RTE; // number of timesteps
+    int n_it_RTE; // number of Iterations
+    int snapshots; // number of Snapshots
     int samplesize;
     int vortexnumber;
     

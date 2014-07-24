@@ -157,7 +157,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 			 << std::setw(2) << std::setfill('0') << seconds  << "    "
 			 << std::setw(3) << std::setfill('0') << std::setprecision(2) << (totalstate/totalmaxpercent) << "% | "
 			 << "Number of Threads: " << stateOfLoops.size() ;
-		cout << " | Slowest Thread: " << std::setw(3) << std::setfill('0') << (float)(stateOfLoops[slowestthread])/(float)(counter_max/10) << "% ";
+			// cout << " | Slowest Thread: " << std::setw(3) << std::setfill('0') << (float)(stateOfLoops[slowestthread])/(float)(counter_max/10) << "% ";
 			// for(int k = 0; k < stateOfLoops.size(); k++){
 			// cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
 		// }
@@ -227,7 +227,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 	}
 
 
-	binaryFile *dataFile = new binaryFile("runData00000.h5",binaryFile::out);
+	binaryFile *dataFile = new binaryFile("00000.h5",binaryFile::out);
 	dataFile->appendSnapshot(runname,0,wavefctVec,opt);
 	delete dataFile;
 	
@@ -319,7 +319,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 			std::string h5name = to_string(snapshot_times[j]);
 			std::stringstream ss;
 			ss << std::setfill('0') << std::setw(5) << h5name;
-			h5name = "runData" + ss.str() + ".h5";
+			h5name = ss.str() + ".h5";
 
 			binaryFile dataFile(h5name,binaryFile::out);
 			dataFile.appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
@@ -351,7 +351,7 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 	keeperOfTime.absoluteSteps = 0;
 	keeperOfTime.lambdaSteps = 0;
 
-	binaryFile *dataLoading = new binaryFile("runData00000.h5",binaryFile::in);
+	binaryFile *dataLoading = new binaryFile("runData/00000.h5",binaryFile::in);
 	dataLoading->getSnapshot(runname,0,wavefctVec,opt);
 	delete dataLoading;
 
@@ -468,7 +468,7 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 			std::string h5name = to_string(snapshot_times[j]);
 			std::stringstream ss;
 			ss << std::setfill('0') << std::setw(5) << h5name;
-			h5name = "runData" + ss.str() + ".h5";
+			h5name = ss.str() + ".h5";
 			
 			binaryFile dataFile(h5name,binaryFile::out);
 			dataFile.appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
