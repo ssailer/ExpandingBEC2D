@@ -20,7 +20,7 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : stateInformation(2), vortexnumber(20), snapshots(100) {}
+    Options () : stateInformation(2), vortexnumber(20), snapshots(100), t_abs(0,0) {}
 
     double N; // Number of particles    
     double klength[3];
@@ -47,27 +47,6 @@ typedef struct Options {
     
 } Options;
 
-class matrixData {
-public:
-
-    vector<MatrixXcd> wavefunction;
-    double timeState;
-    vector<double> coordinateBoundaries;
-
-    matrixData() : wavefunction(0), timeState(0), coordinateBoundaries(2) {}
-    matrixData(const int &samplesize,const int &gridx, const int &gridy,const int &tmpTime, const int &xsize, const int &ysize) {
-        
-        wavefunction.resize(samplesize);
-        for(int i = 0; wavefunction.size(); ++i)
-            wavefunction[i] = MatrixXcd(gridx,gridy);
-
-        coordinateBoundaries.resize(2);
-        coordinateBoundaries[0] = xsize;
-        coordinateBoundaries[1] = ysize;
-
-        timeState = tmpTime;
-    }
-};
 
 void noiseTheGrid(ComplexGrid &g);
 

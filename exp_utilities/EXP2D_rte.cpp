@@ -68,7 +68,7 @@ void RTE::setOptions(Options &externaloptions){
 void RTE::RunSetup(){
 
 	//Initialize and fill the Eigen Wavefunction Storage
-	wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	// wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	// the time-step sizes for Runge-Kutta integration for both schemes as complex valued variables
 	t_RTE = complex<double>(opt.RTE_step,0.0);
@@ -112,7 +112,7 @@ void RTE::RunSetup(){
 
    	complex<double> tmp;  	
    	for(int t = 0; t < ( 2 * opt.n_it_RTE); t++){
-   	tmp = half * complex<double>(t+1,0.0) * t_RTE;   	
+   	tmp = opt.t_abs + ( half * complex<double>(t+1,0.0) * t_RTE );   	
    	laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
    	laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
    	gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
@@ -136,57 +136,71 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 	}
 	
 	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/10))==0){
-		int seconds;
-		int min;
-		int hour;
-		int total;
+		int seconds, min, hour, total, expectedhour, expectedmin, expectedseconds;
 		double totalstate = 0;
 		double totalmaxpercent = (double)counter_max * (double)opt.samplesize / 100;
 		for(int i = 0; i < opt.samplesize; i++){
 			totalstate += stateOfLoops[i];
 		}
+		double totalPercent = totalstate/totalmaxpercent;
+
+		int overallStepState = keeperOfTime.absoluteSteps + totalstate / opt.samplesize;
 
 		total = omp_get_wtime() - start;
+
+		overallStepState = (overallStepState == 0) ? 1 : overallStepState;
+
+		int remainingSeconds = (total * opt.n_it_RTE / overallStepState) - total;;
+
+
+		
 		hour = total / 3600;
 		min = (total / 60) % 60;
 		seconds = total % 60;
-		cout << "\r" << flush;
+		expectedhour = (remainingSeconds / 3600);
+		expectedmin = (remainingSeconds / 60) % 60;
+		expectedseconds = remainingSeconds % 60;
+		cout << "\r";
 		cout << currentTime() <<  " " << name << " "
 		 	 << std::setw(2) << std::setfill('0') << hour << ":"
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    "
-			 << std::setw(3) << std::setfill('0') << std::setprecision(2) << (totalstate/totalmaxpercent) << "% | "
-			 << "Number of Threads: " << stateOfLoops.size() ;
+			 << std::setw(3) << std::setfill('0') << (int)totalPercent << "% "
+			 << " threads: " << stateOfLoops.size()
+			 << " remaining runtime: "
+			 << std::setw(2) << std::setfill('0') << expectedhour << ":"
+			 << std::setw(2) << std::setfill('0') << expectedmin << ":"
+			 << std::setw(2) << std::setfill('0') << expectedseconds
 			// cout << " | Slowest Thread: " << std::setw(3) << std::setfill('0') << (float)(stateOfLoops[slowestthread])/(float)(counter_max/10) << "% ";
 			// for(int k = 0; k < stateOfLoops.size(); k++){
 			// cout << k << "_" << threadinfo[k] << ": " << std::setw(3) << std::setfill('0') << (float)stateOfLoops[k]/((float)counter_max/100) << "% ";
 		// }
-		cout << "                          ";
+		<< "    " << flush;
 	}
 }
 
-void RTE::plot(string name,int counter_state, int counter_max){
-	wavefct = wavefctVec[0];
+// void RTE::plot(string name,int counter_state, int counter_max){
+// 	wavefct = wavefctVec[0];
 
-	if(opt.runmode.compare(1,1,"1") == 0){
-		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
-		Xexpanding = x_expand(tmp);
-		Yexpanding = y_expand(tmp);
-		plotDataToPngEigenExpanding(name, wavefct,ranges,Xexpanding,Yexpanding,opt);
-	}
-	if(opt.runmode.compare(1,1,"0") == 0){
-		plotDataToPngEigen(name, wavefct,opt);
-	}
-}
+// 	if(opt.runmode.compare(1,1,"1") == 0){
+// 		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
+// 		Xexpanding = x_expand(tmp);
+// 		Yexpanding = y_expand(tmp);
+// 		plotDataToPngEigenExpanding(name, wavefct,ranges,Xexpanding,Yexpanding,opt);
+// 	}
+// 	if(opt.runmode.compare(1,1,"0") == 0){
+// 		plotDataToPngEigen(name, wavefct,opt);
+// 	}
+// }
 
 
-void RTE::CopyComplexGridToEigen(){
-	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ wavefct(i,j) = pPsi->at(0,i,j,0);}}
-}
+// void RTE::CopyComplexGridToEigen(){
+// 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ wavefct(i,j) = pPsi->at(0,i,j,0);}}
+// }
 
-void RTE::CopyEigenToComplexGrid(){
-	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ pPsi->at(0,i,j,0) = wavefct(i,j);}}
-}
+// void RTE::CopyEigenToComplexGrid(){
+// 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ pPsi->at(0,i,j,0) = wavefct(i,j);}}
+// }
 
 void RTE::toEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct){
 	noiseTheGrid(g);
@@ -303,7 +317,8 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 		keeperOfTime.absoluteSteps = snapshot_times[j];	
 		previousTimes = snapshot_times[j];
 
-		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps * opt.RTE_step,0.0);  
+		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps * opt.RTE_step,0.0);
+		opt.t_abs = tmp;  
 
 		opt.stateInformation.resize(2);
 		if(opt.runmode.compare(1,1,"1") == 0){
@@ -324,7 +339,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 			binaryFile dataFile(h5name,binaryFile::out);
 			dataFile.appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
 			// dataFile.close();
-			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
+			cout << " ..Snapshot saved to runData/" << h5name;
 
 		}
 		catch(const std::exception& e) { 
@@ -343,7 +358,7 @@ void RTE::rteToTime(string runname, vector<int> snapshot_times)
 
 }
 
-void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
+void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name)
 {
 	double start;  // starttime of the run
 	// int t = 0;		// counter for the expanding lambdavectors with coefficients
@@ -351,9 +366,14 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 	keeperOfTime.absoluteSteps = 0;
 	keeperOfTime.lambdaSteps = 0;
 
-	binaryFile *dataLoading = new binaryFile("runData/00000.h5",binaryFile::in);
-	dataLoading->getSnapshot(runname,0,wavefctVec,opt);
+	binaryFile *dataLoading = new binaryFile(h5name,binaryFile::in);
+	int previousTimes = dataLoading->getTimeList().back();
+	dataLoading->getSnapshot(runname,previousTimes,wavefctVec,opt);
 	delete dataLoading;
+
+	RunSetup();
+
+
 
 	// wavefctVec.resize(opt.samplesize);
 
@@ -385,7 +405,7 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 
 	//start loop here
 	Eigen::initParallel();
-	int previousTimes = 0;
+	// int previousTimes = 0;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
 		string stepname = runname + "-" + to_string(snapshot_times[j]);
@@ -473,7 +493,7 @@ void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times)
 			binaryFile dataFile(h5name,binaryFile::out);
 			dataFile.appendSnapshot(runname,snapshot_times[j],wavefctVec,opt);
 			// dataFile.close();
-			cout << endl << currentTime() << " Snapshot saved to runData.h5" << endl;
+			cout << " ..Snapshot saved to runData/" << h5name;
 
 		}
 		catch(const std::exception& e) { 
