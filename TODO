@@ -10,3 +10,6 @@ GENERAL:
 - the whole integral/rescaling thing
 - expanding speeds, maybe a dynamic system, like ITP things for expansion?
 - think about the radial k in terms of expansion, rest of k definition should be good now.
+
+
+us test_hdf5_2 to continue the simulation, write code to do that.

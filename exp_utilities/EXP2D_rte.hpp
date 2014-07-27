@@ -29,7 +29,7 @@ class RTE
 {
   public:
     RTE();
-    RTE(ComplexGrid* &c,Options &opt);    
+    RTE(ComplexGrid* &c,Options &opt);  
     ~RTE();
 
     void setOptions(Options &externaloptions);
@@ -38,13 +38,13 @@ class RTE
     // Propagatoren
 
     void rteToTime(string runname, vector<int> snapshot_times);
-    void rteFromDataToTime(string runname, vector<int> snapshot_times);    
+    void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;
 
     // Storage Variable for the runs
-    MatrixXcd wavefct;
+    // MatrixXcd wavefct;
     vector<MatrixXcd> wavefctVec;
 
     void CopyComplexGridToEigen();
@@ -61,7 +61,7 @@ class RTE
     
     // void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
-    void plot(string name,int counter_state, int counter_max);
+    // void plot(string name,int counter_state, int counter_max);
     
 
     // internal RunOptions, use setOptions(Options) to update from the outside

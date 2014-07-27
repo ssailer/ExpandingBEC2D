@@ -15,7 +15,7 @@
 // Class implementation
 binaryFile::binaryFile(const string &file, mode nm)
 {
-  filename = file;
+  filename = "runData/" + file;
   // options = opt;
   m = nm;
 
@@ -140,7 +140,22 @@ binaryFile::binaryFile(const string &file, mode nm)
     }
   else
     {
-        // cerr << "Reached ERROR location #4" << endl;
+      string dirname = "runData";
+      struct stat st;
+      if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+      }
+
+      string fileNameListName = "runData/fileNameList.dat";
+      // struct stat buffer;   
+      // if(stat (filename.c_str(), &buffer) != 0){
+        ofstream fileNameListFile;
+        fileNameListFile.open(fileNameListName.c_str(), ios::out | ios::app);
+        fileNameListFile << std::left << file << endl;
+        fileNameListFile.close();
+    // } 
+
+
 
       h5_file = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
@@ -268,12 +283,12 @@ void binaryFile::close()
   filename = "";
 }
 
-bool binaryFile::checkTime(double snapShotTime)
+bool binaryFile::checkTime(int snapShotTime)
 {
   stringstream time_name;
-  // snapShotTime will always be formatted with two decimal digits
-  time_name.setf(ios_base::fixed);
-  time_name.precision(2);
+  // // snapShotTime will always be formatted with two decimal digits
+  // time_name.setf(ios_base::fixed);
+  // time_name.precision(2);
   time_name << snapShotTime;
 
   if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
@@ -294,7 +309,7 @@ bool binaryFile::checkTime(double snapShotTime)
 }
 
 
-bool binaryFile::appendSnapshot(const string &name, double snapShotTime, const vector<MatrixXcd> &k, Options &options)
+bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vector<MatrixXcd> &k, Options &options)
 {
   if(m == in)
     {
@@ -441,7 +456,7 @@ bool binaryFile::appendSnapshot(const string &name, double snapShotTime, const v
 }
 
 
-bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<MatrixXcd> &k, Options &options)
+bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<MatrixXcd> &k, Options &options)
 {
   if(m == out)
     {
@@ -454,8 +469,6 @@ bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<Mat
   time_name.setf(ios_base::fixed);
   time_name.precision(2);
   time_name << snapShotTime;
-
-  cout << snapShotTime << endl;
 
   if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT))
     {
@@ -482,56 +495,7 @@ bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<Mat
     {
       hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
 
-      // if(H5Iget_type(test_id) == H5I_DATASET)
-      //   {
-      //     hid_t dataspace = H5Dget_space(test_id);
-
-      //     hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
-      //     hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
-      //     H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-
-      //     dimf[0] /= 2;
-      //     dimf[1] /= 2;
-      //     k[0].resize(dimf[0],dimf[1]);
-          
-
-      //     H5Dread(test_id,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[0].data());
-
-      //     free(dimf);
-      //     H5Dclose(test_id);
-      //   }
-      // else
-      //   {
-          hsize_t vecsize;
-          H5Gget_num_objs(test_id, &vecsize);
-          k.resize(vecsize);
-
-          for(int i = 0; i < vecsize; i++)
-            {
-              stringstream comp;
-              comp << i;
-
-              hid_t dataset = H5Dopen(test_id, (comp.str()).c_str(), H5P_DEFAULT);
-              hid_t dataspace = H5Dget_space(dataset);
-
-              hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
-              hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
-              H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-
-          	  dimf[0] /= 2;
-          	  // dimf[1] /= 2;
-              k[i].resize(dimf[0],dimf[1]);
-
-              H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[i].data());
-
-              free(dimf);
-              H5Dclose(dataset);
-            }
-          H5Gclose(test_id);
-        // }
-    }
-
-               hid_t h5a_options;
+              hid_t h5a_options;
               h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
 
               double tmpOpt1[24];
@@ -566,13 +530,65 @@ bool binaryFile::getSnapshot(const string &name, double snapShotTime, vector<Mat
 
               H5Aclose(h5a_options);
 
+      // if(H5Iget_type(test_id) == H5I_DATASET)
+      //   {
+      //     hid_t dataspace = H5Dget_space(test_id);
+
+      //     hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
+      //     hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
+      //     H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+
+      //     dimf[0] /= 2;
+      //     dimf[1] /= 2;
+      //     k[0].resize(dimf[0],dimf[1]);
+          
+
+      //     H5Dread(test_id,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[0].data());
+
+      //     free(dimf);
+      //     H5Dclose(test_id);
+      //   }
+      // else
+      //   {
+          hsize_t vecsize;
+          H5Gget_num_objs(test_id, &vecsize);
+          k.resize(vecsize);
+
+          for(int i = 0; i < vecsize; i++)
+            {
+              k[i] = MatrixXcd(options.grid[1],options.grid[2]);
+              stringstream comp;
+              comp << i;
+
+              hid_t dataset = H5Dopen(test_id, (comp.str()).c_str(), H5P_DEFAULT);
+              hid_t dataspace = H5Dget_space(dataset);
+
+              hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
+              hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
+              H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+
+          	  dimf[0] /= 2;
+          	  // dimf[1] /= 2;
+              k[i].resize(dimf[0],dimf[1]);
+
+              H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[i].data());
+
+              free(dimf);
+              H5Dclose(dataset);
+            }
+          H5Gclose(test_id);
+        // }
+    }
+
+
+
   H5Gclose(h5_timegroup);
 
   return true;
 }
 
 
-bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, int* vec_dim, double snapShotTime)
+bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, int* vec_dim, int snapShotTime)
 {
   if(m == in)
     {

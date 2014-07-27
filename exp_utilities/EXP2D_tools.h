@@ -18,7 +18,9 @@
 using namespace std;
 using namespace Eigen;
 
-typedef struct {
+typedef struct Options {
+
+    Options () : stateInformation(2), vortexnumber(20), snapshots(100), t_abs(0,0) {}
 
     double N; // Number of particles    
     double klength[3];
@@ -32,58 +34,40 @@ typedef struct {
     double ITP_step, RTE_step; // stepsize for the timeiteration
 
     int32_t grid[4];  // gridsize
-    int n_it_RTE; // number of timesteps
+    int n_it_RTE; // number of Iterations
+    int snapshots; // number of Snapshots
     int samplesize;
     int vortexnumber;
     
     string runmode; // Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
                      // second char determines if expanding coordinates are used or not
                      // third char determines if potential is switch on for the differential equation
-    string name; // naming of the datafile      // think about that naming system remove it from here
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
-    string workingfile;
-   
-
-    double scale_factor; //Scale factor
     
 } Options;
 
-void optToPath(Options &opt,PathOptions &pathopt);
-void pathToOpt(PathOptions &pathopt,Options &opt);
-void readDataFromHDF5(ComplexGrid* &g,Options &opt);
-void saveDataToHDF5(ComplexGrid* &g, Options &opt);
-void noiseTheGrid(ComplexGrid &g);
 
-void saveEigenMatrixToHDF5();
-void loadEigenMatrixFromHDF5();
+void noiseTheGrid(ComplexGrid &g);
 
 class expException {
 public:
-    inline expException(std::string const& info);    
-    inline void setString(std::string const& info);
-    inline void addString(std::string const& info);
-    inline std::string printString();
+    inline expException(std::string const& info){
+        stringException = info;
+    }    
+    inline void setString(std::string const& info){
+        stringException = info;
+    };
+    inline void addString(std::string const& info){
+        stringException += info;
+    };
+    inline std::string printString(){
+        cout << stringException.c_str() << endl;
+    };
     std::string stringException;
 private:
     
 };
-
-inline expException::expException(std::string const& info){
-    stringException = info;
-}
-
-inline void expException::setString(std::string const& info){
-    stringException = info;
-}
-
-inline void expException::addString(std::string const& info){
-    stringException += info;
-}
-
-inline std::string expException::printString(){
-    cout << stringException.c_str() << endl;
-}
 
 inline const std::string currentDate() {
     time_t     now = time(0);

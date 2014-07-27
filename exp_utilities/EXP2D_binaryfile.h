@@ -25,7 +25,7 @@ protected:
   // Options options;
   fstream stream;
   mode m;
-  vector<double> time_list;
+  vector<int> time_list;
 
 
 public:
@@ -34,22 +34,22 @@ public:
 
   void close();
 
-  bool appendSnapshot(const string &name, double time, const vector<MatrixXcd> &k, Options &options);
+  bool appendSnapshot(const string &name, int time, const vector<MatrixXcd> &k, Options &options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
 
-  bool appendEval(const string &vec_name, double *vec, int vec_dim, int* vec_rank, double time);
+  bool appendEval(const string &vec_name, double *vec, int vec_dim, int* vec_rank, int time);
   // bool appendDocString(const string &group, const string &docstring, double time);
 
-  bool getSnapshot(const string &name, double time, vector<MatrixXcd> &k, Options &options);
+  bool getSnapshot(const string &name, int time, vector<MatrixXcd> &k, Options &options);
   // bool getSnapshot(const string &name, double time, vector<RealGrid> &k);
 
-  const vector<double> & getTimelist() const {return time_list;}
+  const vector<int> & getTimeList() const {return time_list;}
 
   // const Options & getOptions() const {return options;}
 
 protected:
   binaryFile() {}
-  bool checkTime(double time);
+  bool checkTime(int snapShotTime);
 
 };
 
@@ -100,10 +100,8 @@ inline bool operator== (const Options &p1, const Options &p2)
   		  (p1.samplesize == p2.samplesize) &&
   		  (p1.vortexnumber == p2.vortexnumber) &&
   		  (p1.runmode == p2.runmode) &&
-  		  (p1.name == p2.name) &&
   		  (p1.config == p2.config) &&
-  		  (p1.workingdirectory == p2.workingdirectory) &&
-  		  (p1.workingfile == p2.workingfile));
+  		  (p1.workingdirectory == p2.workingdirectory));
 }
 
 inline bool operator!= (const Options &p1, const Options &p2)
@@ -214,77 +212,77 @@ inline bool operator!= (const Options &p1, const Options &p2)
 //     }
 // }
 
-// inline void write(ostream &stream, const Options &opt)
-// {
-//   write(stream, opt.N);
-//   write(stream, opt.stateInformation[0]);
-//   write(stream, opt.stateInformation[1]);
-//   write(stream, opt.omega_x);
-//   write(stream, opt.omega_y);
-//   write(stream, opt.dispersion_x);
-//   write(stream, opt.dispersion_y);
-//   write(stream, opt.min_x);
-//   write(stream, opt.min_y);
-//   write(stream, opt.t_abs);
-//   write(stream, opt.exp_factor);
-//   write(stream, opt.ITP_step);
-//   write(stream, opt.RTE_step);
-//   write(stream, opt.n_it_RTE);
-//   write(stream, opt.samplesize);
-//   write(stream, opt.vortexnumber);
-//   write(stream, opt.g);
-//   write(stream, opt.grid[0]);
-//   write(stream, opt.grid[1]);
-//   write(stream, opt.grid[2]);
-//   write(stream, opt.grid[3]);
-//   write(stream, opt.klength[0]);
-//   write(stream, opt.klength[1]);
-//   write(stream, opt.klength[2]);
-// }
+inline void write(ostream &stream, const Options &opt)
+{
+  write(stream, opt.N);
+  write(stream, opt.stateInformation[0]);
+  write(stream, opt.stateInformation[1]);
+  write(stream, opt.omega_x);
+  write(stream, opt.omega_y);
+  write(stream, opt.dispersion_x);
+  write(stream, opt.dispersion_y);
+  write(stream, opt.min_x);
+  write(stream, opt.min_y);
+  write(stream, opt.t_abs);
+  write(stream, opt.exp_factor);
+  write(stream, opt.ITP_step);
+  write(stream, opt.RTE_step);
+  write(stream, opt.n_it_RTE);
+  write(stream, opt.samplesize);
+  write(stream, opt.vortexnumber);
+  write(stream, opt.g);
+  write(stream, opt.grid[0]);
+  write(stream, opt.grid[1]);
+  write(stream, opt.grid[2]);
+  write(stream, opt.grid[3]);
+  write(stream, opt.klength[0]);
+  write(stream, opt.klength[1]);
+  write(stream, opt.klength[2]);
+}
 
-// inline void read(istream &stream, Options &opt)
-// {
-//   read(stream, opt.N);
-//   read(stream, opt.stateInformation[0]);
-//   read(stream, opt.stateInformation[1]);
-//   read(stream, opt.omega_x);
-//   read(stream, opt.omega_y);
-//   read(stream, opt.dispersion_x);
-//   read(stream, opt.dispersion_y);
-//   read(stream, opt.min_x);
-//   read(stream, opt.min_y);
-//   read(stream, opt.t_abs);
-//   read(stream, opt.exp_factor);
-//   read(stream, opt.ITP_step);
-//   read(stream, opt.RTE_step);
-//   read(stream, opt.n_it_RTE);
-//   read(stream, opt.samplesize);
-//   read(stream, opt.vortexnumber);
-//   read(stream, opt.g);
-//   read(stream, opt.grid[0]);
-//   read(stream, opt.grid[1]);
-//   read(stream, opt.grid[2]);
-//   read(stream, opt.grid[3]);
-//   read(stream, opt.klength[0]);
-//   read(stream, opt.klength[1]);
-//   read(stream, opt.klength[2]);
-// }
+inline void read(istream &stream, Options &opt)
+{
+  read(stream, opt.N);
+  read(stream, opt.stateInformation[0]);
+  read(stream, opt.stateInformation[1]);
+  read(stream, opt.omega_x);
+  read(stream, opt.omega_y);
+  read(stream, opt.dispersion_x);
+  read(stream, opt.dispersion_y);
+  read(stream, opt.min_x);
+  read(stream, opt.min_y);
+  read(stream, opt.t_abs);
+  read(stream, opt.exp_factor);
+  read(stream, opt.ITP_step);
+  read(stream, opt.RTE_step);
+  read(stream, opt.n_it_RTE);
+  read(stream, opt.samplesize);
+  read(stream, opt.vortexnumber);
+  read(stream, opt.g);
+  read(stream, opt.grid[0]);
+  read(stream, opt.grid[1]);
+  read(stream, opt.grid[2]);
+  read(stream, opt.grid[3]);
+  read(stream, opt.klength[0]);
+  read(stream, opt.klength[1]);
+  read(stream, opt.klength[2]);
+}
 
-// inline ostream & operator<< (ostream &o, const Options &opt)
-// {
-//   o << "Number of particles: " << opt.N << endl;
-//   o << "Interaction strength: " << opt.g << endl;
-//   o << endl;
-//   o << "Grid dimensions: " << opt.grid[1] << ", " << opt.grid[2] << endl;
-//   o << "K-Length: " << opt.klength[0] << ", " << opt.klength[1] <<  endl;
-//   o << endl;
-//   o << "Potential Frequencies: " << opt.omega_x << ", " << opt.omega_y << endl;
-//   o << "Dispersion Frequencies: " << opt.dispersion_x << ", " << opt.dispersion_y << " with an overall expansion factor: " << opt.exp_factor << endl;
-//   o << endl;
-//   o << "RTE Stepsize: " << opt.RTE_step << " for " << opt.n_it_RTE << " Steps." << endl;
-//   o << "Samplesize: " << opt.samplesize << endl;
-//   o << endl;
-//   return o;
-// }
+inline ostream & operator<< (ostream &o, const Options &opt)
+{
+  o << "Number of particles: " << opt.N << endl;
+  o << "Interaction strength: " << opt.g << endl;
+  o << endl;
+  o << "Grid dimensions: " << opt.grid[1] << ", " << opt.grid[2] << endl;
+  o << "K-Length: " << opt.klength[0] << ", " << opt.klength[1] <<  endl;
+  o << endl;
+  o << "Potential Frequencies: " << opt.omega_x << ", " << opt.omega_y << endl;
+  o << "Dispersion Frequencies: " << opt.dispersion_x << ", " << opt.dispersion_y << " with an overall expansion factor: " << opt.exp_factor << endl;
+  o << endl;
+  o << "RTE Stepsize: " << opt.RTE_step << " for " << opt.n_it_RTE << " Steps." << endl;
+  o << "Samplesize: " << opt.samplesize << endl;
+  o << endl;
+  return o;
+}
 
 #endif

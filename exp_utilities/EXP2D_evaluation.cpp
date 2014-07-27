@@ -106,16 +106,16 @@ void Eval::evaluateData(){
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
 	for(int k = 0; k < PsiVec.size(); k++){
-		cout << endl << "Eval #" << k << endl;
+		// cout << endl << "Eval #" << k << endl;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
-		cout << "-getDensity" << endl;
+		// cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		cout << "-trackContour" << endl;
+		// cout << "-trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
-		cout << "-calculator" << endl;		
+		// cout << "-calculator" << endl;		
 	}
 	getVortices(PsiVec[0],densityCoordinates[0]);
-	cout << endl << "-getVortices" << endl;
+	// cout << endl << "-getVortices" << endl;
 	totalResult /= PsiVec.size();
 
 	
@@ -143,7 +143,7 @@ void Eval::evaluateDataITP(){
 void Eval::plotData(){
 	std::string snapShotString = to_string(snapshot_time);
 	std::stringstream ss;
-	ss << std::setfill('0') << std::setw(4) << snapShotString;
+	ss << std::setfill('0') << std::setw(5) << snapShotString;
 	snapShotString = ss.str();
 
 	string filename = runname + "-Control-Plot-" + snapShotString;
@@ -158,8 +158,8 @@ void Eval::plotData(){
 	filename = runname + "-Density-" + snapShotString;
 	plotDataToPng(filename,densityLocationMap[0],opt);
 
-	// filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	// plotVector(filename,x_dist_grad,y_dist_grad,opt);
+	filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	plotVector(filename,x_dist_grad,y_dist_grad,opt);
 
 	filename = runname + "-Angular-Dens-" + snapShotString;
 	plotVector(filename,totalResult.angularDensity,opt);	
@@ -293,9 +293,6 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 				}*/
 	// 		}
 		// }
-		
-
-
 
 	}
 
@@ -331,7 +328,17 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 
 	// This Number is set at the start, maybe set this in run.cfg -> Options struct, or check how many got set inside the contour, if equal spacing vortices are used.
 	 // cout << "findVortices before sorting" << endl;
+	// list<VortexData> vlistCopy(vlist);
+	// list<VortexData> vlistCopy1(vlist);
+	// vlistCopy.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
 	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.zeroDensity < rhs.zeroDensity;});
+
+	// for(list<VortexData>::iterator it = vlistCopy.begin(); it != vlistCopy.end(); ++it){
+	// 	for(list<VortexData>::iterator et = vlistCopy1.begin(); et != vlistCopy.end(); ++et){
+	// 		if(it->x == et->x)
+	// 			vlist.push_back(*it);
+	// 	}
+	// }
 	if(vlist.size() > opt.vortexnumber){
 		list<VortexData>::iterator it1 = vlist.begin();
 		advance(it1,opt.vortexnumber);

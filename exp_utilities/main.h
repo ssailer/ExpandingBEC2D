@@ -153,14 +153,12 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.grid[2]              = root["RunOptions"]["grid2"];	   			
 	opt.grid[3]              = root["RunOptions"]["grid3"];				
 	opt.g                    = root["RunOptions"]["g"]; 						
-	opt.n_it_RTE             = root["RunOptions"]["n_it_RTE"]; 				
+	opt.n_it_RTE             = root["RunOptions"]["numberOfIterations"]; 				
+	opt.snapshots            = root["RunOptions"]["numberOfSnapshots"];
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
-	// opt.workingfile			 = root["RunOptions"]["workingfile"]
-	cfg.lookupValue("RunOptions.workingfile",opt.workingfile);
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
-	// opt.name
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
@@ -187,9 +185,7 @@ int read_config(int argc, char** argv, Options &opt)
 	}
 
 	// runspecific Values, just initilized here
-	opt.scale_factor = 0; //Scale factor
 	opt.t_abs = complex<double>(0,0); //Absolute time 
-	opt.name       = "run";
 	opt.stateInformation.resize(2);
 	opt.stateInformation[0] = 1;
 	opt.stateInformation[1] = 1;
