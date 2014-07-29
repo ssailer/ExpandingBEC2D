@@ -43,6 +43,12 @@ void RTE::setOptions(const Options &externaloptions){
 
 void RTE::RunSetup(){
 
+	snapshot_times.resize(opt.snapshots);
+	for(int k = 0; k < opt.snapshots; k++){
+		snapshot_times[k] = (k + 1) * opt.n_it_RTE / opt.snapshots;
+		cout << snapshot_times[k] << endl;
+	}
+
 	//Initialize and fill the Eigen Wavefunction Storage
 	// wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
@@ -191,7 +197,7 @@ void RTE::noise(vector<MatrixXcd> &c){
 	}
 }
 
-void RTE::rteToTime(string runname, vector<int> snapshot_times)
+void RTE::rteToTime(string runname)
 {
 	double start;  // starttime of the run
 	int samplesize = wavefctVec.size();

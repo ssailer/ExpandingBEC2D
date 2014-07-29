@@ -60,12 +60,10 @@ try{
 	setGridToDoubleGaussian(data,startUp.getOptions());
 	RTE* run = new RTE(data,startUp.getOptions());
 
-	vector<int> snapShotTimes(run->opt.snapshots);
-	for(int k = 0; k < run->opt.snapshots; k++){
-		snapShotTimes[k] = (k + 1) * run->opt.n_it_RTE / run->opt.snapshots;
-	}
+	
+
 	string runName = "RT-No-Ex";
-	run->rteToTime(runName,snapShotTimes);
+	run->rteToTime(runName);
 
 	
 	delete data;

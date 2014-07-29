@@ -37,7 +37,7 @@ class RTE
     
     // Propagatoren
 
-    void rteToTime(string runname, vector<int> snapshot_times);
+    void rteToTime(string runname);
     // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction
@@ -67,6 +67,7 @@ class RTE
 
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
+    vector<int> snapshot_times;
 
   private:
 
