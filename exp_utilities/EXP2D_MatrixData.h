@@ -2,64 +2,51 @@
 #define EXP2D_MATRIXDATA_H__
 
 #include <iostream>
+#include <complex>
+#include <EXP2D_tools.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
 using namespace Eigen;
 
-class MetaData {
-public:
-    MetaData() : stepState(0), timeState(0), coordinateBoundaries(2), grid(2), spacing(2), samplesize(0) {
-        for(int i = 0; i < 9; i++)
-            array[i] = 0;
-    }
-    inline double* data();
-    inline void dataToArray();
-    inline void arrayToData();
-
-    double timeState;
-    int stepState, samplesize;
-    vector<double> coordinateBoundaries;
-    vector<int> grid;
-    vector<double> spacing;
-
-    double array[9];
-};
-
-inline double* MetaData::data(){
-    return array;
-}
-
-inline void MetaData::dataToArray(){
-    array[0] = timeState;
-    array[1] = (double)stepState;
-    array[2] = (double)samplesize;
-    array[3] = (double)grid[0];
-    array[4] = (double)grid[1];
-    array[5] = coordinateBoundaries[0];
-    array[6] = coordinateBoundaries[1];
-    array[7] = spacing[0];
-    array[8] = spacing[1];
-}
-
-inline void MetaData::arrayToData(){
-    timeState = array[0];
-    stepState = (int)array[1];
-    samplesize = (int)array[2];
-    grid[0] = (int)array[3];
-    grid[1] = (int)array[4];
-    coordinateBoundaries[0] = array[5];
-    coordinateBoundaries[1] = array[6];
-    spacing[0] = array[7];
-    spacing[1] = array[8];
-}
-
 class MatrixData {
-public:
+    public:
+
+    class MetaData {
+        public:
+        MetaData() : steps(0), time(0), coord(2), grid(2), spacing(2), samplesize(0) { for(int i = 0; i < 9; i++){array[i] = 0;}}
+        // MetaData( const MetaData &m) : coord(2), grid(2), spacing(2) {
+        //     steps = m.steps;
+        //     time = m.time;
+        //     coord[0] = m.coord[0];
+        //     coord[1] = m.coord[1];
+        //     grid[0] = m.grid[0];
+        //     grid[1] = m.grid[1];
+        //     spacing[0] = m.grid[0];
+        //     spacing[1] = m.spacing[1];
+        //     samplesize = m.samplesize;
+        //     arrayToData();
+        // }
+        inline double* data();
+        inline void dataToArray();
+        inline void arrayToData();
+    
+        double time;
+        int steps, samplesize;
+        vector<double> coord;
+        vector<int> grid;
+        vector<double> spacing;
+    
+        double array[9];    
+    };
+
     vector<MatrixXcd> wavefunction;
     MetaData meta;
 
-    MatrixData() : wavefunction(0), meta() {}
+    MatrixData() {}
+    // MatrixData(int size) : wavefunction(size), meta() {}
+    // MatrixData(int x, int y) {for(int i = 0; wavefunction.size(); i++){ wavefunction[i] = MatrixXcd::Zero(x,y);}}
+    // MatrixData(int size, int x, int y) : MatrixData(size), MatrixData(x,y) {}
     inline MatrixData(const MetaData &extMeta);
     inline MatrixData(const int &samplesize,const int &gridx, const int &gridy,const double &extTime, const int &extStep, const double &xsize, const double &ysize);
 
@@ -76,70 +63,72 @@ public:
     inline MetaData getMeta();
 };
 
+inline MatrixData::MatrixData(const MetaData &m) : meta(m), wavefunction(m.samplesize) {    
+        for(int i = 0; i < wavefunction.size(); i++){
+            wavefunction[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+        }
+    }   
 
 
 inline MatrixData::MatrixData(const int &samplesize,const int &gridx, const int &gridy,const double &extTime, const int &extStep, const double &xsize, const double &ysize) {
         
     wavefunction.resize(samplesize);
     for(int i = 0; wavefunction.size(); ++i)
-        wavefunction[i] = MatrixXcd(gridx,gridy);
+        wavefunction[i] = MatrixXcd::Zero(gridx,gridy);
 
     meta.grid.resize(2);
     meta.grid[0] = gridx;
     meta.grid[1] = gridy;
 
-    meta.coordinateBoundaries.resize(2);
-    meta.coordinateBoundaries[0] = xsize;
-    meta.coordinateBoundaries[1] = ysize;
+    meta.coord.resize(2);
+    meta.coord[0] = xsize;
+    meta.coord[1] = ysize;
 
     meta.spacing.resize(2);
     meta.spacing[0] = xsize * 2 / gridx;
     meta.spacing[1] = ysize * 2 / gridy;
 
-    meta.timeState = extTime;
-    meta.stepState = extStep;
+    meta.time = extTime;
+    meta.steps = extStep;
 
-
+    meta.dataToArray();
 }
 
-inline MatrixData::MatrixData(const MetaData &extMeta){
 
-    meta = extMeta;        
-    wavefunction.resize(meta.samplesize);
-    for(int i = 0; wavefunction.size(); ++i)
-        wavefunction[i] = MatrixXcd(meta.grid[0],meta.grid[1]);
-}
 
 inline void MatrixData::setMatrix(const vector<MatrixXcd> &extWavefct){
     wavefunction = extWavefct;
 }
 
 inline void MatrixData::setTime(const double &extTime){
-    meta.timeState = extTime;
+    meta.time = extTime;
+    meta.dataToArray();
 }
 
 inline void MatrixData::setStep(const int &extStep){
-    meta.stepState = extStep;
+    meta.steps = extStep;
+    meta.dataToArray();
 }
 
 inline void MatrixData::setCoord(const vector<double> &extCoord){
     if( extCoord.size() == 2){
-       meta.coordinateBoundaries = extCoord;
+       meta.coord = extCoord;
+       meta.dataToArray();
     } else {
         cerr << "Error in MatrixData::setCoord, wrong vector size";
     }
 }
 
-inline double MatrixData::getGridXSpacing(){
+inline double MatrixData::hX(){
     return meta.spacing[0];
 }
 
-inline double MatrixData::getGrixYSpacing(){
+inline double MatrixData::hY(){
     return meta.spacing[1];
 }
 
 inline int MatrixData::getStep(){
-    return meta.stepState;
+    return meta.steps;
 }
 
 inline vector<MatrixXcd> MatrixData::getMatrix(){
@@ -147,11 +136,41 @@ inline vector<MatrixXcd> MatrixData::getMatrix(){
 }
 
 inline void MatrixData::setMeta(const MetaData &extMeta){
-    meta = extMeta;
+    meta = MetaData(extMeta);
 }
 
-inline MetaData MatrixData::getMeta(){
+inline MatrixData::MetaData MatrixData::getMeta(){
     return meta;
+}
+
+
+
+inline double* MatrixData::MetaData::data(){
+    return array;
+}
+
+inline void MatrixData::MetaData::dataToArray(){
+    array[0] = time;
+    array[1] = (double)steps;
+    array[2] = (double)samplesize;
+    array[3] = (double)grid[0];
+    array[4] = (double)grid[1];
+    array[5] = coord[0];
+    array[6] = coord[1];
+    array[7] = spacing[0];
+    array[8] = spacing[1];
+}
+
+inline void MatrixData::MetaData::arrayToData(){
+    time = array[0];
+    steps = (int)array[1];
+    samplesize = (int)array[2];
+    grid[0] = (int)array[3];
+    grid[1] = (int)array[4];
+    coord[0] = array[5];
+    coord[1] = array[6];
+    spacing[0] = array[7];
+    spacing[1] = array[8];
 }
 
 
