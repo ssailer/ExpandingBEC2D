@@ -29,7 +29,7 @@ set(SOURCESEVALUATOR evaluator.cpp ${EXP2DSOURCES})
 
 set(SOURCESTESTER tester.cpp ${EXP2DSOURCES})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fopenmp -Ofast -funroll-loops -march=native ") #-ftree-vectorizer-verbose=1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fopenmp -g ") #-Ofast -funroll-loops -march=native ") #-ftree-vectorizer-verbose=1")
 
 add_executable(main ${SOURCESMAIN})
 add_executable(evaluator ${SOURCESEVALUATOR})

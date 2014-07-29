@@ -52,21 +52,24 @@ void noiseTheGrid(ComplexGrid &g);
 
 class expException {
 public:
-    inline expException(std::string const& info){
-        stringException = info;
-    }    
-    inline void setString(std::string const& info){
-        stringException = info;
-    };
-    inline void addString(std::string const& info){
-        stringException += info;
-    };
-    inline std::string printString(){
-        cout << stringException.c_str() << endl;
-    };
-    std::string stringException;
+    expException() : stringException("expException, nothing happened, yet.") {}
+    expException(std::string const& info);
+    void setString(std::string const& info);
+    void addString(std::string const& info);
+    string printString();
 private:
-    
+    std::string stringException;
+};
+
+inline expException::expException(std::string const& info) : stringException(info) {}    
+inline void expException::setString(std::string const& info){
+    stringException = info;
+};
+inline void expException::addString(std::string const& info){
+    stringException += info;
+};
+inline std::string expException::printString(){
+    cerr << stringException.c_str() << endl;
 };
 
 inline const std::string currentDate() {

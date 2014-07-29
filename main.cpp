@@ -210,7 +210,7 @@ catch(const std::exception& e)
 	return ERROR_UNHANDLED_EXCEPTION; 
 }
 catch(expException& e){
-	std::cerr << e.stringException.c_str() << endl;
+	e.printString();
 	std::cerr << " Terminating now." << endl;
 	return ERROR_UNHANDLED_EXCEPTION;
 }
