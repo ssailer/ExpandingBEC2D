@@ -32,13 +32,13 @@ set(SOURCESTESTER tester.cpp ${EXP2DSOURCES})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fopenmp -Ofast -funroll-loops -march=native ") #-ftree-vectorizer-verbose=1")
 
 add_executable(main ${SOURCESMAIN})
-#add_executable(evaluator ${SOURCESEVALUATOR})
+add_executable(evaluator ${SOURCESEVALUATOR})
 #add_executable(tester ${SOURCESTESTER})
 
 target_link_libraries(main ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options -Wnarrowing)
-#target_link_libraries(evaluator ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options -Wnarrowing)
+target_link_libraries(evaluator ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options -Wnarrowing)
 #target_link_libraries(tester ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgslcblas -lgomp -lpthread -lfftw3 -lfftw3_threads -lm -lboost_program_options -Wnarrowing)
 
 install(TARGETS main RUNTIME DESTINATION bin)
-#install(TARGETS evaluator RUNTIME DESTINATION bin)
+install(TARGETS evaluator RUNTIME DESTINATION bin)
 #install(TARGETS tester RUNTIME DESTINATION bin)

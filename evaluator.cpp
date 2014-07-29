@@ -20,6 +20,7 @@ Last Update: 22/07/13
 #include <averageclass.h>
 #include <bh3observables.h>
 
+#include <EXP2D_MatrixData.h>
 #include <main.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_itp.hpp>
@@ -54,7 +55,7 @@ try{
 		std::cout.rdbuf(psbuf);         // assign streambuf to cout
 	}
 		
-	string runname = "RT-Ex";
+	string runname = "RT-No-Ex";
 	vector<string> snapShotFiles;
 	string tmp;
 	string fileNameListName = "runData/fileNameList.dat";
@@ -65,14 +66,13 @@ try{
 			snapShotFiles.push_back(tmp);
 		}
 	}		
-
+	MatrixData* matrixData = new MatrixData(startUp.getMeta());
 	#pragma omp parallel for
 	for(int j = 0; j < snapShotFiles.size(); j++){
 		
 		string h5name = snapShotFiles[j];
 		Options opt;
 		Eval results;
-		vector<MatrixXcd> wavefunction;	
 
 		cout << "Opening Datafiles.." << h5name << endl;
 		binaryFile data(h5name,binaryFile::in);	
@@ -80,8 +80,8 @@ try{
 		cout << "Reading Datafiles.. " << h5name << endl;
 		vector<int> timeList = data.getTimeList();
 		for(int i = 0; i < timeList.size(); i++){
-			data.getSnapshot(runname,timeList[i],wavefunction,opt);		
-			results.saveData(wavefunction,opt,timeList[i],runname);		
+			data.getSnapshot(runname,timeList[i],matrixData,opt);		
+			results.saveData(matrixData->wavefunction,opt,timeList[i],runname);		
 			cout << "Evaluating Datafiles.. "<< timeList[i] << endl;
 			results.evaluateData();		
 			cout << "Plotting Datafiles.. " << timeList[i] << endl;		
