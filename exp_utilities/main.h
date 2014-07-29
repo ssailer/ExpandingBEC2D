@@ -6,6 +6,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <stdio.h>
+#include <EXP2D_MatrixData.h>
 
 #define SUCCESS 0 
 #define ERROR_IN_COMMAND_LINE 1
@@ -14,7 +15,39 @@
 
 using namespace libconfig;
 
-void printInitVar(Options &opt)
+class StartUp {
+public:
+	StartUp(int argcTmp, char** argvTmp) {
+		argc = argcTmp;
+		argv = argvTmp;
+		readCli();
+		readConfig();
+		setDirectory();
+	}
+	inline void printInitVar();
+	inline void setDirectory();
+	inline int readCli();
+	inline int readConfig();
+
+	inline Options getOptions();
+	inline MatrixData::MetaData getMeta();
+private:
+	MatrixData::MetaData meta;
+	Options opt;
+	int argc;
+	char** argv;
+};
+
+inline Options StartUp::getOptions(){
+	return opt;
+}
+
+inline MatrixData::MetaData StartUp::getMeta(){
+	return meta;
+}
+
+
+inline void StartUp::printInitVar()
 {
 	std::cout.setf(std::ios::boolalpha);
 	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
@@ -27,7 +60,7 @@ void printInitVar(Options &opt)
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
 }
 
-void set_workingdirectory(Options &opt)
+inline void StartUp::setDirectory()
 {
 	// cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
 	struct stat wd_stat;
@@ -52,7 +85,7 @@ void set_workingdirectory(Options &opt)
 }
 
 
-int read_cli_options(int argc, char** argv, Options &opt)
+inline int StartUp::readCli()
 {
 	// Beginning of the options block
 
@@ -115,7 +148,7 @@ int read_cli_options(int argc, char** argv, Options &opt)
 }
 
 
-int read_config(int argc, char** argv, Options &opt)
+inline int StartUp::readConfig()
 {
 	libconfig::Config cfg;
 
@@ -173,8 +206,16 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
-
-
+	meta.grid[0] = opt.grid[1];
+	meta.grid[1] = opt.grid[2];
+	meta.coord[0] = opt.min_x;
+	meta.coord[1] = opt.min_y;
+	meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
+	meta.spacing[0] = opt.min_y * 2 / opt.grid[2];
+	meta.samplesize = opt.samplesize;
+	meta.time = 0;
+	meta.steps = 0;
+	meta.dataToArray();
 	}
 	catch(const SettingNotFoundException &nfex)
 	{

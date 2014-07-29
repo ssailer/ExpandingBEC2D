@@ -9,6 +9,7 @@
 #include <complex>
 #include <hdf5.h>
 #include <EXP2D_tools.h>
+#include <EXP2D_MatrixData.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
@@ -34,13 +35,13 @@ public:
 
   void close();
 
-  bool appendSnapshot(const string &name, int time, const vector<MatrixXcd> &k, Options &options);
+  bool appendSnapshot(const string &name, int time, MatrixData* const &pData, Options &options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
 
   bool appendEval(const string &vec_name, double *vec, int vec_dim, int* vec_rank, int time);
   // bool appendDocString(const string &group, const string &docstring, double time);
 
-  bool getSnapshot(const string &name, int time, vector<MatrixXcd> &k, Options &options);
+  bool getSnapshot(const string &name, int time, MatrixData* &pData, Options &options);
   // bool getSnapshot(const string &name, double time, vector<RealGrid> &k);
 
   const vector<int> & getTimeList() const {return time_list;}

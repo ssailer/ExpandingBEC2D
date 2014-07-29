@@ -11,10 +11,12 @@
 #include <omp.h>
 #include <string>
 #include <iomanip>
+#include <gauss_random.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_evaluation.h>
 #include <EXP2D_binaryfile.h>
 #include <plot_with_mgl.h>
+#include <EXP2D_MatrixData.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
@@ -28,24 +30,23 @@ typedef struct {
 class RTE
 {
   public:
-    RTE();
-    RTE(ComplexGrid* &c,Options &opt);  
-    ~RTE();
+    RTE(MatrixData* &d,const Options &opt);  
 
-    void setOptions(Options &externaloptions);
+    void setOptions(const Options &externaloptions);
     void RunSetup();
     
     // Propagatoren
 
     void rteToTime(string runname, vector<int> snapshot_times);
-    void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
+    // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction
-    ComplexGrid* pPsi;
+    MatrixData* pData;
 
     // Storage Variable for the runs
     // MatrixXcd wavefct;
-    vector<MatrixXcd> wavefctVec;
+    vector<MatrixXcd> &wavefctVec;
+    MatrixData::MetaData &meta;
 
     void CopyComplexGridToEigen();
     void CopyEigenToComplexGrid();
@@ -72,7 +73,7 @@ class RTE
     //
     inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    void toEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct);
+    void noise(vector<MatrixXcd> &wavefct);
 
     // Variables
     complex<double> h_x, h_y;

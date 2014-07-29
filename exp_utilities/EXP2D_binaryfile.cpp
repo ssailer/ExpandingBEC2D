@@ -309,7 +309,7 @@ bool binaryFile::checkTime(int snapShotTime)
 }
 
 
-bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vector<MatrixXcd> &k, Options &options)
+bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData* const &pData, Options &options)
 {
   if(m == in)
     {
@@ -374,7 +374,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 
       hid_t h5_EMGroup_vecsub = H5Gcreate(h5_timegroup, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); //create dataset with full space selection
       // cerr << "Reached ERROR location #11" << endl;
-      for (int i = 0; i < k.size(); i++)
+      for (int i = 0; i < pData->wavefunction.size(); i++)
         {
           hid_t    dataset, dataspace, dset_create_props;
 
@@ -383,8 +383,8 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 
           hsize_t *dimsf = (hsize_t *) malloc(rank*sizeof(hsize_t));
 
-          dimsf[0] = 2*k[i].rows();
-          dimsf[1] = k[i].cols();
+          dimsf[0] = 2 * pData->wavefunction[i].rows();
+          dimsf[1] = pData->wavefunction[i].cols();
 
 
           dset_create_props = H5Pcreate(H5P_DATASET_CREATE); //create a default creation property list
@@ -395,7 +395,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 
           dataset = H5Dcreate(h5_EMGroup_vecsub, (comp.str()).c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT); //create data block in file
 
-          H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[i].data()); //write grid data
+          H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)pData->wavefunction[i].data()); //write grid data
 
           free(dimsf);
           H5Dclose(dataset);
@@ -448,6 +448,15 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 
       H5Aclose(h5a_options);
       H5Sclose(dataspace);
+
+      hid_t h5a_meta;
+      dimsf[0] = 9;
+      dataspace = H5Screate_simple(1, dimsf, NULL);
+
+      h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite(h5a_meta, H5T_IEEE_F64LE, pData->meta.data());
+      H5Aclose(h5a_meta);
+      H5Sclose(dataspace);
       // cerr << "Reached ERROR location #13" << endl;
 
   H5Gclose(h5_timegroup);
@@ -456,7 +465,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 }
 
 
-bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<MatrixXcd> &k, Options &options)
+bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &pData, Options &options)
 {
   if(m == out)
     {
@@ -530,6 +539,11 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Matrix
 
               H5Aclose(h5a_options);
 
+              hid_t h5a_meta;
+              h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
+              H5Aread(h5a_meta, H5T_IEEE_F64LE, pData->meta.data());
+              H5Aclose(h5a_meta);
+
       // if(H5Iget_type(test_id) == H5I_DATASET)
       //   {
       //     hid_t dataspace = H5Dget_space(test_id);
@@ -552,11 +566,11 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Matrix
       //   {
           hsize_t vecsize;
           H5Gget_num_objs(test_id, &vecsize);
-          k.resize(vecsize);
+          pData->wavefunction.resize(vecsize);
 
           for(int i = 0; i < vecsize; i++)
             {
-              k[i] = MatrixXcd(options.grid[1],options.grid[2]);
+              pData->wavefunction[i] = MatrixXcd(pData->meta.grid[0], pData->meta.grid[1]);
               stringstream comp;
               comp << i;
 
@@ -567,11 +581,11 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Matrix
               hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
               H5Sget_simple_extent_dims(dataspace, dimf, NULL);
 
-          	  dimf[0] /= 2;
+          	  // dimf[0] /= 2;
           	  // dimf[1] /= 2;
-              k[i].resize(dimf[0],dimf[1]);
+              // k[i].resize(dimf[0],dimf[1]);
 
-              H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[i].data());
+              H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)pData->wavefunction[i].data());
 
               free(dimf);
               H5Dclose(dataset);

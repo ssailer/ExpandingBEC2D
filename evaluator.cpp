@@ -46,10 +46,7 @@ try{
  	backup = std::cout.rdbuf();     // back up cout's streambuf
  	// std::cout.rdbuf(backup);        // restore cout's original streambuf
 
- 	Options opt;
-	read_cli_options(argc,argv,opt);
-	read_config(argc,argv,opt);
-	set_workingdirectory(opt);
+	StartUp startUp(argc,argv);
 	
 	if(DEBUG_LOG == 1){
 		logstream.open ("eval.log");

@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 #include <iomanip>
-#include <gauss_random.h>
+
 #include <stdlib.h>
 #include <time.h>
 #include <eigen3/Eigen/Dense>
@@ -47,8 +47,6 @@ typedef struct Options {
     
 } Options;
 
-
-void noiseTheGrid(ComplexGrid &g);
 
 class expException {
 public:
