@@ -65,28 +65,33 @@ try{
 		while (getline (fileNameList,tmp)){
 			snapShotFiles.push_back(tmp);
 		}
-	}		
+	}
+
+	cout << "Snapshot File Size: " << snapShotFiles.size() << endl;
+	int counter = 0;		
 	MatrixData* matrixData = new MatrixData(startUp.getMeta());
-	#pragma omp parallel for
+	// #pragma omp parallel for
 	for(int j = 0; j < snapShotFiles.size(); j++){
 		
+		counter++;
 		string h5name = snapShotFiles[j];
 		Options opt;
 		Eval results;
 
-		cout << "Opening Datafiles.." << h5name << endl;
+		cout << counter << " Opening Datafiles.." << h5name << endl;
 		binaryFile data(h5name,binaryFile::in);	
 
-		cout << "Reading Datafiles.. " << h5name << endl;
+		cout << counter << " Reading Datafiles.. " << h5name << endl;
 		vector<int> timeList = data.getTimeList();
 		for(int i = 0; i < timeList.size(); i++){
 			data.getSnapshot(runname,timeList[i],matrixData,opt);		
 			results.saveData(matrixData->wavefunction,opt,timeList[i],runname);		
-			cout << "Evaluating Datafiles.. "<< timeList[i] << endl;
+			cout << counter << " Evaluating Datafiles.. "<< timeList[i] << endl;
 			results.evaluateData();		
-			cout << "Plotting Datafiles.. " << timeList[i] << endl;		
+			cout << counter << " Plotting Datafiles.. " << timeList[i] << endl;		
 			results.plotData();
 		}
+
 	}	
 	
 	cout << "Terminating successfully." << endl;

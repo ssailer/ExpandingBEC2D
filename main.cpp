@@ -60,7 +60,7 @@ try{
 
 
 	MatrixData* data = new MatrixData(startUp.getMeta());
-	setGridToGaussian(data,startUp.getOptions());
+	setGridToDoubleGaussian(data,startUp.getOptions());
 	ITP* itprun = new ITP(data->wavefunction[0],startUp.getOptions());
 	string itpname = "ITP";
 	itprun->propagateToGroundState(itpname);

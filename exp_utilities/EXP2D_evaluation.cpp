@@ -109,7 +109,7 @@ void Eval::evaluateData(){
 		// cout << endl << "Eval #" << k << endl;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
 		// cout << "-getDensity" << endl;
-		contour[k] = tracker.trackContour(densityLocationMap[k]);
+		// contour[k] = tracker.trackContour(densityLocationMap[k]);
 		// cout << "-trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
 		// cout << "-calculator" << endl;		
@@ -158,14 +158,14 @@ void Eval::plotData(){
 	filename = runname + "-Density-" + snapShotString;
 	plotDataToPng(filename,densityLocationMap[0],opt);
 
-	filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	plotVector(filename,x_dist_grad,y_dist_grad,opt);
+	// filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	// plotVector(filename,x_dist_grad,y_dist_grad,opt);
 
 	filename = runname + "-Angular-Dens-" + snapShotString;
 	plotVector(filename,totalResult.angularDensity,opt);	
 
-	filename = runname + "-Contour-" + snapShotString;
-	plotContour(filename,PsiVec[0],contour[0],opt);
+	// filename = runname + "-Contour-" + snapShotString;
+	// plotContour(filename,PsiVec[0],contour[0],opt);
 
 	
 	filename = runname + "-Observables" + ".dat";

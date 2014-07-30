@@ -222,7 +222,7 @@ void RTE::rteToTime(string runname)
 
 	noise(wavefctVec);
 
-	plot("1-AfterNoise-");
+	// plot("1-AfterNoise-");
 
 	// binaryFile *dataFile = new binaryFile("00000.h5",binaryFile::out);
 	// dataFile->appendSnapshot(runname,0,pData,opt);
@@ -241,7 +241,7 @@ void RTE::rteToTime(string runname)
 		vector<int> threadinfo(samplesize);
 		int slowestthread = 0;
 
-		plot("2-StartOfSnapShot-" + to_string(snapshot_times[j]));
+		// plot("2-StartOfSnapShot-" + to_string(snapshot_times[j]));
 
 		#pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
@@ -249,8 +249,6 @@ void RTE::rteToTime(string runname)
 			int lambdaSteps = keeperOfTime.lambdaSteps;
 			threadinfo[i] = omp_get_thread_num();
 			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
-
-				cout << "Midmaximum: " << wavefctVec[0](256,256) << endl;
 		
 				wavefctcp[i] = wavefctVec[i];
 		
@@ -319,26 +317,26 @@ void RTE::rteToTime(string runname)
 
 		pData->update(real(tmp),keeperOfTime.absoluteSteps,opt.stateInformation);
 
-		plot("3-"+to_string(snapshot_times[j]));
+		// plot("3-"+to_string(snapshot_times[j]));
 		
-		// try{
-		// 	plot(to_string(snapshot_times[j]));
-		// 	std::string h5name = to_string(snapshot_times[j]);
-		// 	std::stringstream ss;
-		// 	ss << std::setfill('0') << std::setw(5) << h5name;
-		// 	h5name = ss.str() + ".h5";
+		try{
+			plot("RTE-"+to_string(snapshot_times[j]));
+			std::string h5name = to_string(snapshot_times[j]);
+			std::stringstream ss;
+			ss << std::setfill('0') << std::setw(5) << h5name;
+			h5name = ss.str() + ".h5";
 
-		// 	binaryFile dataFile(h5name,binaryFile::out);
-		// 	dataFile.appendSnapshot(runname,snapshot_times[j],pData,opt);
-		// 	// dataFile.close();
-		// 	cout << " ..Snapshot saved to runData/" << h5name;
+			binaryFile dataFile(h5name,binaryFile::out);
+			dataFile.appendSnapshot(runname,snapshot_times[j],pData,opt);
+			// dataFile.close();
+			cout << " ..Snapshot saved to runData/" << h5name;
 
-		// }
-		// catch(const std::exception& e) { 
-		// 	std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
-		// 			    << e.what() << ", application will now exit" << std::endl; 
-		// 	throw; 
-		// }
+		}
+		catch(const std::exception& e) { 
+			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
+					    << e.what() << ", application will now exit" << std::endl; 
+			throw; 
+		}
 
 	}	
 
