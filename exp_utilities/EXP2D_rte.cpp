@@ -46,7 +46,6 @@ void RTE::RunSetup(){
 	snapshot_times.resize(opt.snapshots);
 	for(int k = 0; k < opt.snapshots; k++){
 		snapshot_times[k] = (k + 1) * opt.n_it_RTE / opt.snapshots;
-		cout << snapshot_times[k] << endl;
 	}
 
 	//Initialize and fill the Eigen Wavefunction Storage
@@ -161,19 +160,19 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 	}
 }
 
-// void RTE::plot(string name,int counter_state, int counter_max){
-// 	wavefct = wavefctVec[0];
+void RTE::plot(const string name){
 
-// 	if(opt.runmode.compare(1,1,"1") == 0){
-// 		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
-// 		Xexpanding = x_expand(tmp);
-// 		Yexpanding = y_expand(tmp);
-// 		plotDataToPngEigenExpanding(name, wavefct,ranges,Xexpanding,Yexpanding,opt);
-// 	}
-// 	if(opt.runmode.compare(1,1,"0") == 0){
-// 		plotDataToPngEigen(name, wavefct,opt);
-// 	}
-// }
+
+	if(opt.runmode.compare(1,1,"1") == 0){
+		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
+		Xexpanding = x_expand(tmp);
+		Yexpanding = y_expand(tmp);
+		plotDataToPngEigenExpanding(name, wavefctVec[0],ranges,Xexpanding,Yexpanding,opt);
+	}
+	if(opt.runmode.compare(1,1,"0") == 0){
+		plotDataToPngEigen(name, wavefctVec[0],opt);
+	}
+}
 
 
 // void RTE::CopyComplexGridToEigen(){
@@ -211,21 +210,23 @@ void RTE::rteToTime(string runname)
 	vector<MatrixXcd> k2(samplesize);
 	vector<MatrixXcd> k3(samplesize);
 
-	for(int i = 0; i < wavefctVec.size();i++){
-		wavefctcp[i] = MatrixXcd::Zero(wavefctVec[i].rows(),wavefctVec[i].cols());
-		k0[i] = MatrixXcd::Zero(wavefctVec[i].rows(),wavefctVec[i].cols());
-		k1[i] = MatrixXcd::Zero(wavefctVec[i].rows(),wavefctVec[i].cols());
-		k2[i] = MatrixXcd::Zero(wavefctVec[i].rows(),wavefctVec[i].cols());
-		k3[i] = MatrixXcd::Zero(wavefctVec[i].rows(),wavefctVec[i].cols());	
+	for(int i = 0; i <samplesize;i++){
+		wavefctcp[i] = MatrixXcd(pData->meta.grid[0],pData->meta.grid[1]);
+		k0[i] = MatrixXcd::Zero(pData->meta.grid[0],pData->meta.grid[1]);
+		k1[i] = MatrixXcd::Zero(pData->meta.grid[0],pData->meta.grid[1]);
+		k2[i] = MatrixXcd::Zero(pData->meta.grid[0],pData->meta.grid[1]);
+		k3[i] = MatrixXcd::Zero(pData->meta.grid[0],pData->meta.grid[1]);	
 	}
 
 	// CopyComplexGridToEigen();
 
 	noise(wavefctVec);
 
-	binaryFile *dataFile = new binaryFile("00000.h5",binaryFile::out);
-	dataFile->appendSnapshot(runname,0,pData,opt);
-	delete dataFile;
+	plot("1-AfterNoise-");
+
+	// binaryFile *dataFile = new binaryFile("00000.h5",binaryFile::out);
+	// dataFile->appendSnapshot(runname,0,pData,opt);
+	// delete dataFile;
 	
 	start = omp_get_wtime();
 
@@ -240,12 +241,16 @@ void RTE::rteToTime(string runname)
 		vector<int> threadinfo(samplesize);
 		int slowestthread = 0;
 
+		plot("2-StartOfSnapShot-" + to_string(snapshot_times[j]));
+
 		#pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
 			// list of which thread is working which iteration
 			int lambdaSteps = keeperOfTime.lambdaSteps;
 			threadinfo[i] = omp_get_thread_num();
 			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
+
+				cout << "Midmaximum: " << wavefctVec[0](256,256) << endl;
 		
 				wavefctcp[i] = wavefctVec[i];
 		
@@ -314,24 +319,26 @@ void RTE::rteToTime(string runname)
 
 		pData->update(real(tmp),keeperOfTime.absoluteSteps,opt.stateInformation);
 
+		plot("3-"+to_string(snapshot_times[j]));
+		
+		// try{
+		// 	plot(to_string(snapshot_times[j]));
+		// 	std::string h5name = to_string(snapshot_times[j]);
+		// 	std::stringstream ss;
+		// 	ss << std::setfill('0') << std::setw(5) << h5name;
+		// 	h5name = ss.str() + ".h5";
 
-		try{
-			std::string h5name = to_string(snapshot_times[j]);
-			std::stringstream ss;
-			ss << std::setfill('0') << std::setw(5) << h5name;
-			h5name = ss.str() + ".h5";
+		// 	binaryFile dataFile(h5name,binaryFile::out);
+		// 	dataFile.appendSnapshot(runname,snapshot_times[j],pData,opt);
+		// 	// dataFile.close();
+		// 	cout << " ..Snapshot saved to runData/" << h5name;
 
-			binaryFile dataFile(h5name,binaryFile::out);
-			dataFile.appendSnapshot(runname,snapshot_times[j],pData,opt);
-			// dataFile.close();
-			cout << " ..Snapshot saved to runData/" << h5name;
-
-		}
-		catch(const std::exception& e) { 
-			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
-					    << e.what() << ", application will now exit" << std::endl; 
-			throw; 
-		}
+		// }
+		// catch(const std::exception& e) { 
+		// 	std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
+		// 			    << e.what() << ", application will now exit" << std::endl; 
+		// 	throw; 
+		// }
 
 	}	
 

@@ -55,9 +55,22 @@ try{
 		psbuf = logstream.rdbuf();        // get file's streambuf
 		std::cout.rdbuf(psbuf);         // assign streambuf to cout
 	}
+	
+
+
 
 	MatrixData* data = new MatrixData(startUp.getMeta());
-	setGridToDoubleGaussian(data,startUp.getOptions());
+	setGridToGaussian(data,startUp.getOptions());
+	ITP* itprun = new ITP(data->wavefunction[0],startUp.getOptions());
+	string itpname = "ITP";
+	itprun->propagateToGroundState(itpname);
+	
+	for(int i = 0; i < data->meta.samplesize; i++){
+		data->wavefunction[i] = itprun->result();
+	}
+	delete itprun;
+
+	// setGridToDoubleGaussian(data,startUp.getOptions());
 	RTE* run = new RTE(data,startUp.getOptions());
 
 	

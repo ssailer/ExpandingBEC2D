@@ -23,11 +23,13 @@ ITP::ITP()
  	i_unit=complex<double>(0,1);
 }
 
-ITP::ITP(ComplexGrid* &c,Options &externaloptions)
+ITP::ITP(MatrixXcd &wavedata,const Options &externaloptions)
 {	
 	// Both essential Variables
-	pPsi = c;
+	// pPsi = c;
+	wavefct = wavedata;
   	opt = externaloptions;
+  	plot("Initialize");
 
 
   	// some constants used in computations to shorten stuff
@@ -56,6 +58,10 @@ ITP::~ITP(){
 
 }
 
+MatrixXcd ITP::result(){
+	return wavefct;
+}
+
 void ITP::setOptions(Options &externaloptions){
 	opt = externaloptions;
 
@@ -64,7 +70,7 @@ void ITP::setOptions(Options &externaloptions){
 void ITP::RunSetup(){
 
 	//Initialize and fill the Eigen Wavefunction Storage
-	wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	// wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	// the time-step sizes for Runge-Kutta integration for both schemes as complex valued variables
  	t_ITP = complex<double>(opt.ITP_step,0.0);
@@ -97,6 +103,10 @@ void ITP::RunSetup(){
 	opt.stateInformation[0] = 1.0;
 	opt.stateInformation[1] = 1.0;
 
+}
+
+void ITP::plot(const string name){
+		plotDataToPngEigen(name, wavefct,opt);
 }
 
 inline void ITP::rescale(MatrixXcd &wavefct)
@@ -206,7 +216,7 @@ void ITP::propagateToGroundState(string runname)
 	int old_Ekin = 0;
 
 	// load external Data into wavefct
-	CopyComplexGridToEigen();
+	// CopyComplexGridToEigen();
 
 	Eval breakCondition;
 	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -219,6 +229,8 @@ void ITP::propagateToGroundState(string runname)
 
 	//start loop here
 	Eigen::initParallel();
+
+	plot("ITP-1");
 
 	// do{
 	// 	rescale(wavefct);
@@ -258,6 +270,7 @@ void ITP::propagateToGroundState(string runname)
 			state++;	
 		}
 		
+		plot("ITP-"+to_string(state));
 
 		breakCondition.saveData(wavefct,opt,state,runname);
 		breakCondition.evaluateDataITP();
@@ -279,10 +292,8 @@ void ITP::propagateToGroundState(string runname)
 
 	cout << endl;
 
-
-
 	// update the ComplexGrid* DATA object outside of this.
-	CopyEigenToComplexGrid();
+	// CopyEigenToComplexGrid();
 }
 
 void ITP::cli_groundState(string name, double start,int state,Observables totalResult){	

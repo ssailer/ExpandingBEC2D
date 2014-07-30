@@ -62,7 +62,7 @@ class RTE
     
     // void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
-    // void plot(string name,int counter_state, int counter_max);
+    void plot(const string name);
     
 
     // internal RunOptions, use setOptions(Options) to update from the outside

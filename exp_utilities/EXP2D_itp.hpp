@@ -23,8 +23,9 @@ class ITP
 {
 public:
     ITP();
-    ITP(ComplexGrid* &c,Options &opt);
+    ITP(MatrixXcd &wavedata,const Options &opt);
     ~ITP();
+    MatrixXcd result();
 
     void setOptions(Options &externaloptions);
     void RunSetup();
@@ -53,6 +54,7 @@ public:
 
 
 private:
+    void plot(const string name);
 
     inline void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
 
