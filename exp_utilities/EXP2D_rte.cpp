@@ -45,7 +45,7 @@ void RTE::RunSetup(){
 
 	snapshot_times.resize(opt.snapshots);
 	for(int k = 0; k < opt.snapshots; k++){
-		snapshot_times[k] = (k + 1) * opt.n_it_RTE / opt.snapshots;
+		snapshot_times[k] = (k + 1) * opt.n_it_RTE / opt.snapshots + meta.steps;
 	}
 
 	//Initialize and fill the Eigen Wavefunction Storage
@@ -119,13 +119,13 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/10))==0){
 		int seconds, min, hour, total, expectedhour, expectedmin, expectedseconds;
 		double totalstate = 0;
-		double totalmaxpercent = (double)counter_max * (double)opt.samplesize / 100;
-		for(int i = 0; i < opt.samplesize; i++){
+		double totalmaxpercent = (double)counter_max * (double)meta.samplesize / 100;
+		for(int i = 0; i < meta.samplesize; i++){
 			totalstate += stateOfLoops[i];
 		}
 		double totalPercent = totalstate/totalmaxpercent;
 
-		int overallStepState = keeperOfTime.absoluteSteps + totalstate / opt.samplesize;
+		int overallStepState = meta.steps + totalstate / meta.samplesize;
 
 		total = omp_get_wtime() - start;
 
@@ -183,14 +183,14 @@ void RTE::plot(const string name){
 // 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ pPsi->at(0,i,j,0) = wavefct(i,j);}}
 // }
 
-void RTE::noise(vector<MatrixXcd> &c){
-	for(int k = 0; k < c.size(); k++){
+void RTE::noise(){
+	for(int k = 0; k < wavefctVec.size(); k++){
 		GaussRandom r (get_seed());
 		double rvalue;
-		for(int i = 0;i < c[k].rows();i++){
-			for(int j = 0; j < c[k].cols();j++){
-				rvalue = real(c[k](i,j)) * 0.1;
-				c[k](i,j) += r.gauss_random(0.0,rvalue);
+		for(int i = 0;i < wavefctVec[k].rows();i++){
+			for(int j = 0; j < wavefctVec[k].cols();j++){
+				rvalue = real(wavefctVec[k](i,j)) * 0.1;
+				wavefctVec[k](i,j) += r.gauss_random(0.0,rvalue);
 			}
 		}
 	}
@@ -211,16 +211,14 @@ void RTE::rteToTime(string runname)
 	vector<MatrixXcd> k3(samplesize);
 
 	for(int i = 0; i <samplesize;i++){
-		wavefctcp[i] = MatrixXcd(pData->meta.grid[0],pData->meta.grid[1]);
-		k0[i] = MatrixXcd::Zero(pData->meta.grid[0],pData->meta.grid[1]);
-		k1[i] = MatrixXcd::Zero(pData->meta.grid[0],pData->meta.grid[1]);
-		k2[i] = MatrixXcd::Zero(pData->meta.grid[0],pData->meta.grid[1]);
-		k3[i] = MatrixXcd::Zero(pData->meta.grid[0],pData->meta.grid[1]);	
+		wavefctcp[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+		k0[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+		k1[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+		k2[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+		k3[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);	
 	}
 
 	// CopyComplexGridToEigen();
-
-	noise(wavefctVec);
 
 	// plot("1-AfterNoise-");
 
@@ -233,7 +231,8 @@ void RTE::rteToTime(string runname)
 
 	//start loop here
 	Eigen::initParallel();
-	int previousTimes = 0;
+	int previousTimes = meta.steps;
+	cout << "previousTimes " << previousTimes << endl;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
 		string stepname = runname + "-" + to_string(snapshot_times[j]);
@@ -298,7 +297,7 @@ void RTE::rteToTime(string runname)
 			// }
 	
 		}
-		keeperOfTime.lambdaSteps = 2 * snapshot_times[j];
+		keeperOfTime.lambdaSteps = 2 * (snapshot_times[j] - previousTimes);
 		keeperOfTime.absoluteSteps = snapshot_times[j];	
 		previousTimes = snapshot_times[j];
 
@@ -320,14 +319,15 @@ void RTE::rteToTime(string runname)
 		// plot("3-"+to_string(snapshot_times[j]));
 		
 		try{
-			plot("RTE-"+to_string(snapshot_times[j]));
+			// plot("RTE-"+to_string(snapshot_times[j]));
 			std::string h5name = to_string(snapshot_times[j]);
 			std::stringstream ss;
 			ss << std::setfill('0') << std::setw(5) << h5name;
 			h5name = ss.str() + ".h5";
 
-			binaryFile dataFile(h5name,binaryFile::out);
-			dataFile.appendSnapshot(runname,snapshot_times[j],pData,opt);
+			binaryFile* dataFile = new binaryFile(h5name,binaryFile::out);
+			dataFile->appendSnapshot(runname,snapshot_times[j],pData,opt);
+			delete dataFile;
 			// dataFile.close();
 			cout << " ..Snapshot saved to runData/" << h5name;
 
@@ -338,7 +338,9 @@ void RTE::rteToTime(string runname)
 			throw; 
 		}
 
-	}	
+	}
+	std::cout << "RTE finished." << endl;
+	std::cerr << "RTE finished." << endl;	
 
 }
 

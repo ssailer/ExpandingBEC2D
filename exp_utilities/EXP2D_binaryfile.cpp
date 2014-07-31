@@ -543,6 +543,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
               h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
               H5Aread(h5a_meta, H5T_IEEE_F64LE, pData->meta.data());
               H5Aclose(h5a_meta);
+              pData->meta.arrayToData();
 
       // if(H5Iget_type(test_id) == H5I_DATASET)
       //   {

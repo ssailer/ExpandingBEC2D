@@ -71,24 +71,24 @@ try{
 	int counter = 0;		
 	MatrixData* matrixData = new MatrixData(startUp.getMeta());
 	// #pragma omp parallel for
-	for(int j = 0; j < snapShotFiles.size(); j++){
+	for(int j = 200; j < snapShotFiles.size(); j++){
 		
 		counter++;
 		string h5name = snapShotFiles[j];
 		Options opt;
 		Eval results;
 
-		cout << counter << " Opening Datafiles.." << h5name << endl;
+		cout << counter << " Opening datafile " << h5name ;
 		binaryFile data(h5name,binaryFile::in);	
 
-		cout << counter << " Reading Datafiles.. " << h5name << endl;
+		cout << " >> Reading Datafiles " << h5name;
 		vector<int> timeList = data.getTimeList();
 		for(int i = 0; i < timeList.size(); i++){
 			data.getSnapshot(runname,timeList[i],matrixData,opt);		
 			results.saveData(matrixData->wavefunction,opt,timeList[i],runname);		
-			cout << counter << " Evaluating Datafiles.. "<< timeList[i] << endl;
+			cout << " >> Evaluating Datafiles "<< timeList[i];
 			results.evaluateData();		
-			cout << counter << " Plotting Datafiles.. " << timeList[i] << endl;		
+			cout << " >> Plotting Datafiles " << timeList[i] << endl;		
 			results.plotData();
 		}
 

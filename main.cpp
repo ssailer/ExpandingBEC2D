@@ -45,46 +45,72 @@ try{
 
 	StartUp startUp(argc,argv);	
 
- 	std::streambuf *psbuf, *backup;
+ 	std::streambuf *filebuf, *coutbuf;
  	std::ofstream logstream;
- 	backup = std::cout.rdbuf();     // back up cout's streambuf
+ 	coutbuf = std::cout.rdbuf();     // back up cout's streambuf
  	// std::cout.rdbuf(backup);        // restore cout's original streambuf
 	
 	if(DEBUG_LOG == 1){
 		logstream.open ("run.log");
-		psbuf = logstream.rdbuf();        // get file's streambuf
-		std::cout.rdbuf(psbuf);         // assign streambuf to cout
+		filebuf = logstream.rdbuf();        // get file's streambuf
+		std::cout.rdbuf(filebuf);         // assign streambuf to cout
 	}
 	
-
+	string runName = "RT-No-Ex";
 
 
 	MatrixData* data = new MatrixData(startUp.getMeta());
-	setGridToDoubleGaussian(data,startUp.getOptions());
-	ITP* itprun = new ITP(data->wavefunction[0],startUp.getOptions());
-	string itpname = "ITP";
-	itprun->propagateToGroundState(itpname);
+
+	// if(opt.runmode.compare(0,1,"1") == 0){
+		vector<string> snapShotFiles;
+			string tmp;
+			string fileNameListName = "runData/fileNameList.dat";
+			ifstream fileNameList(fileNameListName);
 	
-	for(int i = 0; i < data->meta.samplesize; i++){
-		data->wavefunction[i] = itprun->result();
-	}
-	delete itprun;
+		if(fileNameList.is_open()){
+			while (getline (fileNameList,tmp)){
+				snapShotFiles.push_back(tmp);
+			}
+		}
+		string h5name = snapShotFiles.back();
+		binaryFile* loading = new binaryFile(h5name,binaryFile::in);
+		int timeList = 30000;
+		Options opt = startUp.getOptions();
+		loading->getSnapshot(runName,timeList,data,opt);
+		delete loading;
+		cerr << data->meta.steps << endl;
 
-	// setGridToDoubleGaussian(data,startUp.getOptions());
-	RTE* run = new RTE(data,startUp.getOptions());
+		RTE* run = new RTE(data,opt);
+		run->rteToTime(runName);
 
+	// } else {
+	
+	// 	setGridToDoubleGaussian(data,startUp.getOptions());
+	// 	ITP* itprun = new ITP(data->wavefunction[0],startUp.getOptions());
+	// 	string itpname = "ITP";
+	// 	itprun->propagateToGroundState(itpname);
+			
+	// 	for(int i = 0; i < data->meta.samplesize; i++){
+	// 		data->wavefunction[i] = itprun->result();
+	// 	}
+	// 	delete itprun;
+	
+	// 	RTE* run = new RTE(data,startUp.getOptions());
+		
+	//	run->noise();
+	// 	run->rteToTime(runName);
+	// }
 	
 
-	string runName = "RT-No-Ex";
-	run->rteToTime(runName);
 
-	
-	delete data;
-	delete run;
+	cout << "Deleting objects." << endl;
+	delete data, run;	
+
+	cout << "Terminating successfully." << endl;
 	if(DEBUG_LOG == 1){
 		logstream.close();
+		std::cout.rdbuf(coutbuf);
 	}
-	cout << "Terminating successfully." << endl;
 }  // exceptions catcher
 
 

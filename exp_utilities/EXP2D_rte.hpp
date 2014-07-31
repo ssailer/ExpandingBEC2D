@@ -63,6 +63,7 @@ class RTE
     // void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(const string name);
+    void noise();
     
 
     // internal RunOptions, use setOptions(Options) to update from the outside
@@ -74,7 +75,7 @@ class RTE
     //
     inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    void noise(vector<MatrixXcd> &wavefct);
+   
 
     // Variables
     complex<double> h_x, h_y;
