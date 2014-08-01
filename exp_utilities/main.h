@@ -15,6 +15,17 @@
 
 using namespace libconfig;
 
+class redirecter // copied from 
+{
+public:
+    redirecter(std::ostream & dst, std::ostream & src)
+        : src(src), sbuf(src.rdbuf(dst.rdbuf())) {}
+    ~redirecter() { src.rdbuf(sbuf); }
+private:
+    std::ostream & src;
+    std::streambuf * const sbuf;
+};
+
 class StartUp {
 public:
 	StartUp(int argcTmp, char** argvTmp) {
@@ -31,6 +42,8 @@ public:
 
 	inline Options getOptions();
 	inline MatrixData::MetaData getMeta();
+	inline void rotatePotential();
+	bool newRun;
 private:
 	MatrixData::MetaData meta;
 	Options opt;
@@ -44,6 +57,15 @@ inline Options StartUp::getOptions(){
 
 inline MatrixData::MetaData StartUp::getMeta(){
 	return meta;
+}
+
+inline void StartUp::rotatePotential(){
+	complex<double> tmp = opt.omega_x;
+	opt.omega_x = opt.omega_y;
+	opt.omega_y = tmp;
+
+	opt.dispersion_x = opt.omega_x;
+	opt.dispersion_y = opt.omega_y;
 }
 
 
@@ -61,26 +83,26 @@ inline void StartUp::printInitVar()
 }
 
 inline void StartUp::setDirectory()
-{
+{	
 	// cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
 	struct stat wd_stat;
 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cout << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
-			cout << "Check \"run.log\" for output of this run." << endl;
+			cerr << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
+			cerr << "Check \"run.log\" for output of this run." << endl;
+			newRun = false;
 		}
 	}else
 	{
-		char command[256];
-		sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
-		if(system(command) == 0){
-			cout << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
-		}
+		mkdir(opt.workingdirectory.c_str(),0755);
+		cerr << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
+
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cout << "Switchting to "<< "\"" << opt.workingdirectory << "\"" << endl;
+			cerr << "Switchting to " << "\"" << opt.workingdirectory << "\"" << endl;
+			newRun = true;
 		}
-		cout << endl;
-		cout << "Check \"run.log\" for information about this run." << endl;
+		cerr << endl;
+		cerr << "Check \"run.log\" for information about this run." << endl;			
 	}
 }
 
@@ -191,6 +213,7 @@ inline int StartUp::readConfig()
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
+	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
@@ -244,6 +267,7 @@ inline int StartUp::readConfig()
      return SUCCESS;
 	
 }
+
 
 
 

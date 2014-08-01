@@ -94,7 +94,7 @@ void ITP::RunSetup(){
 
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
    	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-	PotentialGrid(i,j) = half * opt.omega_x * opt.omega_x * ( 0.05 * X(i) * X(i) * X(i) * X(i) - X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j);}}
+	PotentialGrid(i,j) = two * (half * opt.omega_x * opt.omega_x * ( 0.05 * X(i) * X(i) * X(i) * X(i) - X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
 
 	itp_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	itp_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);

@@ -25,6 +25,7 @@ using namespace Eigen;
 typedef struct {
         int absoluteSteps;
         int lambdaSteps;
+        int initialSteps;
     } stepCounter;
 
 class RTE

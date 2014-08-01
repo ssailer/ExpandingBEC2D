@@ -93,7 +93,7 @@ void RTE::RunSetup(){
 
    	complex<double> tmp;  	
    	for(int t = 0; t < ( 2 * opt.n_it_RTE); t++){
-   	tmp = opt.t_abs + ( half * complex<double>(t+1,0.0) * t_RTE );   	
+   	tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t+1,0.0) * t_RTE );   	
    	laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
    	laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
    	gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
@@ -102,7 +102,7 @@ void RTE::RunSetup(){
 
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
    	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-	PotentialGrid(i,j) = half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j);}}
+	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * ( half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
 
    	pot_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	pot_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
@@ -125,7 +125,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 		}
 		double totalPercent = totalstate/totalmaxpercent;
 
-		int overallStepState = meta.steps + totalstate / meta.samplesize;
+		int overallStepState = keeperOfTime.absoluteSteps + totalstate / meta.samplesize;
 
 		total = omp_get_wtime() - start;
 
@@ -202,6 +202,7 @@ void RTE::rteToTime(string runname)
 	int samplesize = wavefctVec.size();
 	keeperOfTime.absoluteSteps = 0;
 	keeperOfTime.lambdaSteps = 0;
+	keeperOfTime.initialSteps = meta.steps;
 
 
 	vector<MatrixXcd> wavefctcp(samplesize);	
@@ -232,7 +233,6 @@ void RTE::rteToTime(string runname)
 	//start loop here
 	Eigen::initParallel();
 	int previousTimes = meta.steps;
-	cout << "previousTimes " << previousTimes << endl;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
 		string stepname = runname + "-" + to_string(snapshot_times[j]);
@@ -297,11 +297,11 @@ void RTE::rteToTime(string runname)
 			// }
 	
 		}
-		keeperOfTime.lambdaSteps = 2 * (snapshot_times[j] - previousTimes);
-		keeperOfTime.absoluteSteps = snapshot_times[j];	
+		keeperOfTime.lambdaSteps += 2 * (snapshot_times[j] - previousTimes);
+		keeperOfTime.absoluteSteps = snapshot_times[j] - keeperOfTime.initialSteps;	
 		previousTimes = snapshot_times[j];
 
-		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps * opt.RTE_step,0.0);
+		complex<double> tmp = complex<double>(snapshot_times[j] * opt.RTE_step,0.0);
 		opt.t_abs = tmp;  
 
 		opt.stateInformation.resize(2);
@@ -314,7 +314,7 @@ void RTE::rteToTime(string runname)
 			opt.stateInformation[1] = 1.0;
 		}
 
-		pData->update(real(tmp),keeperOfTime.absoluteSteps,opt.stateInformation);
+		pData->update(real(tmp),snapshot_times[j],opt.stateInformation);
 
 		// plot("3-"+to_string(snapshot_times[j]));
 		
@@ -339,9 +339,6 @@ void RTE::rteToTime(string runname)
 		}
 
 	}
-	std::cout << "RTE finished." << endl;
-	std::cerr << "RTE finished." << endl;	
-
 }
 
 // void RTE::rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name)

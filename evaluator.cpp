@@ -42,18 +42,14 @@ int main( int argc, char** argv)
 {	
 try{
 
- 	std::streambuf *psbuf, *backup;
- 	std::ofstream logstream;
- 	backup = std::cout.rdbuf();     // back up cout's streambuf
- 	// std::cout.rdbuf(backup);        // restore cout's original streambuf
-
 	StartUp startUp(argc,argv);
-	
+
 	if(DEBUG_LOG == 1){
-		logstream.open ("eval.log");
-		psbuf = logstream.rdbuf();        // get file's streambuf
-		std::cout.rdbuf(psbuf);         // assign streambuf to cout
-	}
+ 		std::ofstream logstream("run.log");
+ 		redirecter redirect(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
+ 	}
+	
+
 		
 	string runname = "RT-No-Ex";
 	vector<string> snapShotFiles;
@@ -70,23 +66,22 @@ try{
 	cout << "Snapshot File Size: " << snapShotFiles.size() << endl;
 	int counter = 0;		
 	MatrixData* matrixData = new MatrixData(startUp.getMeta());
-	// #pragma omp parallel for
-	for(int j = 200; j < snapShotFiles.size(); j++){
+	for(int j = 0; j < snapShotFiles.size(); j++){
 		
 		counter++;
 		string h5name = snapShotFiles[j];
 		Options opt;
 		Eval results;
 
-		cout << counter << " Opening datafile " << h5name ;
+		cout << counter << " Opening datafile " << h5name << flush;
 		binaryFile data(h5name,binaryFile::in);	
 
-		cout << " >> Reading Datafiles " << h5name;
+		cout << " >> Reading Datafiles " << h5name << flush;
 		vector<int> timeList = data.getTimeList();
 		for(int i = 0; i < timeList.size(); i++){
 			data.getSnapshot(runname,timeList[i],matrixData,opt);		
 			results.saveData(matrixData->wavefunction,opt,timeList[i],runname);		
-			cout << " >> Evaluating Datafiles "<< timeList[i];
+			cout << " >> Evaluating Datafiles "<< timeList[i] << flush;
 			results.evaluateData();		
 			cout << " >> Plotting Datafiles " << timeList[i] << endl;		
 			results.plotData();
@@ -95,10 +90,6 @@ try{
 	}	
 	
 	cout << "Terminating successfully." << endl;
-	if(DEBUG_LOG == 1){
-		logstream.close();
-	}
-// Everything finished here 
 }  // exceptions catcher
 
 

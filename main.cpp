@@ -14,6 +14,7 @@ Last Update: 22/07/13
 #include <complex>
 #include <omp.h>
 #include <sys/stat.h>
+#include <dirent.h>
 
 #include <complexgrid.h>
 #include <bh3defaultgrid.h>
@@ -42,26 +43,32 @@ using namespace std;
 int main( int argc, char** argv) 
 {	
 try{
-
 	StartUp startUp(argc,argv);	
 
- 	std::streambuf *filebuf, *coutbuf;
- 	std::ofstream logstream;
- 	coutbuf = std::cout.rdbuf();     // back up cout's streambuf
+	#if DEBUG_LOG
+ 		std::ofstream logstream("run.log");
+ 		redirecter redirect(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
+ 	#endif
+
+ 	startUp.printInitVar();
+
+ 	// std::streambuf *filebuf, *coutbuf;
+
+ 	// coutbuf = std::cout.rdbuf();     // back up cout's streambuf
  	// std::cout.rdbuf(backup);        // restore cout's original streambuf
 	
-	if(DEBUG_LOG == 1){
-		logstream.open ("run.log");
-		filebuf = logstream.rdbuf();        // get file's streambuf
-		std::cout.rdbuf(filebuf);         // assign streambuf to cout
-	}
+	// if(DEBUG_LOG == 1){
+	// 	logstream.open ("run.log");
+		// filebuf = logstream.rdbuf();        // get file's streambuf
+		// std::cout.rdbuf(filebuf);         // assign streambuf to cout
+	// }
 	
 	string runName = "RT-No-Ex";
 
 
 	MatrixData* data = new MatrixData(startUp.getMeta());
 
-	// if(opt.runmode.compare(0,1,"1") == 0){
+	if(startUp.newRun == false){
 		vector<string> snapShotFiles;
 			string tmp;
 			string fileNameListName = "runData/fileNameList.dat";
@@ -74,43 +81,47 @@ try{
 		}
 		string h5name = snapShotFiles.back();
 		binaryFile* loading = new binaryFile(h5name,binaryFile::in);
-		int timeList = 30000;
+		vector<int> timeList = loading->getTimeList();
 		Options opt = startUp.getOptions();
-		loading->getSnapshot(runName,timeList,data,opt);
+		loading->getSnapshot(runName,timeList.back(),data,opt);
 		delete loading;
-		cerr << data->meta.steps << endl;
 
 		RTE* run = new RTE(data,opt);
 		run->rteToTime(runName);
+		delete run;
 
-	// } else {
-	
-	// 	setGridToDoubleGaussian(data,startUp.getOptions());
-	// 	ITP* itprun = new ITP(data->wavefunction[0],startUp.getOptions());
-	// 	string itpname = "ITP";
-	// 	itprun->propagateToGroundState(itpname);
-			
-	// 	for(int i = 0; i < data->meta.samplesize; i++){
-	// 		data->wavefunction[i] = itprun->result();
-	// 	}
-	// 	delete itprun;
-	
-	// 	RTE* run = new RTE(data,startUp.getOptions());
+	} else {
 		
-	//	run->noise();
-	// 	run->rteToTime(runName);
-	// }
+		startUp.rotatePotential();
+		setGridToDoubleGaussian(data,startUp.getOptions());
+		ITP* itprun = new ITP(data->wavefunction[0],startUp.getOptions());
+		string itpname = "ITP";
+		itprun->propagateToGroundState(itpname);
+			
+		for(int i = 0; i < data->meta.samplesize; i++){
+			data->wavefunction[i] = itprun->result();
+		}
+		delete itprun;
+
+		startUp.rotatePotential();
+	
+		RTE* run = new RTE(data,startUp.getOptions());
+		
+		run->noise();
+		run->rteToTime(runName);
+		delete run;
+	}
 	
 
 
-	cout << "Deleting objects." << endl;
-	delete data, run;	
+	// cout << "Deleting objects." << endl;
+	delete data;	
 
 	cout << "Terminating successfully." << endl;
-	if(DEBUG_LOG == 1){
-		logstream.close();
-		std::cout.rdbuf(coutbuf);
-	}
+	// if(DEBUG_LOG == 1){
+	// 	logstream.close();
+	// 	std::cout.rdbuf(coutbuf);
+	// }
 }  // exceptions catcher
 
 
@@ -132,7 +143,7 @@ catch (const std::string& errorMessage)
 	return SUCCESS; 
 // the code could be different depending on the exception message 
 }
-cout << "Run complete. Terminating successfully." << endl; 
+cerr << "Run complete. Terminating successfully." << endl; 
 return SUCCESS; 	
 }
 

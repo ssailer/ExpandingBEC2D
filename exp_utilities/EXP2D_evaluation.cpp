@@ -141,34 +141,44 @@ void Eval::evaluateDataITP(){
 }
 
 void Eval::plotData(){
+	string dirname = "runPlots";
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+    
 	std::string snapShotString = to_string(snapshot_time);
 	std::stringstream ss;
 	ss << std::setfill('0') << std::setw(5) << snapShotString;
 	snapShotString = ss.str();
 
-	string filename = runname + "-Control-Plot-" + snapShotString;
-	plotDataToPngExpanding(filename,PsiVec[0],opt);
+	string filename = runname + "-Observables.dat";
+	runname = dirname + "/" + runname;
 
-	filename = runname + "-Spectrum-" + snapShotString; 
-	plotSpectrum(filename,totalResult);
 
-	filename = runname + "-Vortices-" + snapShotString;
-	plotVortexList(filename,phase,pres,opt);	
+	string plotname = runname + "-Control-Plot-" + snapShotString;
+	plotDataToPngExpanding(plotname,PsiVec[0],opt);
 
-	filename = runname + "-Density-" + snapShotString;
-	plotDataToPng(filename,densityLocationMap[0],opt);
+	plotname = runname + "-Spectrum-" + snapShotString; 
+	plotSpectrum(plotname,totalResult);
 
-	// filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	// plotVector(filename,x_dist_grad,y_dist_grad,opt);
+	plotname = runname + "-Vortices-" + snapShotString;
+	plotVortexList(plotname,phase,pres,opt);	
 
-	filename = runname + "-Angular-Dens-" + snapShotString;
-	plotVector(filename,totalResult.angularDensity,opt);	
+	plotname = runname + "-Density-" + snapShotString;
+	plotDataToPng(plotname,densityLocationMap[0],opt);
 
-	// filename = runname + "-Contour-" + snapShotString;
-	// plotContour(filename,PsiVec[0],contour[0],opt);
+	// plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	// plotVector(plotname,x_dist_grad,y_dist_grad,opt);
+
+	plotname = runname + "-Angular-Dens-" + snapShotString;
+	plotVector(plotname,totalResult.angularDensity,opt);	
+
+	// plotname = runname + "-Contour-" + snapShotString;
+	// plotContour(plotname,PsiVec[0],contour[0],opt);
 
 	
-	filename = runname + "-Observables" + ".dat";
+	
 	struct stat buffer;   
   	if(stat (filename.c_str(), &buffer) != 0){
   		ofstream datafile;

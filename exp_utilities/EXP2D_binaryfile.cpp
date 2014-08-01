@@ -115,9 +115,9 @@ binaryFile::binaryFile(const string &file, mode nm)
               //   options.delta_t.resize(0);
 
               h5a_options = H5Aopen(h5_file, "SnapshotTimes", H5P_DEFAULT);
-              int size = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
+              int size = (int)(H5Aget_storage_size(h5a_options)/sizeof(int));
               time_list.resize(size);
-              H5Aread(h5a_options, H5T_IEEE_F64LE , &time_list.front());
+              H5Aread(h5a_options, H5T_STD_I32LE , &time_list.front());
               H5Aclose(h5a_options);
 
               // if(m == append)
@@ -255,8 +255,8 @@ void binaryFile::close()
     {      
       hsize_t dimsf[] = {time_list.size()};
       hid_t dataspace = H5Screate_simple(1, dimsf, NULL);
-      hid_t h5a = H5Acreate(h5_file, "SnapshotTimes", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
-      H5Awrite (h5a, H5T_IEEE_F64LE, &time_list.front());
+      hid_t h5a = H5Acreate(h5_file, "SnapshotTimes", H5T_STD_I32LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite (h5a, H5T_STD_I32LE, &time_list.front());
       H5Sclose(dataspace);
       H5Aclose(h5a);
       // cerr << "Reached ERROR location #5" << endl;
@@ -271,8 +271,8 @@ void binaryFile::close()
 
       hsize_t dimsf[] = {time_list.size()};
       hid_t dataspace = H5Screate_simple(1, dimsf, NULL);
-      hid_t h5a = H5Acreate(h5_file, "SnapshotTimes", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
-      H5Awrite (h5a, H5T_IEEE_F64LE, &time_list.front());
+      hid_t h5a = H5Acreate(h5_file, "SnapshotTimes", H5T_STD_I32LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite (h5a, H5T_STD_I32LE, &time_list.front());
       H5Sclose(dataspace);
       H5Aclose(h5a);
       // cerr << "Reached ERROR location #6" << endl;
@@ -285,19 +285,21 @@ void binaryFile::close()
 
 bool binaryFile::checkTime(int snapShotTime)
 {
-  stringstream time_name;
+  // stringstream time_name;
   // // snapShotTime will always be formatted with two decimal digits
   // time_name.setf(ios_base::fixed);
   // time_name.precision(2);
-  time_name << snapShotTime;
+  // time_name << snapShotTime;
 
-  if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
-    h5_timegroup = H5Gopen(h5_file, (time_name.str()).c_str(), H5P_DEFAULT);
+  string time_name = to_string(snapShotTime);
+
+  if(H5Lexists(h5_file, time_name.c_str(), H5P_DEFAULT)){
+    h5_timegroup = H5Gopen(h5_file, time_name.c_str(), H5P_DEFAULT);
     // cerr << "Reached ERROR location #7" << endl;
   }
   else
     {
-      h5_timegroup = H5Gcreate(h5_file, (time_name.str()).c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      h5_timegroup = H5Gcreate(h5_file, time_name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
       time_list.push_back(snapShotTime);
       // cerr << "Reached ERROR location #8" << endl;
     }
@@ -435,7 +437,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
       for(int i = 0; i<4;i++)
         tmpOpt1[i+17] = options.grid[i];
 
-      tmpOpt1[21] = options.n_it_RTE;
+      tmpOpt1[21] = options.potFactor;
       tmpOpt1[22] = options.samplesize;
       tmpOpt1[23] = options.vortexnumber;  
 
@@ -533,7 +535,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
               for(int i = 0; i<4;i++)
                 options.grid[i] = (uint32_t)tmpOpt1[i+17];
 
-              options.n_it_RTE = (int)tmpOpt1[21];
+              options.potFactor = tmpOpt1[21];
               options.samplesize = (int)tmpOpt1[22];
               options.vortexnumber = (int)tmpOpt1[23];              
 
