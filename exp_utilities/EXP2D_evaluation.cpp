@@ -140,70 +140,70 @@ void Eval::evaluateDataITP(){
 	totalResult /= PsiVec.size();
 }
 
-void Eval::plotData(){
-	std::string snapShotString = to_string(snapshot_time);
-	std::stringstream ss;
-	ss << std::setfill('0') << std::setw(5) << snapShotString;
-	snapShotString = ss.str();
+// void Eval::plotData(){
+// 	std::string snapShotString = to_string(snapshot_time);
+// 	std::stringstream ss;
+// 	ss << std::setfill('0') << std::setw(5) << snapShotString;
+// 	snapShotString = ss.str();
 
-	string filename = runname + "-Control-Plot-" + snapShotString;
-	plotDataToPngExpanding(filename,PsiVec[0],opt);
+// 	string filename = runname + "-Control-Plot-" + snapShotString;
+// 	plotDataToPngExpanding(filename,PsiVec[0],opt);
 
-	filename = runname + "-Spectrum-" + snapShotString; 
-	plotSpectrum(filename,totalResult);
+// 	filename = runname + "-Spectrum-" + snapShotString; 
+// 	plotSpectrum(filename,totalResult);
 
-	filename = runname + "-Vortices-" + snapShotString;
-	plotVortexList(filename,phase,pres,opt);	
+// 	filename = runname + "-Vortices-" + snapShotString;
+// 	plotVortexList(filename,phase,pres,opt);	
 
-	filename = runname + "-Density-" + snapShotString;
-	plotDataToPng(filename,densityLocationMap[0],opt);
+// 	filename = runname + "-Density-" + snapShotString;
+// 	plotDataToPng(filename,densityLocationMap[0],opt);
 
-	filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	plotVector(filename,x_dist_grad,y_dist_grad,opt);
+// 	filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+// 	plotVector(filename,x_dist_grad,y_dist_grad,opt);
 
-	filename = runname + "-Angular-Dens-" + snapShotString;
-	plotVector(filename,totalResult.angularDensity,opt);	
+// 	filename = runname + "-Angular-Dens-" + snapShotString;
+// 	plotVector(filename,totalResult.angularDensity,opt);	
 
-	filename = runname + "-Contour-" + snapShotString;
-	plotContour(filename,PsiVec[0],contour[0],opt);
+// 	filename = runname + "-Contour-" + snapShotString;
+// 	plotContour(filename,PsiVec[0],contour[0],opt);
 
 	
-	filename = runname + "-Observables" + ".dat";
-	struct stat buffer;   
-  	if(stat (filename.c_str(), &buffer) != 0){
-  		ofstream datafile;
-  		datafile.open(filename.c_str(), ios::out | ios::app);
-  		datafile << std::left << std::setw(10) << "Timestep"
-  						 << std::setw(10) << "X_max"
-  						 << std::setw(10) << "Y_max"
-  						 << std::setw(10) << "R_max"
-  						 << std::setw(10) << "R_min"
-  						 << std::setw(10) << "R_max/R_min"
-  						 << std::setw(10) << "A/R"
-  						 << std::setw(10) << "N"
-  						 << std::setw(10) << "V"
-  						 << std::setw(10) << "N/V"
-  						 << std::setw(10) << "E_kin"
-  				 << endl;
-  		datafile.close();
-  	} 
+// 	filename = runname + "-Observables" + ".dat";
+// 	struct stat buffer;   
+//   	if(stat (filename.c_str(), &buffer) != 0){
+//   		ofstream datafile;
+//   		datafile.open(filename.c_str(), ios::out | ios::app);
+//   		datafile << std::left << std::setw(10) << "Timestep"
+//   						 << std::setw(10) << "X_max"
+//   						 << std::setw(10) << "Y_max"
+//   						 << std::setw(10) << "R_max"
+//   						 << std::setw(10) << "R_min"
+//   						 << std::setw(10) << "R_max/R_min"
+//   						 << std::setw(10) << "A/R"
+//   						 << std::setw(10) << "N"
+//   						 << std::setw(10) << "V"
+//   						 << std::setw(10) << "N/V"
+//   						 << std::setw(10) << "E_kin"
+//   				 << endl;
+//   		datafile.close();
+//   	} 
 
-  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
-	// datafile.open;
-	datafile << std::left << std::setw(10) << snapshot_time
-					 << std::setw(10) << opt.min_x * opt.stateInformation[0]
-					 << std::setw(10) << opt.min_y * opt.stateInformation[1]
- 					 << std::setw(10) << totalResult.r_max
- 					 << std::setw(10) << totalResult.r_min
- 					 << std::setw(10) << totalResult.r_max / totalResult.r_min  
- 					 << std::setw(10) << totalResult.aspectRatio  
-					 << std::setw(10) << totalResult.particle_count
-					 << std::setw(10) << totalResult.volume
-					 << std::setw(10) << totalResult.density
-					 << std::setw(10) << totalResult.Ekin
-			 << endl;
-	datafile.close();
-}
+//   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
+// 	// datafile.open;
+// 	datafile << std::left << std::setw(10) << snapshot_time
+// 					 << std::setw(10) << opt.min_x * opt.stateInformation[0]
+// 					 << std::setw(10) << opt.min_y * opt.stateInformation[1]
+//  					 << std::setw(10) << totalResult.r_max
+//  					 << std::setw(10) << totalResult.r_min
+//  					 << std::setw(10) << totalResult.r_max / totalResult.r_min  
+//  					 << std::setw(10) << totalResult.aspectRatio  
+// 					 << std::setw(10) << totalResult.particle_count
+// 					 << std::setw(10) << totalResult.volume
+// 					 << std::setw(10) << totalResult.density
+// 					 << std::setw(10) << totalResult.Ekin
+// 			 << endl;
+// 	datafile.close();
+// }
 
 void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates){
 	

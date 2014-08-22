@@ -17,7 +17,7 @@
 #include <string>
 #include <sstream>
 #include <EXP2D_Contour.h>
-#include <plot_with_mgl.h>
+// #include <plot_with_mgl.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_observables.h>
 #include <eigen3/Eigen/Dense>
@@ -37,7 +37,7 @@ public:
 	void saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
 	void evaluateData(); // calculate the observables
 	void evaluateDataITP();
-	void plotData(); // plot Results
+	// void plotData(); // plot Results
 
 
 	// Observables.h

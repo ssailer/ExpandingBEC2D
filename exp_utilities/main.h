@@ -165,7 +165,7 @@ int read_config(int argc, char** argv, Options &opt)
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
 
 	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
-	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
+	double dispersion_y_realValue = root["RunOpctions"]["dispersion_y"]; 
 
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);

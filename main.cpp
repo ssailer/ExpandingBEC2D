@@ -25,7 +25,7 @@ Last Update: 22/07/13
 #include <EXP2D_itp.hpp>
 #include <EXP2D_rte.hpp>
 #include <EXP2D_evaluation.h>
-#include <plot_with_mgl.h>
+// #include <plot_with_mgl.h>
 
 // #include <typeinfo>
 
@@ -75,14 +75,14 @@ try{
 		// set the datafile identifier name and save the initial grid
 		
 		string runname = "INIT";
-		plotDataToPng(runname,data,opt);
+		// plotDataToPng(runname,data,opt);
 		
 		
 		
 		//====> Imaginary Time Propagation (ITP)
 		itprun->propagateToGroundState("ITP1");
 		runname = "ITP1";
-		plotDataToPng(runname,data,opt);
+		// plotDataToPng(runname,data,opt);
 		
 		// vector<MatrixXcd> tmpMatrix(1);
 		// tmpMatrix[0] = MatrixXcd(opt.grid[1],opt.grid[2]);
@@ -114,7 +114,7 @@ try{
 			//====> Imaginary Time Propagation (ITP)
 			itprun->formVortices("ITP2");
 			runname = "ITP2";
-			plotDataToPng(runname,data,opt);
+			// plotDataToPng(runname,data,opt);
 			
 			
 			// vector<MatrixXcd> tmpMatrix1(1);
