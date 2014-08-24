@@ -146,14 +146,14 @@ binaryFile::binaryFile(const string &file, mode nm)
         mkdir(dirname.c_str(),0755);
       }
 
-      string fileNameListName = "runData/fileNameList.dat";
-      // struct stat buffer;   
-      // if(stat (filename.c_str(), &buffer) != 0){
-        ofstream fileNameListFile;
-        fileNameListFile.open(fileNameListName.c_str(), ios::out | ios::app);
-        fileNameListFile << std::left << file << endl;
-        fileNameListFile.close();
-    // } 
+    //   string fileNameListName = "runData/fileNameList.dat";
+    //   // struct stat buffer;   
+    //   // if(stat (filename.c_str(), &buffer) != 0){
+    //     ofstream fileNameListFile;
+    //     fileNameListFile.open(fileNameListName.c_str(), ios::out | ios::app);
+    //     fileNameListFile << std::left << file << endl;
+    //     fileNameListFile.close();
+    // // } 
 
 
 
@@ -604,8 +604,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
   return true;
 }
 
-
-bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, int* vec_dim, int snapShotTime)
+bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaData meta, string vec_name, int vec_rank, double *vec)
 {
   if(m == in)
     {
@@ -618,6 +617,61 @@ bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, i
       cout << "HDF5 Group error for time group: " << snapShotTime << endl;
       return false;
     }
+
+    if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
+          hid_t    h5a_options, dataspace_opt;
+      double tmpOpt1[24];
+
+      tmpOpt1[0] = options.N;
+      for(int i= 0; i < 3; i++)
+        tmpOpt1[i+1] = options.klength[i];
+
+      tmpOpt1[4] = options.stateInformation[0];
+      tmpOpt1[5] = options.stateInformation[1];
+      tmpOpt1[6] = options.omega_x.real();
+      tmpOpt1[7] = options.omega_y.real();
+      tmpOpt1[8] = options.dispersion_x.real();
+      tmpOpt1[9] = options.dispersion_y.real();
+      tmpOpt1[10] = options.min_x;
+      tmpOpt1[11] = options.min_y;
+      tmpOpt1[12] = options.t_abs.real();
+      tmpOpt1[13] = options.exp_factor.real();
+      tmpOpt1[14] = options.g;
+      tmpOpt1[15] = options.ITP_step;
+      tmpOpt1[16] = options.RTE_step;
+
+      for(int i = 0; i<4;i++)
+        tmpOpt1[i+17] = options.grid[i];
+
+      tmpOpt1[21] = options.potFactor;
+      tmpOpt1[22] = options.samplesize;
+      tmpOpt1[23] = options.vortexnumber;  
+
+      //copy options to file
+      hsize_t dimsf[1] = {24};
+      dataspace_opt = H5Screate_simple(1, dimsf, NULL);
+
+      h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
+
+      H5Aclose(h5a_options);
+      H5Sclose(dataspace_opt);
+
+      if(!H5Lexists(h5_timegroup, "Meta", H5P_DEFAULT)){
+
+      hid_t h5a_meta;
+      dimsf[0] = 9;
+      dataspace_opt = H5Screate_simple(1, dimsf, NULL);
+
+      h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite(h5a_meta, H5T_IEEE_F64LE, meta.data());
+      H5Aclose(h5a_meta);
+    }
+
+      H5Sclose(dataspace_opt);
+    }
+
+  
 
   hid_t h5_avgroup;
 
@@ -639,11 +693,9 @@ bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, i
 
   dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
 
-  hsize_t *dimsf = (hsize_t*)malloc(vec_rank*sizeof(hsize_t));
-  for(int l = 0; l < vec_rank; l++)
-    {
-      dimsf[l] = vec_dim[l];
-    }
+  hsize_t *dimsf = (hsize_t*)malloc(sizeof(hsize_t));
+    dimsf[0] = vec_rank;
+
 
   dataspace = H5Screate_simple(1, dimsf,  NULL);
 

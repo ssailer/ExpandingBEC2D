@@ -38,7 +38,7 @@ public:
   bool appendSnapshot(const string &name, int time, MatrixData* const &pData, Options &options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
 
-  bool appendEval(const string &vec_name, double *vec, int vec_dim, int* vec_rank, int time);
+  bool appendEval(int snapShotTime, Options opt, MatrixData::MetaData meta, string vec_name, int vec_rank, double *vec);
   // bool appendDocString(const string &group, const string &docstring, double time);
 
   bool getSnapshot(const string &name, int time, MatrixData* &pData, Options &options);

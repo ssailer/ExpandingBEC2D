@@ -219,6 +219,10 @@ void RTE::rteToTime(string runname)
 		k3[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);	
 	}
 
+	string evalname = "runEval.h5";
+	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
+	delete evalFile;
+
 	// CopyComplexGridToEigen();
 
 	// plot("1-AfterNoise-");
@@ -319,17 +323,33 @@ void RTE::rteToTime(string runname)
 		// plot("3-"+to_string(snapshot_times[j]));
 		
 		try{
-			plot("RTE-"+to_string(snapshot_times[j]));
-			std::string h5name = to_string(snapshot_times[j]);
-			std::stringstream ss;
-			ss << std::setfill('0') << std::setw(5) << h5name;
-			h5name = ss.str() + ".h5";
+			Eval results;
+	
+			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << flush;
+			results.saveData(pData->wavefunction,opt,snapshot_times[j],runname);
+			results.evaluateData();
 
-			binaryFile* dataFile = new binaryFile(h5name,binaryFile::out);
-			dataFile->appendSnapshot(runname,snapshot_times[j],pData,opt);
+			plot("RTE-"+to_string(snapshot_times[j]));
+			// std::string h5name = to_string(snapshot_times[j]);
+			// std::stringstream ss;
+			// ss << std::setfill('0') << std::setw(5) << h5name;
+			// h5name = ss.str() + ".h5";
+
+			string dataname = "runData.h5";
+			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
+			dataFile->appendSnapshot(dataname,snapshot_times[j],pData,opt);
 			delete dataFile;
-			// dataFile.close();
-			cout << " ..Snapshot saved to runData/" << h5name;
+
+			int placeholderVecRank= 10;
+			double placeholderVec[10] = {0,1,2,3,4,5,6,7,8,9};
+			string placeholderName = "placeholderName" + to_string(snapshot_times[j]);
+
+			string evalname = "runEval.h5";
+			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
+			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),placeholderName,placeholderVecRank,placeholderVec);
+			delete evalFile;
+
+			cout << " ..Snapshot saved to runData/";
 
 		}
 		catch(const std::exception& e) { 
