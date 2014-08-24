@@ -319,7 +319,7 @@ void RTE::rteToTime(string runname)
 		// plot("3-"+to_string(snapshot_times[j]));
 		
 		try{
-			// plot("RTE-"+to_string(snapshot_times[j]));
+			plot("RTE-"+to_string(snapshot_times[j]));
 			std::string h5name = to_string(snapshot_times[j]);
 			std::stringstream ss;
 			ss << std::setfill('0') << std::setw(5) << h5name;

@@ -63,7 +63,7 @@ try{
 		// std::cout.rdbuf(filebuf);         // assign streambuf to cout
 	// }
 	
-	string runName = "RT-No-Ex";
+	string runName = "RTE";
 
 
 	MatrixData* data = new MatrixData(startUp.getMeta());
@@ -92,18 +92,21 @@ try{
 
 	} else {
 		
-		startUp.rotatePotential();
-		setGridToDoubleGaussian(data,startUp.getOptions());
+		setGridToGaussian(data,startUp.getOptions());
+
 		ITP* itprun = new ITP(data->wavefunction[0],startUp.getOptions());
-		string itpname = "ITP";
+		string itpname = "ITP-Groundstate";
 		itprun->propagateToGroundState(itpname);
+		
+		startUp.setVortexnumber(addVortices(data,startUp.getOptions()));
+
+		itpname = "ITP-Vortices";
+		itprun->formVortices(itpname);
 			
 		for(int i = 0; i < data->meta.samplesize; i++){
 			data->wavefunction[i] = itprun->result();
 		}
 		delete itprun;
-
-		startUp.rotatePotential();
 	
 		RTE* run = new RTE(data,startUp.getOptions());
 		

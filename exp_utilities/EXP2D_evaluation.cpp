@@ -123,21 +123,22 @@ void Eval::evaluateData(){
 
 void Eval::evaluateDataITP(){
 
-	pres.vlist.clear();
-	densityCoordinates.clear();
-	contour.resize(PsiVec.size());
+	// pres.vlist.clear();
+	// densityCoordinates.clear();
+	// contour.resize(PsiVec.size());
 
-	densityLocationMap.resize(PsiVec.size());
-	densityCoordinates.resize(PsiVec.size());
-	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	// densityLocationMap.resize(PsiVec.size());
+	// densityCoordinates.resize(PsiVec.size());
+	// phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	// zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
-	for(int k = 0; k < PsiVec.size(); k++){
-		totalResult += calculator(PsiVec[k],k);
-	}
-	totalResult /= PsiVec.size();
+	// for(int k = 0; k < PsiVec.size(); k++){
+		// getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0]);
+		totalResult = calculatorITP(PsiVec[0],0);
+	// }
+	// totalResult /= PsiVec.size();
 }
 
 void Eval::plotData(){
@@ -624,6 +625,103 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		}					
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
+
+	// K-Space
+	ComplexGrid::fft(data, data);
+	
+	ArrayXd divisor(obs.number.size());
+	divisor.setZero();
+	
+	vector<vector<double>> kspace;
+	
+	kspace.resize(2);
+	for(int d = 0; d < 2; d++){
+		// set k-space
+		kspace[d].resize(opt.grid[d+1]);
+		// for (int i=0; i<opt.grid[d+1]/2; i++){
+		for(int i = 0; i < opt.grid[d+1]/2; i++){
+		// for (int32_t i = 0; i < kspace[d].size()/2; i++){
+			kspace[d][i] = opt.klength[d]/**opt.stateInformation[0]*/*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
+			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)i) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			// kspace[d][i] = opt.klength[d] * M_PI / ( (double)(opt.grid[d+1]/2 - i) * h[d] );
+		}
+		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
+		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
+		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
+			kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
+			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			// kspace[d][i] = - opt.klength[d] * M_PI / ( (double)(i - opt.grid[d+1]/2 + 1) * h[d]);
+		}
+	}
+
+
+	// DEFINITION OF KLENGTH FROM THE INTERNET! |||| ==>>     2*pi*i/(Nx*dx)
+	// double kmax[2];
+
+	// for(int i = 0; i < 2; i++){
+	// 	kmax[i] = *max_element(kspace[i].begin(), kspace[i].end());
+	// }
+	
+	double kwidth2[2];
+
+	for(int i = 0; i < 2; i++)
+		kwidth2[i] = (opt.grid[i+1] == 1) ? 0 : kspace[i][opt.grid[i+1]/2] * kspace[i][opt.grid[i+1]/2];
+	
+	double index_factor = (obs.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
+
+	for(int x = 0; x < data.width(); x++){
+		for (int y = 0; y < data.height(); y++){
+			for (int z = 0; z < data.depth(); z++){
+				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
+				// Coordinate<int32_t> c = data.make_coord(x,y,z);
+				int index = index_factor * k;
+				// cout << k << "*" << index_factor << "=" << index << "/" << OBSERVABLES_DATA_POINTS_SIZE << endl;
+				obs.k(index) += k;
+				divisor(index)++;
+				double number = abs2(data(0,x,y,z));
+				obs.number(index) += number;
+				// obs.particle_count += number;
+				obs.Ekin += number * k * k;
+			}
+		}
+	}
+	
+	#pragma omp parallel for schedule(guided,1)
+	for(int l = 0; l < obs.number.size(); l++){
+		if(divisor[l] == 0){
+			divisor[l] = 1;
+		}
+	}
+
+	obs.number /= divisor;
+	obs.k /= divisor;	
+	
+	return obs;
+}
+
+
+Observables Eval::calculatorITP(ComplexGrid data,int sampleindex){
+	
+	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	// R-Space
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	double h[2];
+	h[0] = h_x;
+	h[1] = h_y; 
+	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
+	
+	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+
+	obs.volume = h_x * h_y * densityCounter;
+	for(int i = 0; i < opt.grid[1]-1; i++){
+	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
+	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
+	    }
+	}
+	obs.density = obs.particle_count / obs.volume;
 
 	// K-Space
 	ComplexGrid::fft(data, data);

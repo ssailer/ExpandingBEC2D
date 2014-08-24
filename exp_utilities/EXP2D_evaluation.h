@@ -76,6 +76,7 @@ private:
 
 	// doing functinos
 	Observables calculator(ComplexGrid data,int sampleindex);
+	Observables calculatorITP(ComplexGrid data,int sampleindex);
 	void getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates);
 	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates);
 	

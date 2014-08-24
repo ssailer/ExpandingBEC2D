@@ -4,7 +4,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 5000
+#define VORTICES_BUILD_TIME 6000
 
 using namespace std;
 using namespace Eigen;
@@ -94,7 +94,7 @@ void ITP::RunSetup(){
 
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
    	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-	PotentialGrid(i,j) = two * (half * opt.omega_x * opt.omega_x * ( 0.05 * X(i) * X(i) * X(i) * X(i) - X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
+	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
 
 	itp_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	itp_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
@@ -161,7 +161,7 @@ void ITP::CopyEigenToComplexGrid(){
 void ITP::formVortices(string runname){
 	double start;  // starttime of the run
 
-	CopyComplexGridToEigen();
+	// CopyComplexGridToEigen();
 
 	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 	MatrixXcd k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -203,9 +203,10 @@ void ITP::formVortices(string runname){
 
 		cli(runname,m,VORTICES_BUILD_TIME,start);	
 	}
+	plot("ITP-Vortices-" + to_string(VORTICES_BUILD_TIME));
 	cout << endl;
 	// update the ComplexGrid* DATA object outside of this.
-	CopyEigenToComplexGrid();
+	// CopyEigenToComplexGrid();
 }
 void ITP::propagateToGroundState(string runname)
 {
@@ -269,11 +270,11 @@ void ITP::propagateToGroundState(string runname)
 	
 			state++;	
 		}
-		
 		plot("ITP-"+to_string(state));
 
 		breakCondition.saveData(wavefct,opt,state,runname);
 		breakCondition.evaluateDataITP();
+
 
 		cli_groundState(runname,start,state,breakCondition.totalResult);
 		int difference = breakCondition.totalResult.Ekin - old_Ekin;
@@ -286,11 +287,12 @@ void ITP::propagateToGroundState(string runname)
 		old_Ekin = breakCondition.totalResult.Ekin;
 		if(counter_finished >= 3){
 			finished = true;
-		}		
+		}
 		// cli_plot(runname,m,runtime,start,plot);
 	} while (finished == false);
 
 	cout << endl;
+	cout << "Groundstate found." << endl;
 
 	// update the ComplexGrid* DATA object outside of this.
 	// CopyEigenToComplexGrid();

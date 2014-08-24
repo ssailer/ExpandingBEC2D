@@ -3,6 +3,15 @@
 
 #include <EXP2D_MatrixData.h>
 #include <EXP2D_tools.h>
+#include <complexgrid.h>
+
+// int mypow2(int x, int y); // Computes x^y
+
+// inline double vortex(int b, int y, int a, int x) //Vortex with phase [0,2*pi)          
+// {
+//         if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
+//     else{ return atan2(b-y,a-x); }        
+// }
 
 void setGridToDoubleGaussian(MatrixData* &data, Options opt)
 {
@@ -47,5 +56,42 @@ void setGridToGaussian(MatrixData* &data, Options opt)
         }
     }
 };
+
+int addVortices(MatrixData* &g, Options opt){
+
+int x_jump = opt.grid[1] / 8;
+int y_jump = opt.grid[2] / 8;
+int windingnumber = 1;
+
+ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+vector<Coordinate<int32_t>> c;
+
+for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){
+    for(int x = x_jump; x < opt.grid[1]; x += x_jump){
+        if(abs2(g->wavefunction[0](x,y)) >= 2){
+            c.push_back(grid.make_coord(x,y,0));
+        }
+    }
+}
+for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
+    for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){
+        if(abs2(g->wavefunction[0](x,y)) >= 2){
+            c.push_back(grid.make_coord(x,y,0));
+        }
+    }
+}
+
+for(int i = 0; i < c.size(); i++){
+    for(int y = 0; y < opt.grid[2]; y++){
+        for(int x = 0; x < opt.grid[1]; x++){   
+            g->wavefunction[0](x,y) *= polar(1.0, (windingnumber /* * mypow2(-1,i+1)*/ )*vortex( y,c[i].y(),x,c[i].x() )) ;
+        }
+    }
+    // g->wavefunction[0](c) complex<double>(0.0,0.0);
+}
+opt.vortexnumber += c.size() * windingnumber;
+    return opt.vortexnumber;
+}
 
 #endif // EXP2D_STARTGRIDS_H__

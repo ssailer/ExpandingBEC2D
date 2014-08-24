@@ -41,6 +41,7 @@ public:
 	inline int readConfig();
 
 	inline Options getOptions();
+	inline int setVortexnumber(int number);
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
 	bool newRun;
@@ -53,6 +54,10 @@ private:
 
 inline Options StartUp::getOptions(){
 	return opt;
+}
+
+inline int StartUp::setVortexnumber(int number){
+	opt.vortexnumber = number;
 }
 
 inline MatrixData::MetaData StartUp::getMeta(){
@@ -98,7 +103,7 @@ inline void StartUp::setDirectory()
 		cerr << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
 
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cerr << "Switchting to " << "\"" << opt.workingdirectory << "\"" << endl;
+			cerr << "Switching to " << "\"" << opt.workingdirectory << "\"" << endl;
 			newRun = true;
 		}
 		cerr << endl;
