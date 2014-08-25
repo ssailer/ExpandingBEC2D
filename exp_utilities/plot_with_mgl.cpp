@@ -556,7 +556,7 @@ void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt)
 
 }
 
-void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options &opt)
+void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 {
 	
 
@@ -640,7 +640,7 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options &opt)
 
 }
 
-void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt)
+void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options opt)
 {
 	
 

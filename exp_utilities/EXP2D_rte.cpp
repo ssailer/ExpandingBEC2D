@@ -221,6 +221,7 @@ void RTE::rteToTime(string runname)
 
 	string evalname = "runEval.h5";
 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
+	evalFile->appendSnapshot("StartGrid",0,pData,opt);
 	delete evalFile;
 
 	// CopyComplexGridToEigen();

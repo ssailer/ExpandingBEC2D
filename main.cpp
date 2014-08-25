@@ -94,19 +94,29 @@ try{
 		
 		setGridToGaussian(data,startUp.getOptions());
 
-		ITP* itprun = new ITP(data->wavefunction[0],startUp.getOptions());
+		ITP* groundStateITP = new ITP(data->wavefunction[0],startUp.getOptions());
 		string itpname = "ITP-Groundstate";
-		itprun->propagateToGroundState(itpname);
+		groundStateITP->propagateToGroundState(itpname);
+		data->wavefunction[0] = groundStateITP->result();
+		delete groundStateITP;
+
+		int vnumber = 0;
+		addVortices(data,startUp.getOptions(),vnumber);
 		
-		startUp.setVortexnumber(addVortices(data,startUp.getOptions()));
+		startUp.setVortexnumber(vnumber);
+		cout << endl << "Set Vortices #: " << vnumber << endl;
+
+		string vorticesName = "ITP-Vortices-000";
+		plotDataToPngEigen(vorticesName,data->wavefunction[0],startUp.getOptions());
 
 		itpname = "ITP-Vortices";
-		itprun->formVortices(itpname);
-			
+		ITP* vorticesITP = new ITP(data->wavefunction[0],startUp.getOptions());
+		vorticesITP->formVortices(itpname);
+
 		for(int i = 0; i < data->meta.samplesize; i++){
-			data->wavefunction[i] = itprun->result();
+			data->wavefunction[i] = vorticesITP->result();
 		}
-		delete itprun;
+		delete vorticesITP;
 	
 		RTE* run = new RTE(data,startUp.getOptions());
 		
