@@ -101,7 +101,7 @@ try{
 		delete groundStateITP;
 
 		int vnumber = 0;
-		addVortices(data,startUp.getOptions(),vnumber);
+		addVorticesRegular(data,startUp.getOptions(),vnumber);
 		
 		startUp.setVortexnumber(vnumber);
 		cout << endl << "Set Vortices #: " << vnumber << endl;
@@ -117,12 +117,25 @@ try{
 			data->wavefunction[i] = vorticesITP->result();
 		}
 		delete vorticesITP;
-	
-		RTE* run = new RTE(data,startUp.getOptions());
-		
-		run->noise();
-		run->rteToTime(runName);
-		delete run;
+
+		// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
+
+
+		// runName = "NonExpanding";
+		// startUp.setRunMode("0011");
+		// startUp.setRunTime(1000);
+		// RTE* runNonExpanding = new RTE(data,startUp.getOptions());		
+		// runNonExpanding->noise();
+		// runNonExpanding->rteToTime(runName);
+		// delete runNonExpanding;
+
+		runName = "Expanding";
+		// startUp.setRunMode("0101");
+		// startUp.setRunTime(10000);
+		RTE* runExpanding = new RTE(data,startUp.getOptions());
+		runExpanding->noise();
+		runExpanding->rteToTime(runName);
+		delete runExpanding;
 	}
 	
 

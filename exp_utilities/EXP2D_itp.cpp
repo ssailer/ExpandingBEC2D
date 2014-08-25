@@ -4,7 +4,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 6000
+#define VORTICES_BUILD_TIME 1000
 
 using namespace std;
 using namespace Eigen;

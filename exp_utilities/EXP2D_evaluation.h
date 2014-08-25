@@ -42,7 +42,8 @@ public:
 
 	// Observables.h
 	Observables totalResult;
-	PathResults pres;
+	vector<PathResults> pres;
+	vector<c_set> contour;
 
 	
 
@@ -66,7 +67,7 @@ private:
 	RealGrid *phase, *zeros;
 	string runname;
 	vector<ComplexGrid> PsiVec;
-	vector<c_set> contour;
+	
 	Options opt;
 	int snapshot_time;
 	vector<RealGrid> densityLocationMap;
@@ -77,7 +78,7 @@ private:
 	// doing functinos
 	Observables calculator(ComplexGrid data,int sampleindex);
 	Observables calculatorITP(ComplexGrid data,int sampleindex);
-	void getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates);
+	void getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres);
 	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates);
 	
 

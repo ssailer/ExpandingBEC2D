@@ -604,7 +604,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
   return true;
 }
 
-bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaData meta, string vec_name, int vec_rank, double *vec)
+bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaData meta, Eval results)
 {
   if(m == in)
     {
@@ -673,43 +673,148 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
   
 
-  hid_t h5_avgroup;
+  hid_t h5_observables;
 
-  if(H5Lexists(h5_timegroup, "Averages", H5P_DEFAULT))
-    h5_avgroup = H5Gopen(h5_timegroup, "Averages", H5P_DEFAULT);
+  if(H5Lexists(h5_timegroup, "Observables", H5P_DEFAULT))
+    h5_observables = H5Gopen(h5_timegroup, "Observables", H5P_DEFAULT);
   else
-    h5_avgroup = H5Gcreate(h5_timegroup, "Averages", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    h5_observables = H5Gcreate(h5_timegroup, "Observables", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
+    /// PREPARE THE DOUBLE ARRAYS
+      string vec1Name = "Averages";
+      int vec1Rank = 11;
+      double vec1[11];
+      vec1[0] = results.totalResult.Ekin;
+      vec1[1] = results.totalResult.particle_count;
+      vec1[2] = results.totalResult.healing_length;
+      vec1[3] = results.totalResult.volume;
+      vec1[4] = results.totalResult.density;
+      vec1[5] = results.totalResult.aspectRatio;
+      vec1[6] = results.totalResult.aspectRatioAngle;
+      vec1[7] = results.totalResult.r_max;
+      vec1[8] = results.totalResult.r_min;
+      vec1[9] = results.totalResult.r_max_phi;
+      vec1[10] = results.totalResult.r_min_phi;
 
-  if(H5Lexists(h5_avgroup, vec_name.c_str(), H5P_DEFAULT))
+  if(H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT))
     {
-      cout << "Averages " << vec_name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+      cout << "Observables " << vec1Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
       return false;
     }
-
-
 
   hid_t dataset, dataspace, dset_create_props;
 
   dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
 
   hsize_t *dimsf = (hsize_t*)malloc(sizeof(hsize_t));
-    dimsf[0] = vec_rank;
+    dimsf[0] = vec1Rank;
 
 
   dataspace = H5Screate_simple(1, dimsf,  NULL);
 
-  dataset = H5Dcreate(h5_avgroup, vec_name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
-  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec); //write grid data
+  dataset = H5Dcreate(h5_observables, vec1Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec1); //write grid data
 
   //append grid snapShotTime as attribute
 
-  free(dimsf);
+
   H5Dclose(dataset);
   H5Sclose(dataspace);
   H5Pclose(dset_create_props);
+  
 
-  H5Gclose(h5_avgroup);
+
+
+
+
+  string vec2Name = "Contour";
+  int samples = results.contour.size();
+  int vec2Ranks[samples];
+  int arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
+  double *vec2;
+
+  for(int k = 0; k < samples; k++){
+    vec2Ranks[k] = results.contour[k].size();
+    arraysize += 2 * vec2Ranks[k]; // x and y coordinate of each contourpoint summed over all samples
+  }
+
+  vec2 = (double*)malloc(sizeof(double)*arraysize);
+  vec2[0] = samples;
+
+  int l = 1 + samples;
+  for(int k = 0; k < samples; k++){
+    vec2[k+1] = vec2Ranks[k];    
+    for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = results.contour[k].begin(); it != results.contour[k].end(); ++it){
+      vec2[l] = it->x();
+      vec2[l+1] = it->y();
+      l+=2;
+    }
+  }
+
+    if(H5Lexists(h5_observables, vec2Name.c_str(), H5P_DEFAULT))
+    {
+      cout << "Observables " << vec2Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+      return false;
+    }
+
+    dset_create_props = H5Pcreate(H5P_DATASET_CREATE); // default creation property list;
+    dimsf[0] = arraysize;
+
+    dataspace = H5Screate_simple(1,dimsf,NULL);
+    dataset = H5Dcreate(h5_observables,vec2Name.c_str(),H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+    H5Dwrite(dataset,H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec2); 
+
+    H5Dclose(dataset);
+    H5Sclose(dataspace);
+    H5Pclose(dset_create_props);
+    free(vec2);
+
+  string vec3Name = "Vortices";
+  samples = results.pres.size();
+  int vec3Ranks[samples];
+  arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
+  double *vec3;
+
+  for(int k = 0; k < samples; k++){
+    vec3Ranks[k] = results.pres[k].vlist.size();
+    arraysize += 2 * vec3Ranks[k]; // x and y coordinate of each vortex summed over all samples
+  }
+
+  vec3 = (double*)malloc(sizeof(double)*arraysize);
+  vec3[0] = samples;
+
+  l = 1 + samples;
+  for(int k = 0; k < samples; k++){
+    vec3[k+1] = vec3Ranks[k];    
+    for(std::list<VortexData>::const_iterator it = results.pres[k].vlist.begin(); it != results.pres[k].vlist.end(); ++it){
+      vec3[l] = it->x.x();
+      vec3[l+1] = it->x.y();
+      l+=2;
+    }
+  }
+
+    if(H5Lexists(h5_observables, vec3Name.c_str(), H5P_DEFAULT))
+    {
+      cout << "Observables " << vec3Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+      return false;
+    }
+
+    dset_create_props = H5Pcreate(H5P_DATASET_CREATE); // default creation property list;
+    dimsf[0] = arraysize;
+
+    dataspace = H5Screate_simple(1,dimsf,NULL);
+    dataset = H5Dcreate(h5_observables,vec3Name.c_str(),H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+    H5Dwrite(dataset,H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec3); 
+
+    H5Dclose(dataset);
+    H5Sclose(dataspace);
+    H5Pclose(dset_create_props);
+    free(vec3);
+
+
+
+  free(dimsf);
+  H5Gclose(h5_observables);
   H5Gclose(h5_timegroup);
 
   return true;

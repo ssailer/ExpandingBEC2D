@@ -10,7 +10,9 @@
 #include <hdf5.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_MatrixData.h>
+#include <EXP2D_evaluation.h>
 #include <eigen3/Eigen/Dense>
+
 
 using namespace std;
 
@@ -38,7 +40,7 @@ public:
   bool appendSnapshot(const string &name, int time, MatrixData* const &pData, Options &options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
 
-  bool appendEval(int snapShotTime, Options opt, MatrixData::MetaData meta, string vec_name, int vec_rank, double *vec);
+  bool appendEval(int snapShotTime, Options opt, MatrixData::MetaData meta, Eval results);
   // bool appendDocString(const string &group, const string &docstring, double time);
 
   bool getSnapshot(const string &name, int time, MatrixData* &pData, Options &options);

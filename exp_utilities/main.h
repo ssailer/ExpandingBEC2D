@@ -41,7 +41,9 @@ public:
 	inline int readConfig();
 
 	inline Options getOptions();
-	inline int setVortexnumber(int number);
+	inline void setVortexnumber(int number);
+	inline void setRunMode(string runmode);
+	inline void setRunTime(int runtime);
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
 	bool newRun;
@@ -56,7 +58,16 @@ inline Options StartUp::getOptions(){
 	return opt;
 }
 
-inline int StartUp::setVortexnumber(int number){
+inline void StartUp::setRunMode(string runmode){
+	// FIXME: Here should be checks for the sanity of runmode!
+	opt.runmode = runmode;
+}
+
+inline void StartUp::setRunTime(int runtime){
+	opt.n_it_RTE = runtime;
+}
+
+inline void StartUp::setVortexnumber(int number){
 	opt.vortexnumber = number;
 }
 

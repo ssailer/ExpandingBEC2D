@@ -219,7 +219,7 @@ void RTE::rteToTime(string runname)
 		k3[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);	
 	}
 
-	string evalname = "runEval.h5";
+	string evalname = runname + "runEval.h5";
 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
 	evalFile->appendSnapshot("StartGrid",0,pData,opt);
 	delete evalFile;
@@ -329,6 +329,7 @@ void RTE::rteToTime(string runname)
 			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << flush;
 			results.saveData(pData->wavefunction,opt,snapshot_times[j],runname);
 			results.evaluateData();
+			results.plotData();
 
 			plot("RTE-"+to_string(snapshot_times[j]));
 			// std::string h5name = to_string(snapshot_times[j]);
@@ -336,18 +337,35 @@ void RTE::rteToTime(string runname)
 			// ss << std::setfill('0') << std::setw(5) << h5name;
 			// h5name = ss.str() + ".h5";
 
-			string dataname = "runData.h5";
+			string dataname = runname + "runData.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
 			dataFile->appendSnapshot(dataname,snapshot_times[j],pData,opt);
 			delete dataFile;
 
-			int placeholderVecRank= 10;
-			double placeholderVec[10] = {0,1,2,3,4,5,6,7,8,9};
-			string placeholderName = "placeholderName" + to_string(snapshot_times[j]);
+			// int placeholderVecRank= 10;
+			// double placeholderVec[10] = {0,1,2,3,4,5,6,7,8,9};
+			// string placeholderName = "placeholderName" + to_string(snapshot_times[j]);
 
-			string evalname = "runEval.h5";
+			// string vec1Name = "Observables" + to_string(snapshot_times[j]);
+			// int vec1Rank = 11;
+			// double vec1[11];
+			// vec1[0] = results.totalResult.Ekin;
+			// vec1[1] = results.totalResult.particle_count;
+			// vec1[2] = results.totalResult.healing_length;
+			// vec1[3] = results.totalResult.volume;
+			// vec1[4] = results.totalResult.density;
+			// vec1[5] = results.totalResult.aspectRatio;
+			// vec1[6] = results.totalResult.aspectRatioAngle;
+			// vec1[7] = results.totalResult.r_max;
+			// vec1[8] = results.totalResult.r_min;
+			// vec1[9] = results.totalResult.r_max_phi;
+			// vec1[10] = results.totalResult.r_min_phi;
+
+
+			string evalname = runname + "runEval.h5";
 			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
-			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),placeholderName,placeholderVecRank,placeholderVec);
+			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
+			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
 			delete evalFile;
 
 			cout << " ..Snapshot saved to runData/";

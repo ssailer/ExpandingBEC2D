@@ -17,7 +17,7 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length, volume, density, aspectRatio, r_max, r_min, r_max_phi, r_min_phi;
+        double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi;
         ArrayXd number;
         ArrayXd k;
         ArrayXd angularDensity;
@@ -78,6 +78,7 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.healing_length = healing_length + a.healing_length; 
     ret.Ekin = Ekin + a.Ekin;
     ret.aspectRatio = aspectRatio + a.aspectRatio;
+    ret.aspectRatioAngle = aspectRatioAngle + a.aspectRatioAngle;
     ret.r_max = r_max + a.r_max;
     ret.r_min = r_min + a.r_min;
     ret.r_max_phi = r_max_phi + a.r_max_phi;    
@@ -99,6 +100,7 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.healing_length = healing_length - a.healing_length;     
     ret.Ekin = Ekin - a.Ekin;
     ret.aspectRatio = aspectRatio - a.aspectRatio;
+    ret.aspectRatioAngle = aspectRatioAngle - a.aspectRatioAngle;
     ret.r_max = r_max - a.r_max;
     ret.r_min = r_min - a.r_min;
     ret.r_max_phi = r_max_phi - a.r_max_phi; 
@@ -120,6 +122,7 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.healing_length = healing_length * a.healing_length;     
     ret.Ekin = Ekin * a.Ekin;
     ret.aspectRatio = aspectRatio * a.aspectRatio;
+    ret.aspectRatioAngle = aspectRatioAngle * a.aspectRatioAngle;
     ret.r_max = r_max * a.r_max;
     ret.r_min = r_min * a.r_min;
     ret.r_max_phi = r_max_phi * a.r_max_phi; 
@@ -141,6 +144,7 @@ inline Observables Observables::operator* (double d) const
     ret.healing_length = healing_length * d;    
     ret.Ekin = Ekin * d;
     ret.aspectRatio = aspectRatio * d;
+    ret.aspectRatioAngle = aspectRatioAngle * d;
     ret.r_max = r_max * d;
     ret.r_min = r_min * d;
     ret.r_max_phi = r_max_phi * d; 
@@ -162,6 +166,7 @@ inline Observables Observables::operator/ (double d) const
     ret.healing_length = healing_length / d;    
     ret.Ekin = Ekin / d;
     ret.aspectRatio = aspectRatio / d;
+    ret.aspectRatioAngle = aspectRatioAngle / d;
     ret.r_max = r_max / d;
     ret.r_min = r_min / d;
     ret.r_max_phi = r_max_phi / d; 
