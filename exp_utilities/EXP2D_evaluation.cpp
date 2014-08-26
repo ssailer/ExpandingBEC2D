@@ -3,7 +3,7 @@
 #define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
-#define VORTEX_SURROUND_DENSITY_RADIUS 10
+#define VORTEX_SURROUND_DENSITY_RADIUS 5
 #define EDGE_RANGE_CHECK 10
 
 using namespace std;
@@ -92,7 +92,7 @@ void Eval::evaluateData(){
 	// cout << "checkEdges call: " << endl;
 	// checkEdges();
 
-	pres.vlist.clear();
+	pres.resize(PsiVec.size());
 	densityCoordinates.clear();
 	contour.resize(PsiVec.size());
 
@@ -106,15 +106,17 @@ void Eval::evaluateData(){
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
 	for(int k = 0; k < PsiVec.size(); k++){
-		// cout << endl << "Eval #" << k << endl;
+		cout << endl << "Eval #" << k << endl;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
-		// cout << "-getDensity" << endl;
+		cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		// cout << "-trackContour" << endl;
+		cout << "-trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
-		// cout << "-calculator" << endl;		
+		cout << "-calculator" << endl;
+		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
+		cout << "-getVortices" << endl;		
 	}
-	getVortices(PsiVec[0],densityCoordinates[0]);
+	
 	// cout << endl << "-getVortices" << endl;
 	totalResult /= PsiVec.size();
 
@@ -123,89 +125,106 @@ void Eval::evaluateData(){
 
 void Eval::evaluateDataITP(){
 
-	pres.vlist.clear();
-	densityCoordinates.clear();
-	contour.resize(PsiVec.size());
+	// pres.vlist.clear();
+	// densityCoordinates.clear();
+	// contour.resize(PsiVec.size());
 
-	densityLocationMap.resize(PsiVec.size());
-	densityCoordinates.resize(PsiVec.size());
-	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	// densityLocationMap.resize(PsiVec.size());
+	// densityCoordinates.resize(PsiVec.size());
+	// phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	// zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
-	for(int k = 0; k < PsiVec.size(); k++){
-		totalResult += calculator(PsiVec[k],k);
-	}
-	totalResult /= PsiVec.size();
+	// for(int k = 0; k < PsiVec.size(); k++){
+		// getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0]);
+		totalResult = calculatorITP(PsiVec[0],0);
+	// }
+	// totalResult /= PsiVec.size();
 }
 
 void Eval::plotData(){
+	string dirname = "runPlots";
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+    
 	std::string snapShotString = to_string(snapshot_time);
 	std::stringstream ss;
 	ss << std::setfill('0') << std::setw(5) << snapShotString;
 	snapShotString = ss.str();
 
-	string filename = runname + "-Control-Plot-" + snapShotString;
-	plotDataToPngExpanding(filename,PsiVec[0],opt);
+	string filename = runname + "-Observables.dat";
+	runname = dirname + "/" + runname;
 
-	filename = runname + "-Spectrum-" + snapShotString; 
-	plotSpectrum(filename,totalResult);
 
-	filename = runname + "-Vortices-" + snapShotString;
-	plotVortexList(filename,phase,pres,opt);	
+	string plotname = runname + "-Control-Plot-" + snapShotString;
+	plotDataToPngExpanding(plotname,PsiVec[0],opt);
 
-	filename = runname + "-Density-" + snapShotString;
-	plotDataToPng(filename,densityLocationMap[0],opt);
+	plotname = runname + "-Spectrum-" + snapShotString; 
+	plotSpectrum(plotname,totalResult);
 
-	filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	plotVector(filename,x_dist_grad,y_dist_grad,opt);
+	plotname = runname + "-Vortices-" + snapShotString;
+	plotVortexList(plotname,phase,pres[0],opt);	
 
-	filename = runname + "-Angular-Dens-" + snapShotString;
-	plotVector(filename,totalResult.angularDensity,opt);	
+	plotname = runname + "-Density-" + snapShotString;
+	plotDataToPng(plotname,densityLocationMap[0],opt);
 
-	filename = runname + "-Contour-" + snapShotString;
-	plotContour(filename,PsiVec[0],contour[0],opt);
+	plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	plotVector(plotname,x_dist_grad,y_dist_grad,opt);
+
+	plotname = runname + "-Angular-Dens-" + snapShotString;
+	plotVector(plotname,totalResult.angularDensity,opt);	
+
+	plotname = runname + "-Contour-" + snapShotString;
+	plotContour(plotname,PsiVec[0],contour[0],opt);
 
 	
-	filename = runname + "-Observables" + ".dat";
+	
 	struct stat buffer;   
   	if(stat (filename.c_str(), &buffer) != 0){
   		ofstream datafile;
   		datafile.open(filename.c_str(), ios::out | ios::app);
-  		datafile << std::left << std::setw(10) << "Timestep"
-  						 << std::setw(10) << "X_max"
-  						 << std::setw(10) << "Y_max"
-  						 << std::setw(10) << "R_max"
-  						 << std::setw(10) << "R_min"
-  						 << std::setw(10) << "R_max/R_min"
-  						 << std::setw(10) << "A/R"
-  						 << std::setw(10) << "N"
-  						 << std::setw(10) << "V"
-  						 << std::setw(10) << "N/V"
-  						 << std::setw(10) << "E_kin"
+  		datafile << std::left << std::setw(15) << "Timestep"
+  						 << std::setw(15) << "X_max"
+  						 << std::setw(15) << "Y_max"
+  						 << std::setw(15) << "D_max"
+  						 << std::setw(15) << "D_min"
+  						 << std::setw(15) << "D_max/D_min"
+  						 << std::setw(15) << "D_max Angle"
+  						 << std::setw(15) << "D_min Angle"
+  						 << std::setw(15) << "Ratio"
+  						 << std::setw(15) << "RatioAngle"
+  						 << std::setw(15) << "N"
+  						 << std::setw(15) << "V"
+  						 << std::setw(15) << "N/V"
+  						 << std::setw(15) << "E_kin"
   				 << endl;
   		datafile.close();
   	} 
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
-	datafile << std::left << std::setw(10) << snapshot_time
-					 << std::setw(10) << opt.min_x * opt.stateInformation[0]
-					 << std::setw(10) << opt.min_y * opt.stateInformation[1]
- 					 << std::setw(10) << totalResult.r_max
- 					 << std::setw(10) << totalResult.r_min
- 					 << std::setw(10) << totalResult.r_max / totalResult.r_min  
- 					 << std::setw(10) << totalResult.aspectRatio  
-					 << std::setw(10) << totalResult.particle_count
-					 << std::setw(10) << totalResult.volume
-					 << std::setw(10) << totalResult.density
-					 << std::setw(10) << totalResult.Ekin
+	datafile << std::left << std::setw(15) << snapshot_time
+					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
+					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
+ 					 << std::setw(15) << totalResult.r_max
+ 					 << std::setw(15) << totalResult.r_min
+ 					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
+ 					 << std::setw(15) << totalResult.r_max_phi
+ 					 << std::setw(15) << totalResult.r_min_phi
+ 					 << std::setw(15) << totalResult.aspectRatio 
+ 					 << std::setw(15) << totalResult.aspectRatioAngle 
+					 << std::setw(15) << totalResult.particle_count
+					 << std::setw(15) << totalResult.volume
+					 << std::setw(15) << totalResult.density
+					 << std::setw(15) << totalResult.Ekin
 			 << endl;
 	datafile.close();
 }
 
-void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates){
+void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres){
 	
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
@@ -403,7 +422,7 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 // }
 
 void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates_local){
-	double threshold = 10;//opt.N * 0.10 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	double threshold = 2;//opt.N * 0.10 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
 	// cout << "Threshold " << threshold << endl;
 
@@ -521,17 +540,17 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		tmp.c = *it;
 		int x_shift = tmp.c.x() - opt.grid[1]/2;
 		int y_shift = tmp.c.y() - opt.grid[2]/2;
-		tmp.phi = atan2(x_shift * h_x,y_shift * h_y) * 180 /M_PI + 180;
+		tmp.phi = atan2(y_shift * h_y,x_shift * h_x) * 180 /M_PI + 180;
 		tmp.r = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
 		cData.push_back(tmp);
-		if(obs.r_max <= tmp.r){
-			obs.r_max = tmp.r;
-			obs.r_max_phi = tmp.phi;
-		}
-		if(obs.r_min >= tmp.r){
-			obs.r_min = tmp.r;
-			obs.r_min_phi = tmp.phi;
-		}
+		// if(obs.r_max <= tmp.r){
+		// 	obs.r_max = tmp.r;
+		// 	obs.r_max_phi = tmp.phi;
+		// }
+		// if(obs.r_min >= tmp.r){
+		// 	obs.r_min = tmp.r;
+		// 	obs.r_min_phi = tmp.phi;
+		// }
 
 	}
 
@@ -539,7 +558,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 
 	vector<double> cRadius(361);
 	vector<int> divisor_counter(361);
-	for(vector<contourData>::iterator it = cData.begin(); it != cData.end(); ++it){
+	for(vector<contourData>::const_iterator it = cData.begin(); it != cData.end(); ++it){
 		int index = round(it->phi);
 		cRadius[index] += it->r;
 		divisor_counter[index]++;
@@ -564,13 +583,30 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	for(int i = 0; i < 180; i++){
 		cDistance[i] = fabs(cRadius[i] + cRadius[i+180]);
 	}
-	double tmp_ratio = 0;
+	vector<double>::iterator maxDistance = std::max_element(cDistance.begin(), cDistance.end());
+	obs.r_max = *maxDistance;
+	obs.r_max_phi = std::distance(cDistance.begin(), maxDistance);
+
+	vector<double>::iterator minDistance = std::min_element(cDistance.begin(), cDistance.end());
+	obs.r_min = *minDistance;
+	obs.r_min_phi = std::distance(cDistance.begin(), minDistance);
+
+	vector<double> tmp_ratio(90);
+	// double tmp_ratio = 0;
 	for(int i = 0; i < 89; i++){
-		double tmp1 = cDistance[i] / cDistance[i+90];
-		double tmp2 = cDistance[i+1] / cDistance[i+91];
-		tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
+		if(cDistance[i+90] >= 0.0){
+			tmp_ratio[i] = cDistance[i] / cDistance[i+90];
+		} else {
+			cout << "WARNING: Aspect-Ratio: Calulated Distance smaller than zero!" << endl;
+		}
+		// double tmp1 = cDistance[i] / cDistance[i+90];
+		// double tmp2 = cDistance[i+1] / cDistance[i+91];
+		// tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
 	}
-	obs.aspectRatio = tmp_ratio; // zwischen 0 und 90 grad, also effektiv x und y richtung
+	vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
+	int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
+	obs.aspectRatioAngle = maxAspectRatioIndex;
+	obs.aspectRatio = *maxElement; // zwischen 0 und 90 grad, also effektiv x und y richtung
 	// FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
 
 	// == Angular Density
@@ -614,6 +650,103 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		}					
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
+
+	// K-Space
+	ComplexGrid::fft(data, data);
+	
+	ArrayXd divisor(obs.number.size());
+	divisor.setZero();
+	
+	vector<vector<double>> kspace;
+	
+	kspace.resize(2);
+	for(int d = 0; d < 2; d++){
+		// set k-space
+		kspace[d].resize(opt.grid[d+1]);
+		// for (int i=0; i<opt.grid[d+1]/2; i++){
+		for(int i = 0; i < opt.grid[d+1]/2; i++){
+		// for (int32_t i = 0; i < kspace[d].size()/2; i++){
+			kspace[d][i] = opt.klength[d]/**opt.stateInformation[0]*/*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
+			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)i) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			// kspace[d][i] = opt.klength[d] * M_PI / ( (double)(opt.grid[d+1]/2 - i) * h[d] );
+		}
+		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
+		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
+		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
+			kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
+			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			// kspace[d][i] = - opt.klength[d] * M_PI / ( (double)(i - opt.grid[d+1]/2 + 1) * h[d]);
+		}
+	}
+
+
+	// DEFINITION OF KLENGTH FROM THE INTERNET! |||| ==>>     2*pi*i/(Nx*dx)
+	// double kmax[2];
+
+	// for(int i = 0; i < 2; i++){
+	// 	kmax[i] = *max_element(kspace[i].begin(), kspace[i].end());
+	// }
+	
+	double kwidth2[2];
+
+	for(int i = 0; i < 2; i++)
+		kwidth2[i] = (opt.grid[i+1] == 1) ? 0 : kspace[i][opt.grid[i+1]/2] * kspace[i][opt.grid[i+1]/2];
+	
+	double index_factor = (obs.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
+
+	for(int x = 0; x < data.width(); x++){
+		for (int y = 0; y < data.height(); y++){
+			for (int z = 0; z < data.depth(); z++){
+				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
+				// Coordinate<int32_t> c = data.make_coord(x,y,z);
+				int index = index_factor * k;
+				// cout << k << "*" << index_factor << "=" << index << "/" << OBSERVABLES_DATA_POINTS_SIZE << endl;
+				obs.k(index) += k;
+				divisor(index)++;
+				double number = abs2(data(0,x,y,z));
+				obs.number(index) += number;
+				// obs.particle_count += number;
+				obs.Ekin += number * k * k;
+			}
+		}
+	}
+	
+	#pragma omp parallel for schedule(guided,1)
+	for(int l = 0; l < obs.number.size(); l++){
+		if(divisor[l] == 0){
+			divisor[l] = 1;
+		}
+	}
+
+	obs.number /= divisor;
+	obs.k /= divisor;	
+	
+	return obs;
+}
+
+
+Observables Eval::calculatorITP(ComplexGrid data,int sampleindex){
+	
+	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	// R-Space
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	double h[2];
+	h[0] = h_x;
+	h[1] = h_y; 
+	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
+	
+	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+
+	obs.volume = h_x * h_y * densityCounter;
+	for(int i = 0; i < opt.grid[1]-1; i++){
+	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
+	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
+	    }
+	}
+	obs.density = obs.particle_count / obs.volume;
 
 	// K-Space
 	ComplexGrid::fft(data, data);

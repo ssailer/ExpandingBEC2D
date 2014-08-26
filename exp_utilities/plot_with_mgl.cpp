@@ -17,7 +17,7 @@ void plotSpectrum(string name,Observables &ares){
 		if(ares.k(r) != 0.0){
 			plotfile << r <<"\t"<< ares.k(r) <<"\t" << ares.number(r) <<"\t";
 			plotfile << endl;
-			if(r%5 == 0){ // reduce the number of k's plotted, because it gets cluttered.
+			if(r%10 == 0){ // reduce the number of k's plotted, because it gets cluttered.
 				kval.push_back(ares.k(r));
 				numberval.push_back(ares.number(r));
 			}
@@ -46,6 +46,8 @@ void plotSpectrum(string name,Observables &ares){
 
 	mglGraph gr;
 
+	gr.SetMarkSize(0.7);
+	// gr.SetFontSize()
 	gr.SetSize(1800,1800);
 	gr.SetQuality(3);
 	gr.Title(name.c_str());
@@ -117,7 +119,9 @@ void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
 	gr.Dens(phaseData);
 	gr.Plot(v_x,v_y," #xw");
 
-	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
+	name = name + ".png";
+
+	gr.WritePNG(name.c_str(),"Vortices",false);
 }
 
 void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
@@ -162,7 +166,9 @@ void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<in
 	gr.Dens(densData);
 	gr.Plot(v_x,v_y," .w");
 
-	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
+	name = name + ".png";
+
+	gr.WritePNG(name.c_str(),"Contour",false);
 
 }
 
@@ -230,6 +236,8 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 	// gr.Plot(densData," ");
 	gr.Plot(densX,densY," #.k");
 	gr.Plot(v_x,v_y," #.r");
+
+	name = name + ".png";
 
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 
@@ -556,7 +564,7 @@ void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt)
 
 }
 
-void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options &opt)
+void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 {
 	
 
@@ -640,7 +648,7 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options &opt)
 
 }
 
-void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt)
+void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options opt)
 {
 	
 

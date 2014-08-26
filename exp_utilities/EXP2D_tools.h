@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 #include <iomanip>
-#include <gauss_random.h>
+
 #include <stdlib.h>
 #include <time.h>
 #include <eigen3/Eigen/Dense>
@@ -20,7 +20,7 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : stateInformation(2), vortexnumber(20), snapshots(100), t_abs(0,0) {}
+    Options () : N(100), stateInformation(2), vortexnumber(20), snapshots(100), t_abs(0,0), potFactor(1) {}
 
     double N; // Number of particles    
     double klength[3];
@@ -38,6 +38,7 @@ typedef struct Options {
     int snapshots; // number of Snapshots
     int samplesize;
     int vortexnumber;
+    double potFactor;
     
     string runmode; // Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
                      // second char determines if expanding coordinates are used or not
@@ -47,8 +48,6 @@ typedef struct Options {
     
 } Options;
 
-
-void noiseTheGrid(ComplexGrid &g);
 
 class expException {
 public:

@@ -50,14 +50,16 @@ class MatrixData {
     inline MatrixData(const MetaData &extMeta);
     inline MatrixData(const int &samplesize,const int &gridx, const int &gridy,const double &extTime, const int &extStep, const double &xsize, const double &ysize);
 
+    inline void update(const double &extTime, const int &extSteps,const vector<double> &coordFactor);
+
     inline void setMatrix(const vector<MatrixXcd> &extWavefct);
     inline void setTime(const double &extTime);
     inline void setStep(const int &extStep);
     inline void setCoord(const vector<double> &extCoord);
     inline void setMeta(const MetaData &extMeta);
 
-    inline double getGridXSpacing();
-    inline double getGrixYSpacing();
+    inline double hX();
+    inline double hY();
     inline int getStep();
     inline vector<MatrixXcd> getMatrix();    
     inline MetaData getMeta();
@@ -95,6 +97,15 @@ inline MatrixData::MatrixData(const int &samplesize,const int &gridx, const int 
 }
 
 
+inline void MatrixData::update(const double &extTime,const int &extSteps,const vector<double> &coordFactor){
+    meta.time = extTime;
+    meta.steps = extSteps;
+    meta.coord[0] *= coordFactor[0];
+    meta.coord[1] *= coordFactor[1];
+    meta.spacing[0] = meta.coord[0] * 2 / meta.grid[0];
+    meta.spacing[1] = meta.coord[1] * 2 / meta.grid[1];
+    meta.dataToArray();
+}
 
 inline void MatrixData::setMatrix(const vector<MatrixXcd> &extWavefct){
     wavefunction = extWavefct;

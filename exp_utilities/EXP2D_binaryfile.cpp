@@ -115,9 +115,9 @@ binaryFile::binaryFile(const string &file, mode nm)
               //   options.delta_t.resize(0);
 
               h5a_options = H5Aopen(h5_file, "SnapshotTimes", H5P_DEFAULT);
-              int size = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
+              int size = (int)(H5Aget_storage_size(h5a_options)/sizeof(int));
               time_list.resize(size);
-              H5Aread(h5a_options, H5T_IEEE_F64LE , &time_list.front());
+              H5Aread(h5a_options, H5T_STD_I32LE , &time_list.front());
               H5Aclose(h5a_options);
 
               // if(m == append)
@@ -146,14 +146,14 @@ binaryFile::binaryFile(const string &file, mode nm)
         mkdir(dirname.c_str(),0755);
       }
 
-      string fileNameListName = "runData/fileNameList.dat";
-      // struct stat buffer;   
-      // if(stat (filename.c_str(), &buffer) != 0){
-        ofstream fileNameListFile;
-        fileNameListFile.open(fileNameListName.c_str(), ios::out | ios::app);
-        fileNameListFile << std::left << file << endl;
-        fileNameListFile.close();
-    // } 
+    //   string fileNameListName = "runData/fileNameList.dat";
+    //   // struct stat buffer;   
+    //   // if(stat (filename.c_str(), &buffer) != 0){
+    //     ofstream fileNameListFile;
+    //     fileNameListFile.open(fileNameListName.c_str(), ios::out | ios::app);
+    //     fileNameListFile << std::left << file << endl;
+    //     fileNameListFile.close();
+    // // } 
 
 
 
@@ -255,8 +255,8 @@ void binaryFile::close()
     {      
       hsize_t dimsf[] = {time_list.size()};
       hid_t dataspace = H5Screate_simple(1, dimsf, NULL);
-      hid_t h5a = H5Acreate(h5_file, "SnapshotTimes", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
-      H5Awrite (h5a, H5T_IEEE_F64LE, &time_list.front());
+      hid_t h5a = H5Acreate(h5_file, "SnapshotTimes", H5T_STD_I32LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite (h5a, H5T_STD_I32LE, &time_list.front());
       H5Sclose(dataspace);
       H5Aclose(h5a);
       // cerr << "Reached ERROR location #5" << endl;
@@ -271,8 +271,8 @@ void binaryFile::close()
 
       hsize_t dimsf[] = {time_list.size()};
       hid_t dataspace = H5Screate_simple(1, dimsf, NULL);
-      hid_t h5a = H5Acreate(h5_file, "SnapshotTimes", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
-      H5Awrite (h5a, H5T_IEEE_F64LE, &time_list.front());
+      hid_t h5a = H5Acreate(h5_file, "SnapshotTimes", H5T_STD_I32LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite (h5a, H5T_STD_I32LE, &time_list.front());
       H5Sclose(dataspace);
       H5Aclose(h5a);
       // cerr << "Reached ERROR location #6" << endl;
@@ -285,19 +285,21 @@ void binaryFile::close()
 
 bool binaryFile::checkTime(int snapShotTime)
 {
-  stringstream time_name;
+  // stringstream time_name;
   // // snapShotTime will always be formatted with two decimal digits
   // time_name.setf(ios_base::fixed);
   // time_name.precision(2);
-  time_name << snapShotTime;
+  // time_name << snapShotTime;
 
-  if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
-    h5_timegroup = H5Gopen(h5_file, (time_name.str()).c_str(), H5P_DEFAULT);
+  string time_name = to_string(snapShotTime);
+
+  if(H5Lexists(h5_file, time_name.c_str(), H5P_DEFAULT)){
+    h5_timegroup = H5Gopen(h5_file, time_name.c_str(), H5P_DEFAULT);
     // cerr << "Reached ERROR location #7" << endl;
   }
   else
     {
-      h5_timegroup = H5Gcreate(h5_file, (time_name.str()).c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      h5_timegroup = H5Gcreate(h5_file, time_name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
       time_list.push_back(snapShotTime);
       // cerr << "Reached ERROR location #8" << endl;
     }
@@ -309,7 +311,7 @@ bool binaryFile::checkTime(int snapShotTime)
 }
 
 
-bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vector<MatrixXcd> &k, Options &options)
+bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData* const &pData, Options &options)
 {
   if(m == in)
     {
@@ -374,7 +376,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 
       hid_t h5_EMGroup_vecsub = H5Gcreate(h5_timegroup, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); //create dataset with full space selection
       // cerr << "Reached ERROR location #11" << endl;
-      for (int i = 0; i < k.size(); i++)
+      for (int i = 0; i < pData->wavefunction.size(); i++)
         {
           hid_t    dataset, dataspace, dset_create_props;
 
@@ -383,8 +385,8 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 
           hsize_t *dimsf = (hsize_t *) malloc(rank*sizeof(hsize_t));
 
-          dimsf[0] = 2*k[i].rows();
-          dimsf[1] = k[i].cols();
+          dimsf[0] = 2 * pData->wavefunction[i].rows();
+          dimsf[1] = pData->wavefunction[i].cols();
 
 
           dset_create_props = H5Pcreate(H5P_DATASET_CREATE); //create a default creation property list
@@ -395,7 +397,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 
           dataset = H5Dcreate(h5_EMGroup_vecsub, (comp.str()).c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT); //create data block in file
 
-          H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[i].data()); //write grid data
+          H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)pData->wavefunction[i].data()); //write grid data
 
           free(dimsf);
           H5Dclose(dataset);
@@ -435,7 +437,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
       for(int i = 0; i<4;i++)
         tmpOpt1[i+17] = options.grid[i];
 
-      tmpOpt1[21] = options.n_it_RTE;
+      tmpOpt1[21] = options.potFactor;
       tmpOpt1[22] = options.samplesize;
       tmpOpt1[23] = options.vortexnumber;  
 
@@ -448,6 +450,15 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 
       H5Aclose(h5a_options);
       H5Sclose(dataspace);
+
+      hid_t h5a_meta;
+      dimsf[0] = 9;
+      dataspace = H5Screate_simple(1, dimsf, NULL);
+
+      h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite(h5a_meta, H5T_IEEE_F64LE, pData->meta.data());
+      H5Aclose(h5a_meta);
+      H5Sclose(dataspace);
       // cerr << "Reached ERROR location #13" << endl;
 
   H5Gclose(h5_timegroup);
@@ -456,7 +467,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, const vect
 }
 
 
-bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<MatrixXcd> &k, Options &options)
+bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &pData, Options &options)
 {
   if(m == out)
     {
@@ -524,11 +535,17 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Matrix
               for(int i = 0; i<4;i++)
                 options.grid[i] = (uint32_t)tmpOpt1[i+17];
 
-              options.n_it_RTE = (int)tmpOpt1[21];
+              options.potFactor = tmpOpt1[21];
               options.samplesize = (int)tmpOpt1[22];
               options.vortexnumber = (int)tmpOpt1[23];              
 
               H5Aclose(h5a_options);
+
+              hid_t h5a_meta;
+              h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
+              H5Aread(h5a_meta, H5T_IEEE_F64LE, pData->meta.data());
+              H5Aclose(h5a_meta);
+              pData->meta.arrayToData();
 
       // if(H5Iget_type(test_id) == H5I_DATASET)
       //   {
@@ -552,11 +569,11 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Matrix
       //   {
           hsize_t vecsize;
           H5Gget_num_objs(test_id, &vecsize);
-          k.resize(vecsize);
+          pData->wavefunction.resize(vecsize);
 
           for(int i = 0; i < vecsize; i++)
             {
-              k[i] = MatrixXcd(options.grid[1],options.grid[2]);
+              pData->wavefunction[i] = MatrixXcd(pData->meta.grid[0], pData->meta.grid[1]);
               stringstream comp;
               comp << i;
 
@@ -567,11 +584,11 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Matrix
               hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
               H5Sget_simple_extent_dims(dataspace, dimf, NULL);
 
-          	  dimf[0] /= 2;
+          	  // dimf[0] /= 2;
           	  // dimf[1] /= 2;
-              k[i].resize(dimf[0],dimf[1]);
+              // k[i].resize(dimf[0],dimf[1]);
 
-              H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)k[i].data());
+              H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)pData->wavefunction[i].data());
 
               free(dimf);
               H5Dclose(dataset);
@@ -587,8 +604,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Matrix
   return true;
 }
 
-
-bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, int* vec_dim, int snapShotTime)
+bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaData meta, Eval results)
 {
   if(m == in)
     {
@@ -602,45 +618,203 @@ bool binaryFile::appendEval(const string &vec_name, double *vec, int vec_rank, i
       return false;
     }
 
-  hid_t h5_avgroup;
+    if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
+          hid_t    h5a_options, dataspace_opt;
+      double tmpOpt1[24];
 
-  if(H5Lexists(h5_timegroup, "Averages", H5P_DEFAULT))
-    h5_avgroup = H5Gopen(h5_timegroup, "Averages", H5P_DEFAULT);
-  else
-    h5_avgroup = H5Gcreate(h5_timegroup, "Averages", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      tmpOpt1[0] = options.N;
+      for(int i= 0; i < 3; i++)
+        tmpOpt1[i+1] = options.klength[i];
 
+      tmpOpt1[4] = options.stateInformation[0];
+      tmpOpt1[5] = options.stateInformation[1];
+      tmpOpt1[6] = options.omega_x.real();
+      tmpOpt1[7] = options.omega_y.real();
+      tmpOpt1[8] = options.dispersion_x.real();
+      tmpOpt1[9] = options.dispersion_y.real();
+      tmpOpt1[10] = options.min_x;
+      tmpOpt1[11] = options.min_y;
+      tmpOpt1[12] = options.t_abs.real();
+      tmpOpt1[13] = options.exp_factor.real();
+      tmpOpt1[14] = options.g;
+      tmpOpt1[15] = options.ITP_step;
+      tmpOpt1[16] = options.RTE_step;
 
-  if(H5Lexists(h5_avgroup, vec_name.c_str(), H5P_DEFAULT))
-    {
-      cout << "Averages " << vec_name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
-      return false;
+      for(int i = 0; i<4;i++)
+        tmpOpt1[i+17] = options.grid[i];
+
+      tmpOpt1[21] = options.potFactor;
+      tmpOpt1[22] = options.samplesize;
+      tmpOpt1[23] = options.vortexnumber;  
+
+      //copy options to file
+      hsize_t dimsf[1] = {24};
+      dataspace_opt = H5Screate_simple(1, dimsf, NULL);
+
+      h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
+
+      H5Aclose(h5a_options);
+      H5Sclose(dataspace_opt);
+
+      if(!H5Lexists(h5_timegroup, "Meta", H5P_DEFAULT)){
+
+      hid_t h5a_meta;
+      dimsf[0] = 9;
+      dataspace_opt = H5Screate_simple(1, dimsf, NULL);
+
+      h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
+      H5Awrite(h5a_meta, H5T_IEEE_F64LE, meta.data());
+      H5Aclose(h5a_meta);
     }
 
+      H5Sclose(dataspace_opt);
+    }
 
+  
+
+  hid_t h5_observables;
+
+  if(H5Lexists(h5_timegroup, "Observables", H5P_DEFAULT))
+    h5_observables = H5Gopen(h5_timegroup, "Observables", H5P_DEFAULT);
+  else
+    h5_observables = H5Gcreate(h5_timegroup, "Observables", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+    /// PREPARE THE DOUBLE ARRAYS
+      string vec1Name = "Averages";
+      int vec1Rank = 11;
+      double vec1[11];
+      vec1[0] = results.totalResult.Ekin;
+      vec1[1] = results.totalResult.particle_count;
+      vec1[2] = results.totalResult.healing_length;
+      vec1[3] = results.totalResult.volume;
+      vec1[4] = results.totalResult.density;
+      vec1[5] = results.totalResult.aspectRatio;
+      vec1[6] = results.totalResult.aspectRatioAngle;
+      vec1[7] = results.totalResult.r_max;
+      vec1[8] = results.totalResult.r_min;
+      vec1[9] = results.totalResult.r_max_phi;
+      vec1[10] = results.totalResult.r_min_phi;
+
+  if(H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT))
+    {
+      cout << "Observables " << vec1Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+      return false;
+    }
 
   hid_t dataset, dataspace, dset_create_props;
 
   dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
 
-  hsize_t *dimsf = (hsize_t*)malloc(vec_rank*sizeof(hsize_t));
-  for(int l = 0; l < vec_rank; l++)
-    {
-      dimsf[l] = vec_dim[l];
-    }
+  hsize_t *dimsf = (hsize_t*)malloc(sizeof(hsize_t));
+    dimsf[0] = vec1Rank;
+
 
   dataspace = H5Screate_simple(1, dimsf,  NULL);
 
-  dataset = H5Dcreate(h5_avgroup, vec_name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
-  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec); //write grid data
+  dataset = H5Dcreate(h5_observables, vec1Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec1); //write grid data
 
   //append grid snapShotTime as attribute
 
-  free(dimsf);
+
   H5Dclose(dataset);
   H5Sclose(dataspace);
   H5Pclose(dset_create_props);
+  
 
-  H5Gclose(h5_avgroup);
+
+
+
+
+  string vec2Name = "Contour";
+  int samples = results.contour.size();
+  int vec2Ranks[samples];
+  int arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
+  double *vec2;
+
+  for(int k = 0; k < samples; k++){
+    vec2Ranks[k] = results.contour[k].size();
+    arraysize += 2 * vec2Ranks[k]; // x and y coordinate of each contourpoint summed over all samples
+  }
+
+  vec2 = (double*)malloc(sizeof(double)*arraysize);
+  vec2[0] = samples;
+
+  int l = 1 + samples;
+  for(int k = 0; k < samples; k++){
+    vec2[k+1] = vec2Ranks[k];    
+    for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = results.contour[k].begin(); it != results.contour[k].end(); ++it){
+      vec2[l] = it->x();
+      vec2[l+1] = it->y();
+      l+=2;
+    }
+  }
+
+    if(H5Lexists(h5_observables, vec2Name.c_str(), H5P_DEFAULT))
+    {
+      cout << "Observables " << vec2Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+      return false;
+    }
+
+    dset_create_props = H5Pcreate(H5P_DATASET_CREATE); // default creation property list;
+    dimsf[0] = arraysize;
+
+    dataspace = H5Screate_simple(1,dimsf,NULL);
+    dataset = H5Dcreate(h5_observables,vec2Name.c_str(),H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+    H5Dwrite(dataset,H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec2); 
+
+    H5Dclose(dataset);
+    H5Sclose(dataspace);
+    H5Pclose(dset_create_props);
+    free(vec2);
+
+  string vec3Name = "Vortices";
+  samples = results.pres.size();
+  int vec3Ranks[samples];
+  arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
+  double *vec3;
+
+  for(int k = 0; k < samples; k++){
+    vec3Ranks[k] = results.pres[k].vlist.size();
+    arraysize += 2 * vec3Ranks[k]; // x and y coordinate of each vortex summed over all samples
+  }
+
+  vec3 = (double*)malloc(sizeof(double)*arraysize);
+  vec3[0] = samples;
+
+  l = 1 + samples;
+  for(int k = 0; k < samples; k++){
+    vec3[k+1] = vec3Ranks[k];    
+    for(std::list<VortexData>::const_iterator it = results.pres[k].vlist.begin(); it != results.pres[k].vlist.end(); ++it){
+      vec3[l] = it->x.x();
+      vec3[l+1] = it->x.y();
+      l+=2;
+    }
+  }
+
+    if(H5Lexists(h5_observables, vec3Name.c_str(), H5P_DEFAULT))
+    {
+      cout << "Observables " << vec3Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+      return false;
+    }
+
+    dset_create_props = H5Pcreate(H5P_DATASET_CREATE); // default creation property list;
+    dimsf[0] = arraysize;
+
+    dataspace = H5Screate_simple(1,dimsf,NULL);
+    dataset = H5Dcreate(h5_observables,vec3Name.c_str(),H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+    H5Dwrite(dataset,H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec3); 
+
+    H5Dclose(dataset);
+    H5Sclose(dataspace);
+    H5Pclose(dset_create_props);
+    free(vec3);
+
+
+
+  free(dimsf);
+  H5Gclose(h5_observables);
   H5Gclose(h5_timegroup);
 
   return true;

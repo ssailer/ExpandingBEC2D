@@ -4,7 +4,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 5000
+#define VORTICES_BUILD_TIME 1000
 
 using namespace std;
 using namespace Eigen;
@@ -23,11 +23,13 @@ ITP::ITP()
  	i_unit=complex<double>(0,1);
 }
 
-ITP::ITP(ComplexGrid* &c,Options &externaloptions)
+ITP::ITP(MatrixXcd &wavedata,const Options &externaloptions)
 {	
 	// Both essential Variables
-	pPsi = c;
+	// pPsi = c;
+	wavefct = wavedata;
   	opt = externaloptions;
+  	plot("INIT");
 
 
   	// some constants used in computations to shorten stuff
@@ -56,6 +58,10 @@ ITP::~ITP(){
 
 }
 
+MatrixXcd ITP::result(){
+	return wavefct;
+}
+
 void ITP::setOptions(Options &externaloptions){
 	opt = externaloptions;
 
@@ -64,7 +70,7 @@ void ITP::setOptions(Options &externaloptions){
 void ITP::RunSetup(){
 
 	//Initialize and fill the Eigen Wavefunction Storage
-	wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	// wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	// the time-step sizes for Runge-Kutta integration for both schemes as complex valued variables
  	t_ITP = complex<double>(opt.ITP_step,0.0);
@@ -88,7 +94,7 @@ void ITP::RunSetup(){
 
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
    	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-	PotentialGrid(i,j) = half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j);}}
+	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
 
 	itp_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	itp_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
@@ -97,6 +103,10 @@ void ITP::RunSetup(){
 	opt.stateInformation[0] = 1.0;
 	opt.stateInformation[1] = 1.0;
 
+}
+
+void ITP::plot(const string name){
+		plotDataToPngEigen(name, wavefct,opt);
 }
 
 inline void ITP::rescale(MatrixXcd &wavefct)
@@ -151,7 +161,7 @@ void ITP::CopyEigenToComplexGrid(){
 void ITP::formVortices(string runname){
 	double start;  // starttime of the run
 
-	CopyComplexGridToEigen();
+	// CopyComplexGridToEigen();
 
 	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 	MatrixXcd k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -193,9 +203,10 @@ void ITP::formVortices(string runname){
 
 		cli(runname,m,VORTICES_BUILD_TIME,start);	
 	}
+	plot("ITP-Vortices-" + to_string(VORTICES_BUILD_TIME));
 	cout << endl;
 	// update the ComplexGrid* DATA object outside of this.
-	CopyEigenToComplexGrid();
+	// CopyEigenToComplexGrid();
 }
 void ITP::propagateToGroundState(string runname)
 {
@@ -206,7 +217,7 @@ void ITP::propagateToGroundState(string runname)
 	int old_Ekin = 0;
 
 	// load external Data into wavefct
-	CopyComplexGridToEigen();
+	// CopyComplexGridToEigen();
 
 	Eval breakCondition;
 	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -219,6 +230,8 @@ void ITP::propagateToGroundState(string runname)
 
 	//start loop here
 	Eigen::initParallel();
+
+	// plot("ITP-1");
 
 	// do{
 	// 	rescale(wavefct);
@@ -257,10 +270,11 @@ void ITP::propagateToGroundState(string runname)
 	
 			state++;	
 		}
-		
+		plot("ITP-"+to_string(state));
 
 		breakCondition.saveData(wavefct,opt,state,runname);
 		breakCondition.evaluateDataITP();
+
 
 		cli_groundState(runname,start,state,breakCondition.totalResult);
 		int difference = breakCondition.totalResult.Ekin - old_Ekin;
@@ -273,16 +287,15 @@ void ITP::propagateToGroundState(string runname)
 		old_Ekin = breakCondition.totalResult.Ekin;
 		if(counter_finished >= 3){
 			finished = true;
-		}		
+		}
 		// cli_plot(runname,m,runtime,start,plot);
 	} while (finished == false);
 
 	cout << endl;
-
-
+	cout << "Groundstate found." << endl;
 
 	// update the ComplexGrid* DATA object outside of this.
-	CopyEigenToComplexGrid();
+	// CopyEigenToComplexGrid();
 }
 
 void ITP::cli_groundState(string name, double start,int state,Observables totalResult){	
