@@ -65,7 +65,6 @@ try{
 	
 	string runName = "RTE";
 
-
 	MatrixData* data = new MatrixData(startUp.getMeta());
 
 	if(startUp.newRun == false){
@@ -138,6 +137,7 @@ try{
 		delete runExpanding;
 	}
 	
+	cout << "test" << endl;
 
 
 	// cout << "Deleting objects." << endl;

@@ -12,4 +12,4 @@ GENERAL:
 - think about the radial k in terms of expansion, rest of k definition should be good now.
 
 
-us test_hdf5_2 to continue the simulation, write code to do that.
+- RPATH handling of Cmake, check cmake wiki.

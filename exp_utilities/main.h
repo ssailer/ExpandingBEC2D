@@ -222,7 +222,7 @@ inline int StartUp::readConfig()
 	opt.grid[0]              = root["RunOptions"]["grid0"];				
 	opt.grid[1]              = root["RunOptions"]["grid1"];				
 	opt.grid[2]              = root["RunOptions"]["grid2"];	   			
-	opt.grid[3]              = root["RunOptions"]["grid3"];				
+	opt.grid[3]              = root["RunOptions"]["grid3"];
 	opt.g                    = root["RunOptions"]["g"]; 						
 	opt.n_it_RTE             = root["RunOptions"]["numberOfIterations"]; 				
 	opt.snapshots            = root["RunOptions"]["numberOfSnapshots"];
@@ -235,9 +235,9 @@ inline int StartUp::readConfig()
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
-
 	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
 	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
+
 
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);

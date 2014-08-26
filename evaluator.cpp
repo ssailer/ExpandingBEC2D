@@ -51,7 +51,7 @@ try{
 	
 
 		
-	string runname = "RT-No-Ex";
+	string runname = "Expanding";
 	vector<string> snapShotFiles;
 	string tmp;
 	string fileNameListName = "runData/fileNameList.dat";
