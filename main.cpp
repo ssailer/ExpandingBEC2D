@@ -65,85 +65,6 @@ try{
 	
 	string runName = "RTE";
 
-<<<<<<< HEAD
-		printInitVar(opt); 
-		ITP* itprun = new ITP(data,opt);
-		
-		double sigma_real[2];
-		sigma_real[0] = opt.min_x/4;
-		sigma_real[1] = opt.min_y/4;		
-		data = set_grid_to_gaussian(data,opt,sigma_real[0],sigma_real[1]);
-		
-		// set the datafile identifier name and save the initial grid
-		
-		string runname = "INIT";
-		// plotDataToPng(runname,data,opt);
-		
-		
-		
-		//====> Imaginary Time Propagation (ITP)
-		itprun->propagateToGroundState("ITP1");
-		runname = "ITP1";
-		// plotDataToPng(runname,data,opt);
-		
-		// vector<MatrixXcd> tmpMatrix(1);
-		// tmpMatrix[0] = MatrixXcd(opt.grid[1],opt.grid[2]);
-		// for(int i = 0; i < opt.grid[1]; i++){
-		// 	for(int j = 0; j < opt.grid[2]; j++){
-		// 		tmpMatrix[0](i,j) = data->at(0,i,j,0);
-		// 	}
-		// }
-		// binaryFile * ITP1 = new binaryFile("ITP1.h5",binaryFile::out);
-		// ITP1->appendSnapshot("ITP1",0,tmpMatrix,opt);
-		// delete ITP1;		
-			
-				// if the given value is true, add vortices to the startgrid
-		if(opt.runmode.compare(3,1,"1") == 0){
-			int sigma_grid[2];
-			sigma_grid[0] = opt.grid[1]/8;
-			sigma_grid[1] = opt.grid[2]/8;
-			double r = (sigma_grid[0]+sigma_grid[1])/2.0; 
-			
-			// data = add_central_vortex(data,opt);	
-			// data = add_circle_vortex(data,opt,r,4);
-			// data = add_circle_vortex(data,opt,r/4.0,6);
-			// data = add_circle_vortex(data,opt,r*2.0/4.0,12);
-			// data = add_circle_vortex(data,opt,r*3.0/4.0,24);
-			data = addVortices(data,opt);
-			
-			
-			
-			//====> Imaginary Time Propagation (ITP)
-			itprun->formVortices("ITP2");
-			runname = "ITP2";
-			// plotDataToPng(runname,data,opt);
-			
-			
-			// vector<MatrixXcd> tmpMatrix1(1);
-			// tmpMatrix1[0] = MatrixXcd(opt.grid[1],opt.grid[2]);
-			// for(int i = 0; i < opt.grid[1]; i++){
-			// 	for(int j = 0; j < opt.grid[2]; j++){
-			// 		tmpMatrix1[0](i,j) = data->at(0,i,j,0);
-			// 	}
-			// }
-			// binaryFile * ITP2 = new binaryFile("ITP2.h5",binaryFile::out);
-			// ITP2->appendSnapshot("ITP2",0,tmpMatrix1,opt);
-			// delete ITP2;
-		}
-	delete itprun;
-	}
-	////// END VORTICES //////////
-	
-	
-	
-	
-	//====> Real Time Expansion (RTE)	
-	RTE* rterun = new RTE(data,opt);
-	string runname = "RT-Ex";
-	
-=======
->>>>>>> 922d2bb527e02bef6727e73410f8ae59eefdd403
-
 	MatrixData* data = new MatrixData(startUp.getMeta());
 
 	if(startUp.newRun == false){
@@ -216,6 +137,7 @@ try{
 		delete runExpanding;
 	}
 	
+	cout << "test" << endl;
 
 
 	// cout << "Deleting objects." << endl;

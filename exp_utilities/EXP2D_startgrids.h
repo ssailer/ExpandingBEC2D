@@ -3,8 +3,6 @@
 
 #include <EXP2D_MatrixData.h>
 #include <EXP2D_tools.h>
-<<<<<<< HEAD
-=======
 #include <complexgrid.h>
 #include <plot_with_mgl.h>
 
@@ -15,7 +13,6 @@
 //         if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
 //     else{ return atan2(b-y,a-x); }        
 // }
->>>>>>> 922d2bb527e02bef6727e73410f8ae59eefdd403
 
 void setGridToDoubleGaussian(MatrixData* &data, Options opt)
 {
@@ -40,8 +37,6 @@ void setGridToDoubleGaussian(MatrixData* &data, Options opt)
     }
 };
 
-<<<<<<< HEAD
-=======
 void setGridToGaussian(MatrixData* &data, Options opt)
 {
     double sigma_x = opt.min_x/4;
@@ -145,5 +140,4 @@ vnumber += c.size() * windingnumber;
     // return opt.vortexnumber;
 }
 
->>>>>>> 922d2bb527e02bef6727e73410f8ae59eefdd403
 #endif // EXP2D_STARTGRIDS_H__
