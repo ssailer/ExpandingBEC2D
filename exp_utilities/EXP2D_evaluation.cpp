@@ -95,6 +95,7 @@ void Eval::evaluateData(){
 	pres.resize(PsiVec.size());
 	densityCoordinates.clear();
 	contour.resize(PsiVec.size());
+	densityCounter.resize(PsiVec.size());
 
 	densityLocationMap.resize(PsiVec.size());
 	densityCoordinates.resize(PsiVec.size());
@@ -107,7 +108,7 @@ void Eval::evaluateData(){
 		
 	for(int k = 0; k < PsiVec.size(); k++){
 		cout << endl << "Eval #" << k << endl;
-		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
+		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k],densityCounter[k]);
 		cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
 		cout << "-trackContour" << endl;
@@ -126,18 +127,19 @@ void Eval::evaluateData(){
 void Eval::evaluateDataITP(){
 
 	// pres.vlist.clear();
-	// densityCoordinates.clear();
-	// contour.resize(PsiVec.size());
+	densityCoordinates.clear();
+	contour.resize(PsiVec.size());
+	densityCounter.resize(PsiVec.size());
 
-	// densityLocationMap.resize(PsiVec.size());
-	// densityCoordinates.resize(PsiVec.size());
-	// phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	// zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	densityLocationMap.resize(PsiVec.size());
+	densityCoordinates.resize(PsiVec.size());
+	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 		
 	// for(int k = 0; k < PsiVec.size(); k++){
-		// getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0]);
+		getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0],densityCounter[0]);
 		totalResult = calculatorITP(PsiVec[0],0);
 	// }
 	// totalResult /= PsiVec.size();
@@ -421,7 +423,7 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 // 	}
 // }
 
-void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates_local){
+void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
 	double threshold = 2;//opt.N * 0.10 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
 	// cout << "Threshold " << threshold << endl;
@@ -523,7 +525,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	
 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
-	obs.volume = h_x * h_y * densityCounter;
+	obs.volume = h_x * h_y * densityCounter[sampleindex];
 	for(int i = 0; i < opt.grid[1]-1; i++){
 	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
 	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
@@ -740,7 +742,7 @@ Observables Eval::calculatorITP(ComplexGrid data,int sampleindex){
 	
 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
-	obs.volume = h_x * h_y * densityCounter;
+	obs.volume = h_x * h_y * densityCounter[sampleindex];
 	for(int i = 0; i < opt.grid[1]-1; i++){
 	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
 	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));

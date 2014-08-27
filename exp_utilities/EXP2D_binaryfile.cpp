@@ -725,13 +725,13 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
 
       
-      string vec4Name = "KVector";
-      int vec4Rank = results.totalResult.k.size();
-      double vec4[vec4Rank];
+  string vec4Name = "KVector";
+  int vec4Rank = results.totalResult.k.size();
+  vector<double> vec4(vec4Rank);
 
-      for(int i = 0; i < vec4Rank; i++){
-        vec4[i] = results.totalResult.k(i);
-      }
+  for(int i = 0; i < vec4Rank; i++){
+    vec4[i] = results.totalResult.k(i);
+  }
 
 
   if(H5Lexists(h5_observables, vec4Name.c_str(), H5P_DEFAULT))
@@ -750,7 +750,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   dataspace = H5Screate_simple(1, dimsf,  NULL);
 
   dataset = H5Dcreate(h5_observables, vec4Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
-  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec4); //write grid data
+  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec4.data()); //write grid data
 
   //append grid snapShotTime as attribute
 
@@ -758,13 +758,13 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   H5Dclose(dataset);
   H5Sclose(dataspace);
   H5Pclose(dset_create_props);
-  free(vec4);
+
 
 
 
   string vec5Name = "OccupationNumber";
       int vec5Rank = results.totalResult.number.size();
-      double vec5[vec5Rank];
+      vector<double> vec5(vec5Rank);
 
       for(int i = 0; i < vec5Rank; i++){
         vec5[i] = results.totalResult.number(i);
@@ -786,7 +786,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   dataspace = H5Screate_simple(1, dimsf,  NULL);
 
   dataset = H5Dcreate(h5_observables, vec5Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
-  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec5); //write grid data
+  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec5.data()); //write grid data
 
   //append grid snapShotTime as attribute
 
@@ -794,7 +794,8 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   H5Dclose(dataset);
   H5Sclose(dataspace);
   H5Pclose(dset_create_props);
-  free(vec5);
+
+  cout << "Vector Ranks: " << vec4Rank << " " << vec5Rank << endl;
   
 
 
