@@ -726,13 +726,30 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
       
   string vec4Name = "KVector";
+  string vec5Name = "OccupationNumber";
   int vec4Rank = results.totalResult.k.size();
-  vector<double> vec4(vec4Rank);
+  int vec5Rank = results.totalResult.number.size();
+  vector<double> vec4();
+  vector<double> vec5();
 
-  for(int i = 0; i < vec4Rank; i++){
-    vec4[i] = results.totalResult.k(i);
+
+  int sharedRank;
+  if(vec4rank == vec5Rank){
+    sharedRank = vec4Rank;
+  } else {
+    cout << "Ranks of Kvector and OccupationNumber are not the same!" << endl;
   }
 
+
+  for(int i = 0; i < sharedRank; i++){
+    if((results.totalResult.k(i) != 0) || (results.totalResult.number(i) != 0))
+      vec4.push_back(results.totalResult.k(i));
+      vec5.push_back(results.totalResult.number(i));
+  }
+  vec4Rank = vec4.size();
+  vec5Rank = vec5.size();
+
+  cout << "Vector Ranks: " << vec4Rank << " " << vec5Rank << endl;
 
   if(H5Lexists(h5_observables, vec4Name.c_str(), H5P_DEFAULT))
     {
@@ -759,18 +776,6 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   H5Sclose(dataspace);
   H5Pclose(dset_create_props);
 
-
-
-
-  string vec5Name = "OccupationNumber";
-      int vec5Rank = results.totalResult.number.size();
-      vector<double> vec5(vec5Rank);
-
-      for(int i = 0; i < vec5Rank; i++){
-        vec5[i] = results.totalResult.number(i);
-      }
-
-
   if(H5Lexists(h5_observables, vec5Name.c_str(), H5P_DEFAULT))
     {
       cout << "Observables " << vec5Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
@@ -795,7 +800,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   H5Sclose(dataspace);
   H5Pclose(dset_create_props);
 
-  cout << "Vector Ranks: " << vec4Rank << " " << vec5Rank << endl;
+  
   
 
 
