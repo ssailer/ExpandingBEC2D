@@ -29,7 +29,7 @@ ITP::ITP(MatrixXcd &wavedata,const Options &externaloptions)
 	// pPsi = c;
 	wavefct = wavedata;
   	opt = externaloptions;
-  	plot("INIT");
+  	plot("ITP-INIT");
 
 
   	// some constants used in computations to shorten stuff
@@ -203,7 +203,7 @@ void ITP::formVortices(string runname){
 
 		cli(runname,m,VORTICES_BUILD_TIME,start);	
 	}
-	plot("ITP-Vortices-" + to_string(VORTICES_BUILD_TIME));
+	plot("ITP-Vortices-Layout");
 	cout << endl;
 	// update the ComplexGrid* DATA object outside of this.
 	// CopyEigenToComplexGrid();
@@ -270,7 +270,7 @@ void ITP::propagateToGroundState(string runname)
 	
 			state++;	
 		}
-		plot("ITP-"+to_string(state));
+		// plot("ITP-"+to_string(state));
 
 		breakCondition.saveData(wavefct,opt,state,runname);
 		breakCondition.evaluateDataITP();
