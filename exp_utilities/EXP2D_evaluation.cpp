@@ -193,7 +193,7 @@ void Eval::evaluateDataITP(){
 }
 
 void Eval::plotData(){
-	string dirname = "runPlots";
+	string dirname = "runPlots_" + runname;
     struct stat st;
     	if(stat(dirname.c_str(),&st) != 0){
         mkdir(dirname.c_str(),0755);
@@ -204,7 +204,7 @@ void Eval::plotData(){
 	ss << std::setfill('0') << std::setw(5) << snapShotString;
 	snapShotString = ss.str();
 	
-	runname = dirname + "_" + runname + "/" + runname;
+	runname = dirname + "/" + runname;
 
 	string plotname = runname + "-Control-Plot-" + snapShotString;
 	plotDataToPngExpanding(plotname,PsiVec[0],opt);
