@@ -249,9 +249,7 @@ void ITP::propagateToGroundState(string runname)
 			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
 			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
 			wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
-			wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
-
-			rescale(wavefct);
+			wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);			
 
 			wavefctcp = wavefct;
 	
@@ -268,7 +266,9 @@ void ITP::propagateToGroundState(string runname)
 	
 			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
 	
-			state++;	
+			state++;
+
+			rescale(wavefct);	
 		}
 		// plot("ITP-"+to_string(state));
 
