@@ -219,7 +219,7 @@ void RTE::rteToTime(string runname)
 		k3[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);	
 	}
 
-	string evalname = runname + "runEval.h5";
+	string evalname = runname + "_RunEval.h5";
 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
 	evalFile->appendSnapshot("StartGrid",0,pData,opt);
 	delete evalFile;
@@ -337,7 +337,7 @@ void RTE::rteToTime(string runname)
 			// ss << std::setfill('0') << std::setw(5) << h5name;
 			// h5name = ss.str() + ".h5";
 
-			string dataname = runname + "runData.h5";
+			string dataname = runname + "_RunData.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
 			dataFile->appendSnapshot(dataname,snapshot_times[j],pData,opt);
 			delete dataFile;
@@ -362,7 +362,7 @@ void RTE::rteToTime(string runname)
 			// vec1[10] = results.totalResult.r_min_phi;
 
 
-			string evalname = runname + "runEval.h5";
+			string evalname = runname + "_RunEval.h5";
 			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
 			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
 			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
