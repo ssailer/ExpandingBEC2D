@@ -729,15 +729,16 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   string vec5Name = "OccupationNumber";
   int vec4Rank = results.totalResult.k.size();
   int vec5Rank = results.totalResult.number.size();
-  vector<double> vec4();
-  vector<double> vec5();
+  vector<double> vec4;
+  vector<double> vec5;
 
 
   int sharedRank;
-  if(vec4rank == vec5Rank){
+  if(vec4Rank == vec5Rank){
     sharedRank = vec4Rank;
   } else {
     cout << "Ranks of Kvector and OccupationNumber are not the same!" << endl;
+    sharedRank = (vec4Rank >= vec5Rank) ? vec4Rank : vec5Rank;
   }
 
 

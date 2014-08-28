@@ -47,9 +47,9 @@ try{
 
 	#if DEBUG_LOG
  		std::ofstream logstream("run.log");
- 		redirecter redirect(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
+ 		redirecter redirectcout(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
  		std::ofstream errorstream("error.log");
- 		redirecter redirect(errorstream,std::cerr);
+ 		redirecter redirectcerr(errorstream,std::cerr);
  	#endif
 
  	startUp.printInitVar();
