@@ -736,7 +736,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   int sharedRank;
   if(vec4Rank == vec5Rank){
     sharedRank = vec4Rank;
-    cout << "Ranks of KVector and OccupationNumber Input are the same." << vec4Rank <<" "<< vec5Rank << endl;
+    // cout << "Ranks of KVector and OccupationNumber Input are the same." << vec4Rank <<" "<< vec5Rank << endl;
   } else {
     
     sharedRank = (vec4Rank >= vec5Rank) ? vec4Rank : vec5Rank;
@@ -753,7 +753,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   vec4Rank = vec4.size();
   vec5Rank = vec5.size();
 
-  cout << "Vector Ranks: " << vec4Rank << " " << vec5Rank << endl;
+  // cout << "Vector Ranks: " << vec4Rank << " " << vec5Rank << endl;
 
   if(H5Lexists(h5_observables, vec4Name.c_str(), H5P_DEFAULT))
     {

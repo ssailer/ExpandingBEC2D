@@ -116,73 +116,16 @@ void Eval::evaluateData(){
 		cout << "-calculator" << endl;
 		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
 		cout << "-getVortices" << endl;		
-	}
-	
-	// cout << endl << "-getVortices" << endl;
+	}	
 	totalResult /= PsiVec.size();
 
-	
-}
-
-void Eval::evaluateDataITP(){
-
-	// pres.vlist.clear();
-	densityCoordinates.clear();
-	contour.resize(PsiVec.size());
-	densityCounter.resize(PsiVec.size());
-
-	densityLocationMap.resize(PsiVec.size());
-	densityCoordinates.resize(PsiVec.size());
-	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-		
-	// for(int k = 0; k < PsiVec.size(); k++){
-		getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0],densityCounter[0]);
-		totalResult = calculatorITP(PsiVec[0],0);
-	// }
-	// totalResult /= PsiVec.size();
-}
-
-void Eval::plotData(){
-	string dirname = "runPlots";
+	string dirname = "runObservables";
     struct stat st;
     	if(stat(dirname.c_str(),&st) != 0){
         mkdir(dirname.c_str(),0755);
     }
-    
-	std::string snapShotString = to_string(snapshot_time);
-	std::stringstream ss;
-	ss << std::setfill('0') << std::setw(5) << snapShotString;
-	snapShotString = ss.str();
 
-	string filename = runname + "-Observables.dat";
-	runname = dirname + "/" + runname;
-
-
-	string plotname = runname + "-Control-Plot-" + snapShotString;
-	plotDataToPngExpanding(plotname,PsiVec[0],opt);
-
-	plotname = runname + "-Spectrum-" + snapShotString; 
-	plotSpectrum(plotname,totalResult);
-
-	plotname = runname + "-Vortices-" + snapShotString;
-	plotVortexList(plotname,phase,pres[0],opt);	
-
-	plotname = runname + "-Density-" + snapShotString;
-	plotDataToPng(plotname,densityLocationMap[0],opt);
-
-	plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	plotVector(plotname,x_dist_grad,y_dist_grad,opt);
-
-	plotname = runname + "-Angular-Dens-" + snapShotString;
-	plotVector(plotname,totalResult.angularDensity,opt);	
-
-	plotname = runname + "-Contour-" + snapShotString;
-	plotContour(plotname,PsiVec[0],contour[0],opt);
-
-	
+	string filename = dirname + "/" + runname + "-Observables.dat";	
 	
 	struct stat buffer;   
   	if(stat (filename.c_str(), &buffer) != 0){
@@ -224,6 +167,67 @@ void Eval::plotData(){
 					 << std::setw(15) << totalResult.Ekin
 			 << endl;
 	datafile.close();
+
+	
+}
+
+void Eval::evaluateDataITP(){
+
+	// pres.vlist.clear();
+	densityCoordinates.clear();
+	contour.resize(PsiVec.size());
+	densityCounter.resize(PsiVec.size());
+
+	densityLocationMap.resize(PsiVec.size());
+	densityCoordinates.resize(PsiVec.size());
+	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+		
+	// for(int k = 0; k < PsiVec.size(); k++){
+		getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0],densityCounter[0]);
+		totalResult = calculatorITP(PsiVec[0],0);
+	// }
+	// totalResult /= PsiVec.size();
+}
+
+void Eval::plotData(){
+	string dirname = "runPlots";
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+    
+	std::string snapShotString = to_string(snapshot_time);
+	std::stringstream ss;
+	ss << std::setfill('0') << std::setw(5) << snapShotString;
+	snapShotString = ss.str();
+	
+	runname = dirname + "_" + runname + "/" + runname;
+
+	string plotname = runname + "-Control-Plot-" + snapShotString;
+	plotDataToPngExpanding(plotname,PsiVec[0],opt);
+
+	plotname = runname + "-Spectrum-" + snapShotString; 
+	plotSpectrum(plotname,totalResult);
+
+	plotname = runname + "-Vortices-" + snapShotString;
+	plotVortexList(plotname,phase,pres[0],opt);	
+
+	plotname = runname + "-Density-" + snapShotString;
+	plotDataToPng(plotname,densityLocationMap[0],opt);
+
+	plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	plotVector(plotname,x_dist_grad,y_dist_grad,opt);
+
+	plotname = runname + "-Angular-Dens-" + snapShotString;
+	plotVector(plotname,totalResult.angularDensity,opt);	
+
+	plotname = runname + "-Contour-" + snapShotString;
+	plotContour(plotname,PsiVec[0],contour[0],opt);
+
+
 }
 
 void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres){
