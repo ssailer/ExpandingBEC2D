@@ -139,9 +139,6 @@ try{
 		delete runExpanding;
 	}
 	
-	cout << "test" << endl;
-
-
 	// cout << "Deleting objects." << endl;
 	delete data;	
 
