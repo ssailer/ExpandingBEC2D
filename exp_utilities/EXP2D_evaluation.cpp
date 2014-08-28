@@ -125,7 +125,7 @@ void Eval::evaluateData(){
         mkdir(dirname.c_str(),0755);
     }
 
-	string filename = dirname + "/" + runname + "-Observables.dat";	
+	string filename = dirname + "/" + runname + "_Observables.dat";	
 	
 	struct stat buffer;   
   	if(stat (filename.c_str(), &buffer) != 0){

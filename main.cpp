@@ -107,8 +107,8 @@ try{
 		startUp.setVortexnumber(vnumber);
 		cout << endl << "Set Vortices #: " << vnumber << endl;
 
-		string vorticesName = "ITP-Vortices-000";
-		plotDataToPngEigen(vorticesName,data->wavefunction[0],startUp.getOptions());
+		// string vorticesName = "ITP-Vortices-000";
+		// plotDataToPngEigen(vorticesName,data->wavefunction[0],startUp.getOptions());
 
 		itpname = "ITP-Vortices";
 		ITP* vorticesITP = new ITP(data->wavefunction[0],startUp.getOptions());
@@ -124,7 +124,7 @@ try{
 
 		runName = "NonExpanding";
 		startUp.setRunMode("0011");
-		startUp.setRunTime(1000);
+		startUp.setRunTime(10000);
 		RTE* runNonExpanding = new RTE(data,startUp.getOptions());		
 		runNonExpanding->noise();
 		runNonExpanding->rteToTime(runName);
