@@ -20,7 +20,7 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : N(100), stateInformation(2), vortexnumber(20), snapshots(100), t_abs(0,0), potFactor(1) {}
+    Options () : N(100), stateInformation(2), vortexnumber(20), snapshots(100), t_abs(0,0), potFactor(1), initialRun(false) {}
 
     double N; // Number of particles    
     double klength[3];
@@ -45,6 +45,7 @@ typedef struct Options {
                      // third char determines if potential is switch on for the differential equation
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
+    bool initialRun;
     
 } Options;
 

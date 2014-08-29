@@ -33,11 +33,12 @@ public:
 	~Eval();
 
 	// wrapperfunctions 
-	void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)
-	void saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
+	void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)
+	void saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
 	void evaluateData(); // calculate the observables
 	void evaluateDataITP();
 	void plotData(); // plot Results
+	int getVortexNumber();
 
 
 	// Observables.h

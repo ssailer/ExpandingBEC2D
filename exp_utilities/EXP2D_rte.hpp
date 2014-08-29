@@ -38,7 +38,7 @@ class RTE
     
     // Propagatoren
 
-    void rteToTime(string runname);
+    void rteToTime(string runName);
     // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction

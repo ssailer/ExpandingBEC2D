@@ -41,6 +41,7 @@ public:
 	inline int readConfig();
 
 	inline Options getOptions();
+	inline void setInitialRun(bool initialRun);
 	inline void setVortexnumber(int number);
 	inline void setRunMode(string runmode);
 	inline void setRunTime(int runtime);
@@ -56,6 +57,10 @@ private:
 
 inline Options StartUp::getOptions(){
 	return opt;
+}
+
+inline void StartUp::setInitialRun(bool initialRun){
+	opt.initialRun = initialRun;
 }
 
 inline void StartUp::setRunMode(string runmode){

@@ -14,7 +14,7 @@ Eval::Eval() {};
 
 Eval::~Eval() {};
 
-void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &external_snapshot_time,string external_runname){
+void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname){
 	runname = external_runname;
 	opt = external_opt;
 	snapshot_time = external_snapshot_time;
@@ -32,7 +32,7 @@ void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &ext
 
 }
 
-void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snapshot_time,string external_runname){
+void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname){
 	runname = external_runname;
 	opt = external_opt;
 	snapshot_time = external_snapshot_time;
@@ -105,19 +105,22 @@ void Eval::evaluateData(){
 
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-		
+	
+	cout << endl << "Evaluating sample #: ";
 	for(int k = 0; k < PsiVec.size(); k++){
-		cout << endl << "Eval #" << k << endl;
+		cout << k << " " ;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k],densityCounter[k]);
-		cout << "-getDensity" << endl;
+		// cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		cout << "-trackContour" << endl;
+		// cout << "-trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
-		cout << "-calculator" << endl;
+		// cout << "-calculator" << endl;
 		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
-		cout << "-getVortices" << endl;		
+		// cout << "-getVortices" << endl;		
 	}	
 	totalResult /= PsiVec.size();
+
+	cout << endl;
 
 	string dirname = "runObservables";
     struct stat st;
@@ -363,11 +366,20 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	// 			vlist.push_back(*it);
 	// 	}
 	// }
-	if(vlist.size() > opt.vortexnumber){
-		list<VortexData>::iterator it1 = vlist.begin();
-		advance(it1,opt.vortexnumber);
-		vlist.erase(it1,vlist.end());
+	if(opt.initialRun == true){
+		opt.vortexnumber = vlist.size();
+		cout << "Intial Evaluation found " << opt.vortexnumber << " Vortices." << endl;
+	} else {
+		if(vlist.size() > opt.vortexnumber){
+			list<VortexData>::iterator it1 = vlist.begin();
+			advance(it1,opt.vortexnumber);
+			vlist.erase(it1,vlist.end());
+		}
 	}
+}
+
+int Eval::getVortexNumber(){
+	return opt.vortexnumber;
 }
 
 void Eval::calc_fields(ComplexGrid &data, Options &opt){

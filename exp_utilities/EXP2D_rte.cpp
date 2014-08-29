@@ -196,7 +196,7 @@ void RTE::noise(){
 	}
 }
 
-void RTE::rteToTime(string runname)
+void RTE::rteToTime(string runName)
 {
 	double start;  // starttime of the run
 	int samplesize = wavefctVec.size();
@@ -219,9 +219,19 @@ void RTE::rteToTime(string runname)
 		k3[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);	
 	}
 
-	string evalname = runname + "_RunEval.h5";
+	opt.initialRun = true;
+	Eval* initialEval = new Eval;
+	initialEval->saveData(wavefctVec,opt,0,runName);
+	initialEval->evaluateData();
+	initialEval->plotData();
+	opt.vortexnumber = initialEval->getVortexNumber();
+	opt.initialRun = false;
+
+	string evalname = runName + "_RunEval.h5";
 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
 	evalFile->appendSnapshot("StartGrid",0,pData,opt);
+	// evalFile->appendEval(0,opt,meta,*initialEval);
+	delete initialEval;
 	delete evalFile;
 
 	// CopyComplexGridToEigen();
@@ -229,7 +239,7 @@ void RTE::rteToTime(string runname)
 	// plot("1-AfterNoise-");
 
 	// binaryFile *dataFile = new binaryFile("00000.h5",binaryFile::out);
-	// dataFile->appendSnapshot(runname,0,pData,opt);
+	// dataFile->appendSnapshot(runName,0,pData,opt);
 	// delete dataFile;
 	
 	start = omp_get_wtime();
@@ -240,7 +250,7 @@ void RTE::rteToTime(string runname)
 	int previousTimes = meta.steps;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
-		string stepname = runname + "-" + to_string(snapshot_times[j]);
+		string stepname = runName + "-" + to_string(snapshot_times[j]);
 		vector<int> stateOfLoops(samplesize);
 		vector<int> threadinfo(samplesize);
 		int slowestthread = 0;
@@ -327,7 +337,7 @@ void RTE::rteToTime(string runname)
 			Eval results;
 	
 			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << flush;
-			results.saveData(pData->wavefunction,opt,snapshot_times[j],runname);
+			results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
 			results.evaluateData();
 			results.plotData();
 
@@ -337,7 +347,7 @@ void RTE::rteToTime(string runname)
 			// ss << std::setfill('0') << std::setw(5) << h5name;
 			// h5name = ss.str() + ".h5";
 
-			string dataname = runname + "_RunData.h5";
+			string dataname = runName + "_RunData.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
 			dataFile->appendSnapshot(dataname,snapshot_times[j],pData,opt);
 			delete dataFile;
@@ -362,7 +372,7 @@ void RTE::rteToTime(string runname)
 			// vec1[10] = results.totalResult.r_min_phi;
 
 
-			string evalname = runname + "_RunEval.h5";
+			string evalname = runName + "_RunEval.h5";
 			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
 			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
 			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);

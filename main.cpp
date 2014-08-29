@@ -122,19 +122,18 @@ try{
 		// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
 
 
-		runName = "NonExpanding";
-		startUp.setRunMode("0011");
-		startUp.setRunTime(10000);
-		RTE* runNonExpanding = new RTE(data,startUp.getOptions());		
-		runNonExpanding->noise();
-		runNonExpanding->rteToTime(runName);
-		delete runNonExpanding;
-
-		data->setTime(0);
+		// runName = "NonExpanding";
+		// startUp.setRunMode("0011");
+		// startUp.setRunTime(10000);
+		// RTE* runNonExpanding = new RTE(data,startUp.getOptions());		
+		// runNonExpanding->noise();
+		// runNonExpanding->rteToTime(runName);
+		// delete runNonExpanding;
+		// data->setTime(0);
 
 		runName = "Expanding";
-		startUp.setRunMode("0101");
-		startUp.setRunTime(10000);
+		// startUp.setRunMode("0101");
+		// startUp.setRunTime(10000);
 		RTE* runExpanding = new RTE(data,startUp.getOptions());
 		// runExpanding->noise();
 		runExpanding->rteToTime(runName);
