@@ -230,7 +230,7 @@ void RTE::rteToTime(string runName)
 	string evalname = runName + "_RunEval.h5";
 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
 	evalFile->appendSnapshot("StartGrid",0,pData,opt);
-	// evalFile->appendEval(0,opt,meta,*initialEval);
+	evalFile->appendEval(0,opt,meta,*initialEval);
 	delete initialEval;
 	delete evalFile;
 

@@ -412,7 +412,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
       H5Gclose(h5_EMGroup_vecsub);
     // }
   // H5Gclose(h5_EMGroup);
-
+if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
       hid_t    h5a_options, dataspace;
       double tmpOpt1[24];
 
@@ -460,6 +460,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
       H5Aclose(h5a_meta);
       H5Sclose(dataspace);
       // cerr << "Reached ERROR location #13" << endl;
+    }
 
   H5Gclose(h5_timegroup);
 
@@ -506,6 +507,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
     {
       hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
 
+      
               hid_t h5a_options;
               h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
 
@@ -546,6 +548,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
               H5Aread(h5a_meta, H5T_IEEE_F64LE, pData->meta.data());
               H5Aclose(h5a_meta);
               pData->meta.arrayToData();
+            
 
       // if(H5Iget_type(test_id) == H5I_DATASET)
       //   {
