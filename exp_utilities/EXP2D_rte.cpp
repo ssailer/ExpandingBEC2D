@@ -349,7 +349,7 @@ void RTE::rteToTime(string runName)
 
 			string dataname = runName + "_RunData.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
-			dataFile->appendSnapshot(dataname,snapshot_times[j],pData,opt);
+			dataFile->appendSnapshot(runName,snapshot_times[j],pData,opt);
 			delete dataFile;
 
 			// int placeholderVecRank= 10;

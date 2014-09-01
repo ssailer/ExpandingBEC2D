@@ -607,61 +607,59 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
   return true;
 }
 
+
 bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaData meta, Eval results)
 {
-  if(m == in)
-    {
-      cout << "file "<< filename.c_str() << "is not in write mode" << endl;
-      return false;
-    }
+  if(m == in){
+    cout << "file "<< filename.c_str() << "is not in write mode" << endl;
+    return false;
+  }
 
-  if(!checkTime(snapShotTime))
-    {
-      cout << "HDF5 Group error for time group: " << snapShotTime << endl;
-      return false;
-    }
+  if(!checkTime(snapShotTime)){
+    cout << "HDF5 Group error for time group: " << snapShotTime << endl;
+    return false;
+  }
 
-    if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
-          hid_t    h5a_options, dataspace_opt;
-      double tmpOpt1[24];
+  if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){      
+    hid_t    h5a_options, dataspace_opt;
+    double tmpOpt1[24];
 
-      tmpOpt1[0] = options.N;
-      for(int i= 0; i < 3; i++)
-        tmpOpt1[i+1] = options.klength[i];
+    tmpOpt1[0] = options.N;
+    for(int i= 0; i < 3; i++)
+      tmpOpt1[i+1] = options.klength[i];
 
-      tmpOpt1[4] = options.stateInformation[0];
-      tmpOpt1[5] = options.stateInformation[1];
-      tmpOpt1[6] = options.omega_x.real();
-      tmpOpt1[7] = options.omega_y.real();
-      tmpOpt1[8] = options.dispersion_x.real();
-      tmpOpt1[9] = options.dispersion_y.real();
-      tmpOpt1[10] = options.min_x;
-      tmpOpt1[11] = options.min_y;
-      tmpOpt1[12] = options.t_abs.real();
-      tmpOpt1[13] = options.exp_factor.real();
-      tmpOpt1[14] = options.g;
-      tmpOpt1[15] = options.ITP_step;
-      tmpOpt1[16] = options.RTE_step;
+    tmpOpt1[4] = options.stateInformation[0];
+    tmpOpt1[5] = options.stateInformation[1];
+    tmpOpt1[6] = options.omega_x.real();
+    tmpOpt1[7] = options.omega_y.real();
+    tmpOpt1[8] = options.dispersion_x.real();
+    tmpOpt1[9] = options.dispersion_y.real();
+    tmpOpt1[10] = options.min_x;
+    tmpOpt1[11] = options.min_y;
+    tmpOpt1[12] = options.t_abs.real();
+    tmpOpt1[13] = options.exp_factor.real();
+    tmpOpt1[14] = options.g;
+    tmpOpt1[15] = options.ITP_step;
+    tmpOpt1[16] = options.RTE_step;
 
-      for(int i = 0; i<4;i++)
-        tmpOpt1[i+17] = options.grid[i];
+    for(int i = 0; i<4;i++)
+      tmpOpt1[i+17] = options.grid[i];
 
-      tmpOpt1[21] = options.potFactor;
-      tmpOpt1[22] = options.samplesize;
-      tmpOpt1[23] = options.vortexnumber;  
+    tmpOpt1[21] = options.potFactor;
+    tmpOpt1[22] = options.samplesize;
+    tmpOpt1[23] = options.vortexnumber;  
 
       //copy options to file
-      hsize_t dimsf[1] = {24};
-      dataspace_opt = H5Screate_simple(1, dimsf, NULL);
+    hsize_t dimsf[1] = {24};
+    dataspace_opt = H5Screate_simple(1, dimsf, NULL);
 
-      h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
-      H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
+    h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
+    H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
 
-      H5Aclose(h5a_options);
-      H5Sclose(dataspace_opt);
+    H5Aclose(h5a_options);
+    H5Sclose(dataspace_opt);
 
-      if(!H5Lexists(h5_timegroup, "Meta", H5P_DEFAULT)){
-
+    if(!H5Lexists(h5_timegroup, "Meta", H5P_DEFAULT)){
       hid_t h5a_meta;
       dimsf[0] = 9;
       dataspace_opt = H5Screate_simple(1, dimsf, NULL);
@@ -671,8 +669,8 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
       H5Aclose(h5a_meta);
     }
 
-      H5Sclose(dataspace_opt);
-    }
+  H5Sclose(dataspace_opt);
+  }
 
   
 
@@ -684,20 +682,20 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
     h5_observables = H5Gcreate(h5_timegroup, "Observables", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
     /// PREPARE THE DOUBLE ARRAYS
-      string vec1Name = "Averages";
-      int vec1Rank = 11;
-      double vec1[11];
-      vec1[0] = results.totalResult.Ekin;
-      vec1[1] = results.totalResult.particle_count;
-      vec1[2] = results.totalResult.healing_length;
-      vec1[3] = results.totalResult.volume;
-      vec1[4] = results.totalResult.density;
-      vec1[5] = results.totalResult.aspectRatio;
-      vec1[6] = results.totalResult.aspectRatioAngle;
-      vec1[7] = results.totalResult.r_max;
-      vec1[8] = results.totalResult.r_min;
-      vec1[9] = results.totalResult.r_max_phi;
-      vec1[10] = results.totalResult.r_min_phi;
+    string vec1Name = "Averages";
+    int vec1Rank = 11;
+    double vec1[11];
+    vec1[0] = results.totalResult.Ekin;
+    vec1[1] = results.totalResult.particle_count;
+    vec1[2] = results.totalResult.healing_length;
+    vec1[3] = results.totalResult.volume;
+    vec1[4] = results.totalResult.density;
+    vec1[5] = results.totalResult.aspectRatio;
+    vec1[6] = results.totalResult.aspectRatioAngle;
+    vec1[7] = results.totalResult.r_max;
+    vec1[8] = results.totalResult.r_min;
+    vec1[9] = results.totalResult.r_max_phi;
+    vec1[10] = results.totalResult.r_min_phi;
 
   if(H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT))
     {
@@ -720,11 +718,9 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
   //append grid snapShotTime as attribute
 
-
   H5Dclose(dataset);
   H5Sclose(dataspace);
   H5Pclose(dset_create_props);
-
 
 
       
@@ -734,7 +730,6 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   int vec5Rank = results.totalResult.number.size();
   vector<double> vec4;
   vector<double> vec5;
-
 
   int sharedRank;
   if(vec4Rank == vec5Rank){
@@ -766,10 +761,8 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
 
   dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
-
   
     dimsf[0] = vec4Rank;
-
 
   dataspace = H5Screate_simple(1, dimsf,  NULL);
 
