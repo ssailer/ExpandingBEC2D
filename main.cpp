@@ -53,101 +53,49 @@ try{
  	#endif
 
  	startUp.printInitVar();
-
- 	// std::streambuf *filebuf, *coutbuf;
-
- 	// coutbuf = std::cout.rdbuf();     // back up cout's streambuf
- 	// std::cout.rdbuf(backup);        // restore cout's original streambuf
 	
-	// if(DEBUG_LOG == 1){
-	// 	logstream.open ("run.log");
-		// filebuf = logstream.rdbuf();        // get file's streambuf
-		// std::cout.rdbuf(filebuf);         // assign streambuf to cout
-	// }
-	
-	string runName = "RTE";
-
-	MatrixData* data = new MatrixData(startUp.getMeta());
-
-	if(startUp.newRun == false){
-		vector<string> snapShotFiles;
-			string tmp;
-			string fileNameListName = "runData/fileNameList.dat";
-			ifstream fileNameList(fileNameListName);
-	
-		if(fileNameList.is_open()){
-			while (getline (fileNameList,tmp)){
-				snapShotFiles.push_back(tmp);
-			}
-		}
-		string h5name = snapShotFiles.back();
-		binaryFile* loading = new binaryFile(h5name,binaryFile::in);
-		vector<int> timeList = loading->getTimeList();
-		Options opt = startUp.getOptions();
-		loading->getSnapshot(runName,timeList.back(),data,opt);
-		delete loading;
-
-		RTE* run = new RTE(data,opt);
-		run->rteToTime(runName);
-		delete run;
-
-	} else {
+	MatrixData* startGrid = new MatrixData(startUp.getMeta());
 		
-		setGridToGaussian(data,startUp.getOptions());
+	setGridToGaussian(startGrid,startUp.getOptions());
 
-		ITP* groundStateITP = new ITP(data->wavefunction[0],startUp.getOptions());
-		string itpname = "ITP-Groundstate";
-		groundStateITP->propagateToGroundState(itpname);
-		data->wavefunction[0] = groundStateITP->result();
-		delete groundStateITP;
+	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+	string itpname = "ITP-Groundstate";
+	groundStateITP->propagateToGroundState(itpname);
+	startGrid->wavefunction[0] = groundStateITP->result();
+	delete groundStateITP;
 
-		int vnumber = 0;
-		addVorticesRegular(data,startUp.getOptions(),vnumber);
-		
-		startUp.setVortexnumber(vnumber);
-		cout << endl << "Set Vortices #: " << vnumber << endl;
+	int vnumber = 0;
+	addVorticesRegular(startGrid,startUp.getOptions(),vnumber);
+	
+	startUp.setVortexnumber(vnumber);
+	cout << endl << "Set Vortices #: " << vnumber << endl;
 
-		// string vorticesName = "ITP-Vortices-000";
-		// plotDataToPngEigen(vorticesName,data->wavefunction[0],startUp.getOptions());
+	itpname = "ITP-Vortices";
+	ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+	vorticesITP->formVortices(itpname);
+	
+	startGrid->wavefunction[0] = vorticesITP->result();
 
-		itpname = "ITP-Vortices";
-		ITP* vorticesITP = new ITP(data->wavefunction[0],startUp.getOptions());
-		vorticesITP->formVortices(itpname);
+	delete vorticesITP;
 
+	// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
+
+	for( int k = 1; k <= 4; k++){
+		MatrixData* data = new MatrixData(startUp.getMeta());
 		for(int i = 0; i < data->meta.samplesize; i++){
-			data->wavefunction[i] = vorticesITP->result();
-		}
-		delete vorticesITP;
-
-		// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
-
-
-		// runName = "NonExpanding";
-		// startUp.setRunMode("0011");
-		// startUp.setRunTime(10000);
-		// RTE* runNonExpanding = new RTE(data,startUp.getOptions());		
-		// runNonExpanding->noise();
-		// runNonExpanding->rteToTime(runName);
-		// delete runNonExpanding;
-		// data->setTime(0);
-
-		runName = "Expanding";
-		// startUp.setRunMode("0101");
-		// startUp.setRunTime(10000);
+			data->wavefunction[i] = startGrid->wavefunction[0];
+		}	
+		string runName = "Expanding-Set-"+to_string(k);
 		RTE* runExpanding = new RTE(data,startUp.getOptions());
-		// runExpanding->noise();
+		runExpanding->noise();
 		runExpanding->rteToTime(runName);
 		delete runExpanding;
+		delete data;
 	}
-	
-	// cout << "Deleting objects." << endl;
-	delete data;	
-
-	cout << "Terminating successfully." << endl;
-	// if(DEBUG_LOG == 1){
-	// 	logstream.close();
-	// 	std::cout.rdbuf(coutbuf);
 	// }
+	
+	delete startGrid;	
+
 }  // exceptions catcher
 
 
