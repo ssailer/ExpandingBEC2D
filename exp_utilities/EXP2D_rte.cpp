@@ -227,12 +227,15 @@ void RTE::rteToTime(string runName)
 	opt.vortexnumber = initialEval->getVortexNumber();
 	opt.initialRun = false;
 
-	string evalname = runName + "_RunEval.h5";
+	string evalname = runName + "-Eval.h5";
 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
-	evalFile->appendSnapshot("StartGrid",0,pData,opt);
 	evalFile->appendEval(0,opt,meta,*initialEval);
 	delete initialEval;
 	delete evalFile;
+	string startGridName = runName + "-StartGrid.h5";
+	binaryFile* startGrid = new binaryFile(startGridName,binaryFile::out);
+	startGrid->appendSnapshot("StartGrid",0,pData,opt);
+	delete startGrid;
 
 	// CopyComplexGridToEigen();
 
@@ -347,32 +350,12 @@ void RTE::rteToTime(string runName)
 			// ss << std::setfill('0') << std::setw(5) << h5name;
 			// h5name = ss.str() + ".h5";
 
-			string dataname = runName + "_RunData.h5";
+			string dataname = runName + "-LastGrid.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
 			dataFile->appendSnapshot(runName,snapshot_times[j],pData,opt);
 			delete dataFile;
 
-			// int placeholderVecRank= 10;
-			// double placeholderVec[10] = {0,1,2,3,4,5,6,7,8,9};
-			// string placeholderName = "placeholderName" + to_string(snapshot_times[j]);
-
-			// string vec1Name = "Observables" + to_string(snapshot_times[j]);
-			// int vec1Rank = 11;
-			// double vec1[11];
-			// vec1[0] = results.totalResult.Ekin;
-			// vec1[1] = results.totalResult.particle_count;
-			// vec1[2] = results.totalResult.healing_length;
-			// vec1[3] = results.totalResult.volume;
-			// vec1[4] = results.totalResult.density;
-			// vec1[5] = results.totalResult.aspectRatio;
-			// vec1[6] = results.totalResult.aspectRatioAngle;
-			// vec1[7] = results.totalResult.r_max;
-			// vec1[8] = results.totalResult.r_min;
-			// vec1[9] = results.totalResult.r_max_phi;
-			// vec1[10] = results.totalResult.r_min_phi;
-
-
-			string evalname = runName + "_RunEval.h5";
+			string evalname = runName + "-Eval.h5";
 			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
 			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
 			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);

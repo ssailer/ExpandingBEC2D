@@ -127,7 +127,7 @@ for(int y = y_jump; y < opt.grid[2]; y += y_jump){
 for(int i = 0; i < c.size(); i++){
     for(int y = 0; y < opt.grid[2]; y++){
         for(int x = 0; x < opt.grid[1]; x++){   
-            data->wavefunction[0](x,y) *= polar(1.0, (windingnumber /* * mypow2(-1,i+1)*/ )*vortex( y,c[i].y(),x,c[i].x() )) ;
+            data->wavefunction[0](x,y) *= polar(1.0, (windingnumber  * mypow2(-1,i+1) )*vortex( y,c[i].y(),x,c[i].x() )) ;
         }
     }
     // g->wavefunction[0](c) complex<double>(0.0,0.0);
