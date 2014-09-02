@@ -47,6 +47,7 @@ public:
 	inline void setRunTime(int runtime);
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
+	inline string getRunMode();
 	bool newRun;
 private:
 	MatrixData::MetaData meta;
@@ -66,6 +67,11 @@ inline void StartUp::setInitialRun(bool initialRun){
 inline void StartUp::setRunMode(string runmode){
 	// FIXME: Here should be checks for the sanity of runmode!
 	opt.runmode = runmode;
+}
+
+inline string StartUp::getRunMode(){
+	// FIXME: Here should be checks for the sanity of runmode!
+	return opt.runmode;
 }
 
 inline void StartUp::setRunTime(int runtime){

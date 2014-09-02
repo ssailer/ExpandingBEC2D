@@ -64,19 +64,22 @@ try{
 	startGrid->wavefunction[0] = groundStateITP->result();
 	delete groundStateITP;
 
-	int vnumber = 0;
-	addVorticesRegular(startGrid,startUp.getOptions(),vnumber);
+	string tmpRunMode = startUp.getRunMode();
+	if(tmpRunMode.compare(3,1,"1") == 0){
+		int vnumber = 0;
+		addVorticesRegular(startGrid,startUp.getOptions(),vnumber);
+		
+		startUp.setVortexnumber(vnumber);
+		cout << endl << "Set Vortices #: " << vnumber << endl;
 	
-	startUp.setVortexnumber(vnumber);
-	cout << endl << "Set Vortices #: " << vnumber << endl;
-
-	itpname = "ITP-Vortices";
-	ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	vorticesITP->formVortices(itpname);
+		itpname = "ITP-Vortices";
+		ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		vorticesITP->formVortices(itpname);
+		
+		startGrid->wavefunction[0] = vorticesITP->result();
 	
-	startGrid->wavefunction[0] = vorticesITP->result();
-
-	delete vorticesITP;
+		delete vorticesITP;
+	}
 
 	// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
 

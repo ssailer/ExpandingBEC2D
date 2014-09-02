@@ -41,55 +41,102 @@ using namespace std;
 int main( int argc, char** argv) 
 {	
 try{
-
-	StartUp startUp(argc,argv);
-
 	if(DEBUG_LOG == 1){
- 		std::ofstream logstream("run.log");
+ 		std::ofstream logstream("evaluator.log");
  		redirecter redirect(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
  	}
 	
+	vector<vector<Observables>> obs;	
+	obs.resize(4);
+	vector<Options> opt;
+	MatrixData::MetaData meta;
+	Eval* results = new Eval;
 
-		
-	string runname = "Expanding";
-	vector<string> snapShotFiles;
-	string tmp;
-	string fileNameListName = "runData/fileNameList.dat";
-	ifstream fileNameList(fileNameListName);
+	vector<int> timeList;
 
-	if(fileNameList.is_open()){
-		while (getline (fileNameList,tmp)){
-			snapShotFiles.push_back(tmp);
+	for(int k = 1; k <= 4; k++){
+
+		string runName = "Expanding-Set-"+to_string(k);
+		string evalname = runName + "-Eval.h5";
+
+		binaryFile* evalFile = new binaryFile(evalname,binaryFile::in);
+
+		timeList = evalFile->getTimeList();
+
+		cout << "Loaded file " << evalname << " from runData/" << endl;
+
+		for(int j = 0; j< timeList.size(); j++){
+			Options tmpOpt;
+			evalFile->getEval(timeList[j],tmpOpt,meta,*results);
+			obs[k-1].push_back(results->totalResult);
+			if(k == 1){
+				opt.push_back(tmpOpt);
+			}
 		}
+		delete evalFile;
 	}
 
-	cout << "Snapshot File Size: " << snapShotFiles.size() << endl;
-	int counter = 0;		
-	MatrixData* matrixData = new MatrixData(startUp.getMeta());
-	for(int j = 0; j < snapShotFiles.size(); j++){
+	delete results;
+
+	vector<Observables> finalObs;
+	for(int k = 0; k < obs[0].size(); k++){
+		Observables tmpObs = obs[0][k] + obs[1][k] + obs[2][k] + obs[3][k];
+		tmpObs /= 4;
+		finalObs.push_back(tmpObs);
+	}
+
+	if(finalObs.size() != opt.size()){
+		cout << "Obs and Opt are not the same size." << endl;
+	}
+
+	string filename = "Combined_Observables.dat";
+
+	for(int i = 0; i < finalObs.size(); i++){
 		
-		counter++;
-		string h5name = snapShotFiles[j];
-		Options opt;
-		Eval results;
-
-		cout << counter << " Opening datafile " << h5name << flush;
-		binaryFile data(h5name,binaryFile::in);	
-
-		cout << " >> Reading Datafiles " << h5name << flush;
-		vector<int> timeList = data.getTimeList();
-		for(int i = 0; i < timeList.size(); i++){
-			data.getSnapshot(runname,timeList[i],matrixData,opt);		
-			results.saveData(matrixData->wavefunction,opt,timeList[i],runname);		
-			cout << " >> Evaluating Datafiles "<< timeList[i] << flush;
-			results.evaluateData();		
-			cout << " >> Plotting Datafiles " << timeList[i] << endl;		
-			results.plotData();
-		}
-
-	}	
+		struct stat buffer;   
+	  	if(stat (filename.c_str(), &buffer) != 0){
+	  		ofstream datafile;
+	  		datafile.open(filename.c_str(), ios::out | ios::app);
+	  		datafile << std::left << "Timestep"
+	  						 << "," << "X_max"
+	  						 << "," << "Y_max"
+	  						 << "," << "D_max"
+	  						 << "," << "D_min"
+	  						 << "," << "D_Ratio"
+	  						 << "," << "D_max_Angle"
+	  						 << "," << "D_min_Angle"
+	  						 << "," << "Ratio"
+	  						 << "," << "RatioAngle"
+	  						 << "," << "N"
+	  						 << "," << "V"
+	  						 << "," << "Density"
+	  						 << "," << "E_kin"
+	  				 << endl;
+	  		datafile.close();
+	  	} 
 	
-	cout << "Terminating successfully." << endl;
+	  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
+		// datafile.open;
+		datafile << std::left << timeList[i]
+						 << "," << opt[i].min_x * opt[i].stateInformation[0]
+						 << "," << opt[i].min_y * opt[i].stateInformation[1]
+	 					 << "," << finalObs[i].r_max
+	 					 << "," << finalObs[i].r_min
+	 					 << "," << finalObs[i].r_max / finalObs[i].r_min  
+	 					 << "," << finalObs[i].r_max_phi
+	 					 << "," << finalObs[i].r_min_phi
+	 					 << "," << finalObs[i].aspectRatio 
+	 					 << "," << finalObs[i].aspectRatioAngle 
+						 << "," << finalObs[i].particle_count
+						 << "," << finalObs[i].volume
+						 << "," << finalObs[i].density
+						 << "," << finalObs[i].Ekin
+				 << endl;
+		datafile.close();
+	}
+
+
+
 }  // exceptions catcher
 
 

@@ -46,6 +46,8 @@ public:
   bool getSnapshot(const string &name, int time, MatrixData* &pData, Options &options);
   // bool getSnapshot(const string &name, double time, vector<RealGrid> &k);
 
+  bool getEval(int snapShotTime, Options &options, MatrixData::MetaData &meta, Eval &results);
+
   const vector<int> & getTimeList() const {return time_list;}
 
   // const Options & getOptions() const {return options;}

@@ -289,8 +289,8 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
 	/// PREPARE THE DOUBLE ARRAYS
 	string vec1Name = "Averages";
-	int vec1Rank = 11;
-	double vec1[11];
+	int vec1Rank = 12;
+	double vec1[12];
 	vec1[0] = results.totalResult.Ekin;
 	vec1[1] = results.totalResult.particle_count;
 	vec1[2] = results.totalResult.healing_length;
@@ -302,6 +302,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 	vec1[8] = results.totalResult.r_min;
 	vec1[9] = results.totalResult.r_max_phi;
 	vec1[10] = results.totalResult.r_min_phi;
+	vec1[11] = results.totalResult.fixedAspectRatio;
 
   if(H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT))
 	{
@@ -345,12 +346,10 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 	cout << "Ranks of Kvector and OccupationNumber Input are not the same!" << vec4Rank <<" "<< vec5Rank << endl;
   }
 
-  for(int i = 0; i < sharedRank; i++){
-	if(results.totalResult.number(i) != 0){
-	  vec4.push_back(results.totalResult.k(i));
-	  vec5.push_back(results.totalResult.number(i));
+	for(int i = 0; i < sharedRank; i++){
+		vec4.push_back(results.totalResult.k(i));
+		vec5.push_back(results.totalResult.number(i));
 	}
-  }
   vec4Rank = vec4.size();
   vec5Rank = vec5.size();
 
@@ -479,6 +478,277 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
   free(dimsf);
   H5Gclose(h5_observables);
+  H5Gclose(h5_timegroup);
+
+  return true;
+}
+
+
+bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaData &meta, Eval &results){
+
+	if(m == out){
+		cout << "file "<< filename.c_str() << "is not in read mode" << endl;
+		return false;
+	}
+
+  string time_name = to_string(snapShotTime);
+
+  if(H5Lexists(h5_file, (time_name).c_str(), H5P_DEFAULT)){
+	h5_timegroup = H5Gopen(h5_file, (time_name).c_str(), H5P_DEFAULT);
+  }else{
+	cout << "ERROR: HDF5 Group for time " << snapShotTime << " does not exist" << endl;
+	return false;
+  }
+
+	hid_t h5a_options;
+	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
+
+	double tmpOpt1[24];
+
+	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
+
+	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
+	options.N = tmpOpt1[0];
+	for(int i= 0; i < 3; i++){
+	 options.klength[i] = tmpOpt1[i+1];
+	}
+	options.stateInformation[0] = tmpOpt1[4];
+	options.stateInformation[1] = tmpOpt1[5];
+	options.omega_x = complex<double>(tmpOpt1[6],0.0);
+	options.omega_y = complex<double>(tmpOpt1[7],0.0);
+	options.dispersion_x = complex<double>(tmpOpt1[8],0.0);
+	options.dispersion_x = complex<double>(tmpOpt1[9],0.0);
+	options.min_x = tmpOpt1[10];
+	options.min_y = tmpOpt1[11];
+	options.t_abs = complex<double>(tmpOpt1[12],0.0);
+	options.exp_factor = complex<double>(tmpOpt1[13],0.0);
+	options.g = tmpOpt1[14];
+	options.ITP_step = tmpOpt1[15];
+	options.RTE_step = tmpOpt1[16];
+
+	for(int i = 0; i<4;i++)
+	  options.grid[i] = (uint32_t)tmpOpt1[i+17];
+
+	options.potFactor = tmpOpt1[21];
+	options.samplesize = (int)tmpOpt1[22];
+	options.vortexnumber = (int)tmpOpt1[23];              
+
+	H5Aclose(h5a_options);
+
+	hid_t h5a_meta;
+	h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
+	H5Aread(h5a_meta, H5T_IEEE_F64LE, meta.data());
+	H5Aclose(h5a_meta);
+	meta.arrayToData(); 
+
+  hid_t h5_observables;
+
+  if(H5Lexists(h5_timegroup, "Observables", H5P_DEFAULT)){
+	h5_observables = H5Gopen(h5_timegroup, "Observables", H5P_DEFAULT);
+  }else{
+  	cout << "Cannot open Group Observables for time " << snapShotTime << ", it doesn't exist." << endl;
+  	return false;
+  }
+
+	/// PREPARE THE DOUBLE ARRAYS
+	string vec1Name = "Averages";
+	int vec1Rank = 12;
+	double vec1[12];
+
+
+  if(!H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT))
+	{
+	  cout << "Observables " << vec1Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
+	  return false;
+	}
+
+  hid_t dataset, dataspace ;
+  hsize_t *dimf;
+  hsize_t rank;
+
+  dataset = H5Dopen(h5_observables, vec1Name.c_str(), H5P_DEFAULT);
+  dataspace = H5Dget_space(dataset);
+
+  rank = H5Sget_simple_extent_ndims(dataspace);
+
+  dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+
+  H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec1);
+
+  H5Dclose(dataset);
+  H5Sclose(dataspace);
+
+  	results.totalResult.Ekin = vec1[0];
+	results.totalResult.particle_count = vec1[1];
+	results.totalResult.healing_length = vec1[2];
+	results.totalResult.volume = vec1[3];
+	results.totalResult.density = vec1[4];
+	results.totalResult.aspectRatio = vec1[5];
+	results.totalResult.aspectRatioAngle = vec1[6];
+	results.totalResult.r_max = vec1[7];
+	results.totalResult.r_min = vec1[8];
+	results.totalResult.r_max_phi = vec1[9];
+	results.totalResult.r_min_phi = vec1[10];
+	results.totalResult.fixedAspectRatio = vec1[11];
+
+	  
+  string vec4Name = "KVector";
+  string vec5Name = "OccupationNumber";
+  int vec4Rank;
+  int vec5Rank;
+  vector<double> vec4;
+  vector<double> vec5;
+
+  if(!H5Lexists(h5_observables, vec4Name.c_str(), H5P_DEFAULT)){
+	cout << "Observables " << vec4Name << " already exists for time " << snapShotTime << ". I refuse to read." << endl;
+	return false;
+  }
+
+  dataset = H5Dopen(h5_observables, vec4Name.c_str(), H5P_DEFAULT);
+  dataspace = H5Dget_space(dataset);
+
+  rank = H5Sget_simple_extent_ndims(dataspace);
+
+  if(rank != 1){
+  	cout << "reading KVector: wrong dimensions";
+  }
+
+  dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+  vec4.resize(dimf[0]);
+  vec4Rank = dimf[0];
+
+  H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec4.data());
+
+  H5Dclose(dataset);
+  H5Sclose(dataspace);
+
+  if(!H5Lexists(h5_observables, vec5Name.c_str(), H5P_DEFAULT)){
+	cout << "Observables " << vec5Name << " already exists for time " << snapShotTime << ". I refuse to read." << endl;
+	return false;
+  }
+
+  dataset = H5Dopen(h5_observables, vec5Name.c_str(), H5P_DEFAULT);
+  dataspace = H5Dget_space(dataset);
+
+  rank = H5Sget_simple_extent_ndims(dataspace);
+
+  if(rank != 1){
+  	cout << "reading KVector: wrong dimensions";
+  }
+
+  dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+  vec5.resize(dimf[0]);
+  vec5Rank = dimf[0];
+
+  H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec5.data());
+
+  H5Dclose(dataset);
+  H5Sclose(dataspace);
+
+  int sharedRank;
+  if(vec4Rank == vec5Rank){
+	sharedRank = vec4Rank;
+  } else {    
+	sharedRank = (vec4Rank >= vec5Rank) ? vec4Rank : vec5Rank;
+	cout << "Size of Kvector and OccupationNumber Input are not the same!" << vec4Rank <<" "<< vec5Rank << endl;
+	return false;
+  }
+
+  results.totalResult.k.resize(sharedRank);
+  results.totalResult.number.resize(sharedRank);
+  for(int i = 0; i < sharedRank; i++){
+	  results.totalResult.k(i) = vec4[i];
+	  results.totalResult.number(i) = vec5[i];	
+  }
+
+ //  string vec2Name = "Contour";
+ //  int samples = results.contour.size();
+ //  int vec2Ranks[samples];
+ //  int arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
+ //  double *vec2;
+
+ //  for(int k = 0; k < samples; k++){
+	// vec2Ranks[k] = results.contour[k].size();
+	// arraysize += 2 * vec2Ranks[k]; // x and y coordinate of each contourpoint summed over all samples
+ //  }
+
+ //  vec2 = (double*)malloc(sizeof(double)*arraysize);
+ //  vec2[0] = samples;
+
+ //  int l = 1 + samples;
+ //  for(int k = 0; k < samples; k++){
+	// vec2[k+1] = vec2Ranks[k];    
+	// for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = results.contour[k].begin(); it != results.contour[k].end(); ++it){
+	//   vec2[l] = it->x();
+	//   vec2[l+1] = it->y();
+	//   l+=2;
+	// }
+ //  }
+
+ //  if(H5Lexists(h5_observables, vec2Name.c_str(), H5P_DEFAULT)){
+	// cout << "Observables " << vec2Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+	// return false;
+ //  }
+
+ //  dset_create_props = H5Pcreate(H5P_DATASET_CREATE); // default creation property list;
+ //  dimf[0] = arraysize;
+
+ //  dataspace = H5Screate_simple(1,dimf,NULL);
+ //  dataset = H5Dcreate(h5_observables,vec2Name.c_str(),H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+ //  H5Dwrite(dataset,H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec2); 
+
+ //  H5Dclose(dataset);
+ //  H5Sclose(dataspace);
+ //  H5Pclose(dset_create_props);
+ //  free(vec2);
+
+ //  string vec3Name = "Vortices";
+ //  samples = results.pres.size();
+ //  int vec3Ranks[samples];
+ //  arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
+ //  double *vec3;
+
+ //  for(int k = 0; k < samples; k++){
+	// vec3Ranks[k] = results.pres[k].vlist.size();
+	// arraysize += 2 * vec3Ranks[k]; // x and y coordinate of each vortex summed over all samples
+ //  }
+
+ //  vec3 = (double*)malloc(sizeof(double)*arraysize);
+ //  vec3[0] = samples;
+
+ //  l = 1 + samples;
+ //  for(int k = 0; k < samples; k++){
+	// vec3[k+1] = vec3Ranks[k];    
+	// for(std::list<VortexData>::const_iterator it = results.pres[k].vlist.begin(); it != results.pres[k].vlist.end(); ++it){
+	//   vec3[l] = it->x.x();
+	//   vec3[l+1] = it->x.y();
+	//   l+=2;
+	// }
+ //  }
+
+ //  if(H5Lexists(h5_observables, vec3Name.c_str(), H5P_DEFAULT)){
+	// cout << "Observables " << vec3Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+	// return false;
+ //  }
+
+ //  dset_create_props = H5Pcreate(H5P_DATASET_CREATE); // default creation property list;
+ //  dimf[0] = arraysize;
+
+ //  dataspace = H5Screate_simple(1,dimf,NULL);
+ //  dataset = H5Dcreate(h5_observables,vec3Name.c_str(),H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+ //  H5Dwrite(dataset,H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec3); 
+
+ //  H5Dclose(dataset);
+ //  H5Sclose(dataspace);
+ //  H5Pclose(dset_create_props);
+ //  free(vec3);
+
+ //  free(dimf);
+ //  H5Gclose(h5_observables);
+  free(dimf);
   H5Gclose(h5_timegroup);
 
   return true;

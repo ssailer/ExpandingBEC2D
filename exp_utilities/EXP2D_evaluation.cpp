@@ -144,6 +144,7 @@ void Eval::evaluateData(){
   						 << std::setw(15) << "D_min Angle"
   						 << std::setw(15) << "Ratio"
   						 << std::setw(15) << "RatioAngle"
+  						 << std::setw(15) << "FixedRatio"
   						 << std::setw(15) << "N"
   						 << std::setw(15) << "V"
   						 << std::setw(15) << "N/V"
@@ -164,6 +165,7 @@ void Eval::evaluateData(){
  					 << std::setw(15) << totalResult.r_min_phi
  					 << std::setw(15) << totalResult.aspectRatio 
  					 << std::setw(15) << totalResult.aspectRatioAngle 
+ 					 << std::setw(15) << totalResult.fixedAspectRatio
 					 << std::setw(15) << totalResult.particle_count
 					 << std::setw(15) << totalResult.volume
 					 << std::setw(15) << totalResult.density
@@ -614,12 +616,13 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		if(cDistance[i+90] >= 0.0){
 			tmp_ratio[i] = cDistance[i] / cDistance[i+90];
 		} else {
-			cout << "WARNING: Aspect-Ratio: Calulated Distance smaller than zero!" << endl;
+			cout << "WARNING: Aspect-Ratio: Calculated Distance smaller than zero!" << endl;
 		}
 		// double tmp1 = cDistance[i] / cDistance[i+90];
 		// double tmp2 = cDistance[i+1] / cDistance[i+91];
 		// tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
 	}
+	obs.fixedAspectRatio = tmp_ratio[0];
 	vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
 	int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
 	obs.aspectRatioAngle = maxAspectRatioIndex;

@@ -8,72 +8,80 @@ from scipy.cluster.vq import kmeans, kmeans2, whiten
 
 
 def main():
-	hdf5_file_name = 'test06/runData/Expanding_RunEval.h5'
-	group_name = '/800/Observables'
-	
-	file = h5py.File(hdf5_file_name, 'r')
-	group = file[group_name]
-	
-	dataset1 = group['KVector'][:]
-	
-	dataset2 = group['OccupationNumber'][:]
-	
-	# for index in range(dataset1)
-	# 	array1[index] = dataset1[index]
-	# 	array2[index] = dataset2[index]
-	
-	# array1[0] = dataset1[0]
-	
-	file.close()
-	# dataset1.transpose()
-	# dataset2.transpose()
-	
-	# stack = np.vstack((dataset1,dataset2))
-	# data1 = np.array(dataset1)
-	# data2 = np.array(dataset2)
-	data = np.column_stack((dataset1,dataset2))
-	
-	
-	fig = plt.figure()
-	ax1 = fig.add_subplot(2,1,1)
-	histogram = ax1.plot(dataset1,dataset2,'ro')
-	ax1.set_xlim([0.01,4])
-	ax1.set_ylim([0.0001,10000000])
-	ax1.set_xscale('log')
-	ax1.set_yscale('log')
-	plt.ylabel('Occupation Number')
-	plt.xlabel('radial k-Vector')
 
-	ax2 = fig.add_subplot(2,1,2)
+	datafile = 'linma1_run06_4x12samples_mixed_vortices/Combined_Observables.dat'
 
-	envelope_plot(dataset1,dataset2,winsize=20,ax=ax2)
+	from_data = pd.read_csv(datafile)
+	from_csv.head()
 
-	x = np.arange(0.001,10,0.01)
 
-	g1 = x**(-2)
-	g2 = x**(-4.66)
-	g3 = x**(-5)
 
-	ax2.plot(x,g1)
-	ax2.plot(x,g2)
-	ax2.plot(x,g3)
-
-	ax2.set_xlim([0.01,4])
-	ax2.set_ylim([0.0001,10000000])
-	ax2.set_xscale('log')
-	ax2.set_yscale('log')
-	plt.ylabel('Occupation Number')
-	plt.xlabel('radial k-Vector')
+	# hdf5_file_name = 'test06/runData/Expanding_RunEval.h5'
+	# group_name = '/800/Observables'
+	
+	# file = h5py.File(hdf5_file_name, 'r')
+	# group = file[group_name]
+	
+	# dataset1 = group['KVector'][:]
+	
+	# dataset2 = group['OccupationNumber'][:]
+	
+	# # for index in range(dataset1)
+	# # 	array1[index] = dataset1[index]
+	# # 	array2[index] = dataset2[index]
+	
+	# # array1[0] = dataset1[0]
+	
+	# file.close()
+	# # dataset1.transpose()
+	# # dataset2.transpose()
+	
+	# # stack = np.vstack((dataset1,dataset2))
+	# # data1 = np.array(dataset1)
+	# # data2 = np.array(dataset2)
+	# data = np.column_stack((dataset1,dataset2))
 	
 	
-	
-	# scatter = ax2.plot(dataset1,dataset2)
+	# fig = plt.figure()
+	# ax1 = fig.add_subplot(2,1,1)
+	# histogram = ax1.plot(dataset1,dataset2,'ro')
+	# ax1.set_xlim([0.01,4])
+	# ax1.set_ylim([0.0001,10000000])
+	# ax1.set_xscale('log')
+	# ax1.set_yscale('log')
+	# plt.ylabel('Occupation Number')
+	# plt.xlabel('radial k-Vector')
+
+	# ax2 = fig.add_subplot(2,1,2)
+
+	# envelope_plot(dataset1,dataset2,winsize=20,ax=ax2)
+
+	# x = np.arange(0.001,10,0.01)
+
+	# g1 = x**(-2)
+	# g2 = x**(-4.66)
+	# g3 = x**(-5)
+
+	# ax2.plot(x,g1)
+	# ax2.plot(x,g2)
+	# ax2.plot(x,g3)
+
+	# ax2.set_xlim([0.01,4])
+	# ax2.set_ylim([0.0001,10000000])
 	# ax2.set_xscale('log')
 	# ax2.set_yscale('log')
 	# plt.ylabel('Occupation Number')
 	# plt.xlabel('radial k-Vector')
 	
-	plt.show()
+	
+	
+	# # scatter = ax2.plot(dataset1,dataset2)
+	# # ax2.set_xscale('log')
+	# # ax2.set_yscale('log')
+	# # plt.ylabel('Occupation Number')
+	# # plt.xlabel('radial k-Vector')
+	
+	# plt.show()
 
 	# plt.plot(dataset1,dataset2)
 	# plt.show()
