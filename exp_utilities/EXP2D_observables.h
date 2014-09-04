@@ -17,12 +17,13 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length, volume, density, aspectRatio, fixedAspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi;
+        double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi;
         ArrayXd number;
         ArrayXd k;
         ArrayXd angularDensity;
+        ArrayXd fixedAspectRatio;
         
-        Observables() {};
+        Observables();
         Observables(int avgrid);
     
         Observables operator+ (const Observables &a) const;
@@ -55,19 +56,32 @@ struct PathResults {
     list<VortexData> vlist;
 };
 
-
+inline Observables::Observables() :
+        number(),
+        k(),
+        angularDensity(360),
+        fixedAspectRatio(90)
+{
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
+    number.setZero();
+    k.setZero();
+    angularDensity.setZero();
+    fixedAspectRatio.setZero();
+}
 
 
 
 inline Observables::Observables(int avgrid) :
         number(avgrid),
         k(avgrid),
-        angularDensity(360)
+        angularDensity(360),
+        fixedAspectRatio(90)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = r_max = r_min = r_max_phi = r_min_phi = fixedAspectRatio = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
     number.setZero();
     k.setZero();
     angularDensity.setZero();
+    fixedAspectRatio.setZero();
 }
 
 inline Observables Observables::operator+ (const Observables &a) const

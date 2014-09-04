@@ -35,6 +35,7 @@ public:
 	// wrapperfunctions 
 	void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)
 	void saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
+	void saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval);
 	void evaluateData(); // calculate the observables
 	void evaluateDataITP();
 	void plotData(); // plot Results
@@ -76,9 +77,13 @@ private:
 	vector<double> x_dist,y_dist,x_dist_grad,y_dist_grad;
 	vector<int> densityCounter;
 
+	void CombinedEval();
+	void CombinedSpectrum();
+
 	// doing functinos
 	Observables calculator(ComplexGrid data,int sampleindex);
 	Observables calculatorITP(ComplexGrid data,int sampleindex);
+	void aspectRatio(Observables &obs, int &sampleindex);
 	void getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres);
 	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	

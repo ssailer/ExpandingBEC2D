@@ -50,92 +50,48 @@ try{
 	obs.resize(4);
 	vector<Options> opt;
 	MatrixData::MetaData meta;
-	Eval* results = new Eval;
+	vector<vector<Eval>> results;
+	results.resize(4);
 
 	vector<int> timeList;
 
-	for(int k = 1; k <= 4; k++){
+	for(int k = 0; k < 4; k++){
 
-		string runName = "Expanding-Set-"+to_string(k);
+		string runName = "Expanding-Set-"+to_string(k+1);
 		string evalname = runName + "-Eval.h5";
 
 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::in);
 
 		timeList = evalFile->getTimeList();
 
+		results[k].resize(timeList.size());
+
 		cout << "Loaded file " << evalname << " from runData/" << endl;
 
 		for(int j = 0; j< timeList.size(); j++){
 			Options tmpOpt;
-			evalFile->getEval(timeList[j],tmpOpt,meta,*results);
-			obs[k-1].push_back(results->totalResult);
-			if(k == 1){
+			evalFile->getEval(timeList[j],tmpOpt,meta,results[k][j]);
+			// obs[k-1].push_back(results[k].totalResult);
+			if(k == 0){
 				opt.push_back(tmpOpt);
 			}
 		}
 		delete evalFile;
 	}
 
-	delete results;
 
-	vector<Observables> finalObs;
-	for(int k = 0; k < obs[0].size(); k++){
-		Observables tmpObs = obs[0][k] + obs[1][k] + obs[2][k] + obs[3][k];
-		tmpObs /= 4;
-		finalObs.push_back(tmpObs);
+	string finalRunName = "Expanding";
+	Eval finalResult;
+	for(int i = 0; i < timeList.size(); i++){
+		cout << "Processing Time: " << timeList[i] << " .." << endl;
+		vector<Eval> tmpResults(4);
+		for(int f = 0; f < 4; f++){
+			tmpResults[f] = results[f][i];
+		}
+		finalResult.saveDataFromEval(opt[i],timeList[i],finalRunName,tmpResults);
+
 	}
-
-	if(finalObs.size() != opt.size()){
-		cout << "Obs and Opt are not the same size." << endl;
-	}
-
-	string filename = "Combined_Observables.dat";
-
-	for(int i = 0; i < finalObs.size(); i++){
-		
-		struct stat buffer;   
-	  	if(stat (filename.c_str(), &buffer) != 0){
-	  		ofstream datafile;
-	  		datafile.open(filename.c_str(), ios::out | ios::app);
-	  		datafile << std::left << "Timestep"
-	  						 << "," << "X_max"
-	  						 << "," << "Y_max"
-	  						 << "," << "D_max"
-	  						 << "," << "D_min"
-	  						 << "," << "D_Ratio"
-	  						 << "," << "D_max_Angle"
-	  						 << "," << "D_min_Angle"
-	  						 << "," << "Ratio"
-	  						 << "," << "RatioAngle"
-	  						 << "," << "N"
-	  						 << "," << "V"
-	  						 << "," << "Density"
-	  						 << "," << "E_kin"
-	  				 << endl;
-	  		datafile.close();
-	  	} 
-	
-	  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
-		// datafile.open;
-		datafile << std::left << timeList[i]
-						 << "," << opt[i].min_x * opt[i].stateInformation[0]
-						 << "," << opt[i].min_y * opt[i].stateInformation[1]
-	 					 << "," << finalObs[i].r_max
-	 					 << "," << finalObs[i].r_min
-	 					 << "," << finalObs[i].r_max / finalObs[i].r_min  
-	 					 << "," << finalObs[i].r_max_phi
-	 					 << "," << finalObs[i].r_min_phi
-	 					 << "," << finalObs[i].aspectRatio 
-	 					 << "," << finalObs[i].aspectRatioAngle 
-						 << "," << finalObs[i].particle_count
-						 << "," << finalObs[i].volume
-						 << "," << finalObs[i].density
-						 << "," << finalObs[i].Ekin
-				 << endl;
-		datafile.close();
-	}
-
-
+	cout << "Evaluation finished" << endl;
 
 }  // exceptions catcher
 

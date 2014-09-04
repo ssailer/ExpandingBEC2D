@@ -47,44 +47,157 @@ void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapsh
 	}		
 }
 
-void Eval::checkEdges(){
-	int numberOfEdgePoints = 2 * EDGE_RANGE_CHECK * opt.grid[1] + 2 * EDGE_RANGE_CHECK * opt.grid[2] - 4 * EDGE_RANGE_CHECK * EDGE_RANGE_CHECK;
-	double threshold = numberOfEdgePoints * opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);
+void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval){
+	runname = external_runname;
+	opt = external_opt;
+	snapshot_time = external_snapshot_time;
+
+	int numberOfSamples = extEval.size();
 
 
-	// cout << "Size of checkEdges::sum " << PsiVec.size() << endl;
-	vector<double> sum(PsiVec.size());
-	for(int k = 0; k < PsiVec.size(); k++){
-		sum[k] = 0;
-		for(int x = 0; x < EDGE_RANGE_CHECK; x++){
-			for(int y = 0; y < opt.grid[2]; y++){
-				sum[k] += abs2(PsiVec[k](0,x,y,0));
-			}
-		}
-		for(int x = opt.grid[1] - EDGE_RANGE_CHECK; x < opt.grid[1]; x++){
-			for(int y = 0; y < opt.grid[2]; y++){
-				sum[k] += abs2(PsiVec[k](0,x,y,0));
-			}
-		}
-		for(int y = 0; y < EDGE_RANGE_CHECK; y++){
-			for(int x = 0; x < opt.grid[1]; x++){
-				sum[k] += abs2(PsiVec[k](0,x,y,0));
-			}
-		}
-		for(int y = opt.grid[2] - EDGE_RANGE_CHECK; y < opt.grid[2]; y++){
-			for(int x = 0; x < opt.grid[1]; x++){
-				sum[k] += abs2(PsiVec[k](0,x,y,0));
-			}
+	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	contour.resize(numberOfSamples*opt.samplesize);
+	pres.resize(numberOfSamples*opt.samplesize);
+	
+	for(int k = 0; k < numberOfSamples; k++){
+		totalResult += extEval[k].totalResult;
+		for(int i = 0; i < opt.samplesize;i++){
+			contour[i+k*opt.samplesize] = extEval[k].contour[i];
+			pres[i+k*opt.samplesize].vlist = extEval[k].pres[i].vlist;
 		}
 	}
-	for(int k = 0; k < PsiVec.size(); k++){
-		std::string error = "Gas reached the edges of the grid, with a density of " + to_string(sum[k]) + "/" + to_string(threshold) + ".  The simulation failed in step: ";
-		// cout << "checkEdges[" << k << "] result: " << sum[k] << "/" << threshold << " with " << numberOfEdgePoints << " of points on the edge." << endl;
-		if(sum[k] > threshold){			
-			expException e(error);
-			throw;
-		}
+	totalResult /= numberOfSamples;
+	CombinedEval();
+	CombinedSpectrum();
+}
+
+void Eval::CombinedEval(){
+
+	// ONLY NEEDED UNTIL fixedAspectRatio is saved in BinaryFile::appendEval
+	Observables tmpResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	for(int sampleindex = 0; sampleindex < contour.size(); sampleindex++){
+		Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+		aspectRatio(obs,sampleindex);
+		tmpResult.fixedAspectRatio += obs.fixedAspectRatio;
 	}
+	tmpResult.fixedAspectRatio /= contour.size();
+	totalResult.fixedAspectRatio = tmpResult.fixedAspectRatio;
+	// ONLY NEEDED ONE TIME
+
+
+	string dirname = "CombinedRunObservables";
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+
+	string filename = dirname + "/" + runname + "_Observables.dat";	
+	
+	struct stat buffer;
+  	if(stat (filename.c_str(), &buffer) != 0){
+  		ofstream datafile;
+  		datafile.open(filename.c_str(), ios::out | ios::app);
+  		datafile << std::left << std::setw(15) << "Timestep"
+  						 << std::setw(15) << "X_max"
+  						 << std::setw(15) << "Y_max"
+  						 << std::setw(15) << "D_max"
+  						 << std::setw(15) << "D_min"
+  						 << std::setw(15) << "D_max/D_min"
+  						 << std::setw(15) << "D_max Angle"
+  						 << std::setw(15) << "D_min Angle"
+  						 << std::setw(15) << "Ratio"
+  						 << std::setw(15) << "RatioAngle"
+  						 << std::setw(15) << "N"
+  						 << std::setw(15) << "V"
+  						 << std::setw(15) << "N/V"
+  						 << std::setw(15) << "E_kin"
+  				 << endl;
+  		datafile.close();
+  	} 
+
+  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
+	// datafile.open;
+	datafile << std::left << std::setw(15) << snapshot_time
+					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
+					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
+ 					 << std::setw(15) << totalResult.r_max
+ 					 << std::setw(15) << totalResult.r_min
+ 					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
+ 					 << std::setw(15) << totalResult.r_max_phi
+ 					 << std::setw(15) << totalResult.r_min_phi
+ 					 << std::setw(15) << totalResult.aspectRatio 
+ 					 << std::setw(15) << totalResult.aspectRatioAngle 
+					 << std::setw(15) << totalResult.particle_count
+					 << std::setw(15) << totalResult.volume
+					 << std::setw(15) << totalResult.density
+					 << std::setw(15) << totalResult.Ekin
+			 << endl;
+	datafile.close();
+
+
+	filename = dirname + "/" + runname + "_Observables.csv";	
+	
+  	if(stat (filename.c_str(), &buffer) != 0){
+  		ofstream datafile1;
+  		datafile1.open(filename.c_str(), ios::out | ios::app);
+  		datafile1 << std::left << "," << "Timestep"
+  						 << "," << "X_max"
+  						 << "," << "Y_max"
+  						 << "," << "D_max"
+  						 << "," << "D_min"
+  						 << "," << "D_max/D_min"
+  						 << "," << "D_max Angle"
+  						 << "," << "D_min Angle"
+  						 << "," << "Ratio"
+  						 << "," << "RatioAngle"
+  						 << "," << "N"
+  						 << "," << "V"
+  						 << "," << "N/V"
+  						 << "," << "E_kin"
+  				 << endl;
+  		datafile1.close();
+  	} 
+
+  	ofstream datafile1(filename.c_str(), std::ios_base::out | std::ios_base::app);
+	// datafile.open;
+	datafile1 << std::left << "," << snapshot_time
+					 << "," << opt.min_x * opt.stateInformation[0]
+					 << "," << opt.min_y * opt.stateInformation[1]
+ 					 << "," << totalResult.r_max
+ 					 << "," << totalResult.r_min
+ 					 << "," << totalResult.r_max / totalResult.r_min  
+ 					 << "," << totalResult.r_max_phi
+ 					 << "," << totalResult.r_min_phi
+ 					 << "," << totalResult.aspectRatio 
+ 					 << "," << totalResult.aspectRatioAngle 
+					 << "," << totalResult.particle_count
+					 << "," << totalResult.volume
+					 << "," << totalResult.density
+					 << "," << totalResult.Ekin
+			 << endl;
+	datafile1.close();
+
+	filename = dirname + "/" + runname + "_Ratios.csv";	
+	
+  	if(stat (filename.c_str(), &buffer) != 0){
+  		ofstream datafile2;
+  		datafile2.open(filename.c_str(), ios::out | ios::app);
+  		datafile2 << std::left << "," << "Timestep";
+  		for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
+  			datafile2 << "," << std::left << i;
+  		}
+  		datafile2 << endl;
+  		datafile2.close();
+  	} 
+
+  	ofstream datafile2(filename.c_str(), std::ios_base::out | std::ios_base::app);
+	// datafile2.open;
+	datafile2 << std::left << "," << snapshot_time;
+  	for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
+  		datafile2 << "," << totalResult.fixedAspectRatio(i);
+  	}
+  	datafile2 << endl;
+	datafile2.close();
 }
 
 void Eval::evaluateData(){
@@ -144,7 +257,6 @@ void Eval::evaluateData(){
   						 << std::setw(15) << "D_min Angle"
   						 << std::setw(15) << "Ratio"
   						 << std::setw(15) << "RatioAngle"
-  						 << std::setw(15) << "FixedRatio"
   						 << std::setw(15) << "N"
   						 << std::setw(15) << "V"
   						 << std::setw(15) << "N/V"
@@ -165,15 +277,12 @@ void Eval::evaluateData(){
  					 << std::setw(15) << totalResult.r_min_phi
  					 << std::setw(15) << totalResult.aspectRatio 
  					 << std::setw(15) << totalResult.aspectRatioAngle 
- 					 << std::setw(15) << totalResult.fixedAspectRatio
 					 << std::setw(15) << totalResult.particle_count
 					 << std::setw(15) << totalResult.volume
 					 << std::setw(15) << totalResult.density
 					 << std::setw(15) << totalResult.Ekin
 			 << endl;
-	datafile.close();
-
-	
+	datafile.close();	
 }
 
 void Eval::evaluateDataITP(){
@@ -195,6 +304,25 @@ void Eval::evaluateDataITP(){
 		totalResult = calculatorITP(PsiVec[0],0);
 	// }
 	// totalResult /= PsiVec.size();
+}
+
+void Eval::CombinedSpectrum(){
+	string dirname = "CombinedRunPlots";
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+    
+	std::string snapShotString = to_string(snapshot_time);
+	std::stringstream ss;
+	ss << std::setfill('0') << std::setw(5) << snapShotString;
+	snapShotString = ss.str();
+	
+	runname = dirname + "/" + runname;
+
+	string plotname = runname + "-Spectrum-" + snapShotString; 
+	plotSpectrum(plotname,totalResult);
+
 }
 
 void Eval::plotData(){
@@ -233,6 +361,46 @@ void Eval::plotData(){
 	plotContour(plotname,PsiVec[0],contour[0],opt);
 
 
+}
+
+void Eval::checkEdges(){
+	int numberOfEdgePoints = 2 * EDGE_RANGE_CHECK * opt.grid[1] + 2 * EDGE_RANGE_CHECK * opt.grid[2] - 4 * EDGE_RANGE_CHECK * EDGE_RANGE_CHECK;
+	double threshold = numberOfEdgePoints * opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);
+
+
+	// cout << "Size of checkEdges::sum " << PsiVec.size() << endl;
+	vector<double> sum(PsiVec.size());
+	for(int k = 0; k < PsiVec.size(); k++){
+		sum[k] = 0;
+		for(int x = 0; x < EDGE_RANGE_CHECK; x++){
+			for(int y = 0; y < opt.grid[2]; y++){
+				sum[k] += abs2(PsiVec[k](0,x,y,0));
+			}
+		}
+		for(int x = opt.grid[1] - EDGE_RANGE_CHECK; x < opt.grid[1]; x++){
+			for(int y = 0; y < opt.grid[2]; y++){
+				sum[k] += abs2(PsiVec[k](0,x,y,0));
+			}
+		}
+		for(int y = 0; y < EDGE_RANGE_CHECK; y++){
+			for(int x = 0; x < opt.grid[1]; x++){
+				sum[k] += abs2(PsiVec[k](0,x,y,0));
+			}
+		}
+		for(int y = opt.grid[2] - EDGE_RANGE_CHECK; y < opt.grid[2]; y++){
+			for(int x = 0; x < opt.grid[1]; x++){
+				sum[k] += abs2(PsiVec[k](0,x,y,0));
+			}
+		}
+	}
+	for(int k = 0; k < PsiVec.size(); k++){
+		std::string error = "Gas reached the edges of the grid, with a density of " + to_string(sum[k]) + "/" + to_string(threshold) + ".  The simulation failed in step: ";
+		// cout << "checkEdges[" << k << "] result: " << sum[k] << "/" << threshold << " with " << numberOfEdgePoints << " of points on the edge." << endl;
+		if(sum[k] > threshold){			
+			expException e(error);
+			throw;
+		}
+	}
 }
 
 void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres){
@@ -529,28 +697,14 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Co
 	densityLocationMap = densityLocationMap_local;
 }
 
-Observables Eval::calculator(ComplexGrid data,int sampleindex){
-	
-	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-	// R-Space
+void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 	double h[2];
 	h[0] = h_x;
-	h[1] = h_y; 
-	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
-	
-	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	h[1] = h_y;
 
-	obs.volume = h_x * h_y * densityCounter[sampleindex];
-	for(int i = 0; i < opt.grid[1]-1; i++){
-	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
-	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
-	    }
-	}
-	obs.density = obs.particle_count / obs.volume;
-
-	// Aspect-Ratio
+		// Aspect-Ratio
 	obs.r_max = 0;
 	obs.r_min = (opt.grid[1] * h_x >= opt.grid[2] * h_y) ? opt.grid[1] * h_x : opt.grid[2] * h_y;
 	vector<contourData> cData;
@@ -615,6 +769,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	for(int i = 0; i < 89; i++){
 		if(cDistance[i+90] >= 0.0){
 			tmp_ratio[i] = cDistance[i] / cDistance[i+90];
+			obs.fixedAspectRatio(i) = tmp_ratio[i];
 		} else {
 			cout << "WARNING: Aspect-Ratio: Calculated Distance smaller than zero!" << endl;
 		}
@@ -622,12 +777,114 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		// double tmp2 = cDistance[i+1] / cDistance[i+91];
 		// tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
 	}
-	obs.fixedAspectRatio = tmp_ratio[0];
 	vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
 	int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
 	obs.aspectRatioAngle = maxAspectRatioIndex;
 	obs.aspectRatio = *maxElement; // zwischen 0 und 90 grad, also effektiv x und y richtung
 	// FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
+}
+
+Observables Eval::calculator(ComplexGrid data,int sampleindex){
+	
+	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	// R-Space
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	double h[2];
+	h[0] = h_x;
+	h[1] = h_y; 
+	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
+	
+	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+
+	obs.volume = h_x * h_y * densityCounter[sampleindex];
+	for(int i = 0; i < opt.grid[1]-1; i++){
+	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
+	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
+	    }
+	}
+	obs.density = obs.particle_count / obs.volume;
+
+	aspectRatio(obs,sampleindex);
+
+	// // Aspect-Ratio
+	// obs.r_max = 0;
+	// obs.r_min = (opt.grid[1] * h_x >= opt.grid[2] * h_y) ? opt.grid[1] * h_x : opt.grid[2] * h_y;
+	// vector<contourData> cData;
+	// for(c_set::iterator it = contour[sampleindex].begin(); it != contour[sampleindex].end(); ++it){
+	// 	contourData tmp;
+	// 	tmp.c = *it;
+	// 	int x_shift = tmp.c.x() - opt.grid[1]/2;
+	// 	int y_shift = tmp.c.y() - opt.grid[2]/2;
+	// 	tmp.phi = atan2(y_shift * h_y,x_shift * h_x) * 180 /M_PI + 180;
+	// 	tmp.r = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
+	// 	cData.push_back(tmp);
+	// 	// if(obs.r_max <= tmp.r){
+	// 	// 	obs.r_max = tmp.r;
+	// 	// 	obs.r_max_phi = tmp.phi;
+	// 	// }
+	// 	// if(obs.r_min >= tmp.r){
+	// 	// 	obs.r_min = tmp.r;
+	// 	// 	obs.r_min_phi = tmp.phi;
+	// 	// }
+
+	// }
+
+	// std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
+
+	// vector<double> cRadius(361);
+	// vector<int> divisor_counter(361);
+	// for(vector<contourData>::const_iterator it = cData.begin(); it != cData.end(); ++it){
+	// 	int index = round(it->phi);
+	// 	cRadius[index] += it->r;
+	// 	divisor_counter[index]++;
+	// }
+	// // cRadius.erase(cRadius.begin());
+	// // divisor_counter.erase(divisor_counter.begin());
+	// cRadius[0] += cRadius[360]; cRadius.pop_back();
+	// divisor_counter[0] += cRadius[360]; divisor_counter.pop_back();
+
+	// for(int i = 0; i < 360; i++){
+	// 	if(divisor_counter[i] == 0){
+	// 		divisor_counter[i] = 1;
+	// 	}
+
+	// 	cRadius[i] /= divisor_counter[i];
+	// }
+
+	// // string name = "cRadius_" + to_string(sampleindex) + "_" + to_string(sampleindex);
+	// // plotVector(name,cRadius,opt);
+
+	// vector<double> cDistance(180);
+	// for(int i = 0; i < 180; i++){
+	// 	cDistance[i] = fabs(cRadius[i] + cRadius[i+180]);
+	// }
+	// vector<double>::iterator maxDistance = std::max_element(cDistance.begin(), cDistance.end());
+	// obs.r_max = *maxDistance;
+	// obs.r_max_phi = std::distance(cDistance.begin(), maxDistance);
+
+	// vector<double>::iterator minDistance = std::min_element(cDistance.begin(), cDistance.end());
+	// obs.r_min = *minDistance;
+	// obs.r_min_phi = std::distance(cDistance.begin(), minDistance);
+
+	// vector<double> tmp_ratio(90);
+	// // double tmp_ratio = 0;
+	// for(int i = 0; i < 89; i++){
+	// 	if(cDistance[i+90] >= 0.0){
+	// 		tmp_ratio[i] = cDistance[i] / cDistance[i+90];
+	// 	} else {
+	// 		cout << "WARNING: Aspect-Ratio: Calculated Distance smaller than zero!" << endl;
+	// 	}
+	// 	// double tmp1 = cDistance[i] / cDistance[i+90];
+	// 	// double tmp2 = cDistance[i+1] / cDistance[i+91];
+	// 	// tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
+	// }
+	// obs.fixedAspectRatio = tmp_ratio[0];
+	// vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
+	// int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
+	// obs.aspectRatioAngle = maxAspectRatioIndex;
+	// obs.aspectRatio = *maxElement; // zwischen 0 und 90 grad, also effektiv x und y richtung
+	// // FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
 
 	// == Angular Density
 	// vector<double> angularDensity;
