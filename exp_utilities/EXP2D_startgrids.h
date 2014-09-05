@@ -103,7 +103,7 @@ void addVorticesRegular(MatrixData* &data, Options opt, int &vnumber){
 
 int x_jump = 20; // opt.grid[1] / 5;
 int y_jump = 20; // opt.grid[2] / 5;
-int windingnumber = 4;
+int windingnumber = 2;
 
 ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
