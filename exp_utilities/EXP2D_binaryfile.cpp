@@ -330,68 +330,94 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
 
 	  
-  string vec4Name = "KVector";
-  string vec5Name = "OccupationNumber";
-  int vec4Rank = results.totalResult.k.size();
-  int vec5Rank = results.totalResult.number.size();
-  vector<double> vec4;
-  vector<double> vec5;
+	string vec4Name = "KVector";
+	string vec5Name = "OccupationNumber";
+	string vec6Name = "AspectRatios";
+	int vec4Rank = results.totalResult.k.size();
+	int vec5Rank = results.totalResult.number.size();
+	int vec6Rank = results.totalResult.fixedAspectRatio.size();
+	vector<double> vec4;
+	vector<double> vec5;
+	vector<double> vec6;
 
-  int sharedRank;
-  if(vec4Rank == vec5Rank){
-	sharedRank = vec4Rank;
-  } else {    
-	sharedRank = (vec4Rank >= vec5Rank) ? vec4Rank : vec5Rank;
-	cout << "Ranks of Kvector and OccupationNumber Input are not the same!" << vec4Rank <<" "<< vec5Rank << endl;
-  }
+	int sharedRank;
+	if(vec4Rank == vec5Rank){
+		sharedRank = vec4Rank;
+	} else {    
+		sharedRank = (vec4Rank >= vec5Rank) ? vec4Rank : vec5Rank;
+		cout << "Ranks of Kvector and OccupationNumber Input are not the same!" << vec4Rank <<" "<< vec5Rank << endl;
+	}
 
 	for(int i = 0; i < sharedRank; i++){
-		vec4.push_back(results.totalResult.k(i));
-		vec5.push_back(results.totalResult.number(i));
+		if(results.totalResult.number(i) != 0.0){
+			vec4.push_back(results.totalResult.k(i));
+			vec5.push_back(results.totalResult.number(i));
+		}
 	}
-  vec4Rank = vec4.size();
-  vec5Rank = vec5.size();
+	for(int i = 0; i < vec6Rank; i++){
+		vec6.push_back(results.totalResult.fixedAspectRatio(i));
+	}
+	vec4Rank = vec4.size();
+	vec5Rank = vec5.size();
+	vec6Rank = vec6.size();
 
 
-  if(H5Lexists(h5_observables, vec4Name.c_str(), H5P_DEFAULT)){
-	cout << "Observables " << vec4Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
-	return false;
-  }
+  	if(H5Lexists(h5_observables, vec4Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec4Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+  	}else {	
+		dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
+		
+		dimsf[0] = vec4Rank;
+	
+		dataspace = H5Screate_simple(1, dimsf,  NULL);
+	
+		dataset = H5Dcreate(h5_observables, vec4Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+		H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec4.data()); //write grid data
+	
+		//append grid snapShotTime as attribute
+	
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+		H5Pclose(dset_create_props);
+	}
 
-  dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
-  
-  dimsf[0] = vec4Rank;
+  	if(H5Lexists(h5_observables, vec5Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec5Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+	} else {	
+		dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
+	
+		dimsf[0] = vec5Rank;
+	
+		dataspace = H5Screate_simple(1, dimsf,  NULL);
+	
+		dataset = H5Dcreate(h5_observables, vec5Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+		H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec5.data()); //write grid data
+	
+		//append grid snapShotTime as attribute
+	
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+		H5Pclose(dset_create_props);
+	}
 
-  dataspace = H5Screate_simple(1, dimsf,  NULL);
-
-  dataset = H5Dcreate(h5_observables, vec4Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
-  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec4.data()); //write grid data
-
-  //append grid snapShotTime as attribute
-
-  H5Dclose(dataset);
-  H5Sclose(dataspace);
-  H5Pclose(dset_create_props);
-
-  if(H5Lexists(h5_observables, vec5Name.c_str(), H5P_DEFAULT)){
-	cout << "Observables " << vec5Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
-	return false;
-  }
-
-  dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
-
-  dimsf[0] = vec5Rank;
-
-  dataspace = H5Screate_simple(1, dimsf,  NULL);
-
-  dataset = H5Dcreate(h5_observables, vec5Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
-  H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec5.data()); //write grid data
-
-  //append grid snapShotTime as attribute
-
-  H5Dclose(dataset);
-  H5Sclose(dataspace);
-  H5Pclose(dset_create_props);
+ 	if(H5Lexists(h5_observables, vec6Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec6Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+  	} else {	
+		dset_create_props = H5Pcreate (H5P_DATASET_CREATE); //create a default creation property list
+		
+		dimsf[0] = vec6Rank;
+		
+		dataspace = H5Screate_simple(1, dimsf,  NULL);
+		
+		dataset = H5Dcreate(h5_observables, vec6Name.c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+		H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec6.data()); //write grid data
+		
+		//append grid snapShotTime as attribute
+		
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+		H5Pclose(dset_create_props);
+	}
 
 
 
@@ -494,14 +520,14 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 		return false;
 	}
 
-  string time_name = to_string(snapShotTime);
+	string time_name = to_string(snapShotTime);
 
-  if(H5Lexists(h5_file, (time_name).c_str(), H5P_DEFAULT)){
-	h5_timegroup = H5Gopen(h5_file, (time_name).c_str(), H5P_DEFAULT);
-  }else{
-	cout << "ERROR: HDF5 Group for time " << snapShotTime << " does not exist" << endl;
-	return false;
-  }
+	if(H5Lexists(h5_file, (time_name).c_str(), H5P_DEFAULT)){
+		h5_timegroup = H5Gopen(h5_file, (time_name).c_str(), H5P_DEFAULT);
+	}else{
+		cout << "ERROR: HDF5 Group for time " << snapShotTime << " does not exist" << endl;
+		return false;
+	}
 
 	hid_t h5a_options;
 	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
@@ -513,7 +539,7 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
 	options.N = tmpOpt1[0];
 	for(int i= 0; i < 3; i++){
-	 options.klength[i] = tmpOpt1[i+1];
+		options.klength[i] = tmpOpt1[i+1];
 	}
 	options.stateInformation[0] = tmpOpt1[4];
 	options.stateInformation[1] = tmpOpt1[5];
@@ -529,8 +555,9 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 	options.ITP_step = tmpOpt1[15];
 	options.RTE_step = tmpOpt1[16];
 
-	for(int i = 0; i<4;i++)
-	  options.grid[i] = (uint32_t)tmpOpt1[i+17];
+	for(int i = 0; i<4;i++){
+	 	options.grid[i] = (uint32_t)tmpOpt1[i+17];
+	}
 
 	options.potFactor = tmpOpt1[21];
 	options.samplesize = (int)tmpOpt1[22];
@@ -538,220 +565,248 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 
 	H5Aclose(h5a_options);
 
+
 	hid_t h5a_meta;
 	h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
 	H5Aread(h5a_meta, H5T_IEEE_F64LE, meta.data());
 	H5Aclose(h5a_meta);
 	meta.arrayToData(); 
 
-  hid_t h5_observables;
 
-  if(H5Lexists(h5_timegroup, "Observables", H5P_DEFAULT)){
-	h5_observables = H5Gopen(h5_timegroup, "Observables", H5P_DEFAULT);
-  }else{
-  	cout << "Cannot open Group Observables for time " << snapShotTime << ", it doesn't exist." << endl;
-  	return false;
-  }
 
-	/// PREPARE THE DOUBLE ARRAYS
+	hid_t h5_observables;
+	
+	if(H5Lexists(h5_timegroup, "Observables", H5P_DEFAULT)){
+		h5_observables = H5Gopen(h5_timegroup, "Observables", H5P_DEFAULT);
+	}else{
+		cout << "Cannot open Group Observables for time " << snapShotTime << ", it doesn't exist." << endl;
+		return false;
+	}
+
+	hid_t dataset, dataspace ;
+	hsize_t *dimf;
+	hsize_t rank;
+	
 	string vec1Name = "Averages";
-	int vec1Rank = 12;
-	double vec1[12];
-
-
-  if(!H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT))
-	{
-	  cout << "Observables " << vec1Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
-	  return false;
+	if(!H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec1Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
+	} else {		
+		int vec1Rank = 12;
+		vector<double> vec1(vec1Rank);
+		
+		dataset = H5Dopen(h5_observables, vec1Name.c_str(), H5P_DEFAULT);
+		dataspace = H5Dget_space(dataset);
+		
+		rank = H5Sget_simple_extent_ndims(dataspace);
+		
+		dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+		H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+		
+		H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec1.data());		
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+	
+	  	results.totalResult.Ekin = vec1[0];
+		results.totalResult.particle_count = vec1[1];
+		results.totalResult.healing_length = vec1[2];
+		results.totalResult.volume = vec1[3];
+		results.totalResult.density = vec1[4];
+		results.totalResult.aspectRatio = vec1[5];
+		results.totalResult.aspectRatioAngle = vec1[6];
+		results.totalResult.r_max = vec1[7];
+		results.totalResult.r_min = vec1[8];
+		results.totalResult.r_max_phi = vec1[9];
+		results.totalResult.r_min_phi = vec1[10];
 	}
 
-  hid_t dataset, dataspace ;
-  hsize_t *dimf;
-  hsize_t rank;
+	 bool readState[2];
 
-  dataset = H5Dopen(h5_observables, vec1Name.c_str(), H5P_DEFAULT);
-  dataspace = H5Dget_space(dataset);
-
-  rank = H5Sget_simple_extent_ndims(dataspace);
-
-  dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
-  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-
-  H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec1);
-
-  H5Dclose(dataset);
-  H5Sclose(dataspace);
-
-  	results.totalResult.Ekin = vec1[0];
-	results.totalResult.particle_count = vec1[1];
-	results.totalResult.healing_length = vec1[2];
-	results.totalResult.volume = vec1[3];
-	results.totalResult.density = vec1[4];
-	results.totalResult.aspectRatio = vec1[5];
-	results.totalResult.aspectRatioAngle = vec1[6];
-	results.totalResult.r_max = vec1[7];
-	results.totalResult.r_min = vec1[8];
-	results.totalResult.r_max_phi = vec1[9];
-	results.totalResult.r_min_phi = vec1[10];
-
-	  
-  string vec4Name = "KVector";
-  string vec5Name = "OccupationNumber";
-  int vec4Rank;
-  int vec5Rank;
-  vector<double> vec4;
-  vector<double> vec5;
-
-  if(!H5Lexists(h5_observables, vec4Name.c_str(), H5P_DEFAULT)){
-	cout << "Observables " << vec4Name << " doesn't exist for time " << snapShotTime << ". I refuse to read." << endl;
-	return false;
-  }
-
-  dataset = H5Dopen(h5_observables, vec4Name.c_str(), H5P_DEFAULT);
-  dataspace = H5Dget_space(dataset);
-
-  rank = H5Sget_simple_extent_ndims(dataspace);
-
-  if(rank != 1){
-  	cout << "reading KVector: wrong dimensions";
-  }
-
-  dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
-  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-  vec4.resize(dimf[0]);
-  vec4Rank = dimf[0];
-
-  H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec4.data());
-
-  H5Dclose(dataset);
-  H5Sclose(dataspace);
-
-  if(!H5Lexists(h5_observables, vec5Name.c_str(), H5P_DEFAULT)){
-	cout << "Observables " << vec5Name << " doesn't exists for time " << snapShotTime << ". I refuse to read." << endl;
-	return false;
-  }
-
-  dataset = H5Dopen(h5_observables, vec5Name.c_str(), H5P_DEFAULT);
-  dataspace = H5Dget_space(dataset);
-
-  rank = H5Sget_simple_extent_ndims(dataspace);
-
-  if(rank != 1){
-  	cout << "reading Occupation Numbers: wrong dimensions";
-  }
-
-  dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
-  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-  vec5.resize(dimf[0]);
-  vec5Rank = dimf[0];
-
-  H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec5.data());
-
-  H5Dclose(dataset);
-  H5Sclose(dataspace);
-
-  int sharedRank;
-  if(vec4Rank == vec5Rank){
-	sharedRank = vec4Rank;
-  } else {    
-	sharedRank = (vec4Rank >= vec5Rank) ? vec4Rank : vec5Rank;
-	cout << "Size of Kvector and OccupationNumber Input are not the same!" << vec4Rank <<" "<< vec5Rank << endl;
-	return false;
-  }
-
-  results.totalResult.k.resize(sharedRank);
-  results.totalResult.number.resize(sharedRank);
-  for(int i = 0; i < sharedRank; i++){
-	  results.totalResult.k(i) = vec4[i];
-	  results.totalResult.number(i) = vec5[i];	
-  }
-
-
-
-  string vec2Name = "Contour";
-  vector<double> vec2;
-
-  if(!H5Lexists(h5_observables, vec2Name.c_str(), H5P_DEFAULT)){
-	cout << "Observables " << vec2Name << " doesn't exists for time " << snapShotTime << ". I refuse to read." << endl;
-  } else {
-	
-	  dataset = H5Dopen(h5_observables, vec2Name.c_str(), H5P_DEFAULT);
-	  dataspace = H5Dget_space(dataset);
-	  rank = H5Sget_simple_extent_ndims(dataspace);
-	  if(rank != 1){
-	  	cout << "reading Contour: wrong dimensions";
-	  }
-	  dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
-	  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-	  vec2.resize(dimf[0]);
-	  H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec2.data());
-	  H5Dclose(dataset);
-	  H5Sclose(dataspace);
-	  int samples = vec2[0];
-	  int vec2Ranks[samples];
-	  results.contour.resize(samples);
-	  for(int i = 0; i < samples; i++){
-	  	vec2Ranks[i] = vec2[i+1];
-	  }
-	
-	  int l = 1 + samples;
-	  for(int k = 0; k < samples; k++){
-	  	results.contour[k].clear();
-	  	for(int j = 0; j < vec2Ranks[k]; j++){
-	  		Coordinate<int32_t> c(vec2[l],vec2[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
-	  		// c.x() = vec2[l];
-	  		// c.y() = vec2[l+1];
-	  		l+=2;
-	  		results.contour[k].insert(c);
-	  	}
-	  }
-}
-
-  string vec3Name = "Vortices";
-  vector<double> vec3;
-
-  if(!H5Lexists(h5_observables, vec3Name.c_str(), H5P_DEFAULT)){
-	cout << "Observables " << vec3Name << " doesn't exists for time " << snapShotTime << ". I refuse to read." << endl;
-  } else {
-	
-	  dataset = H5Dopen(h5_observables, vec3Name.c_str(), H5P_DEFAULT);
-	  dataspace = H5Dget_space(dataset);
-	  rank = H5Sget_simple_extent_ndims(dataspace);
-	  if(rank != 1){
-	  	cout << "reading Contour: wrong dimensions";
-	  }
-	  dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
-	  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
-	  vec3.resize(dimf[0]);
-	  H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec3.data());
-	  H5Dclose(dataset);
-	  H5Sclose(dataspace);
-	  int samples = vec3[0];
-	  int vec3Ranks[samples];
-	  results.pres.resize(samples);
-	  for(int i = 0; i < samples; i++){
-	  	vec3Ranks[i] = vec3[i+1];
-	  }
-	
-	  int l = 1 + samples;
-	  for(int k = 0; k < samples; k++){
-	  	results.pres[k].vlist.clear();
-	  	for(int j = 0; j < vec3Ranks[k]; j++){
-	  		VortexData c;
-	  		Coordinate<int32_t> x(vec3[l],vec3[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
-	  		c.x = x;
-	  		// c.x.x() = vec3[l];
-	  		// c.x.y() = vec3[l+1];
-	  		l+=2;
-	  		results.pres[k].vlist.push_back(c);
-	  	}
-	  }
+	string vec4Name = "KVector";
+	int vec4Rank;	
+	vector<double> vec4;
+	if(!H5Lexists(h5_observables, vec4Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec4Name << " doesn't exist for time " << snapShotTime << ". Cannot read." << endl;
+		readState[0] = false;
+	} else {		
+		dataset = H5Dopen(h5_observables, vec4Name.c_str(), H5P_DEFAULT);
+		dataspace = H5Dget_space(dataset);
+		
+		rank = H5Sget_simple_extent_ndims(dataspace);
+		
+		if(rank != 1){
+			cout << "reading KVector: wrong dimensions.";
+		}
+		
+		dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+		H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+		vec4.resize(dimf[0]);
+		vec4Rank = dimf[0];
+		
+		H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec4.data());
+		
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+		readState[0] = true;
 	}
 
-  free(dimf);
-  H5Gclose(h5_timegroup);
+	string vec5Name = "OccupationNumber";
+	int vec5Rank;
+	vector<double> vec5;
+	if(!H5Lexists(h5_observables, vec5Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec5Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
+		readState[1] = false;
+	} else {
+		dataset = H5Dopen(h5_observables, vec5Name.c_str(), H5P_DEFAULT);
+		dataspace = H5Dget_space(dataset);
+		
+		rank = H5Sget_simple_extent_ndims(dataspace);
+		
+		if(rank != 1){
+			cout << "reading Occupation Numbers: wrong dimensions.";
+		}
+		
+		dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+		H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+		vec5.resize(dimf[0]);
+		vec5Rank = dimf[0];
+		
+		H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec5.data());
+		
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+		readState[1] = true;
+	}
+	if(readState[0] && readState[1]){
+		int sharedRank;
+		if(vec4Rank == vec5Rank){
+			sharedRank = vec4Rank;
+	
+			results.totalResult.k.resize(vec4Rank);
+			results.totalResult.number.resize(vec5Rank);
+	
+			for(int i = 0; i < sharedRank; i++){
+				results.totalResult.k(i) = vec4[i];
+				results.totalResult.number(i) = vec5[i];	
+			}
+	
+		} else {    
+			sharedRank = (vec4Rank >= vec5Rank) ? vec4Rank : vec5Rank;
+			cout << "Size of Kvector and OccupationNumber Input are not the same!" << vec4Rank <<" "<< vec5Rank << endl;
+		}
+	}
 
-  return true;
+	string vec6Name = "AspectRatios";
+	
+	vector<double> vec6;
+	if(!H5Lexists(h5_observables, vec6Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec6Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
+	} else {
+		int vec6Rank;
+		dataset = H5Dopen(h5_observables, vec6Name.c_str(), H5P_DEFAULT);
+		dataspace = H5Dget_space(dataset);
+		
+		rank = H5Sget_simple_extent_ndims(dataspace);
+		
+		if(rank != 1){
+			cout << "reading Aspect Ratios: wrong dimensions.";
+		}
+		
+		dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+		H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+		vec6.resize(dimf[0]);
+		vec6Rank = dimf[0];
+		
+		H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec6.data());
+		
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+
+		results.totalResult.fixedAspectRatio.resize(vec6Rank);
+		for(int i = 0; i < vec6Rank; i++){
+			results.totalResult.fixedAspectRatio(i) = vec6[i];
+		}
+	}
+
+	string vec2Name = "Contour";
+	vector<double> vec2;
+
+	if(!H5Lexists(h5_observables, vec2Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec2Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
+	} else {
+		dataset = H5Dopen(h5_observables, vec2Name.c_str(), H5P_DEFAULT);
+		dataspace = H5Dget_space(dataset);
+		rank = H5Sget_simple_extent_ndims(dataspace);
+		if(rank != 1){
+			cout << "reading Contour: wrong dimensions.";
+		}
+		dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+		H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+		vec2.resize(dimf[0]);
+		H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec2.data());
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+		int samples = vec2[0];
+		int vec2Ranks[samples];
+		results.contour.resize(samples);
+		for(int i = 0; i < samples; i++){
+			vec2Ranks[i] = vec2[i+1];
+		}
+		
+		int l = 1 + samples;
+		for(int k = 0; k < samples; k++){
+			results.contour[k].clear();
+			for(int j = 0; j < vec2Ranks[k]; j++){
+				Coordinate<int32_t> c(vec2[l],vec2[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
+				l+=2;
+				results.contour[k].insert(c);
+			}
+		}
+	}
+
+	string vec3Name = "Vortices";
+	vector<double> vec3;
+
+	if(!H5Lexists(h5_observables, vec3Name.c_str(), H5P_DEFAULT)){
+	cout << "Observables " << vec3Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
+	} else {
+		dataset = H5Dopen(h5_observables, vec3Name.c_str(), H5P_DEFAULT);
+		dataspace = H5Dget_space(dataset);
+		rank = H5Sget_simple_extent_ndims(dataspace);
+		if(rank != 1){
+			cout << "reading Vortices: wrong dimensions";
+		}
+		dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+		H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+		vec3.resize(dimf[0]);
+		H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec3.data());
+		H5Dclose(dataset);
+		H5Sclose(dataspace);
+		int samples = vec3[0];
+		int vec3Ranks[samples];
+		results.pres.resize(samples);
+		for(int i = 0; i < samples; i++){
+			vec3Ranks[i] = vec3[i+1];
+		}
+		
+		int l = 1 + samples;
+		for(int k = 0; k < samples; k++){
+			results.pres[k].vlist.clear();
+			for(int j = 0; j < vec3Ranks[k]; j++){
+				VortexData c;
+				Coordinate<int32_t> x(vec3[l],vec3[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
+				c.x = x;
+				// c.x.x() = vec3[l];
+				// c.x.y() = vec3[l+1];
+				l+=2;
+				results.pres[k].vlist.push_back(c);
+			}
+		}
+	}
+
+	free(dimf);
+	H5Gclose(h5_timegroup);
+
+	return true;
 }
 
 bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &pData, Options &options)

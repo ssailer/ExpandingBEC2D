@@ -766,7 +766,7 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 	vector<double> tmp_ratio(90);
 	// double tmp_ratio = 0;
-	for(int i = 0; i < 89; i++){
+	for(int i = 0; i < 90; i++){
 		if(cDistance[i+90] >= 0.0){
 			tmp_ratio[i] = cDistance[i] / cDistance[i+90];
 			obs.fixedAspectRatio(i) = tmp_ratio[i];
