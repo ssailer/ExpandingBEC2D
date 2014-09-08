@@ -85,7 +85,7 @@ inline Observables::Observables(int avgrid) :
 }
 
 inline Observables Observables::operator+ (const Observables &a) const
-{
+{   
     Observables ret(number.size());  
 
     ret.particle_count = particle_count + a.particle_count;
@@ -101,6 +101,7 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.density = density + a.density;
     ret.volume = volume + a.volume;
     ret.angularDensity = angularDensity + a.angularDensity;
+
 
     ret.number = number + a.number; 
     ret.k = k + a.k;

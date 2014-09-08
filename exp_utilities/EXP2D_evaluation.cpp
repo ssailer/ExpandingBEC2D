@@ -55,7 +55,7 @@ void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,st
 	int numberOfSamples = extEval.size();
 
 
-	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	totalResult = Observables(extEval[0].totalResult.number.size());
 	contour.resize(numberOfSamples*opt.samplesize);
 	pres.resize(numberOfSamples*opt.samplesize);
 	

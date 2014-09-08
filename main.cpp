@@ -48,8 +48,8 @@ try{
 	#if DEBUG_LOG
  		std::ofstream logstream("run.log");
  		redirecter redirectcout(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
- 		std::ofstream errorstream("error.log");
- 		redirecter redirectcerr(errorstream,std::cerr);
+ 		// std::ofstream errorstream("error.log");
+ 		// redirecter redirectcerr(errorstream,std::cerr);
  	#endif
 
  	startUp.printInitVar();
@@ -67,6 +67,7 @@ try{
 	string tmpRunMode = startUp.getRunMode();
 	if(tmpRunMode.compare(3,1,"1") == 0){
 		int vnumber = 0;
+		cout << "Adding Vortices." << endl;
 		addVorticesRegular(startGrid,startUp.getOptions(),vnumber);
 		
 		startUp.setVortexnumber(vnumber);
