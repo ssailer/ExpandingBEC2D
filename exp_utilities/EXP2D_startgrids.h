@@ -60,8 +60,8 @@ void setGridToGaussian(MatrixData* &data, Options opt)
 
 void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
 
-int x_jump = 10; // opt.grid[1] / 5;
-int y_jump = 10; // opt.grid[2] / 5;
+int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
+int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
 int windingnumber = 1;
 
 ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -101,8 +101,10 @@ vnumber += c.size() * windingnumber;
 
 void addVorticesRegular(MatrixData* &data, Options opt, int &vnumber){
 
-int x_jump = 8; // opt.grid[1] / 5;
-int y_jump = 8; // opt.grid[2] / 5;
+cout << "Adding Vortices with a spacing of " << opt.vortexspacing << "." << endl;
+
+int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
+int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
 int windingnumber = 1;
 
 ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);

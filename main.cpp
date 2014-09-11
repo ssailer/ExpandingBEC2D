@@ -67,7 +67,6 @@ try{
 	string tmpRunMode = startUp.getRunMode();
 	if(tmpRunMode.compare(3,1,"1") == 0){
 		int vnumber = 0;
-		cout << "Adding Vortices." << endl;
 		addVorticesRegular(startGrid,startUp.getOptions(),vnumber);
 		
 		startUp.setVortexnumber(vnumber);

@@ -241,6 +241,7 @@ inline int StartUp::readConfig()
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
+	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];

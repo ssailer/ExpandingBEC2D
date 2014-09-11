@@ -320,8 +320,9 @@ void Eval::CombinedSpectrum(){
 	
 	runname = dirname + "/" + runname;
 
-	string plotname = runname + "-Spectrum-" + snapShotString; 
-	plotSpectrum(plotname,totalResult);
+	string plotname = runname + "-Spectrum-" + snapShotString;
+	string title = "Spectrum " + snapShotString; 
+	plotSpectrum(plotname,title, totalResult);
 
 }
 
@@ -339,26 +340,56 @@ void Eval::plotData(){
 	
 	runname = dirname + "/" + runname;
 
-	string plotname = runname + "-Control-Plot-" + snapShotString;
-	plotDataToPngExpanding(plotname,PsiVec[0],opt);
+	vector<double> Xexpanding(opt.grid[1]);
+	vector<double> Yexpanding(opt.grid[2]);
+	double b_x = opt.min_x * opt.stateInformation[0];
+	double b_y = opt.min_y * opt.stateInformation[1];
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	for(int i = 0; i < opt.grid[1]; i++){
+		Xexpanding[i] = -b_x + h_x * i;
+	}
+	for(int i = 0; i < opt.grid[2]; i++){
+		Yexpanding[i] = -b_y + h_y * i;
+	}
 
-	plotname = runname + "-Spectrum-" + snapShotString; 
-	plotSpectrum(plotname,totalResult);
+	vector<double> ranges(2);
+	complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
+	ranges[0] = opt.min_x * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*tmp3*tmp3));
+	ranges[1] = opt.min_y * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*tmp3*tmp3));
+	
+
+	string plotname = runname + "-Control-Plot-" + snapShotString;
+	string title = "Density " + snapShotString;
+	plotDataToPngExpanding(plotname,title,PsiVec[0],opt);
+
+	title = "Density " + snapShotString;
+	plotname = runname + "-ExpandingFrame-" + snapShotString;
+	plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
+
+	plotname = runname + "-Spectrum-" + snapShotString;
+	title = "Spectrum " + snapShotString; 
+	plotSpectrum(plotname,title,totalResult);
 
 	plotname = runname + "-Vortices-" + snapShotString;
-	plotVortexList(plotname,phase,pres[0],opt);	
+	title = "Vortices " + snapShotString;
+	plotVortexList(plotname,title,phase,pres[0],opt);	
 
 	plotname = runname + "-Density-" + snapShotString;
-	plotDataToPng(plotname,densityLocationMap[0],opt);
+	title = "Density " + snapShotString;
+	plotDataToPng(plotname,title,densityLocationMap[0],opt);
 
-	plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	plotVector(plotname,x_dist_grad,y_dist_grad,opt);
+	// plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	// title = "Density " + snapShotString;
+	// plotVector(plotname,title,x_dist_grad,y_dist_grad,opt);
 
 	plotname = runname + "-Angular-Dens-" + snapShotString;
-	plotVector(plotname,totalResult.angularDensity,opt);	
+	title = "Angular Density " + snapShotString;
+	plotVector(plotname,title,totalResult.angularDensity,opt);	
 
 	plotname = runname + "-Contour-" + snapShotString;
-	plotContour(plotname,PsiVec[0],contour[0],opt);
+	title = "Contour " + snapShotString;
+	plotContour(plotname,title,PsiVec[0],contour[0],opt);
 
 
 }

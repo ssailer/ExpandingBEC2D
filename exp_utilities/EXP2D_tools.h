@@ -20,7 +20,7 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : N(100), stateInformation(2), vortexnumber(20), snapshots(100), t_abs(0,0), potFactor(1), initialRun(false) {}
+    Options () : N(100), stateInformation(2), vortexnumber(20), vortexspacing(50), snapshots(100), t_abs(0,0), potFactor(1), initialRun(false) {}
 
     double N; // Number of particles    
     double klength[3];
@@ -38,6 +38,7 @@ typedef struct Options {
     int snapshots; // number of Snapshots
     int samplesize;
     int vortexnumber;
+    int vortexspacing;
     double potFactor;
     
     string runmode; // Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
