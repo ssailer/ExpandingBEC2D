@@ -112,9 +112,10 @@ void ITP::plot(const string name){
 inline void ITP::rescale(MatrixXcd &wavefct)
 {	
 	double Integral = 0.;  
-	for(int i=0;i<opt.grid[1]-1;i++){
-    	for(int j=0;j<opt.grid[2]-1;j++){
-      		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);      
+	for(int i=0;i<opt.grid[1];i++){
+    	for(int j=0;j<opt.grid[2];j++){
+    		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);
+      		// Integral += abs2(wavefct(i,j));      
     	}
     }
     
@@ -270,7 +271,7 @@ void ITP::propagateToGroundState(string runname)
 
 			rescale(wavefct);	
 		}
-		// plot("ITP-"+to_string(state));
+		plot("ITP-"+to_string(state));
 
 		breakCondition.saveData(wavefct,opt,state,runname);
 		breakCondition.evaluateDataITP();

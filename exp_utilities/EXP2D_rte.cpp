@@ -529,54 +529,56 @@ void RTE::rteToTime(string runName)
 
 // }
 
-inline void RTE::RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t)
-	{
+inline void RTE::RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
 	Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
 	Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
 	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);                                                                                                                                            
 
 	if(opt.runmode.compare(1,1,"1") == 0){
-	//laplacian
-	for(int j = 1;j<opt.grid[2]-1;j++){
-	for(int i = 1;i<opt.grid[1]-1;i++){
-	wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
-	wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
-	}}
-	k.noalias() +=   wavefctcpX * laplacian_coefficient_x(t) + wavefctcpY * laplacian_coefficient_y(t);
-
-	// gradient
-	for(int j = 1;j<opt.grid[2]-1;j++){
-	for(int i = 1;i<opt.grid[1]-1;i++){
-	wavefctcpX(i,j) = wavefctcp(i+1,j) - wavefctcp(i-1,j);
-	wavefctcpY(i,j) = wavefctcp(i,j+1) - wavefctcp(i,j-1);
-	}}
-
-	for(int i = 0;i<opt.grid[1];i++){ wavefctcpY.row(i).array() *= Y.array(); }
-	for(int j = 0;j<opt.grid[2];j++){ wavefctcpX.col(j).array() *= X.array(); }
-	k.noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
+		//laplacian
+		for(int j = 1;j<opt.grid[2]-1;j++){
+			for(int i = 1;i<opt.grid[1]-1;i++){
+				wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
+				wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
+			}
+		}
+		k.noalias() +=   wavefctcpX * laplacian_coefficient_x(t) + wavefctcpY * laplacian_coefficient_y(t);
+	
+		// gradient
+		for(int j = 1;j<opt.grid[2]-1;j++){
+			for(int i = 1;i<opt.grid[1]-1;i++){
+				wavefctcpX(i,j) = wavefctcp(i+1,j) - wavefctcp(i-1,j);
+				wavefctcpY(i,j) = wavefctcp(i,j+1) - wavefctcp(i,j-1);
+			}
+		}
+	
+		for(int i = 0;i<opt.grid[1];i++){ wavefctcpY.row(i).array() *= Y.array(); }
+		for(int j = 0;j<opt.grid[2];j++){ wavefctcpX.col(j).array() *= X.array(); }
+		k.noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
 	}
 
 	if(opt.runmode.compare(1,1,"0") == 0){
-	//laplacian
-	for(int j = 1;j<opt.grid[2]-1;j++){
-	for(int i = 1;i<opt.grid[1]-1;i++){
-	wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
-	wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
-	}}
-	k.noalias() +=   wavefctcpX * pot_laplacian_x * i_unit + wavefctcpY * pot_laplacian_x * i_unit;
+		//laplacian
+		for(int j = 1;j<opt.grid[2]-1;j++){
+			for(int i = 1;i<opt.grid[1]-1;i++){
+				wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
+				wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
+			}
+		}
+		k.noalias() +=   wavefctcpX * pot_laplacian_x * i_unit + wavefctcpY * pot_laplacian_x * i_unit;
 	}
 
 	if(opt.runmode.compare(2,1,"0") == 0){
-	//interaction
-	k.array() -= complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() ) * wavefctcp.array();
+		//interaction
+		k.array() -= complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() ) * wavefctcp.array();
 	}
 
 	if(opt.runmode.compare(2,1,"1") == 0){
-		//Potential + Interaction
-	k.array() -= ( i_unit * PotentialGrid.array() + complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() )) * wavefctcp.array();
+			//Potential + Interaction
+		k.array() -= ( i_unit * PotentialGrid.array() + complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() )) * wavefctcp.array();
 	}
 
-	}
+}
 
 // inline void RTE::RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t)
 // 	{

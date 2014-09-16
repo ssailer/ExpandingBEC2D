@@ -363,9 +363,11 @@ void Eval::plotData(){
 	string title = "Density " + snapShotString;
 	plotDataToPngExpanding(plotname,title,PsiVec[0],opt);
 
-	title = "Density " + snapShotString;
-	plotname = runname + "-ExpandingFrame-" + snapShotString;
-	plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
+	if(opt.runmode.compare(1,1,"1") == 0){
+		title = "Density " + snapShotString;
+		plotname = runname + "-ExpandingFrame-" + snapShotString;
+		plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
+	}
 
 	plotname = runname + "-Spectrum-" + snapShotString;
 	title = "Spectrum " + snapShotString; 
@@ -829,8 +831,8 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
 	obs.volume = h_x * h_y * densityCounter[sampleindex];
-	for(int i = 0; i < opt.grid[1]-1; i++){
-	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
+	for(int i = 0; i < opt.grid[1]; i++){
+	    for(int j = 0; j < opt.grid[2]; j++){	    	    		
 	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
 	    }
 	}
@@ -1049,9 +1051,9 @@ Observables Eval::calculatorITP(ComplexGrid data,int sampleindex){
 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
 	obs.volume = h_x * h_y * densityCounter[sampleindex];
-	for(int i = 0; i < opt.grid[1]-1; i++){
-	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
-	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
+	for(int i = 0; i < opt.grid[1]; i++){
+	    for(int j = 0; j < opt.grid[2]; j++){	    	    		
+	      	obs.particle_count += abs2(data(0,i,j,0));
 	    }
 	}
 	obs.density = obs.particle_count / obs.volume;
