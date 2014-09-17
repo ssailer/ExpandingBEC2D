@@ -109,19 +109,20 @@ void ITP::plot(const string name){
 		plotDataToPngEigen(name, wavefct,opt);
 }
 
-inline void ITP::rescale(MatrixXcd &wavefct)
-{	
+inline void ITP::rescale(MatrixXcd &wavefct){	
+
+	// cout << "Rescale " << h_x << " " << h_y << endl;
 	double Integral = 0.;  
-	for(int i=0;i<opt.grid[1];i++){
-    	for(int j=0;j<opt.grid[2];j++){
+	for(int i=0;i<opt.grid[1]-1;i++){
+    	for(int j=0;j<opt.grid[2]-1;j++){
     		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);
       		// Integral += abs2(wavefct(i,j));      
     	}
     }
+    // cout << "Integral" << Integral << endl;
     
 	scaleFactor = opt.N/Integral;	
 	// cout << "Integral : " << Integral << " scalefactor: " << scaleFactor << " " << sqrt(scaleFactor) << endl;
-	// wavefct.array() *= sqrt(scaleFactor);
 	wavefct.array() *= sqrt(scaleFactor);
 }
 
@@ -144,6 +145,7 @@ void ITP::cli(string name,int counter_state, int counter_max, double start)
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
 				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
+			plot("ITP-Vortices-" + to_string(counter_state));
 		}
 	if(counter_state == counter_max)
 	{
@@ -182,6 +184,7 @@ void ITP::formVortices(string runname){
 		wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
 		wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
 
+		
 
 		wavefctcp = wavefct;
 
@@ -199,12 +202,14 @@ void ITP::formVortices(string runname){
 		wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
 
 
-
 		rescale(wavefct);
+		
 
 		cli(runname,m,VORTICES_BUILD_TIME,start);	
 	}
-	plot("ITP-Vortices-Layout");
+
+	// rescale(wavefct);
+	// plot("ITP-Vortices-Layout");
 	cout << endl;
 	// update the ComplexGrid* DATA object outside of this.
 	// CopyEigenToComplexGrid();
@@ -245,7 +250,7 @@ void ITP::propagateToGroundState(string runname)
 
 	// for(int m = 1; scaleFactor < 0.99 && scaleFactor > 1.01; m++){
 	do {
-		for(int m = 0; m < 100; m++){
+		for(int m = 0; m < 100; m++){			
 
 			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
 			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
@@ -269,9 +274,14 @@ void ITP::propagateToGroundState(string runname)
 	
 			state++;
 
-			rescale(wavefct);	
+			// plot("ITP-Groundstate-"+to_string(state)+"-Before-Rescale");
+
+			rescale(wavefct);
+
+			// plot("ITP-Groundstate-"+to_string(state)+"-After-Rescale");
+				
 		}
-		plot("ITP-"+to_string(state));
+		
 
 		breakCondition.saveData(wavefct,opt,state,runname);
 		breakCondition.evaluateDataITP();
@@ -286,7 +296,7 @@ void ITP::propagateToGroundState(string runname)
 			counter_finished = 0;
 		}
 		old_Ekin = breakCondition.totalResult.Ekin;
-		if(counter_finished >= 3){
+		if(counter_finished >= 2){
 			finished = true;
 		}
 		// cli_plot(runname,m,runtime,start,plot);

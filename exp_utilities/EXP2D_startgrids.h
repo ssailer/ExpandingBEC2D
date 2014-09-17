@@ -39,8 +39,8 @@ void setGridToDoubleGaussian(MatrixData* &data, Options opt)
 
 void setGridToGaussian(MatrixData* &data, Options opt)
 {
-    double sigma_x = opt.min_x/4;
-    double sigma_y = opt.min_y/4;
+    double sigma_x = opt.min_x/2;
+    double sigma_y = opt.min_y/2;
     double h_x = 2.*opt.min_x/opt.grid[1];
     double h_y = 2.*opt.min_y/opt.grid[2];
     vector<double> x(opt.grid[1]);
@@ -50,6 +50,7 @@ void setGridToGaussian(MatrixData* &data, Options opt)
     for(int j=0;j<opt.grid[2];j++){y[j]=-opt.min_y+j*h_y;}
 
     complex<double> value;
+    #pragma omp parallel for
     for(int i=0; i < opt.grid[1]; i++){
         for(int j=0; j < opt.grid[2]; j++){
             value = complex<double>((opt.N/(4 * opt.min_x * opt.min_y )) * exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), 0.0 );
@@ -84,6 +85,7 @@ for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
 }
 
 for(int i = 0; i < c.size(); i++){
+    #pragma omp parallel for
     for(int y = 0; y < opt.grid[2]; y++){
         for(int x = 0; x < opt.grid[1]; x++){   
             data->wavefunction[0](x,y) *= polar(1.0, (windingnumber /* * mypow2(-1,i+1)*/ )*vortex( y,c[i].y(),x,c[i].x() )) ;

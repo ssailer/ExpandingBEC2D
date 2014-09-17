@@ -58,6 +58,8 @@ try{
 		
 	setGridToGaussian(startGrid,startUp.getOptions());
 
+	// cout << "value " << startGrid->wavefunction[0](1024,1024) << endl;
+
 	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
 	string itpname = "ITP-Groundstate";
 	groundStateITP->propagateToGroundState(itpname);

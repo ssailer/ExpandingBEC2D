@@ -1,6 +1,7 @@
 #include <plot_with_mgl.h>
 
 #define COLOURBAR_MAX_VALUE 10000
+#define IMAGE_SIZE 2500
 
 using namespace std;
 
@@ -47,8 +48,8 @@ void plotSpectrum(string name,string title, Observables &ares){
 	mglGraph gr;
 
 	gr.SetMarkSize(0.7);
-	// gr.SetFontSize()
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	gr.SetRange('x',0.01,4);
@@ -103,7 +104,8 @@ void plotVortexList(string name,string title, RealGrid *phase,PathResults &pres,
 
 	mglGraph gr;
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 
@@ -150,7 +152,8 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 
 	mglGraph gr;
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 
@@ -220,7 +223,8 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 
 	mglGraph gr;
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(name.c_str());
 
@@ -277,7 +281,8 @@ void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt)
 
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	// gr.Alpha(true);
@@ -364,7 +369,8 @@ void plotDataToPng(string filename,string title,ComplexGrid &g,Options &opt)
 
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	// gr.Alpha(true);
@@ -446,7 +452,8 @@ void plotDataToPng(string filename,string title,RealGrid g,Options &opt){
 
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	// gr.Alpha(true);
@@ -503,7 +510,8 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	// gr.Alpha(true);
@@ -596,7 +604,8 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 	double yrange = opt.min_y*opt.stateInformation[1];
 	gr.SetRange('x',-xrange,xrange);
 	gr.SetRange('y',-yrange,yrange);
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(filename.c_str());
 	// gr.Alpha(true);
@@ -682,14 +691,16 @@ void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vecto
 		
 		// gr.Light(0,true);
 		// gr.Alpha(true);
-
+	
+	double range = (ranges[0] >= ranges[1]) ? ranges[0] : ranges[1];
 	
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
-	gr.SetRange('x',-ranges[0],ranges[0]);
-	gr.SetRange('y',-ranges[1],ranges[1]);
+	gr.SetRange('x',-range,range);
+	gr.SetRange('y',-range,range);
 	// gr.Alpha(true);
 
 	filename = filename + ".png";
@@ -774,7 +785,8 @@ void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<
 
 	filename = filename + "-Density-Expanding.png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(filename.c_str());
 	gr.SetRange('x',xaxis);
@@ -844,7 +856,8 @@ void plotVector(string filename,string title,vector<double> v,vector<double> w,O
 		
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	// gr.Alpha(true);
@@ -879,7 +892,8 @@ void plotVector(string filename,string title,vector<double> v,Options &opt){
 		
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 
@@ -906,7 +920,8 @@ void plotVector(string filename,string title,ArrayXd v,Options &opt){
 		
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 
@@ -938,7 +953,8 @@ void plotAngularDensity(string filename,vector<double> phi,vector<double> densit
 		
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(filename.c_str());
 

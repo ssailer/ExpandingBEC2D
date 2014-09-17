@@ -830,10 +830,13 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	
 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
+	cout << "DensityCounter " << sampleindex << " : " << densityCounter[sampleindex] << endl;
+
 	obs.volume = h_x * h_y * densityCounter[sampleindex];
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){	    	    		
-	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
+	      	obs.particle_count += abs2(data(0,i,j,0));
+	      	obs.particle_count += h_x * h_y;
 	    }
 	}
 	obs.density = obs.particle_count / obs.volume;
@@ -1054,6 +1057,7 @@ Observables Eval::calculatorITP(ComplexGrid data,int sampleindex){
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){	    	    		
 	      	obs.particle_count += abs2(data(0,i,j,0));
+	      	obs.particle_count += h_x * h_y;
 	    }
 	}
 	obs.density = obs.particle_count / obs.volume;
