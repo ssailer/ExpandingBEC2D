@@ -342,11 +342,13 @@ inline void ITP::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp){
 	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	// laplacian
+	#pragma omp parallel for
 	for(int j = 1;j<opt.grid[2]-1;j++){
-	for(int i = 1;i<opt.grid[1]-1;i++){
-	wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
-	wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
-	}}
+		for(int i = 1;i<opt.grid[1]-1;i++){
+			wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
+			wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
+		}
+	}
 	k.noalias() += wavefctcpX * itp_laplacian_x + wavefctcpY * itp_laplacian_y;
 
 	// interaction + potential

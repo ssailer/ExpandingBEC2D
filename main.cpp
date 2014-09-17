@@ -43,6 +43,7 @@ using namespace std;
 int main( int argc, char** argv) 
 {	
 try{
+	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 	StartUp startUp(argc,argv);	
 
 	#if DEBUG_LOG
