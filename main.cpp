@@ -86,7 +86,7 @@ try{
 
 	// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
 
-	for( int k = 1; k <= 4; k++){
+	for( int k = 1; k <= 1; k++){
 		MatrixData* data = new MatrixData(startUp.getMeta());
 		for(int i = 0; i < data->meta.samplesize; i++){
 			data->wavefunction[i] = startGrid->wavefunction[0];

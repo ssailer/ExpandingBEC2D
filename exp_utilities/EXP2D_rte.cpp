@@ -536,6 +536,7 @@ inline void RTE::RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
 
 	if(opt.runmode.compare(1,1,"1") == 0){
 		//laplacian
+		#pragma omp parallel for
 		for(int j = 1;j<opt.grid[2]-1;j++){
 			for(int i = 1;i<opt.grid[1]-1;i++){
 				wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
@@ -545,20 +546,23 @@ inline void RTE::RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
 		k.noalias() +=   wavefctcpX * laplacian_coefficient_x(t) + wavefctcpY * laplacian_coefficient_y(t);
 	
 		// gradient
+		#pragma omp parallel for
 		for(int j = 1;j<opt.grid[2]-1;j++){
 			for(int i = 1;i<opt.grid[1]-1;i++){
 				wavefctcpX(i,j) = wavefctcp(i+1,j) - wavefctcp(i-1,j);
 				wavefctcpY(i,j) = wavefctcp(i,j+1) - wavefctcp(i,j-1);
 			}
 		}
-	
+		#pragma omp parallel for
 		for(int i = 0;i<opt.grid[1];i++){ wavefctcpY.row(i).array() *= Y.array(); }
+		#pragma omp parallel for
 		for(int j = 0;j<opt.grid[2];j++){ wavefctcpX.col(j).array() *= X.array(); }
 		k.noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
 	}
 
 	if(opt.runmode.compare(1,1,"0") == 0){
 		//laplacian
+		#pragma omp parallel for
 		for(int j = 1;j<opt.grid[2]-1;j++){
 			for(int i = 1;i<opt.grid[1]-1;i++){
 				wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);

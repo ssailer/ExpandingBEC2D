@@ -286,7 +286,6 @@ void ITP::propagateToGroundState(string runname)
 		breakCondition.saveData(wavefct,opt,state,runname);
 		breakCondition.evaluateDataITP();
 
-
 		cli_groundState(runname,start,state,breakCondition.totalResult);
 		int difference = breakCondition.totalResult.Ekin - old_Ekin;
 		if(difference == 0){
