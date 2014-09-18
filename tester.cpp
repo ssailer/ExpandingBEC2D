@@ -1,20 +1,15 @@
-#include <EXP2D_MatrixData.h>
+#include <inttypes.h>
+#include <stdio.h>
 
-int main( int argc, char** argv) 
-{	
+int main() {
+  printf( "    short int: %zd\n" , sizeof(short int) ) ;
+  printf( "          int: %zd\n" , sizeof(int) ) ;
+  printf( "     long int: %zd\n", sizeof(long int) ) ;
+  printf( "long long int: %zd\n", sizeof(long long int) ) ;
+  printf( "       size_t: %zd\n", sizeof(size_t) ) ;
+  printf( "        void*: %zd\n\n", sizeof(void *) ) ;
 
-	MatrixData::MetaData meta;
-	meta.grid[0] = 512;
-	meta.grid[1] = 512;
-	meta.samplesize = 8;
-	meta.coord[0] = 5;
-	meta.coord[1] = 5;
-	meta.time = 0;
-	meta.steps = 0;
-	meta.spacing[0] = meta.coord[0] * 2 / meta.grid[0];
-	meta.spacing[0] = meta.coord[1] * 2 / meta.grid[1];
-	meta.dataToArray();
 
-	MatrixData data(meta);
-	return 0;
+  printf( "PRIu32 usage (see source): %" PRIu32 "\n" , (uint32_t) 42 ) ;
+  return 0;
 }

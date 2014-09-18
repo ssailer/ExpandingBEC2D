@@ -1,11 +1,12 @@
 #include <plot_with_mgl.h>
 
 #define COLOURBAR_MAX_VALUE 10000
+#define IMAGE_SIZE 2500
 
 using namespace std;
 
 
-void plotSpectrum(string name,Observables &ares){
+void plotSpectrum(string name,string title, Observables &ares){
 
 	ofstream plotfile;
     vector<double> kval;
@@ -17,7 +18,7 @@ void plotSpectrum(string name,Observables &ares){
 		if(ares.k(r) != 0.0){
 			plotfile << r <<"\t"<< ares.k(r) <<"\t" << ares.number(r) <<"\t";
 			plotfile << endl;
-			if(r%5 == 0){ // reduce the number of k's plotted, because it gets cluttered.
+			if(r%10 == 0){ // reduce the number of k's plotted, because it gets cluttered.
 				kval.push_back(ares.k(r));
 				numberval.push_back(ares.number(r));
 			}
@@ -46,11 +47,13 @@ void plotSpectrum(string name,Observables &ares){
 
 	mglGraph gr;
 
-	gr.SetSize(1800,1800);
+	gr.SetMarkSize(0.7);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(name.c_str());
+	gr.Title(title.c_str());
 	gr.SetRange('x',0.01,4);
-	gr.SetRange('y',0.1,10000000);
+	gr.SetRange('y',0.0001,10000000);
 	gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);
@@ -73,7 +76,7 @@ void plotSpectrum(string name,Observables &ares){
 	gr.WritePNG(name.c_str(),"Spectrum",false);
 }
 
-void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
+void plotVortexList(string name,string title, RealGrid *phase,PathResults &pres,Options &opt){
 
 	int n = opt.grid[1];
 	int m = opt.grid[2];
@@ -101,9 +104,10 @@ void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
 
 	mglGraph gr;
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(name.c_str());
+	gr.Title(title.c_str());
 
 	// gr.SetRange('x',-opt.min_x,opt.min_x);
 	// gr.SetRange('y',-opt.min_y,opt.min_y);
@@ -117,10 +121,12 @@ void plotVortexList(string name,RealGrid *phase,PathResults &pres,Options &opt){
 	gr.Dens(phaseData);
 	gr.Plot(v_x,v_y," #xw");
 
-	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
+	name = name + ".png";
+
+	gr.WritePNG(name.c_str(),"Vortices",false);
 }
 
-void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
+void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
 	int n = opt.grid[1];
 	int m = opt.grid[2];
 	int size = contour.size();
@@ -146,9 +152,10 @@ void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<in
 
 	mglGraph gr;
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(name.c_str());
+	gr.Title(title.c_str());
 
 	// gr.SetRange('x',-opt.min_x,opt.min_x);
 	// gr.SetRange('y',-opt.min_y,opt.min_y);
@@ -162,7 +169,9 @@ void plotContour(string name, ComplexGrid &Psi, std::unordered_set<Coordinate<in
 	gr.Dens(densData);
 	gr.Plot(v_x,v_y," .w");
 
-	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
+	name = name + ".png";
+
+	gr.WritePNG(name.c_str(),"Contour",false);
 
 }
 
@@ -214,7 +223,8 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 
 	mglGraph gr;
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(name.c_str());
 
@@ -231,11 +241,13 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 	gr.Plot(densX,densY," #.k");
 	gr.Plot(v_x,v_y," #.r");
 
+	name = name + ".png";
+
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 
 }
 
-void plotDataToPng(string filename,ComplexGrid* &g,Options &opt)
+void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt)
 {
 	
 
@@ -269,9 +281,10 @@ void plotDataToPng(string filename,ComplexGrid* &g,Options &opt)
 
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(filename.c_str());
+	gr.Title(title.c_str());
 	// gr.Alpha(true);
 
 
@@ -322,7 +335,7 @@ void plotDataToPng(string filename,ComplexGrid* &g,Options &opt)
 
 }
 
-void plotDataToPng(string filename,ComplexGrid &g,Options &opt)
+void plotDataToPng(string filename,string title,ComplexGrid &g,Options &opt)
 {
 	
 
@@ -356,9 +369,10 @@ void plotDataToPng(string filename,ComplexGrid &g,Options &opt)
 
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(filename.c_str());
+	gr.Title(title.c_str());
 	// gr.Alpha(true);
 
 
@@ -408,7 +422,7 @@ void plotDataToPng(string filename,ComplexGrid &g,Options &opt)
 
 }
 
-void plotDataToPng(string filename,RealGrid g,Options &opt){
+void plotDataToPng(string filename,string title,RealGrid g,Options &opt){
 
 	int n = opt.grid[1];
 	int m = opt.grid[2];
@@ -438,9 +452,10 @@ void plotDataToPng(string filename,RealGrid g,Options &opt){
 
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(filename.c_str());
+	gr.Title(title.c_str());
 	// gr.Alpha(true);
 
 	double xrange = opt.min_x*opt.stateInformation[0];
@@ -459,7 +474,7 @@ void plotDataToPng(string filename,RealGrid g,Options &opt){
 
 }
 
-void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt)
+void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options &opt)
 {
 	
 
@@ -495,9 +510,10 @@ void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt)
 
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(filename.c_str());
+	gr.Title(title.c_str());
 	// gr.Alpha(true);
 
 
@@ -556,7 +572,7 @@ void plotDataToPngExpanding(string filename,ComplexGrid &g,Options &opt)
 
 }
 
-void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options &opt)
+void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 {
 	
 
@@ -588,7 +604,8 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options &opt)
 	double yrange = opt.min_y*opt.stateInformation[1];
 	gr.SetRange('x',-xrange,xrange);
 	gr.SetRange('y',-yrange,yrange);
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(filename.c_str());
 	// gr.Alpha(true);
@@ -640,7 +657,98 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options &opt)
 
 }
 
-void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options &opt)
+void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vector<double> &ranges, vector<double> &Xexpanding,vector<double> &Yexpanding,Options &opt)
+{
+	
+
+	int n = opt.grid[1];
+	int m = opt.grid[2];
+
+
+
+	mglData data(n,m);
+	mglData xaxis(n);
+	mglData yaxis(m);
+
+	int i,j,k;
+
+	// data.Create(n,m);
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		k = i+n*j;
+
+		data.a[k] = abs2(Psi(0,i,j,0));		
+	}
+
+	for( i = 0; i < n; i++){ xaxis.a[i] = Xexpanding[i]; }
+	for( j = 0; j < m; j++){ yaxis.a[j] = Yexpanding[j]; }
+
+
+
+	mglGraph gr;
+
+		
+		// gr.Light(0,true);
+		// gr.Alpha(true);
+	
+	double range = (ranges[0] >= ranges[1]) ? ranges[0] : ranges[1];
+	
+
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
+	gr.SetQuality(3);
+	gr.Title(title.c_str());
+	gr.SetRange('x',-range,range);
+	gr.SetRange('y',-range,range);
+	// gr.Alpha(true);
+
+	filename = filename + ".png";
+
+
+	// data.use_abs=false;
+
+	// gr.SetRange('z',data);
+	// gr.SetRange('c',data);
+
+	// gr.SubPlot(2,2,0);
+
+	// gr.Rotate(40,40);
+	// gr.Box();
+	// gr.Axis();
+	// gr.Surf(xaxis,yaxis,data);
+
+
+	// gr.SubPlot(2,2,2);
+	// gr.Axis();
+	// gr.Colorbar("_");
+	// gr.Dens(xaxis,yaxis,data);
+
+
+	// data.use_abs=true;
+	gr.SetRange('z',data);
+	// gr.SetRange('c',data);
+	gr.SetRange('c',data);
+
+	// gr.SubPlot(2,2,1);
+
+	// // gr.Light(true);
+	// gr.Rotate(40,40);
+	// gr.Box();
+	// gr.Axis();
+
+	// gr.Surf(xaxis,yaxis,data);
+
+	// gr.SubPlot(2,2,3);
+	gr.Axis();
+	gr.Colorbar("w{B,0.05}bcyrR_");
+	gr.Dens(xaxis,yaxis,data,"w{B,0.05}bcyrR");
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
+void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options opt)
 {
 	
 
@@ -677,7 +785,8 @@ void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<
 
 	filename = filename + "-Density-Expanding.png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(filename.c_str());
 	gr.SetRange('x',xaxis);
@@ -728,7 +837,7 @@ void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<
 }
 
 
-void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
+void plotVector(string filename,string title,vector<double> v,vector<double> w,Options &opt){
 
 	int x = v.size();
 	int y = w.size();
@@ -747,9 +856,10 @@ void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
 		
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(filename.c_str());
+	gr.Title(title.c_str());
 	// gr.Alpha(true);
 
 	gr.SubPlot(2,1,0);
@@ -768,7 +878,7 @@ void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
 
 }
 
-void plotVector(string filename,vector<double> v,Options &opt){
+void plotVector(string filename,string title,vector<double> v,Options &opt){
 
 	int x = v.size();
 
@@ -782,9 +892,10 @@ void plotVector(string filename,vector<double> v,Options &opt){
 		
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(filename.c_str());
+	gr.Title(title.c_str());
 
 	gr.SetRange('x',0,v.size());
 	gr.SetRange('y',data);
@@ -795,7 +906,7 @@ void plotVector(string filename,vector<double> v,Options &opt){
 
 }
 
-void plotVector(string filename,ArrayXd v,Options &opt){
+void plotVector(string filename,string title,ArrayXd v,Options &opt){
 
 	int x = v.size();
 
@@ -809,9 +920,10 @@ void plotVector(string filename,ArrayXd v,Options &opt){
 		
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(filename.c_str());
+	gr.Title(title.c_str());
 
 	gr.SetRange('x',0,v.size());
 	gr.SetRange('y',data);
@@ -841,7 +953,8 @@ void plotAngularDensity(string filename,vector<double> phi,vector<double> densit
 		
 	filename = filename + ".png";
 
-	gr.SetSize(1800,1800);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(filename.c_str());
 

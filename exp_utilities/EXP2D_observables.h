@@ -17,12 +17,13 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length, volume, density, aspectRatio, r_max, r_min, r_max_phi, r_min_phi;
+        double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi;
         ArrayXd number;
         ArrayXd k;
         ArrayXd angularDensity;
+        ArrayXd fixedAspectRatio;
         
-        Observables() {};
+        Observables();
         Observables(int avgrid);
     
         Observables operator+ (const Observables &a) const;
@@ -55,38 +56,55 @@ struct PathResults {
     list<VortexData> vlist;
 };
 
-
+inline Observables::Observables() :
+        number(),
+        k(),
+        angularDensity(360),
+        fixedAspectRatio(90)
+{
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
+    number.setZero();
+    k.setZero();
+    angularDensity.setZero();
+    fixedAspectRatio.setZero();
+}
 
 
 
 inline Observables::Observables(int avgrid) :
         number(avgrid),
         k(avgrid),
-        angularDensity(360)
+        angularDensity(360),
+        fixedAspectRatio(90)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = r_max = r_min = r_max_phi = r_min_phi = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
     number.setZero();
     k.setZero();
     angularDensity.setZero();
+    fixedAspectRatio.setZero();
 }
 
 inline Observables Observables::operator+ (const Observables &a) const
-{
+{   
     Observables ret(number.size());  
 
     ret.particle_count = particle_count + a.particle_count;
     ret.healing_length = healing_length + a.healing_length; 
     ret.Ekin = Ekin + a.Ekin;
     ret.aspectRatio = aspectRatio + a.aspectRatio;
+    ret.fixedAspectRatio = fixedAspectRatio + a.fixedAspectRatio;
+    ret.aspectRatioAngle = aspectRatioAngle + a.aspectRatioAngle;
     ret.r_max = r_max + a.r_max;
     ret.r_min = r_min + a.r_min;
     ret.r_max_phi = r_max_phi + a.r_max_phi;    
     ret.r_min_phi = r_min_phi + a.r_min_phi;
     ret.density = density + a.density;
-    ret.number = number + a.number; 
-    ret.k = k + a.k;
     ret.volume = volume + a.volume;
     ret.angularDensity = angularDensity + a.angularDensity;
+
+
+    ret.number = number + a.number; 
+    ret.k = k + a.k;
     
     return ret;
 }
@@ -99,15 +117,18 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.healing_length = healing_length - a.healing_length;     
     ret.Ekin = Ekin - a.Ekin;
     ret.aspectRatio = aspectRatio - a.aspectRatio;
+    ret.fixedAspectRatio = fixedAspectRatio - a.fixedAspectRatio;
+    ret.aspectRatioAngle = aspectRatioAngle - a.aspectRatioAngle;
     ret.r_max = r_max - a.r_max;
     ret.r_min = r_min - a.r_min;
     ret.r_max_phi = r_max_phi - a.r_max_phi; 
     ret.r_min_phi = r_min_phi - a.r_min_phi;
     ret.density = density - a.density;
-    ret.number = number - a.number; 
-    ret.k = k - a.k;
     ret.volume = volume - a.volume;
     ret.angularDensity = angularDensity - a.angularDensity;
+
+    ret.number = number - a.number; 
+    ret.k = k - a.k;
     
     return ret;
 }
@@ -120,15 +141,18 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.healing_length = healing_length * a.healing_length;     
     ret.Ekin = Ekin * a.Ekin;
     ret.aspectRatio = aspectRatio * a.aspectRatio;
+    ret.fixedAspectRatio = fixedAspectRatio * a.fixedAspectRatio;
+    ret.aspectRatioAngle = aspectRatioAngle * a.aspectRatioAngle;
     ret.r_max = r_max * a.r_max;
     ret.r_min = r_min * a.r_min;
     ret.r_max_phi = r_max_phi * a.r_max_phi; 
     ret.r_min_phi = r_min_phi * a.r_min_phi;
     ret.density = density * a.density;
-    ret.number = number * a.number; 
-    ret.k = k * a.k;
     ret.volume = volume * a.volume;
     ret.angularDensity = angularDensity * a.angularDensity;
+
+    ret.number = number * a.number; 
+    ret.k = k * a.k;
     
     return ret;
 }
@@ -141,15 +165,18 @@ inline Observables Observables::operator* (double d) const
     ret.healing_length = healing_length * d;    
     ret.Ekin = Ekin * d;
     ret.aspectRatio = aspectRatio * d;
+    ret.fixedAspectRatio = fixedAspectRatio * d;
+    ret.aspectRatioAngle = aspectRatioAngle * d;
     ret.r_max = r_max * d;
     ret.r_min = r_min * d;
     ret.r_max_phi = r_max_phi * d; 
     ret.r_min_phi = r_min_phi * d;
     ret.density = density * d;
-    ret.number = number * d;    
-    ret.k = k * d;
     ret.volume = volume * d;
     ret.angularDensity = angularDensity * d;
+
+    ret.number = number * d;    
+    ret.k = k * d;
 
     return ret;
 }
@@ -162,15 +189,18 @@ inline Observables Observables::operator/ (double d) const
     ret.healing_length = healing_length / d;    
     ret.Ekin = Ekin / d;
     ret.aspectRatio = aspectRatio / d;
+    ret.fixedAspectRatio = fixedAspectRatio / d;
+    ret.aspectRatioAngle = aspectRatioAngle / d;
     ret.r_max = r_max / d;
     ret.r_min = r_min / d;
     ret.r_max_phi = r_max_phi / d; 
     ret.r_min_phi = r_min_phi / d;
     ret.density = density / d;
-    ret.number = number / d;    
-    ret.k = k / d;
     ret.volume = volume / d;
     ret.angularDensity = angularDensity / d;
+
+    ret.number = number / d;    
+    ret.k = k / d;
     
     return ret;
 }

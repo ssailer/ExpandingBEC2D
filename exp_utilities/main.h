@@ -6,6 +6,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <stdio.h>
+#include <EXP2D_MatrixData.h>
 
 #define SUCCESS 0 
 #define ERROR_IN_COMMAND_LINE 1
@@ -14,7 +15,88 @@
 
 using namespace libconfig;
 
-void printInitVar(Options &opt)
+class redirecter // copied from 
+{
+public:
+    redirecter(std::ostream & dst, std::ostream & src)
+        : src(src), sbuf(src.rdbuf(dst.rdbuf())) {}
+    ~redirecter() { src.rdbuf(sbuf); }
+private:
+    std::ostream & src;
+    std::streambuf * const sbuf;
+};
+
+class StartUp {
+public:
+	StartUp(int argcTmp, char** argvTmp) {
+		argc = argcTmp;
+		argv = argvTmp;
+		readCli();
+		readConfig();
+		setDirectory();
+	}
+	inline void printInitVar();
+	inline void setDirectory();
+	inline int readCli();
+	inline int readConfig();
+
+	inline Options getOptions();
+	inline void setInitialRun(bool initialRun);
+	inline void setVortexnumber(int number);
+	inline void setRunMode(string runmode);
+	inline void setRunTime(int runtime);
+	inline MatrixData::MetaData getMeta();
+	inline void rotatePotential();
+	inline string getRunMode();
+	bool newRun;
+private:
+	MatrixData::MetaData meta;
+	Options opt;
+	int argc;
+	char** argv;
+};
+
+inline Options StartUp::getOptions(){
+	return opt;
+}
+
+inline void StartUp::setInitialRun(bool initialRun){
+	opt.initialRun = initialRun;
+}
+
+inline void StartUp::setRunMode(string runmode){
+	// FIXME: Here should be checks for the sanity of runmode!
+	opt.runmode = runmode;
+}
+
+inline string StartUp::getRunMode(){
+	// FIXME: Here should be checks for the sanity of runmode!
+	return opt.runmode;
+}
+
+inline void StartUp::setRunTime(int runtime){
+	opt.n_it_RTE = runtime;
+}
+
+inline void StartUp::setVortexnumber(int number){
+	opt.vortexnumber = number;
+}
+
+inline MatrixData::MetaData StartUp::getMeta(){
+	return meta;
+}
+
+inline void StartUp::rotatePotential(){
+	complex<double> tmp = opt.omega_x;
+	opt.omega_x = opt.omega_y;
+	opt.omega_y = tmp;
+
+	opt.dispersion_x = opt.omega_x;
+	opt.dispersion_y = opt.omega_y;
+}
+
+
+inline void StartUp::printInitVar()
 {
 	std::cout.setf(std::ios::boolalpha);
 	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
@@ -27,32 +109,32 @@ void printInitVar(Options &opt)
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
 }
 
-void set_workingdirectory(Options &opt)
-{
+inline void StartUp::setDirectory()
+{	
 	// cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
 	struct stat wd_stat;
 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cout << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
-			cout << "Check \"run.log\" for output of this run." << endl;
+			cerr << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
+			cerr << "Check \"run.log\" for output of this run." << endl;
+			newRun = false;
 		}
 	}else
 	{
-		char command[256];
-		sprintf(command,"mkdir %s",opt.workingdirectory.c_str());
-		if(system(command) == 0){
-			cout << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
-		}
+		mkdir(opt.workingdirectory.c_str(),0755);
+		cerr << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
+
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cout << "Switchting to "<< "\"" << opt.workingdirectory << "\"" << endl;
+			cerr << "Switching to " << "\"" << opt.workingdirectory << "\"" << endl;
+			newRun = true;
 		}
-		cout << endl;
-		cout << "Check \"run.log\" for information about this run." << endl;
+		cerr << endl;
+		cerr << "Check \"run.log\" for information about this run." << endl;			
 	}
 }
 
 
-int read_cli_options(int argc, char** argv, Options &opt)
+inline int StartUp::readCli()
 {
 	// Beginning of the options block
 
@@ -115,7 +197,7 @@ int read_cli_options(int argc, char** argv, Options &opt)
 }
 
 
-int read_config(int argc, char** argv, Options &opt)
+inline int StartUp::readConfig()
 {
 	libconfig::Config cfg;
 
@@ -151,21 +233,23 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.grid[0]              = root["RunOptions"]["grid0"];				
 	opt.grid[1]              = root["RunOptions"]["grid1"];				
 	opt.grid[2]              = root["RunOptions"]["grid2"];	   			
-	opt.grid[3]              = root["RunOptions"]["grid3"];				
+	opt.grid[3]              = root["RunOptions"]["grid3"];
 	opt.g                    = root["RunOptions"]["g"]; 						
 	opt.n_it_RTE             = root["RunOptions"]["numberOfIterations"]; 				
 	opt.snapshots            = root["RunOptions"]["numberOfSnapshots"];
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
+	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
+	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
-
 	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
 	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
+
 
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
@@ -173,8 +257,16 @@ int read_config(int argc, char** argv, Options &opt)
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
-
-
+	meta.grid[0] = opt.grid[1];
+	meta.grid[1] = opt.grid[2];
+	meta.coord[0] = opt.min_x;
+	meta.coord[1] = opt.min_y;
+	meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
+	meta.spacing[0] = opt.min_y * 2 / opt.grid[2];
+	meta.samplesize = opt.samplesize;
+	meta.time = 0;
+	meta.steps = 0;
+	meta.dataToArray();
 	}
 	catch(const SettingNotFoundException &nfex)
 	{
@@ -203,6 +295,7 @@ int read_config(int argc, char** argv, Options &opt)
      return SUCCESS;
 	
 }
+
 
 
 

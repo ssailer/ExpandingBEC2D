@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 #include <iomanip>
-#include <gauss_random.h>
+
 #include <stdlib.h>
 #include <time.h>
 #include <eigen3/Eigen/Dense>
@@ -20,7 +20,7 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : stateInformation(2), vortexnumber(20), snapshots(100), t_abs(0,0) {}
+    Options () : N(100), stateInformation(2), vortexnumber(20), vortexspacing(50), snapshots(100), t_abs(0,0), potFactor(1), initialRun(false) {}
 
     double N; // Number of particles    
     double klength[3];
@@ -38,17 +38,18 @@ typedef struct Options {
     int snapshots; // number of Snapshots
     int samplesize;
     int vortexnumber;
+    int vortexspacing;
+    double potFactor;
     
     string runmode; // Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
                      // second char determines if expanding coordinates are used or not
                      // third char determines if potential is switch on for the differential equation
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
+    bool initialRun;
     
 } Options;
 
-
-void noiseTheGrid(ComplexGrid &g);
 
 class expException {
 public:
@@ -94,6 +95,24 @@ inline const std::string currentTime() {
     strftime(buf, sizeof(buf), "%X", &tstruct);
 
     return buf;
+}
+
+
+inline void progressBar(const float progress){
+    while (progress < 1.0) {
+        int barWidth = 70;
+    
+        std::cout << "[";
+        int pos = barWidth * progress;
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos) std::cout << "=";
+            else if (i == pos) std::cout << ">";
+            else std::cout << " ";
+        }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
+    }
+    std::cout << std::endl;
 }
 
 

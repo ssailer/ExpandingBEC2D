@@ -3,7 +3,7 @@
 #define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
-#define VORTEX_SURROUND_DENSITY_RADIUS 10
+#define VORTEX_SURROUND_DENSITY_RADIUS 5
 #define EDGE_RANGE_CHECK 10
 
 using namespace std;
@@ -14,7 +14,7 @@ Eval::Eval() {};
 
 Eval::~Eval() {};
 
-void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &external_snapshot_time,string external_runname){
+void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname){
 	runname = external_runname;
 	opt = external_opt;
 	snapshot_time = external_snapshot_time;
@@ -32,7 +32,7 @@ void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int &ext
 
 }
 
-void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snapshot_time,string external_runname){
+void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname){
 	runname = external_runname;
 	opt = external_opt;
 	snapshot_time = external_snapshot_time;
@@ -45,6 +45,355 @@ void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int &external_snaps
 			PsiVec[0](0,i,j,0) = wavefct(i,j);
 		}
 	}		
+}
+
+void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval){
+	runname = external_runname;
+	opt = external_opt;
+	snapshot_time = external_snapshot_time;
+
+	int numberOfSamples = extEval.size();
+
+
+	totalResult = Observables(extEval[0].totalResult.number.size());
+	contour.resize(numberOfSamples*opt.samplesize);
+	pres.resize(numberOfSamples*opt.samplesize);
+	
+	for(int k = 0; k < numberOfSamples; k++){
+		totalResult += extEval[k].totalResult;
+		for(int i = 0; i < opt.samplesize;i++){
+			contour[i+k*opt.samplesize] = extEval[k].contour[i];
+			pres[i+k*opt.samplesize].vlist = extEval[k].pres[i].vlist;
+		}
+	}
+	totalResult /= numberOfSamples;
+	CombinedEval();
+	CombinedSpectrum();
+}
+
+void Eval::CombinedEval(){
+
+	// ONLY NEEDED UNTIL fixedAspectRatio is saved in BinaryFile::appendEval
+	Observables tmpResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	for(int sampleindex = 0; sampleindex < contour.size(); sampleindex++){
+		Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+		aspectRatio(obs,sampleindex);
+		tmpResult.fixedAspectRatio += obs.fixedAspectRatio;
+	}
+	tmpResult.fixedAspectRatio /= contour.size();
+	totalResult.fixedAspectRatio = tmpResult.fixedAspectRatio;
+	// ONLY NEEDED ONE TIME
+
+
+	string dirname = "CombinedRunObservables";
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+
+	string filename = dirname + "/" + runname + "_Observables.dat";	
+	
+	struct stat buffer;
+  	if(stat (filename.c_str(), &buffer) != 0){
+  		ofstream datafile;
+  		datafile.open(filename.c_str(), ios::out | ios::app);
+  		datafile << std::left << std::setw(15) << "Timestep"
+  						 << std::setw(15) << "X_max"
+  						 << std::setw(15) << "Y_max"
+  						 << std::setw(15) << "D_max"
+  						 << std::setw(15) << "D_min"
+  						 << std::setw(15) << "D_max/D_min"
+  						 << std::setw(15) << "D_max Angle"
+  						 << std::setw(15) << "D_min Angle"
+  						 << std::setw(15) << "Ratio"
+  						 << std::setw(15) << "RatioAngle"
+  						 << std::setw(15) << "N"
+  						 << std::setw(15) << "V"
+  						 << std::setw(15) << "N/V"
+  						 << std::setw(15) << "E_kin"
+  				 << endl;
+  		datafile.close();
+  	} 
+
+  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
+	// datafile.open;
+	datafile << std::left << std::setw(15) << snapshot_time
+					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
+					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
+ 					 << std::setw(15) << totalResult.r_max
+ 					 << std::setw(15) << totalResult.r_min
+ 					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
+ 					 << std::setw(15) << totalResult.r_max_phi
+ 					 << std::setw(15) << totalResult.r_min_phi
+ 					 << std::setw(15) << totalResult.aspectRatio 
+ 					 << std::setw(15) << totalResult.aspectRatioAngle 
+					 << std::setw(15) << totalResult.particle_count
+					 << std::setw(15) << totalResult.volume
+					 << std::setw(15) << totalResult.density
+					 << std::setw(15) << totalResult.Ekin
+			 << endl;
+	datafile.close();
+
+
+	filename = dirname + "/" + runname + "_Observables.csv";	
+	
+  	if(stat (filename.c_str(), &buffer) != 0){
+  		ofstream datafile1;
+  		datafile1.open(filename.c_str(), ios::out | ios::app);
+  		datafile1 << std::left << "," << "Timestep"
+  						 << "," << "X_max"
+  						 << "," << "Y_max"
+  						 << "," << "D_max"
+  						 << "," << "D_min"
+  						 << "," << "D_max/D_min"
+  						 << "," << "D_max Angle"
+  						 << "," << "D_min Angle"
+  						 << "," << "Ratio"
+  						 << "," << "RatioAngle"
+  						 << "," << "N"
+  						 << "," << "V"
+  						 << "," << "N/V"
+  						 << "," << "E_kin"
+  				 << endl;
+  		datafile1.close();
+  	} 
+
+  	ofstream datafile1(filename.c_str(), std::ios_base::out | std::ios_base::app);
+	// datafile.open;
+	datafile1 << std::left << "," << snapshot_time
+					 << "," << opt.min_x * opt.stateInformation[0]
+					 << "," << opt.min_y * opt.stateInformation[1]
+ 					 << "," << totalResult.r_max
+ 					 << "," << totalResult.r_min
+ 					 << "," << totalResult.r_max / totalResult.r_min  
+ 					 << "," << totalResult.r_max_phi
+ 					 << "," << totalResult.r_min_phi
+ 					 << "," << totalResult.aspectRatio 
+ 					 << "," << totalResult.aspectRatioAngle 
+					 << "," << totalResult.particle_count
+					 << "," << totalResult.volume
+					 << "," << totalResult.density
+					 << "," << totalResult.Ekin
+			 << endl;
+	datafile1.close();
+
+	filename = dirname + "/" + runname + "_Ratios.csv";	
+	
+  	if(stat (filename.c_str(), &buffer) != 0){
+  		ofstream datafile2;
+  		datafile2.open(filename.c_str(), ios::out | ios::app);
+  		datafile2 << std::left << "," << "Timestep";
+  		for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
+  			datafile2 << "," << std::left << i;
+  		}
+  		datafile2 << endl;
+  		datafile2.close();
+  	} 
+
+  	ofstream datafile2(filename.c_str(), std::ios_base::out | std::ios_base::app);
+	// datafile2.open;
+	datafile2 << std::left << "," << snapshot_time;
+  	for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
+  		datafile2 << "," << totalResult.fixedAspectRatio(i);
+  	}
+  	datafile2 << endl;
+	datafile2.close();
+}
+
+void Eval::evaluateData(){
+	// cout << "evaluateData" << endl;	
+	// cout << "checkEdges call: " << endl;
+	// checkEdges();
+
+	pres.resize(PsiVec.size());
+	densityCoordinates.clear();
+	contour.resize(PsiVec.size());
+	densityCounter.resize(PsiVec.size());
+
+	densityLocationMap.resize(PsiVec.size());
+	densityCoordinates.resize(PsiVec.size());
+	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	Contour tracker(opt);
+
+
+	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	
+	cout << endl << "Evaluating sample #: ";
+	for(int k = 0; k < PsiVec.size(); k++){
+		cout << k << " " ;
+		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k],densityCounter[k]);
+		// cout << "-getDensity" << endl;
+		contour[k] = tracker.trackContour(densityLocationMap[k]);
+		// cout << "-trackContour" << endl;
+		totalResult += calculator(PsiVec[k],k);
+		// cout << "-calculator" << endl;
+		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
+		// cout << "-getVortices" << endl;		
+	}	
+	totalResult /= PsiVec.size();
+
+	cout << endl;
+
+	string dirname = "runObservables";
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+
+	string filename = dirname + "/" + runname + "_Observables.dat";	
+	
+	struct stat buffer;   
+  	if(stat (filename.c_str(), &buffer) != 0){
+  		ofstream datafile;
+  		datafile.open(filename.c_str(), ios::out | ios::app);
+  		datafile << std::left << std::setw(15) << "Timestep"
+  						 << std::setw(15) << "X_max"
+  						 << std::setw(15) << "Y_max"
+  						 << std::setw(15) << "D_max"
+  						 << std::setw(15) << "D_min"
+  						 << std::setw(15) << "D_max/D_min"
+  						 << std::setw(15) << "D_max Angle"
+  						 << std::setw(15) << "D_min Angle"
+  						 << std::setw(15) << "Ratio"
+  						 << std::setw(15) << "RatioAngle"
+  						 << std::setw(15) << "N"
+  						 << std::setw(15) << "V"
+  						 << std::setw(15) << "N/V"
+  						 << std::setw(15) << "E_kin"
+  				 << endl;
+  		datafile.close();
+  	} 
+
+  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
+	// datafile.open;
+	datafile << std::left << std::setw(15) << snapshot_time
+					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
+					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
+ 					 << std::setw(15) << totalResult.r_max
+ 					 << std::setw(15) << totalResult.r_min
+ 					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
+ 					 << std::setw(15) << totalResult.r_max_phi
+ 					 << std::setw(15) << totalResult.r_min_phi
+ 					 << std::setw(15) << totalResult.aspectRatio 
+ 					 << std::setw(15) << totalResult.aspectRatioAngle 
+					 << std::setw(15) << totalResult.particle_count
+					 << std::setw(15) << totalResult.volume
+					 << std::setw(15) << totalResult.density
+					 << std::setw(15) << totalResult.Ekin
+			 << endl;
+	datafile.close();	
+}
+
+void Eval::evaluateDataITP(){
+
+	// pres.vlist.clear();
+	densityCoordinates.clear();
+	contour.resize(PsiVec.size());
+	densityCounter.resize(PsiVec.size());
+
+	densityLocationMap.resize(PsiVec.size());
+	densityCoordinates.resize(PsiVec.size());
+	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+		
+	// for(int k = 0; k < PsiVec.size(); k++){
+		getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0],densityCounter[0]);
+		totalResult = calculatorITP(PsiVec[0],0);
+	// }
+	// totalResult /= PsiVec.size();
+}
+
+void Eval::CombinedSpectrum(){
+	string dirname = "CombinedRunPlots";
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+    
+	std::string snapShotString = to_string(snapshot_time);
+	std::stringstream ss;
+	ss << std::setfill('0') << std::setw(5) << snapShotString;
+	snapShotString = ss.str();
+	
+	runname = dirname + "/" + runname;
+
+	string plotname = runname + "-Spectrum-" + snapShotString;
+	string title = "Spectrum " + snapShotString; 
+	plotSpectrum(plotname,title, totalResult);
+
+}
+
+void Eval::plotData(){
+	string dirname = "runPlots_" + runname;
+    struct stat st;
+    	if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str(),0755);
+    }
+    
+	std::string snapShotString = to_string(snapshot_time);
+	std::stringstream ss;
+	ss << std::setfill('0') << std::setw(5) << snapShotString;
+	snapShotString = ss.str();
+	
+	runname = dirname + "/" + runname;
+
+	vector<double> Xexpanding(opt.grid[1]);
+	vector<double> Yexpanding(opt.grid[2]);
+	double b_x = opt.min_x * opt.stateInformation[0];
+	double b_y = opt.min_y * opt.stateInformation[1];
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	for(int i = 0; i < opt.grid[1]; i++){
+		Xexpanding[i] = -b_x + h_x * i;
+	}
+	for(int i = 0; i < opt.grid[2]; i++){
+		Yexpanding[i] = -b_y + h_y * i;
+	}
+
+	vector<double> ranges(2);
+	complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
+	ranges[0] = opt.min_x * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*tmp3*tmp3));
+	ranges[1] = opt.min_y * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*tmp3*tmp3));
+	
+
+	string plotname = runname + "-Control-Plot-" + snapShotString;
+	string title = "Density " + snapShotString;
+	plotDataToPngExpanding(plotname,title,PsiVec[0],opt);
+
+	if(opt.runmode.compare(1,1,"1") == 0){
+		title = "Density " + snapShotString;
+		plotname = runname + "-ExpandingFrame-" + snapShotString;
+		plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
+	}
+
+	plotname = runname + "-Spectrum-" + snapShotString;
+	title = "Spectrum " + snapShotString; 
+	plotSpectrum(plotname,title,totalResult);
+
+	plotname = runname + "-Vortices-" + snapShotString;
+	title = "Vortices " + snapShotString;
+	plotVortexList(plotname,title,phase,pres[0],opt);	
+
+	plotname = runname + "-Density-" + snapShotString;
+	title = "Density " + snapShotString;
+	plotDataToPng(plotname,title,densityLocationMap[0],opt);
+
+	// plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	// title = "Density " + snapShotString;
+	// plotVector(plotname,title,x_dist_grad,y_dist_grad,opt);
+
+	plotname = runname + "-Angular-Dens-" + snapShotString;
+	title = "Angular Density " + snapShotString;
+	plotVector(plotname,title,totalResult.angularDensity,opt);	
+
+	plotname = runname + "-Contour-" + snapShotString;
+	title = "Contour " + snapShotString;
+	plotContour(plotname,title,PsiVec[0],contour[0],opt);
+
+
 }
 
 void Eval::checkEdges(){
@@ -87,125 +436,7 @@ void Eval::checkEdges(){
 	}
 }
 
-void Eval::evaluateData(){
-	// cout << "evaluateData" << endl;	
-	// cout << "checkEdges call: " << endl;
-	// checkEdges();
-
-	pres.vlist.clear();
-	densityCoordinates.clear();
-	contour.resize(PsiVec.size());
-
-	densityLocationMap.resize(PsiVec.size());
-	densityCoordinates.resize(PsiVec.size());
-	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	Contour tracker(opt);
-
-
-	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-		
-	for(int k = 0; k < PsiVec.size(); k++){
-		// cout << endl << "Eval #" << k << endl;
-		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k]);
-		// cout << "-getDensity" << endl;
-		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		// cout << "-trackContour" << endl;
-		totalResult += calculator(PsiVec[k],k);
-		// cout << "-calculator" << endl;		
-	}
-	getVortices(PsiVec[0],densityCoordinates[0]);
-	// cout << endl << "-getVortices" << endl;
-	totalResult /= PsiVec.size();
-
-	
-}
-
-void Eval::evaluateDataITP(){
-
-	pres.vlist.clear();
-	densityCoordinates.clear();
-	contour.resize(PsiVec.size());
-
-	densityLocationMap.resize(PsiVec.size());
-	densityCoordinates.resize(PsiVec.size());
-	phase = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	zeros = new RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-		
-	for(int k = 0; k < PsiVec.size(); k++){
-		totalResult += calculator(PsiVec[k],k);
-	}
-	totalResult /= PsiVec.size();
-}
-
-void Eval::plotData(){
-	std::string snapShotString = to_string(snapshot_time);
-	std::stringstream ss;
-	ss << std::setfill('0') << std::setw(5) << snapShotString;
-	snapShotString = ss.str();
-
-	string filename = runname + "-Control-Plot-" + snapShotString;
-	plotDataToPngExpanding(filename,PsiVec[0],opt);
-
-	filename = runname + "-Spectrum-" + snapShotString; 
-	plotSpectrum(filename,totalResult);
-
-	filename = runname + "-Vortices-" + snapShotString;
-	plotVortexList(filename,phase,pres,opt);	
-
-	filename = runname + "-Density-" + snapShotString;
-	plotDataToPng(filename,densityLocationMap[0],opt);
-
-	filename = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
-	plotVector(filename,x_dist_grad,y_dist_grad,opt);
-
-	filename = runname + "-Angular-Dens-" + snapShotString;
-	plotVector(filename,totalResult.angularDensity,opt);	
-
-	filename = runname + "-Contour-" + snapShotString;
-	plotContour(filename,PsiVec[0],contour[0],opt);
-
-	
-	filename = runname + "-Observables" + ".dat";
-	struct stat buffer;   
-  	if(stat (filename.c_str(), &buffer) != 0){
-  		ofstream datafile;
-  		datafile.open(filename.c_str(), ios::out | ios::app);
-  		datafile << std::left << std::setw(10) << "Timestep"
-  						 << std::setw(10) << "X_max"
-  						 << std::setw(10) << "Y_max"
-  						 << std::setw(10) << "R_max"
-  						 << std::setw(10) << "R_min"
-  						 << std::setw(10) << "R_max/R_min"
-  						 << std::setw(10) << "A/R"
-  						 << std::setw(10) << "N"
-  						 << std::setw(10) << "V"
-  						 << std::setw(10) << "N/V"
-  						 << std::setw(10) << "E_kin"
-  				 << endl;
-  		datafile.close();
-  	} 
-
-  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
-	// datafile.open;
-	datafile << std::left << std::setw(10) << snapshot_time
-					 << std::setw(10) << opt.min_x * opt.stateInformation[0]
-					 << std::setw(10) << opt.min_y * opt.stateInformation[1]
- 					 << std::setw(10) << totalResult.r_max
- 					 << std::setw(10) << totalResult.r_min
- 					 << std::setw(10) << totalResult.r_max / totalResult.r_min  
- 					 << std::setw(10) << totalResult.aspectRatio  
-					 << std::setw(10) << totalResult.particle_count
-					 << std::setw(10) << totalResult.volume
-					 << std::setw(10) << totalResult.density
-					 << std::setw(10) << totalResult.Ekin
-			 << endl;
-	datafile.close();
-}
-
-void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates){
+void Eval::getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres){
 	
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
@@ -326,12 +557,11 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 		it->surroundDens = sum;
 	}
 
-	// This Number is set at the start, maybe set this in run.cfg -> Options struct, or check how many got set inside the contour, if equal spacing vortices are used.
 	 // cout << "findVortices before sorting" << endl;
 	// list<VortexData> vlistCopy(vlist);
 	// list<VortexData> vlistCopy1(vlist);
-	// vlistCopy.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
-	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.zeroDensity < rhs.zeroDensity;});
+	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
+	// vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.zeroDensity < rhs.zeroDensity;});
 
 	// for(list<VortexData>::iterator it = vlistCopy.begin(); it != vlistCopy.end(); ++it){
 	// 	for(list<VortexData>::iterator et = vlistCopy1.begin(); et != vlistCopy.end(); ++et){
@@ -339,11 +569,20 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	// 			vlist.push_back(*it);
 	// 	}
 	// }
-	if(vlist.size() > opt.vortexnumber){
-		list<VortexData>::iterator it1 = vlist.begin();
-		advance(it1,opt.vortexnumber);
-		vlist.erase(it1,vlist.end());
+	if(opt.initialRun == true){
+		opt.vortexnumber = vlist.size();
+		cout << "Intial Evaluation found " << opt.vortexnumber << " Vortices." << endl;
+	} else {
+		if(vlist.size() > opt.vortexnumber){
+			list<VortexData>::iterator it1 = vlist.begin();
+			advance(it1,opt.vortexnumber);
+			vlist.erase(it1,vlist.end());
+		}
 	}
+}
+
+int Eval::getVortexNumber(){
+	return opt.vortexnumber;
 }
 
 void Eval::calc_fields(ComplexGrid &data, Options &opt){
@@ -402,8 +641,8 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 // 	}
 // }
 
-void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates_local){
-	double threshold = 10;//opt.N * 0.10 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
+	double threshold = 2;//opt.N * 0.10 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
 	// cout << "Threshold " << threshold << endl;
 
@@ -491,28 +730,14 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Co
 	densityLocationMap = densityLocationMap_local;
 }
 
-Observables Eval::calculator(ComplexGrid data,int sampleindex){
-	
-	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-	// R-Space
+void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 	double h[2];
 	h[0] = h_x;
-	h[1] = h_y; 
-	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
-	
-	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	h[1] = h_y;
 
-	obs.volume = h_x * h_y * densityCounter;
-	for(int i = 0; i < opt.grid[1]-1; i++){
-	    for(int j = 0; j < opt.grid[2]-1; j++){	    	    		
-	      	obs.particle_count += h_x * h_y * abs2(data(0,i,j,0));
-	    }
-	}
-	obs.density = obs.particle_count / obs.volume;
-
-	// Aspect-Ratio
+		// Aspect-Ratio
 	obs.r_max = 0;
 	obs.r_min = (opt.grid[1] * h_x >= opt.grid[2] * h_y) ? opt.grid[1] * h_x : opt.grid[2] * h_y;
 	vector<contourData> cData;
@@ -521,17 +746,17 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		tmp.c = *it;
 		int x_shift = tmp.c.x() - opt.grid[1]/2;
 		int y_shift = tmp.c.y() - opt.grid[2]/2;
-		tmp.phi = atan2(x_shift * h_x,y_shift * h_y) * 180 /M_PI + 180;
+		tmp.phi = atan2(y_shift * h_y,x_shift * h_x) * 180 /M_PI + 180;
 		tmp.r = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
 		cData.push_back(tmp);
-		if(obs.r_max <= tmp.r){
-			obs.r_max = tmp.r;
-			obs.r_max_phi = tmp.phi;
-		}
-		if(obs.r_min >= tmp.r){
-			obs.r_min = tmp.r;
-			obs.r_min_phi = tmp.phi;
-		}
+		// if(obs.r_max <= tmp.r){
+		// 	obs.r_max = tmp.r;
+		// 	obs.r_max_phi = tmp.phi;
+		// }
+		// if(obs.r_min >= tmp.r){
+		// 	obs.r_min = tmp.r;
+		// 	obs.r_min_phi = tmp.phi;
+		// }
 
 	}
 
@@ -539,7 +764,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 
 	vector<double> cRadius(361);
 	vector<int> divisor_counter(361);
-	for(vector<contourData>::iterator it = cData.begin(); it != cData.end(); ++it){
+	for(vector<contourData>::const_iterator it = cData.begin(); it != cData.end(); ++it){
 		int index = round(it->phi);
 		cRadius[index] += it->r;
 		divisor_counter[index]++;
@@ -564,14 +789,139 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	for(int i = 0; i < 180; i++){
 		cDistance[i] = fabs(cRadius[i] + cRadius[i+180]);
 	}
-	double tmp_ratio = 0;
-	for(int i = 0; i < 89; i++){
-		double tmp1 = cDistance[i] / cDistance[i+90];
-		double tmp2 = cDistance[i+1] / cDistance[i+91];
-		tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
+	vector<double>::iterator maxDistance = std::max_element(cDistance.begin(), cDistance.end());
+	obs.r_max = *maxDistance;
+	obs.r_max_phi = std::distance(cDistance.begin(), maxDistance);
+
+	vector<double>::iterator minDistance = std::min_element(cDistance.begin(), cDistance.end());
+	obs.r_min = *minDistance;
+	obs.r_min_phi = std::distance(cDistance.begin(), minDistance);
+
+	vector<double> tmp_ratio(90);
+	// double tmp_ratio = 0;
+	for(int i = 0; i < 90; i++){
+		if(cDistance[i+90] >= 0.0){
+			tmp_ratio[i] = cDistance[i] / cDistance[i+90];
+			obs.fixedAspectRatio(i) = tmp_ratio[i];
+		} else {
+			cout << "WARNING: Aspect-Ratio: Calculated Distance smaller than zero!" << endl;
+		}
+		// double tmp1 = cDistance[i] / cDistance[i+90];
+		// double tmp2 = cDistance[i+1] / cDistance[i+91];
+		// tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
 	}
-	obs.aspectRatio = tmp_ratio; // zwischen 0 und 90 grad, also effektiv x und y richtung
+	vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
+	int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
+	obs.aspectRatioAngle = maxAspectRatioIndex;
+	obs.aspectRatio = *maxElement; // zwischen 0 und 90 grad, also effektiv x und y richtung
 	// FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
+}
+
+Observables Eval::calculator(ComplexGrid data,int sampleindex){
+	
+	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	// R-Space
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	double h[2];
+	h[0] = h_x;
+	h[1] = h_y; 
+	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
+	
+	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+
+	cout << "DensityCounter " << sampleindex << " : " << densityCounter[sampleindex] << endl;
+
+	obs.volume = h_x * h_y * densityCounter[sampleindex];
+	for(int i = 0; i < opt.grid[1]; i++){
+	    for(int j = 0; j < opt.grid[2]; j++){	    	    		
+	      	obs.particle_count += abs2(data(0,i,j,0));
+
+	    }
+	}
+	obs.particle_count *= h_x * h_y;
+	obs.density = obs.particle_count / obs.volume;
+
+	aspectRatio(obs,sampleindex);
+
+	// // Aspect-Ratio
+	// obs.r_max = 0;
+	// obs.r_min = (opt.grid[1] * h_x >= opt.grid[2] * h_y) ? opt.grid[1] * h_x : opt.grid[2] * h_y;
+	// vector<contourData> cData;
+	// for(c_set::iterator it = contour[sampleindex].begin(); it != contour[sampleindex].end(); ++it){
+	// 	contourData tmp;
+	// 	tmp.c = *it;
+	// 	int x_shift = tmp.c.x() - opt.grid[1]/2;
+	// 	int y_shift = tmp.c.y() - opt.grid[2]/2;
+	// 	tmp.phi = atan2(y_shift * h_y,x_shift * h_x) * 180 /M_PI + 180;
+	// 	tmp.r = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
+	// 	cData.push_back(tmp);
+	// 	// if(obs.r_max <= tmp.r){
+	// 	// 	obs.r_max = tmp.r;
+	// 	// 	obs.r_max_phi = tmp.phi;
+	// 	// }
+	// 	// if(obs.r_min >= tmp.r){
+	// 	// 	obs.r_min = tmp.r;
+	// 	// 	obs.r_min_phi = tmp.phi;
+	// 	// }
+
+	// }
+
+	// std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
+
+	// vector<double> cRadius(361);
+	// vector<int> divisor_counter(361);
+	// for(vector<contourData>::const_iterator it = cData.begin(); it != cData.end(); ++it){
+	// 	int index = round(it->phi);
+	// 	cRadius[index] += it->r;
+	// 	divisor_counter[index]++;
+	// }
+	// // cRadius.erase(cRadius.begin());
+	// // divisor_counter.erase(divisor_counter.begin());
+	// cRadius[0] += cRadius[360]; cRadius.pop_back();
+	// divisor_counter[0] += cRadius[360]; divisor_counter.pop_back();
+
+	// for(int i = 0; i < 360; i++){
+	// 	if(divisor_counter[i] == 0){
+	// 		divisor_counter[i] = 1;
+	// 	}
+
+	// 	cRadius[i] /= divisor_counter[i];
+	// }
+
+	// // string name = "cRadius_" + to_string(sampleindex) + "_" + to_string(sampleindex);
+	// // plotVector(name,cRadius,opt);
+
+	// vector<double> cDistance(180);
+	// for(int i = 0; i < 180; i++){
+	// 	cDistance[i] = fabs(cRadius[i] + cRadius[i+180]);
+	// }
+	// vector<double>::iterator maxDistance = std::max_element(cDistance.begin(), cDistance.end());
+	// obs.r_max = *maxDistance;
+	// obs.r_max_phi = std::distance(cDistance.begin(), maxDistance);
+
+	// vector<double>::iterator minDistance = std::min_element(cDistance.begin(), cDistance.end());
+	// obs.r_min = *minDistance;
+	// obs.r_min_phi = std::distance(cDistance.begin(), minDistance);
+
+	// vector<double> tmp_ratio(90);
+	// // double tmp_ratio = 0;
+	// for(int i = 0; i < 89; i++){
+	// 	if(cDistance[i+90] >= 0.0){
+	// 		tmp_ratio[i] = cDistance[i] / cDistance[i+90];
+	// 	} else {
+	// 		cout << "WARNING: Aspect-Ratio: Calculated Distance smaller than zero!" << endl;
+	// 	}
+	// 	// double tmp1 = cDistance[i] / cDistance[i+90];
+	// 	// double tmp2 = cDistance[i+1] / cDistance[i+91];
+	// 	// tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
+	// }
+	// obs.fixedAspectRatio = tmp_ratio[0];
+	// vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
+	// int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
+	// obs.aspectRatioAngle = maxAspectRatioIndex;
+	// obs.aspectRatio = *maxElement; // zwischen 0 und 90 grad, also effektiv x und y richtung
+	// // FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
 
 	// == Angular Density
 	// vector<double> angularDensity;
@@ -614,6 +964,105 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		}					
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
+
+	// K-Space
+	ComplexGrid::fft(data, data);
+	
+	ArrayXd divisor(obs.number.size());
+	divisor.setZero();
+	
+	vector<vector<double>> kspace;
+	
+	kspace.resize(2);
+	for(int d = 0; d < 2; d++){
+		// set k-space
+		kspace[d].resize(opt.grid[d+1]);
+		// for (int i=0; i<opt.grid[d+1]/2; i++){
+		for(int i = 0; i < opt.grid[d+1]/2; i++){
+		// for (int32_t i = 0; i < kspace[d].size()/2; i++){
+			kspace[d][i] = opt.klength[d]/**opt.stateInformation[0]*/*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
+			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)i) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			// kspace[d][i] = opt.klength[d] * M_PI / ( (double)(opt.grid[d+1]/2 - i) * h[d] );
+		}
+		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
+		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
+		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
+			kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
+			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
+			// kspace[d][i] = - opt.klength[d] * M_PI / ( (double)(i - opt.grid[d+1]/2 + 1) * h[d]);
+		}
+	}
+
+
+	// DEFINITION OF KLENGTH FROM THE INTERNET! |||| ==>>     2*pi*i/(Nx*dx)
+	// double kmax[2];
+
+	// for(int i = 0; i < 2; i++){
+	// 	kmax[i] = *max_element(kspace[i].begin(), kspace[i].end());
+	// }
+	
+	double kwidth2[2];
+
+	for(int i = 0; i < 2; i++)
+		kwidth2[i] = (opt.grid[i+1] == 1) ? 0 : kspace[i][opt.grid[i+1]/2] * kspace[i][opt.grid[i+1]/2];
+	
+	double index_factor = (obs.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
+
+	for(int x = 0; x < data.width(); x++){
+		for (int y = 0; y < data.height(); y++){
+			for (int z = 0; z < data.depth(); z++){
+				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
+				// Coordinate<int32_t> c = data.make_coord(x,y,z);
+				int index = index_factor * k;
+				// cout << k << "*" << index_factor << "=" << index << "/" << OBSERVABLES_DATA_POINTS_SIZE << endl;
+				obs.k(index) += k;
+				divisor(index)++;
+				double number = abs2(data(0,x,y,z));
+				obs.number(index) += number;
+				// obs.particle_count += number;
+				obs.Ekin += number * k * k;
+			}
+		}
+	}
+	
+	#pragma omp parallel for schedule(guided,1)
+	for(int l = 0; l < obs.number.size(); l++){
+		if(divisor[l] == 0){
+			divisor[l] = 1;
+		}
+	}
+
+	obs.number /= divisor;
+	obs.k /= divisor;	
+	
+	return obs;
+}
+
+
+Observables Eval::calculatorITP(ComplexGrid data,int sampleindex){
+	
+	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	// R-Space
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	double h[2];
+	h[0] = h_x;
+	h[1] = h_y; 
+	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
+	
+	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+
+	obs.volume = h_x * h_y * densityCounter[sampleindex];
+	for(int i = 0; i < opt.grid[1]; i++){
+	    for(int j = 0; j < opt.grid[2]; j++){	    	    		
+	      	obs.particle_count += abs2(data(0,i,j,0));
+	      	
+	    }
+	}
+	obs.particle_count *= h_x * h_y;
+	obs.density = obs.particle_count / obs.volume;
 
 	// K-Space
 	ComplexGrid::fft(data, data);

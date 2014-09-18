@@ -11,10 +11,12 @@
 #include <omp.h>
 #include <string>
 #include <iomanip>
+#include <gauss_random.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_evaluation.h>
 #include <EXP2D_binaryfile.h>
 #include <plot_with_mgl.h>
+#include <EXP2D_MatrixData.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
@@ -23,29 +25,29 @@ using namespace Eigen;
 typedef struct {
         int absoluteSteps;
         int lambdaSteps;
+        int initialSteps;
     } stepCounter;
 
 class RTE
 {
   public:
-    RTE();
-    RTE(ComplexGrid* &c,Options &opt);  
-    ~RTE();
+    RTE(MatrixData* &d,const Options &opt);  
 
-    void setOptions(Options &externaloptions);
+    void setOptions(const Options &externaloptions);
     void RunSetup();
     
     // Propagatoren
 
-    void rteToTime(string runname, vector<int> snapshot_times);
-    void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
+    void rteToTime(string runName);
+    // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction
-    ComplexGrid* pPsi;
+    MatrixData* pData;
 
     // Storage Variable for the runs
     // MatrixXcd wavefct;
-    vector<MatrixXcd> wavefctVec;
+    vector<MatrixXcd> &wavefctVec;
+    MatrixData::MetaData &meta;
 
     void CopyComplexGridToEigen();
     void CopyEigenToComplexGrid();
@@ -61,18 +63,20 @@ class RTE
     
     // void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
-    // void plot(string name,int counter_state, int counter_max);
+    void plot(const string name);
+    void noise();
     
 
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
+    vector<int> snapshot_times;
 
   private:
 
     //
     inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    void toEigenAndNoise(ComplexGrid g,MatrixXcd &wavefct);
+   
 
     // Variables
     complex<double> h_x, h_y;

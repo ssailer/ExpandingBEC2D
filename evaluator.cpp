@@ -20,6 +20,7 @@ Last Update: 22/07/13
 #include <averageclass.h>
 #include <bh3observables.h>
 
+#include <EXP2D_MatrixData.h>
 #include <main.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_itp.hpp>
@@ -40,63 +41,58 @@ using namespace std;
 int main( int argc, char** argv) 
 {	
 try{
-
- 	std::streambuf *psbuf, *backup;
- 	std::ofstream logstream;
- 	backup = std::cout.rdbuf();     // back up cout's streambuf
- 	// std::cout.rdbuf(backup);        // restore cout's original streambuf
-
- 	Options opt;
-	read_cli_options(argc,argv,opt);
-	read_config(argc,argv,opt);
-	set_workingdirectory(opt);
-	
 	if(DEBUG_LOG == 1){
-		logstream.open ("eval.log");
-		psbuf = logstream.rdbuf();        // get file's streambuf
-		std::cout.rdbuf(psbuf);         // assign streambuf to cout
-	}
-		
-	string runname = "RT-Ex";
-	vector<string> snapShotFiles;
-	string tmp;
-	string fileNameListName = "runData/fileNameList.dat";
-	ifstream fileNameList(fileNameListName);
-
-	if(fileNameList.is_open()){
-		while (getline (fileNameList,tmp)){
-			snapShotFiles.push_back(tmp);
-		}
-	}		
-
-	#pragma omp parallel for
-	for(int j = 0; j < snapShotFiles.size(); j++){
-		
-		string h5name = snapShotFiles[j];
-		Options opt;
-		Eval results;
-		vector<MatrixXcd> wavefunction;	
-
-		cout << "Opening Datafiles.." << h5name << endl;
-		binaryFile data(h5name,binaryFile::in);	
-
-		cout << "Reading Datafiles.. " << h5name << endl;
-		vector<int> timeList = data.getTimeList();
-		for(int i = 0; i < timeList.size(); i++){
-			data.getSnapshot(runname,timeList[i],wavefunction,opt);		
-			results.saveData(wavefunction,opt,timeList[i],runname);		
-			cout << "Evaluating Datafiles.. "<< timeList[i] << endl;
-			results.evaluateData();		
-			cout << "Plotting Datafiles.. " << timeList[i] << endl;		
-			results.plotData();
-		}
-	}	
+ 		std::ofstream logstream("evaluator.log");
+ 		redirecter redirect(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
+ 	}
 	
-	cout << "Terminating successfully." << endl;
-	if(DEBUG_LOG == 1){
-		logstream.close();
+	vector<vector<Observables>> obs;	
+	obs.resize(4);
+	vector<Options> opt;
+	MatrixData::MetaData meta;
+	vector<vector<Eval>> results;
+	results.resize(4);
+
+	vector<int> timeList;
+
+	for(int k = 0; k < 4; k++){
+
+		string runName = "Expanding-Set-"+to_string(k+1);
+		string evalname = runName + "-Eval.h5";
+
+		binaryFile* evalFile = new binaryFile(evalname,binaryFile::in);
+
+		timeList = evalFile->getTimeList();
+
+		results[k].resize(timeList.size());
+
+		cout << "Loaded file " << evalname << " from runData/" << endl;
+
+		for(int j = 0; j< timeList.size(); j++){
+			Options tmpOpt;
+			evalFile->getEval(timeList[j],tmpOpt,meta,results[k][j]);
+			// obs[k-1].push_back(results[k].totalResult);
+			if(k == 0){
+				opt.push_back(tmpOpt);
+			}
+		}
+		delete evalFile;
 	}
-// Everything finished here 
+
+
+	string finalRunName = "Expanding";
+	Eval finalResult;
+	for(int i = 0; i < timeList.size(); i++){
+		cout << "Processing Time: " << timeList[i] << " .." << endl;
+		vector<Eval> tmpResults(4);
+		for(int f = 0; f < 4; f++){
+			tmpResults[f] = results[f][i];
+		}
+		finalResult.saveDataFromEval(opt[i],timeList[i],finalRunName,tmpResults);
+
+	}
+	cout << "Evaluation finished" << endl;
+
 }  // exceptions catcher
 
 
