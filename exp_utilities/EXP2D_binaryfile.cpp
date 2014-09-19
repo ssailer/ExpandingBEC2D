@@ -163,7 +163,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
 
   if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
 	hid_t    h5a_options, dataspace;
-	double tmpOpt1[24];
+	double tmpOpt1[25];
 
 	tmpOpt1[0] = options.N;
 	for(int i= 0; i < 3; i++)
@@ -188,7 +188,8 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
 
 	tmpOpt1[21] = options.potFactor;
 	tmpOpt1[22] = options.samplesize;
-	tmpOpt1[23] = options.vortexnumber;  
+	tmpOpt1[23] = options.vortexnumber;
+	tmpOpt1[24] = options.vortexspacing;  
 
 	//copy options to file
 	hsize_t dimsf[1] = {24};
@@ -844,7 +845,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 	hid_t h5a_options;
 	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
 
-	double tmpOpt1[24];
+	double tmpOpt1[25];
 
 	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
 
@@ -872,7 +873,8 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 
 	options.potFactor = tmpOpt1[21];
 	options.samplesize = (int)tmpOpt1[22];
-	options.vortexnumber = (int)tmpOpt1[23];              
+	options.vortexnumber = (int)tmpOpt1[23];
+	options.vortexspacing = (int)tmpOpt1[24];              
 
 	H5Aclose(h5a_options);
 

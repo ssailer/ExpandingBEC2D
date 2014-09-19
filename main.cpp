@@ -43,6 +43,7 @@ using namespace std;
 int main( int argc, char** argv) 
 {	
 try{
+	omp_set_num_threads(12);
 	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 	StartUp startUp(argc,argv);	
 
@@ -55,42 +56,61 @@ try{
 
  	startUp.printInitVar();
 	
-	MatrixData* startGrid = new MatrixData(startUp.getMeta());
+	// MatrixData* startGrid = new MatrixData(startUp.getMeta());
 		
-	setGridToGaussian(startGrid,startUp.getOptions());
+	// setGridToGaussian(startGrid,startUp.getOptions());
 
-	// cout << "value " << startGrid->wavefunction[0](1024,1024) << endl;
+	// // cout << "value " << startGrid->wavefunction[0](1024,1024) << endl;
 
-	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	string itpname = "ITP-Groundstate";
-	groundStateITP->propagateToGroundState(itpname);
-	startGrid->wavefunction[0] = groundStateITP->result();
-	delete groundStateITP;
+	// ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+	// string itpname = "ITP-Groundstate";
+	// groundStateITP->propagateToGroundState(itpname);
+	// startGrid->wavefunction[0] = groundStateITP->result();
+	// delete groundStateITP;
 
-	string tmpRunMode = startUp.getRunMode();
-	if(tmpRunMode.compare(3,1,"1") == 0){
-		int vnumber = 0;
-		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
+	// string tmpRunMode = startUp.getRunMode();
+	// if(tmpRunMode.compare(3,1,"1") == 0){
+	// 	int vnumber = 0;
+	// 	addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
 		
-		startUp.setVortexnumber(vnumber);
-		cout << endl << "Set Vortices #: " << vnumber << endl;
+	// 	startUp.setVortexnumber(vnumber);
+	// 	cout << endl << "Set Vortices #: " << vnumber << endl;
 	
-		itpname = "ITP-Vortices";
-		ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-		vorticesITP->formVortices(itpname);
+	// 	itpname = "ITP-Vortices";
+	// 	ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+	// 	vorticesITP->formVortices(itpname);
 		
-		startGrid->wavefunction[0] = vorticesITP->result();
+	// 	startGrid->wavefunction[0] = vorticesITP->result();
 	
-		delete vorticesITP;
-	}
+	// 	delete vorticesITP;
+	// }
+
+	// for(int i = 1; i < startGrid->meta.samplesize;i++){
+	// 	startGrid->wavefunction[i] = startGrid->wavefunction[0];
+	// }
+
+	// Options tmpOpt = startUp.getOptions();
+	string startGridName = "StartGrid.h5";
+	// binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
+	// dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
+	// delete dataFile;
+	// delete startGrid;	
 
 	// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
 
-	for( int k = 1; k <= 1; k++){
+	for( int k = 1; k <= 6; k++){
 		MatrixData* data = new MatrixData(startUp.getMeta());
-		for(int i = 0; i < data->meta.samplesize; i++){
-			data->wavefunction[i] = startGrid->wavefunction[0];
-		}	
+
+		Options tmpOpt;
+		binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+		dataFile->getSnapshot("StartGrid",0,data,tmpOpt);
+		delete dataFile;
+
+
+		
+		// for(int i = 0; i < data->meta.samplesize; i++){
+		// 	data->wavefunction[i] = startGrid->wavefunction[0];
+		// }	
 		string runName = "Expanding-Set-"+to_string(k);
 		RTE* runExpanding = new RTE(data,startUp.getOptions());
 		runExpanding->noise();
@@ -100,7 +120,7 @@ try{
 	}
 	// }
 	
-	delete startGrid;	
+	
 
 }  // exceptions catcher
 
