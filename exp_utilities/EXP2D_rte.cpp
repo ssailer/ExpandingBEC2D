@@ -1,5 +1,5 @@
 #define EIGEN_VECTORIZE
-#define EIGEN_NO_DEBUG
+// #define EIGEN_NO_DEBUG
 
 #include <EXP2D_rte.hpp>
 #include <omp.h>
@@ -86,10 +86,10 @@ void RTE::RunSetup(){
 	// The laplacian and gradient coefficient needed for the RTE scheme.
 	// These are precomputed here, to simplify the computations later
 
-   	laplacian_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
-   	laplacian_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
-   	gradient_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
-   	gradient_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
+   	laplacian_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE);
+   	laplacian_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE);
+   	gradient_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE);
+   	gradient_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE);
 
    	complex<double> tmp;  	
    	for(int t = 0; t < ( 2 * opt.n_it_RTE); t++){
@@ -221,7 +221,7 @@ void RTE::rteToTime(string runName)
 
 	opt.initialRun = true;
 	Eval* initialEval = new Eval;
-	initialEval->saveData(wavefctVec,opt,0,runName);
+	initialEval->saveData(wavefctVec,opt,meta.steps,runName);
 	initialEval->evaluateData();
 	initialEval->plotData();
 	opt.vortexnumber = initialEval->getVortexNumber();
@@ -341,12 +341,6 @@ void RTE::rteToTime(string runName)
 			results.evaluateData();
 			results.plotData();
 
-			// plot("RTE-"+to_string(snapshot_times[j]));
-			// std::string h5name = to_string(snapshot_times[j]);
-			// std::stringstream ss;
-			// ss << std::setfill('0') << std::setw(5) << h5name;
-			// h5name = ss.str() + ".h5";
-
 			string dataname = runName + "-LastGrid.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
 			dataFile->appendSnapshot(runName,snapshot_times[j],pData,opt);
@@ -362,9 +356,8 @@ void RTE::rteToTime(string runName)
 
 		}
 		catch(const std::exception& e) { 
-			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " 
-					    << e.what() << ", application will now exit" << std::endl; 
-			throw; 
+			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 
+			throw e; 
 		}
 
 	}

@@ -57,6 +57,8 @@ try{
  	startUp.printInitVar();
 	
 	// MatrixData* startGrid = new MatrixData(startUp.getMeta());
+	// Options tmpOpt = startUp.getOptions();
+	// MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 		
 	// setGridToGaussian(startGrid,startUp.getOptions());
 
@@ -89,7 +91,7 @@ try{
 	// 	startGrid->wavefunction[i] = startGrid->wavefunction[0];
 	// }
 
-	// Options tmpOpt = startUp.getOptions();
+	
 	string startGridName = "StartGrid.h5";
 	// binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	// dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
@@ -98,15 +100,13 @@ try{
 
 	// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
 
-	for( int k = 1; k <= 6; k++){
+	for( int k = 1; k <= 1; k++){
 		MatrixData* data = new MatrixData(startUp.getMeta());
 
 		Options tmpOpt;
 		binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
 		dataFile->getSnapshot("StartGrid",0,data,tmpOpt);
 		delete dataFile;
-
-
 		
 		// for(int i = 0; i < data->meta.samplesize; i++){
 		// 	data->wavefunction[i] = startGrid->wavefunction[0];
