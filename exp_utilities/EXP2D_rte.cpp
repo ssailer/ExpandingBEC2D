@@ -147,7 +147,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    "
 			 << std::setw(3) << std::setfill('0') << (int)totalPercent << "% "
-			 // << " threads: " << omp_get_num_threads() //stateOfLoops.size()
+			 << " threads: " << stateOfLoops.size()
 			 << " remaining runtime: "
 			 << std::setw(2) << std::setfill('0') << expectedhour << ":"
 			 << std::setw(2) << std::setfill('0') << expectedmin << ":"
@@ -219,11 +219,7 @@ void RTE::rteToTime(string runName)
 	// 	k3[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);	
 	// }
 
-	MatrixXcd wavefctcp = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-	MatrixXcd k0 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-	MatrixXcd k1 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-	MatrixXcd k2 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-	MatrixXcd k3 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+
 
 	opt.initialRun = true;
 	Eval* initialEval = new Eval;
@@ -253,11 +249,18 @@ void RTE::rteToTime(string runName)
 
 		// plot("2-StartOfSnapShot-" + to_string(snapshot_times[j]));
 
-		// #pragma omp parallel for
+		#pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
+
+			MatrixXcd wavefctcp = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+			MatrixXcd k0 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+			MatrixXcd k1 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+			MatrixXcd k2 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+			MatrixXcd k3 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+
 			// list of which thread is working which iteration
 			int lambdaSteps = keeperOfTime.lambdaSteps;
-			threadinfo[i] = i; //omp_get_thread_num();
+			threadinfo[i] = omp_get_thread_num();
 			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
 		
 				wavefctcp = wavefctVec[i];
