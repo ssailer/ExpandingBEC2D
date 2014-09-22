@@ -229,7 +229,7 @@ void RTE::rteToTime(string runName)
 	Eval* initialEval = new Eval;
 	initialEval->saveData(wavefctVec,opt,meta.steps,runName);
 	initialEval->evaluateData();
-	// initialEval->plotData();
+	initialEval->plotData();
 	opt.vortexnumber = initialEval->getVortexNumber();
 	opt.initialRun = false;
 
@@ -335,7 +335,7 @@ void RTE::rteToTime(string runName)
 			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << flush;
 			results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
 			results.evaluateData();
-			// results.plotData();
+			results.plotData();
 
 			string dataname = runName + "-LastGrid.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
