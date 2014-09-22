@@ -249,7 +249,7 @@ void RTE::rteToTime(string runName)
 
 		// plot("2-StartOfSnapShot-" + to_string(snapshot_times[j]));
 
-		#pragma omp parallel for
+		// #pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
 
 			MatrixXcd wavefctcp = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
@@ -260,7 +260,7 @@ void RTE::rteToTime(string runName)
 
 			// list of which thread is working which iteration
 			int lambdaSteps = keeperOfTime.lambdaSteps;
-			threadinfo[i] = omp_get_thread_num();
+			threadinfo[i] = i;//omp_get_thread_num();
 			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
 		
 				wavefctcp = wavefctVec[i];
@@ -519,34 +519,60 @@ void RTE::rteToTime(string runName)
 // }
 
 inline void RTE::RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
-	Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
-	Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
-	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);                                                                                                                                            
+	// Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
+	// Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
+	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	int subx = meta.grid[0]-2;
+	int suby = meta.grid[1]-2;
+	MatrixXcd wavefctcpX(subx,suby);
+	MatrixXcd wavefctcpY(subx,suby);
 
 	if(opt.runmode.compare(1,1,"1") == 0){
 		//laplacian
-		#pragma omp parallel for
-		for(int j = 1;j<opt.grid[2]-1;j++){
-			for(int i = 1;i<opt.grid[1]-1;i++){
-				wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
-				wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
-			}
-		}
-		k.noalias() +=   wavefctcpX * laplacian_coefficient_x(t) + wavefctcpY * laplacian_coefficient_y(t);
+		// #pragma omp parallel for
+		// for(int j = 1;j<opt.grid[2]-1;j++){
+		// 	for(int i = 1;i<opt.grid[1]-1;i++){
+		// 		wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
+		// 		wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
+		// 	}
+		// }
+
+		// k.noalias() += wavefctcpX * laplacian_coefficient_x(t) + wavefctcpY * laplacian_coefficient_y(t);
+
+
+
+			// wavefctcpX.block(1,1,subx,suby).noalias() = wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby);
+			// wavefctcpY.block(1,1,subx,suby).noalias() = wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby);
 	
-		// gradient
-		#pragma omp parallel for
-		for(int j = 1;j<opt.grid[2]-1;j++){
-			for(int i = 1;i<opt.grid[1]-1;i++){
-				wavefctcpX(i,j) = wavefctcp(i+1,j) - wavefctcp(i-1,j);
-				wavefctcpY(i,j) = wavefctcp(i,j+1) - wavefctcp(i,j-1);
+			k.block(1,1,subx,suby).noalias() += (wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby)) * laplacian_coefficient_x(t)
+											  + (wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby)) * laplacian_coefficient_y(t);
+	
+		// // gradient
+		// #pragma omp parallel for
+		// for(int j = 1;j<opt.grid[2]-1;j++){
+		// 	for(int i = 1;i<opt.grid[1]-1;i++){
+		// 		wavefctcpX(i,j) = wavefctcp(i+1,j) - wavefctcp(i-1,j);
+		// 		wavefctcpY(i,j) = wavefctcp(i,j+1) - wavefctcp(i,j-1);
+		// 	}
+		// }
+
+		// #pragma omp parallel for
+		// for(int i = 0;i<opt.grid[1];i++){ wavefctcpY.row(i).array() *= Y.array(); }
+		// #pragma omp parallel for
+		// for(int j = 0;j<opt.grid[2];j++){ wavefctcpX.col(j).array() *= X.array(); }
+		// k.noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
+
+			wavefctcpX = (wavefctcp.block(2,1,subx,suby) - wavefctcp.block(0,1,subx,suby));
+			wavefctcpY = (wavefctcp.block(1,2,subx,suby) - wavefctcp.block(1,0,subx,suby));
+	
+			for(int i = 0; i < subx; i++){
+				wavefctcpY.row(i).array() *= Y.segment(1,suby).array();
 			}
-		}
-		#pragma omp parallel for
-		for(int i = 0;i<opt.grid[1];i++){ wavefctcpY.row(i).array() *= Y.array(); }
-		#pragma omp parallel for
-		for(int j = 0;j<opt.grid[2];j++){ wavefctcpX.col(j).array() *= X.array(); }
-		k.noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
+			for(int j = 0; j < suby; j++){
+				wavefctcpX.col(j).array() *= X.segment(1,subx).array();
+			}
+	
+			k.block(1,1,subx,suby).noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
 	}
 
 	if(opt.runmode.compare(1,1,"0") == 0){

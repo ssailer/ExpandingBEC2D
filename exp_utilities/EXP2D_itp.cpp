@@ -209,7 +209,7 @@ void ITP::formVortices(string runname){
 	}
 
 	// rescale(wavefct);
-	// plot("ITP-Vortices-Layout");
+	plot(runname + "Vortices-Layout");
 	cout << endl;
 	// update the ComplexGrid* DATA object outside of this.
 	// CopyEigenToComplexGrid();

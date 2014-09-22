@@ -43,7 +43,7 @@ using namespace std;
 int main( int argc, char** argv) 
 {	
 try{
-	omp_set_num_threads(12);
+	// omp_set_num_threads(12);
 	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 	StartUp startUp(argc,argv);	
 
