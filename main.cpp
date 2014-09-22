@@ -43,7 +43,7 @@ using namespace std;
 int main( int argc, char** argv) 
 {	
 try{
-	omp_set_num_threads(12);
+	// omp_set_num_threads();
 	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 	StartUp startUp(argc,argv);	
 
@@ -57,12 +57,12 @@ try{
  	startUp.printInitVar();
 	
 	// MatrixData* startGrid = new MatrixData(startUp.getMeta());
-	// Options tmpOpt = startUp.getOptions();
-	// MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+	Options tmpOpt = startUp.getOptions();
+	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 		
 	// setGridToGaussian(startGrid,startUp.getOptions());
 
-	// // cout << "value " << startGrid->wavefunction[0](1024,1024) << endl;
+	// cout << "value " << startGrid->wavefunction[0](1024,1024) << endl;
 
 	// ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
 	// string itpname = "ITP-Groundstate";
@@ -92,7 +92,7 @@ try{
 	// }
 
 	
-	string startGridName = "StartGrid.h5";
+	string startGridName = "StartGrid_2048x2048_N1000_noVortices.h5";
 	// binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	// dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	// delete dataFile;
@@ -100,24 +100,26 @@ try{
 
 	// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
 
-	for( int k = 1; k <= 1; k++){
+	// for( int k = 1; k <= 1; k++){
 		MatrixData* data = new MatrixData(startUp.getMeta());
 
-		Options tmpOpt;
+	// 	Options tmpOpt;
 		binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
-		dataFile->getSnapshot("StartGrid",0,data,tmpOpt);
+		dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 		delete dataFile;
 		
-		// for(int i = 0; i < data->meta.samplesize; i++){
-		// 	data->wavefunction[i] = startGrid->wavefunction[0];
-		// }	
-		string runName = "Expanding-Set-"+to_string(k);
+		for(int i = 0; i < data->meta.samplesize; i++){
+			data->wavefunction[i] = startGrid->wavefunction[0];
+		}
+		delete startGrid;
+
+		string runName = "Expanding-Set-"+to_string(1);
 		RTE* runExpanding = new RTE(data,startUp.getOptions());
 		runExpanding->noise();
 		runExpanding->rteToTime(runName);
 		delete runExpanding;
 		delete data;
-	}
+	// }
 	// }
 	
 	

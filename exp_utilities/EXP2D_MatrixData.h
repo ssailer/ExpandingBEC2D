@@ -75,7 +75,7 @@ inline MatrixData::MatrixData(const MetaData &m) : meta(m), wavefunction(m.sampl
 inline MatrixData::MatrixData(const int &samplesize,const int &gridx, const int &gridy,const double &extTime, const int &extStep, const double &xsize, const double &ysize) {
         
     wavefunction.resize(samplesize);
-    for(int i = 0; wavefunction.size(); ++i)
+    for(int i = 0; i < wavefunction.size(); i++)
         wavefunction[i] = MatrixXcd::Zero(gridx,gridy);
 
     meta.grid.resize(2);

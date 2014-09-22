@@ -66,7 +66,7 @@ private:
 
 	// data savefiles
 
-	RealGrid *phase, *zeros;
+	RealGrid phase, zeros;
 	string runname;
 	vector<ComplexGrid> PsiVec;
 	
@@ -88,7 +88,7 @@ private:
 	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	
 
-	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase);
+	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid &phase);
 	void findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
 	void calc_fields(ComplexGrid &data, Options &opt);
 	void checkEdges();

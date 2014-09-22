@@ -242,6 +242,7 @@ inline int StartUp::readConfig()
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
 	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
+	// opt.runmode 			 = root["RunOptions"]["runmode"];
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];

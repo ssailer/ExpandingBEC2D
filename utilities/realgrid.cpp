@@ -239,7 +239,7 @@ void RealGrid::allocate(uint32_t internal, uint32_t fft_xGrid, uint32_t fft_yGri
 void RealGrid::deallocate()
 {
 	if(store)
-		delete store;
+		delete[] store;
 }
 
 

@@ -76,7 +76,7 @@ void plotSpectrum(string name,string title, Observables &ares){
 	gr.WritePNG(name.c_str(),"Spectrum",false);
 }
 
-void plotVortexList(string name,string title, RealGrid *phase,PathResults &pres,Options &opt){
+void plotVortexList(string name,string title,const RealGrid &phase,PathResults &pres,Options &opt){
 
 	int n = opt.grid[1];
 	int m = opt.grid[2];
@@ -99,7 +99,7 @@ void plotVortexList(string name,string title, RealGrid *phase,PathResults &pres,
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
 	{	
 		k = i+n*j;
-		phaseData.a[k] = phase->at(0,i,j,0);
+		phaseData.a[k] = phase.at(0,i,j,0);
 	}
 
 	mglGraph gr;

@@ -86,13 +86,13 @@ void RTE::RunSetup(){
 	// The laplacian and gradient coefficient needed for the RTE scheme.
 	// These are precomputed here, to simplify the computations later
 
-   	laplacian_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE);
-   	laplacian_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE);
-   	gradient_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE);
-   	gradient_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE);
+   	laplacian_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
+   	laplacian_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
+   	gradient_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
+   	gradient_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
 
    	complex<double> tmp;  	
-   	for(int t = 0; t < ( 2 * opt.n_it_RTE); t++){
+   	for(int t = 0; t < ( 2 * opt.n_it_RTE + 1); t++){
    	tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t+1,0.0) * t_RTE );   	
    	laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
    	laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
@@ -147,7 +147,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    "
 			 << std::setw(3) << std::setfill('0') << (int)totalPercent << "% "
-			 << " threads: " << stateOfLoops.size()
+			 // << " threads: " << omp_get_num_threads() //stateOfLoops.size()
 			 << " remaining runtime: "
 			 << std::setw(2) << std::setfill('0') << expectedhour << ":"
 			 << std::setw(2) << std::setfill('0') << expectedmin << ":"
@@ -205,45 +205,41 @@ void RTE::rteToTime(string runName)
 	keeperOfTime.initialSteps = meta.steps;
 
 
-	vector<MatrixXcd> wavefctcp(samplesize);	
-	vector<MatrixXcd> k0(samplesize);
-	vector<MatrixXcd> k1(samplesize);
-	vector<MatrixXcd> k2(samplesize);
-	vector<MatrixXcd> k3(samplesize);
+	// vector<MatrixXcd> wavefctcp(samplesize);	
+	// vector<MatrixXcd> k0(samplesize);
+	// vector<MatrixXcd> k1(samplesize);
+	// vector<MatrixXcd> k2(samplesize);
+	// vector<MatrixXcd> k3(samplesize);
 
-	for(int i = 0; i <samplesize;i++){
-		wavefctcp[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-		k0[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-		k1[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-		k2[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-		k3[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);	
-	}
+	// for(int i = 0; i <samplesize;i++){
+	// 	wavefctcp[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	// 	k0[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	// 	k1[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	// 	k2[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	// 	k3[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);	
+	// }
+
+	MatrixXcd wavefctcp = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	MatrixXcd k0 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	MatrixXcd k1 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	MatrixXcd k2 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	MatrixXcd k3 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
 
 	opt.initialRun = true;
 	Eval* initialEval = new Eval;
 	initialEval->saveData(wavefctVec,opt,meta.steps,runName);
 	initialEval->evaluateData();
-	initialEval->plotData();
+	// initialEval->plotData();
 	opt.vortexnumber = initialEval->getVortexNumber();
 	opt.initialRun = false;
 
 	string evalname = runName + "-Eval.h5";
 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
-	evalFile->appendEval(0,opt,meta,*initialEval);
+	evalFile->appendEval(meta.steps,opt,meta,*initialEval);
 	delete initialEval;
 	delete evalFile;
-
-
-	// CopyComplexGridToEigen();
-
-	// plot("1-AfterNoise-");
-
-	// binaryFile *dataFile = new binaryFile("00000.h5",binaryFile::out);
-	// dataFile->appendSnapshot(runName,0,pData,opt);
-	// delete dataFile;
 	
 	start = omp_get_wtime();
-
 
 	//start loop here
 	Eigen::initParallel();
@@ -257,14 +253,14 @@ void RTE::rteToTime(string runName)
 
 		// plot("2-StartOfSnapShot-" + to_string(snapshot_times[j]));
 
-		#pragma omp parallel for
+		// #pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
 			// list of which thread is working which iteration
 			int lambdaSteps = keeperOfTime.lambdaSteps;
-			threadinfo[i] = omp_get_thread_num();
+			threadinfo[i] = i; //omp_get_thread_num();
 			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
 		
-				wavefctcp[i] = wavefctVec[i];
+				wavefctcp = wavefctVec[i];
 		
 				// boundary conditions -- Dirichlet
 		
@@ -275,20 +271,20 @@ void RTE::rteToTime(string runName)
 		
 				// boundary conditions end
 		
-				RTE_compute_k(k0[i],wavefctcp[i],lambdaSteps);
-				wavefctcp[i] = wavefctVec[i] + half * t_RTE * k0[i];
+				RTE_compute_k(k0,wavefctcp,lambdaSteps);
+				wavefctcp = wavefctVec[i] + half * t_RTE * k0;
 
 				lambdaSteps++;
-				RTE_compute_k(k1[i],wavefctcp[i],lambdaSteps);
-				wavefctcp[i] = wavefctVec[i] + half * t_RTE * k1[i];
+				RTE_compute_k(k1,wavefctcp,lambdaSteps);
+				wavefctcp = wavefctVec[i] + half * t_RTE * k1;
 		
-				RTE_compute_k(k2[i],wavefctcp[i],lambdaSteps);		
-				wavefctcp[i] = wavefctVec[i] + t_RTE * k2[i];
+				RTE_compute_k(k2,wavefctcp,lambdaSteps);		
+				wavefctcp = wavefctVec[i] + t_RTE * k2;
 		
 				lambdaSteps++;
-				RTE_compute_k(k3[i],wavefctcp[i],lambdaSteps);
+				RTE_compute_k(k3,wavefctcp,lambdaSteps);
 		
-				wavefctVec[i] += (t_RTE/six) * ( k0[i] + two * k1[i] + two * k2[i] + k3[i]);
+				wavefctVec[i] += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 		
 				// // Neumann Boundaries
 		
@@ -339,7 +335,7 @@ void RTE::rteToTime(string runName)
 			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << flush;
 			results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
 			results.evaluateData();
-			results.plotData();
+			// results.plotData();
 
 			string dataname = runName + "-LastGrid.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);

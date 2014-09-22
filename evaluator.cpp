@@ -45,17 +45,17 @@ try{
  		std::ofstream logstream("evaluator.log");
  		redirecter redirect(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
  	}
-	
+	int files = 2;
 	vector<vector<Observables>> obs;	
-	obs.resize(4);
+	obs.resize(files);
 	vector<Options> opt;
 	MatrixData::MetaData meta;
 	vector<vector<Eval>> results;
-	results.resize(4);
+	results.resize(files);
 
 	vector<int> timeList;
 
-	for(int k = 0; k < 4; k++){
+	for(int k = 0; k < files; k++){
 
 		string runName = "Expanding-Set-"+to_string(k+1);
 		string evalname = runName + "-Eval.h5";
@@ -83,12 +83,14 @@ try{
 	string finalRunName = "Expanding";
 	Eval finalResult;
 	for(int i = 0; i < timeList.size(); i++){
-		cout << "Processing Time: " << timeList[i] << " .." << endl;
-		vector<Eval> tmpResults(4);
-		for(int f = 0; f < 4; f++){
+		cout << "Processing Time: " << timeList[i] << " .. ";
+		vector<Eval> tmpResults(files);
+		for(int f = 0; f < files; f++){
 			tmpResults[f] = results[f][i];
 		}
+		cout << "Evaluate .. ";
 		finalResult.saveDataFromEval(opt[i],timeList[i],finalRunName,tmpResults);
+		cout << "Done.";
 
 	}
 	cout << "Evaluation finished" << endl;
