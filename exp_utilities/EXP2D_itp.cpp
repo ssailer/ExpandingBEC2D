@@ -1,5 +1,4 @@
 #define EIGEN_VECTORIZE
-#define EIGEN_NO_DEBUG
 
 #include <EXP2D_itp.hpp>
 #include <omp.h>
@@ -335,20 +334,27 @@ void ITP::cli_groundState(string name, double start,int state,Observables totalR
 }
 
 inline void ITP::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp){
-	Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
-	Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
+	// Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
+	// Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
 	
+	int subx = opt.grid[1]-2;
+	int suby = opt.grid[2]-2;
+	MatrixXcd wavefctcpX(subx,suby);
+	MatrixXcd wavefctcpY(subx,suby);
 	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	// laplacian
-	#pragma omp parallel for
-	for(int j = 1;j<opt.grid[2]-1;j++){
-		for(int i = 1;i<opt.grid[1]-1;i++){
-			wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
-			wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
-		}
-	}
-	k.noalias() += wavefctcpX * itp_laplacian_x + wavefctcpY * itp_laplacian_y;
+	// #pragma omp parallel for
+	// for(int j = 1;j<opt.grid[2]-1;j++){
+	// 	for(int i = 1;i<opt.grid[1]-1;i++){
+	// 		wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
+	// 		wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
+	// 	}
+	// }
+	// k.noalias() += wavefctcpX * itp_laplacian_x + wavefctcpY * itp_laplacian_y;
+
+	k.block(1,1,subx,suby).noalias() += (wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby)) * itp_laplacian_x
+									  + (wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby)) * itp_laplacian_y;
 
 	// interaction + potential
 	k.array() -= (PotentialGrid.array() + complex<double>(opt.g,0.0) * ( wavefctcp.conjugate().array() * wavefctcp.array() )) * wavefctcp.array();

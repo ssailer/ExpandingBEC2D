@@ -55,6 +55,7 @@ class RTE
     // Coordinates
     vector<double> x_axis,y_axis;
     VectorXcd X,Y;
+    MatrixXcd Xmatrix,Ymatrix;
     VectorXd Xexpanding, Yexpanding;
 
     int samplesize;

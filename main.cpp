@@ -43,8 +43,7 @@ using namespace std;
 int main( int argc, char** argv) 
 {	
 try{
-	// omp_set_num_threads(12);
-	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+
 	StartUp startUp(argc,argv);	
 
 	#if DEBUG_LOG
@@ -59,6 +58,9 @@ try{
 	// MatrixData* startGrid = new MatrixData(startUp.getMeta());
 	Options tmpOpt = startUp.getOptions();
 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+
+	omp_set_num_threads(tmpOpt.samplesize);
+	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 		
 	// setGridToGaussian(startGrid,startUp.getOptions());
 
@@ -92,7 +94,7 @@ try{
 	// }
 
 	
-	string startGridName = "StartGrid_2048x2048_N1000_noVortices.h5";
+	string startGridName = "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 	// binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	// dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	// delete dataFile;
