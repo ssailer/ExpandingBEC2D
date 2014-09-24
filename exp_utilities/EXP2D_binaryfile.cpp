@@ -192,7 +192,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
 	tmpOpt1[24] = options.vortexspacing;  
 
 	//copy options to file
-	hsize_t dimsf[1] = {24};
+	hsize_t dimsf[1] = {25};
 	dataspace = H5Screate_simple(1, dimsf, NULL);
 
 	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
@@ -229,7 +229,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
   if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){      
 	hid_t    h5a_options, dataspace_opt;
-	double tmpOpt1[24];
+	double tmpOpt1[25];
 
 	tmpOpt1[0] = options.N;
 	for(int i= 0; i < 3; i++)
@@ -254,10 +254,11 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
 	tmpOpt1[21] = options.potFactor;
 	tmpOpt1[22] = options.samplesize;
-	tmpOpt1[23] = options.vortexnumber;  
+	tmpOpt1[23] = options.vortexnumber; 
+	tmpOpt1[24] = options.vortexspacing; 
 
 	  //copy options to file
-	hsize_t dimsf[1] = {24};
+	hsize_t dimsf[1] = {25};
 	dataspace_opt = H5Screate_simple(1, dimsf, NULL);
 
 	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
@@ -533,7 +534,7 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 	hid_t h5a_options;
 	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
 
-	double tmpOpt1[24];
+	double tmpOpt1[25];
 
 	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
 
@@ -562,7 +563,8 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 
 	options.potFactor = tmpOpt1[21];
 	options.samplesize = (int)tmpOpt1[22];
-	options.vortexnumber = (int)tmpOpt1[23];              
+	options.vortexnumber = (int)tmpOpt1[23];
+	options.vortexspacing = (int)tmpOpt1[24];              
 
 	H5Aclose(h5a_options);
 
@@ -840,10 +842,14 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 	H5Gclose(h5_timegroup);
 	return false;
   }else{
-	hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
+	hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);3
+
+
 	
 	hid_t h5a_options;
 	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
+
+	// int sizeOfOptions = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
 
 	double tmpOpt1[25];
 

@@ -54,75 +54,51 @@ try{
  	#endif
 
  	startUp.printInitVar();
-	
-	// MatrixData* startGrid = new MatrixData(startUp.getMeta());
+
+
 	Options tmpOpt = startUp.getOptions();
-	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 
-	omp_set_num_threads(tmpOpt.samplesize);
-	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
-		
-	// setGridToGaussian(startGrid,startUp.getOptions());
 
-	// cout << "value " << startGrid->wavefunction[0](1024,1024) << endl;
 
-	// ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	// string itpname = "ITP-Groundstate";
-	// groundStateITP->propagateToGroundState(itpname);
-	// startGrid->wavefunction[0] = groundStateITP->result();
-	// delete groundStateITP;
+	// MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 
-	// string tmpRunMode = startUp.getRunMode();
-	// if(tmpRunMode.compare(3,1,"1") == 0){
-	// 	int vnumber = 0;
-	// 	addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
-		
-	// 	startUp.setVortexnumber(vnumber);
-	// 	cout << endl << "Set Vortices #: " << vnumber << endl;
+	// // cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 	
-	// 	itpname = "ITP-Vortices";
-	// 	ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	// 	vorticesITP->formVortices(itpname);
-		
-	// 	startGrid->wavefunction[0] = vorticesITP->result();
-	
-	// 	delete vorticesITP;
-	// }
+	// string startGridName = "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 
-	// for(int i = 1; i < startGrid->meta.samplesize;i++){
-	// 	startGrid->wavefunction[i] = startGrid->wavefunction[0];
-	// }
+	// MatrixData* data = new MatrixData(startUp.getMeta());
 
-	
-	string startGridName = "StartGrid_2048x2048_N1000_alternatingVortices.h5";
-	// binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
-	// dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
+	// binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+	// dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 	// delete dataFile;
-	// delete startGrid;	
-
-	// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
-
-	// for( int k = 1; k <= 1; k++){
-		MatrixData* data = new MatrixData(startUp.getMeta());
-
-	// 	Options tmpOpt;
-		binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
-		dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-		delete dataFile;
-		
-		for(int i = 0; i < data->meta.samplesize; i++){
-			data->wavefunction[i] = startGrid->wavefunction[0];
-		}
-		delete startGrid;
-
-		string runName = "Expanding-Set-"+to_string(1);
-		RTE* runExpanding = new RTE(data,startUp.getOptions());
-		runExpanding->noise();
-		runExpanding->rteToTime(runName);
-		delete runExpanding;
-		delete data;
+	
+	// for(int i = 0; i < data->meta.samplesize; i++){
+	// 	data->wavefunction[i] = startGrid->wavefunction[0];
 	// }
-	// }
+	// delete startGrid;
+
+	// string runName = "Expanding-Set-1";
+	// RTE* runExpanding = new RTE(data,startUp.getOptions());
+	// runExpanding->noise();
+	// runExpanding->rteToTime(runName);
+	// delete runExpanding;
+	// delete data;
+
+
+	string runName = "Expanding-Set-1";
+	string filename = runName + "-LastGrid.h5";
+	MatrixData* data = new MatrixData(startUp.getMeta());
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
+
+	vector<int> timeList = dataFile->getTimeList();
+	dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
+	delete dataFile;
+	tmpOpt.initialRun = false;
+	RTE* runExpanding = new RTE(data,tmpOpt);
+	runExpanding->rteToTime(runName);
+	delete runExpanding;
+	delete data;
+
 	
 	
 

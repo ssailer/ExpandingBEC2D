@@ -48,7 +48,7 @@ public:
 
   bool getEval(int snapShotTime, Options &options, MatrixData::MetaData &meta, Eval &results);
 
-  const vector<int> & getTimeList() const {return time_list;}
+  const vector<int> getTimeList() const {return time_list;}
 
   // const Options & getOptions() const {return options;}
 

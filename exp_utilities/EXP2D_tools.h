@@ -20,7 +20,7 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : N(100), stateInformation(2), vortexnumber(20), vortexspacing(50), snapshots(100), t_abs(0,0), potFactor(1), initialRun(false) {}
+    Options () : N(100), stateInformation(2), vortexnumber(20), vortexspacing(50), snapshots(100), t_abs(0,0), potFactor(1), initialRun(true) {}
 
     double N; // Number of particles    
     double klength[3];

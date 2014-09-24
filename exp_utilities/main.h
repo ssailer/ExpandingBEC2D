@@ -41,6 +41,7 @@ public:
 	inline int readConfig();
 
 	inline Options getOptions();
+	inline void setOptions(Options &ext_opt);
 	inline void setInitialRun(bool initialRun);
 	inline void setVortexnumber(int number);
 	inline void setRunMode(string runmode);
@@ -58,6 +59,10 @@ private:
 
 inline Options StartUp::getOptions(){
 	return opt;
+}
+
+inline void StartUp::setOptions(Options &ext_opt){
+	opt = ext_opt;
 }
 
 inline void StartUp::setInitialRun(bool initialRun){
