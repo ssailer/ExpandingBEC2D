@@ -20,7 +20,7 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : N(100), stateInformation(2), vortexnumber(20), vortexspacing(50), snapshots(100), t_abs(0,0), potFactor(1), initialRun(true) {}
+    
 
     double N; // Number of particles    
     double klength[3];
@@ -47,6 +47,8 @@ typedef struct Options {
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
     bool initialRun;
+
+    Options () : N(100), stateInformation(2), t_abs(0,0), snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true) {}
     
 } Options;
 
@@ -57,7 +59,7 @@ public:
     expException(std::string const& info);
     void setString(std::string const& info);
     void addString(std::string const& info);
-    string printString();
+    void printString();
 private:
     std::string stringException;
 };
@@ -69,7 +71,7 @@ inline void expException::setString(std::string const& info){
 inline void expException::addString(std::string const& info){
     stringException += info;
 };
-inline std::string expException::printString(){
+inline void expException::printString(){
     cerr << stringException.c_str() << endl;
 };
 

@@ -842,7 +842,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 	H5Gclose(h5_timegroup);
 	return false;
   }else{
-	hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);3
+	hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
 
 
 	

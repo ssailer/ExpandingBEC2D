@@ -28,7 +28,7 @@ private:
 
 class StartUp {
 public:
-	StartUp(int argcTmp, char** argvTmp) {
+	StartUp(int argcTmp, char** argvTmp) : restartValue(false) {
 		argc = argcTmp;
 		argv = argvTmp;
 		readCli();
@@ -49,13 +49,18 @@ public:
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
 	inline string getRunMode();
-	bool newRun;
+	inline bool restart();
 private:
+	bool restartValue;
 	MatrixData::MetaData meta;
 	Options opt;
 	int argc;
 	char** argv;
 };
+
+inline bool StartUp::restart(){
+	return restartValue;
+}
 
 inline Options StartUp::getOptions(){
 	return opt;
@@ -122,7 +127,6 @@ inline void StartUp::setDirectory()
 		if(chdir(opt.workingdirectory.c_str()) == 0){
 			cerr << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
 			cerr << "Check \"run.log\" for output of this run." << endl;
-			newRun = false;
 		}
 	}else
 	{
@@ -131,7 +135,6 @@ inline void StartUp::setDirectory()
 
 		if(chdir(opt.workingdirectory.c_str()) == 0){
 			cerr << "Switching to " << "\"" << opt.workingdirectory << "\"" << endl;
-			newRun = true;
 		}
 		cerr << endl;
 		cerr << "Check \"run.log\" for information about this run." << endl;			
@@ -150,7 +153,8 @@ inline int StartUp::readCli()
     desc.add_options() 
       ("help,h", "Print help messages.") 
       ("config,c",po::value<string>(&opt.config), "Name of the configfile")
-      ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data");
+      ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data.")
+      ("restart,r","Use if you want to restart the run from LastGrid.");
       // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
       // ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
       // ("gauss",po::value<bool>(&opt.startgrid[0]),"Initial Grid has gaussian form.")
@@ -177,18 +181,23 @@ inline int StartUp::readCli()
  
       /** --help option 
        */ 
-      if ( vm.count("help")  ) 
-      { 
+      if ( vm.count("help")  ){ 
         std::cout << "This is a program to simulate the expansion of a BEC with Vortices in 2D" << endl
         		  << "after a harmonic trap has been turned off. The expansion is simulated by" << endl
         		  << "an expanding coordinate system. The implemented algorithm to solve the GPE" << endl
         		  << "is a 4-th order Runge-Kutta Integration." << endl << endl
-                  << desc << endl; 
-        return SUCCESS; 
+                  << desc << endl;
+        expException e("End of Help.");
+        throw e;
       } 
  
       po::notify(vm); // throws on error, so do after help in case 
                       // there are any problems 
+
+    	if(vm.count("restart")){
+    		restartValue = true;
+
+		}
     } 
     catch(po::error& e) 
     { 
