@@ -187,7 +187,7 @@ inline int StartUp::readCli()
         		  << "an expanding coordinate system. The implemented algorithm to solve the GPE" << endl
         		  << "is a 4-th order Runge-Kutta Integration." << endl << endl
                   << desc << endl;
-        expException e("End of Help.");
+        string e = "End of Help.";
         throw e;
       } 
  
