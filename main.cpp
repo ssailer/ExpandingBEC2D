@@ -64,7 +64,7 @@ if(!startUp.restart()){
 
 	// cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 	
-	string startGridName = "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+	string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 
 	MatrixData* data = new MatrixData(startUp.getMeta());
 

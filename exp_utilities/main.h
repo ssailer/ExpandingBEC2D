@@ -50,8 +50,10 @@ public:
 	inline void rotatePotential();
 	inline string getRunMode();
 	inline bool restart();
+	inline string getStartingGridName();
 private:
 	bool restartValue;
+	string startingGridName;
 	MatrixData::MetaData meta;
 	Options opt;
 	int argc;
@@ -60,6 +62,10 @@ private:
 
 inline bool StartUp::restart(){
 	return restartValue;
+}
+
+inline string StartUp::getStartingGridName(){
+	return startingGridName;
 }
 
 inline Options StartUp::getOptions(){
@@ -258,6 +264,7 @@ inline int StartUp::readConfig()
 	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
 	// opt.runmode 			 = root["RunOptions"]["runmode"];
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
+	cfg.lookupValue("RunOptions.startingGridName",startingGridName);
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
