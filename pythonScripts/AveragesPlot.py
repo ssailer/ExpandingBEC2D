@@ -9,10 +9,25 @@ from scipy.cluster.vq import kmeans, kmeans2, whiten
 
 def main():
 
-	datafile = 'linma1_run06_4x12samples_mixed_vortices/Combined_Observables.dat'
+	datafile = 'linma1_run07_4x12samples_no_vortices/Combined_Observables.dat'
 
-	from_data = pd.read_csv(datafile)
-	from_csv.head()
+	cols = ["Timestep","X_max","Y_max","D_max","D_min","D_Ratio","D_max_Angle","D_min_Angle","Ratio","RatioAngle","N","V","Density","E_kin"]
+
+	from_data = pd.read_csv(datafile,
+		header=0,
+		names=cols)
+
+	dataset1 = from_data['Timestep']
+	dataset2 = from_data['Ratio']
+	dataset3 = from_data['RatioAngle']
+	dataset4 = from_data['D_Ratio']
+	dataset5 = from_data['D_max_Angle']
+
+	for i in range(0,len(dataset3)):
+		if dataset2[i] < 1:
+			dataset2[i] = 1/dataset2[i]
+
+
 
 
 
@@ -42,17 +57,31 @@ def main():
 	# data = np.column_stack((dataset1,dataset2))
 	
 	
-	# fig = plt.figure()
-	# ax1 = fig.add_subplot(2,1,1)
-	# histogram = ax1.plot(dataset1,dataset2,'ro')
+	fig = plt.figure()
+	ax1 = fig.add_subplot(221)
+	ratioPlot = ax1.plot(dataset1,dataset2,'ro')
 	# ax1.set_xlim([0.01,4])
 	# ax1.set_ylim([0.0001,10000000])
 	# ax1.set_xscale('log')
 	# ax1.set_yscale('log')
-	# plt.ylabel('Occupation Number')
-	# plt.xlabel('radial k-Vector')
+	plt.ylabel('Ratio')
+	plt.xlabel('Timestep')
 
-	# ax2 = fig.add_subplot(2,1,2)
+	ax2 = fig.add_subplot(222)
+	anglePlot = ax2.plot(dataset1,dataset3,'ro')
+	plt.ylabel('Angle')
+	plt.xlabel('Timestep')
+
+	ax3 = fig.add_subplot(223)
+	anglePlot = ax3.plot(dataset1,dataset4,'ro')
+	plt.ylabel('D_Ratio')
+	plt.xlabel('Timestep')
+
+	ax4 = fig.add_subplot(224)
+	anglePlot = ax4.plot(dataset1,dataset5,'ro')
+	plt.ylabel('D_max_Angle')
+	plt.xlabel('Timestep')
+
 
 	# envelope_plot(dataset1,dataset2,winsize=20,ax=ax2)
 
@@ -80,8 +109,10 @@ def main():
 	# # ax2.set_yscale('log')
 	# # plt.ylabel('Occupation Number')
 	# # plt.xlabel('radial k-Vector')
+	# 
 	
-	# plt.show()
+	plt.savefig('linma1_run06_4x12samples_mixed_vortices/Combined_Plots.png')
+	plt.show()
 
 	# plt.plot(dataset1,dataset2)
 	# plt.show()

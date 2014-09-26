@@ -45,7 +45,7 @@ try{
  		std::ofstream logstream("evaluator.log");
  		redirecter redirect(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
  	}
-	int files = 2;
+	int files = 1;
 	vector<vector<Observables>> obs;	
 	obs.resize(files);
 	vector<Options> opt;
@@ -83,16 +83,16 @@ try{
 	string finalRunName = "Expanding";
 	Eval finalResult;
 	for(int i = 0; i < timeList.size(); i++){
-		cout << "Processing Time: " << timeList[i] << " .. ";
+		cout << "Processing Time: " << timeList[i] << " .. " ;
 		vector<Eval> tmpResults(files);
 		for(int f = 0; f < files; f++){
 			tmpResults[f] = results[f][i];
 		}
-		cout << "Evaluate .. ";
 		finalResult.saveDataFromEval(opt[i],timeList[i],finalRunName,tmpResults);
-		cout << "Done.";
+		cout << "\r" << flush;
 
 	}
+	cout << endl;
 	cout << "Evaluation finished" << endl;
 
 }  // exceptions catcher
