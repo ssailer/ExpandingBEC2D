@@ -252,7 +252,7 @@ void RTE::rteToTime(string runName)
 		vector<int> threadinfo(samplesize);
 		int slowestthread = 0;
 
-		omp_set_num_threads(omp_get_max_threads()/2);
+		omp_set_num_threads(12);
 		#pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
 
