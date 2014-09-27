@@ -75,6 +75,7 @@ if(!startUp.restart()){
 	for(int i = 0; i < data->meta.samplesize; i++){
 		data->wavefunction[i] = startGrid->wavefunction[0];
 	}
+	data->setMeta(startGrid->getMeta());
 	delete startGrid;
 
 	string runName = "Expanding-Set-1";
