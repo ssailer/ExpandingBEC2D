@@ -865,7 +865,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 	options.omega_x = complex<double>(tmpOpt1[6],0.0);
 	options.omega_y = complex<double>(tmpOpt1[7],0.0);
 	options.dispersion_x = complex<double>(tmpOpt1[8],0.0);
-	options.dispersion_x = complex<double>(tmpOpt1[9],0.0);
+	options.dispersion_y = complex<double>(tmpOpt1[9],0.0);
 	options.min_x = tmpOpt1[10];
 	options.min_y = tmpOpt1[11];
 	options.t_abs = complex<double>(tmpOpt1[12],0.0);

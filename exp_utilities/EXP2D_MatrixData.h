@@ -97,11 +97,11 @@ inline MatrixData::MatrixData(const int &samplesize,const int &gridx, const int 
 }
 
 
-inline void MatrixData::update(const double &extTime,const int &extSteps,const vector<double> &coordFactor){
+inline void MatrixData::update(const double &extTime,const int &extSteps,const vector<double> &coord){
     meta.time = extTime;
     meta.steps = extSteps;
-    meta.coord[0] *= coordFactor[0];
-    meta.coord[1] *= coordFactor[1];
+    meta.coord[0] = coord[0];
+    meta.coord[1] = coord[1];
     meta.spacing[0] = meta.coord[0] * 2 / meta.grid[0];
     meta.spacing[1] = meta.coord[1] * 2 / meta.grid[1];
     meta.dataToArray();

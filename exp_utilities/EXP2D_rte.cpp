@@ -92,15 +92,15 @@ void RTE::RunSetup(){
 
 	// The laplacian and gradient coefficient needed for the RTE scheme.
 	// These are precomputed here, to simplify the computations later
-
-   	laplacian_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
-   	laplacian_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
-   	gradient_coefficient_x = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
-   	gradient_coefficient_y = VectorXcd::Zero(2 * opt.n_it_RTE + 1);
+	int coefSize = 2 * opt.n_it_RTE + 1 - 2 * meta.steps;
+   	laplacian_coefficient_x = VectorXcd::Zero(coefSize);
+   	laplacian_coefficient_y = VectorXcd::Zero(coefSize);
+   	gradient_coefficient_x = VectorXcd::Zero(coefSize);
+   	gradient_coefficient_y = VectorXcd::Zero(coefSize);
 
    	complex<double> tmp;  	
-   	for(int t = 0; t < ( 2 * opt.n_it_RTE + 1); t++){
-   	tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t+1,0.0) * t_RTE );   	
+   	for(int t = 0; t < coefSize; t++){
+   	tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t,0.0) * t_RTE );   	
    	laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
    	laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
    	gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
@@ -138,7 +138,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 
 		overallStepState = (overallStepState == 0) ? 1 : overallStepState;
 
-		int remainingSeconds = (total * opt.n_it_RTE / overallStepState) - total;;
+		int remainingSeconds = (total * opt.n_it_RTE / overallStepState) - total;
 
 
 		
@@ -168,7 +168,6 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 }
 
 void RTE::plot(const string name){
-
 
 	if(opt.runmode.compare(1,1,"1") == 0){
 		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
@@ -325,13 +324,17 @@ void RTE::rteToTime(string runName)
 		if(opt.runmode.compare(1,1,"1") == 0){
 			opt.stateInformation[0] = real(lambda_x(tmp)); // needed for expansion and the computing of the gradient etc.
 			opt.stateInformation[1] = real(lambda_y(tmp));
+			cout << opt.stateInformation[0] << "  " << opt.stateInformation[1] << endl;
 		}
 		if(opt.runmode.compare(1,1,"0") == 0){
 			opt.stateInformation[0] = 1.0;
 			opt.stateInformation[1] = 1.0;
 		}
 
-		pData->update(real(tmp),snapshot_times[j],opt.stateInformation);
+		vector<double> coord(2);
+		coord[0] = opt.min_x * opt.stateInformation[0];
+		coord[1] = opt.min_y * opt.stateInformation[1];
+		pData->update(real(tmp),snapshot_times[j],coord);
 
 		// plot("3-"+to_string(snapshot_times[j]));
 		
@@ -395,7 +398,6 @@ void RTE::RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
 
 	Eigen::initParallel();
 
-
 	// Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
 	// Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
 	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -404,14 +406,11 @@ void RTE::RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
 	MatrixXcd wavefctcpX(subx,suby);
 	MatrixXcd wavefctcpY(subx,suby);
 
-
 	k.block(1,1,subx,suby).noalias() += (wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby)) * laplacian_coefficient_x(t)
 									  + (wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby)) * laplacian_coefficient_y(t);
 
 
 	k.array() -= ( i_unit * PotentialGrid.array() + complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() )) * wavefctcp.array();
-
-
 }
 
 // void RTE::RTE_compute_k_ex(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
