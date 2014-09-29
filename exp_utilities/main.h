@@ -33,12 +33,13 @@ public:
 		argv = argvTmp;
 		readCli();
 		readConfig();
-		setDirectory();
+		setDirectory();		
 	}
 	inline void printInitVar();
 	inline void setDirectory();
 	inline int readCli();
 	inline int readConfig();
+	inline void writeConfig();
 
 	inline Options getOptions();
 	inline void setOptions(Options &ext_opt);
@@ -51,6 +52,8 @@ public:
 	inline string getRunMode();
 	inline bool restart();
 	inline string getStartingGridName();
+	inline int getRunTime(){ return opt.n_it_RTE;};
+	inline int getSnapShots(){ return opt.snapshots;};
 private:
 	bool restartValue;
 	string startingGridName;
@@ -316,6 +319,40 @@ inline int StartUp::readConfig()
 
      return SUCCESS;
 	
+}
+
+inline void StartUp::writeConfig(){
+	string filename = "run.cfg";
+	ofstream datafile;
+  		datafile.open(filename.c_str(), ios::out);
+  		datafile << "RunOptions =\n" << "{\n"
+  				 << "N = " << opt.N << ";\n"
+				 << "g = " << opt.g << ";\n"
+				 << "min_x = " << opt.min_x << ";\n"
+				 << "min_y = " << opt.min_y << ";\n"
+				 << "klength0 = " << opt.klength[0] << ";\n"
+				 << "klength1 = " << opt.klength[1] << ";\n"
+				 << "klength2 = " << opt.klength[2] << ";\n"
+				 << "grid0 = " << opt.grid[0] << ";\n"
+				 << "grid1 = " << opt.grid[1] << ";\n"
+				 << "grid2 = " << opt.grid[2] << ";\n"
+				 << "grid3 = " << opt.grid[3] << ";\n"
+				 << "numberOfIterations = " << opt.n_it_RTE << ";\n"
+				 << "numberOfSnapshots = " << opt.snapshots << ";\n"
+				 << "ITP_step = " << opt.ITP_step << ";\n"
+				 << "RTE_step = " << opt.RTE_step << ";\n"
+				 << "exp_factor = " << opt.exp_factor.real() << ";\n"
+				 << "potentialFactor = " << opt.potFactor << ";\n"
+				 << "vortexspacing = " << opt.vortexspacing << ";\n"
+				 << "omega_x = " << opt.omega_x.real() << ";\n"
+				 << "omega_y = " << opt.omega_y.real() << ";\n"
+				 << "dispersion_x = " << opt.dispersion_x.real() << ";\n"
+				 << "dispersion_y = " << opt.dispersion_y.real() << ";\n"
+				 << "runmode = \"" << opt.runmode << "\";\n"
+				 << "startingGridName = \"" << startingGridName << "\";\n"
+				 << "samplesize = " << opt.samplesize << ";\n"
+				 << "}";
+	datafile.close();
 }
 
 

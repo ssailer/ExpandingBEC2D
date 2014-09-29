@@ -107,7 +107,7 @@ cout << "Adding Vortices with a spacing of " << opt.vortexspacing << "." << endl
 
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
 int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
-int windingnumber = 1;
+int windingnumber = 2;
 
 ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 

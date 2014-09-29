@@ -95,6 +95,8 @@ if(startUp.restart()){
 	dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
 	delete dataFile;
 	tmpOpt.initialRun = false;
+	tmpOpt.n_it_RTE = startUp.getRunTime();
+	tmpOpt.snapshots = startUp.getSnapShots();
 	RTE* runExpanding = new RTE(data,tmpOpt);
 	runExpanding->rteToTime(runName);
 	delete runExpanding;
