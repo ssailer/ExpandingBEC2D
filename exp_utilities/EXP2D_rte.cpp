@@ -202,6 +202,23 @@ void RTE::noise(){
 	}
 }
 
+inline void RTE::rescale(MatrixXcd &wavefct){	
+
+	// cout << "Rescale " << h_x << " " << h_y << endl;
+	double Integral = 0.;  
+	for(int i=0;i<opt.grid[1]-1;i++){
+    	for(int j=0;j<opt.grid[2]-1;j++){
+    		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);
+      		// Integral += abs2(wavefct(i,j));      
+    	}
+    }
+    // cout << "Integral" << Integral << endl;
+    
+	double scaleFactor = opt.N/Integral;	
+	// cout << "Integral : " << Integral << " scalefactor: " << scaleFactor << " " << sqrt(scaleFactor) << endl;
+	wavefct.array() *= sqrt(scaleFactor);
+}
+
 void RTE::rteToTime(string runName)
 {
 	double start;  // starttime of the run
@@ -293,6 +310,8 @@ void RTE::rteToTime(string runName)
 				RTE_compute_k_ex(k3,wavefctcp,lambdaSteps);
 		
 				wavefctVec[i] += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
+
+				rescale(wavefctVec[i]);
 		
 				// // Neumann Boundaries
 		

@@ -66,6 +66,7 @@ class RTE
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(const string name);
     void noise();
+    inline void rescale(MatrixXcd &wavefct);
     
 
     // internal RunOptions, use setOptions(Options) to update from the outside

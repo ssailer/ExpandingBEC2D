@@ -77,7 +77,7 @@ if(!startUp.restart()){
 	}
 	delete startGrid;
 
-	string runName = "Expanding-Set-1";
+	string runName = "Non-Expanding-Set-1";
 	RTE* runExpanding = new RTE(data,startUp.getOptions());
 	runExpanding->noise();
 	runExpanding->rteToTime(runName);
