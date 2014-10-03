@@ -296,18 +296,18 @@ void RTE::rteToTime(string runName)
 		
 				// boundary conditions end
 		
-				RTE_compute_k_ex(k0,wavefctcp,lambdaSteps);
+				RTE_compute_k_pot(k0,wavefctcp,lambdaSteps);
 				wavefctcp = wavefctVec[i] + half * t_RTE * k0;
 
 				lambdaSteps++;
-				RTE_compute_k_ex(k1,wavefctcp,lambdaSteps);
+				RTE_compute_k_pot(k1,wavefctcp,lambdaSteps);
 				wavefctcp = wavefctVec[i] + half * t_RTE * k1;
 		
-				RTE_compute_k_ex(k2,wavefctcp,lambdaSteps);		
+				RTE_compute_k_pot(k2,wavefctcp,lambdaSteps);		
 				wavefctcp = wavefctVec[i] + t_RTE * k2;
 		
 				lambdaSteps++;
-				RTE_compute_k_ex(k3,wavefctcp,lambdaSteps);
+				RTE_compute_k_pot(k3,wavefctcp,lambdaSteps);
 		
 				wavefctVec[i] += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
