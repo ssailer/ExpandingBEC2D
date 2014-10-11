@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 1000
+#define VORTICES_BUILD_TIME 5000
 
 using namespace std;
 using namespace Eigen;
@@ -202,7 +202,6 @@ void ITP::formVortices(string runname){
 
 
 		rescale(wavefct);
-		
 
 		cli(runname,m,VORTICES_BUILD_TIME,start);	
 	}
@@ -249,7 +248,7 @@ void ITP::propagateToGroundState(string runname)
 
 	// for(int m = 1; scaleFactor < 0.99 && scaleFactor > 1.01; m++){
 	do {
-		for(int m = 0; m < 100; m++){			
+		for(int m = 0; m < 10; m++){			
 
 			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
 			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
@@ -277,7 +276,7 @@ void ITP::propagateToGroundState(string runname)
 
 			rescale(wavefct);
 
-			// plot("ITP-Groundstate-"+to_string(state)+"-After-Rescale");
+			
 				
 		}
 		
@@ -329,6 +328,8 @@ void ITP::cli_groundState(string name, double start,int state,Observables totalR
 			<< std::setw(2) << std::setfill('0') << hour << ":"
 			<< std::setw(2) << std::setfill('0') << min << ":"
 			<< std::setw(2) << std::setfill('0') << seconds  << "\r" << flush;
+
+			plot("ITP-Groundstate-"+to_string(state));
 
 
 }

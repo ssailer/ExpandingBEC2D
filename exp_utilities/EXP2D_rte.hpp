@@ -39,6 +39,7 @@ class RTE
     // Propagatoren
 
     void rteToTime(string runName);
+    void splitToTime(string runName);
     // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction
@@ -49,8 +50,8 @@ class RTE
     vector<MatrixXcd> &wavefctVec;
     MatrixData::MetaData &meta;
 
-    void CopyComplexGridToEigen();
-    void CopyEigenToComplexGrid();
+    // void CopyComplexGridToEigen();
+    // void CopyEigenToComplexGrid();
     
     // Coordinates
     vector<double> x_axis,y_axis;
@@ -127,5 +128,6 @@ class RTE
    }
   
 };
+
 
 #endif // EXP2D_RTE_H__

@@ -355,8 +355,8 @@ void plotDataToPng(string filename,string title,ComplexGrid &g,Options &opt)
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
 	{	
 		k = i+n*j;
-		density.a[k] = abs2(g(0,i,j,0));
-		phase.a[k] = arg(g(0,i,j,0));
+		density.a[k] = abs2(g(0,i,j,0)); // g(0,i,j,0).real(); // 
+		phase.a[k] = arg(g(0,i,j,0)); // g(0,i,j,0).imag(); // 
 
 		// data.a[k] = abs2(g(0,i,j,0));
 	}

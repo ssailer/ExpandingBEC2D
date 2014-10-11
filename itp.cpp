@@ -59,20 +59,18 @@ try{
 	Options tmpOpt = startUp.getOptions();
 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 
-	// setGridToGaussian(startGrid,startUp.getOptions());
+	setGridToGaussian(startGrid,startUp.getOptions());
 
-	string groundStateName = "StartGrid_2048x2048_N1000_groundState.h5";
-	binaryFile* groundStateFile = new binaryFile(groundStateName,binaryFile::in);
-	groundStateFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-	delete groundStateFile;
-		
+	// string groundStateName = "StartGrid_2048x2048_N1000_groundState.h5";
+	// binaryFile* groundStateFile = new binaryFile(groundStateName,binaryFile::in);
+	// groundStateFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+	// delete groundStateFile;
 
-
-	// ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	// string itpname = "ITP-Groundstate";
-	// groundStateITP->propagateToGroundState(itpname);
-	// startGrid->wavefunction[0] = groundStateITP->result();
-	// delete groundStateITP;
+	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+	string groundStateName = "ITP-Groundstate";
+	groundStateITP->propagateToGroundState(groundStateName);
+	startGrid->wavefunction[0] = groundStateITP->result();
+	delete groundStateITP;
 
 		int vnumber = 0;
 		addVorticesRegular(startGrid,startUp.getOptions(),vnumber);
@@ -89,7 +87,7 @@ try{
 		delete vorticesITP;
 
 
-	string startGridName = "StartGrid_2048x2048_N1000_WN2_sV_regular.h5";
+	string startGridName = "StartGrid_2048x2048_N1000_WN1_sV_regular.h5";
 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	delete dataFile;

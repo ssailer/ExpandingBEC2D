@@ -219,9 +219,9 @@ void Eval::evaluateData(){
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 	
-	cout << endl << "Evaluating sample #: ";
+	// cout << endl << "Evaluating sample #: ";
 	for(int k = 0; k < PsiVec.size(); k++){
-		cout << k << " " ;
+		// cout << k << " " ;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k],densityCounter[k]);
 		// cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);

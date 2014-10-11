@@ -81,6 +81,7 @@ if(!startUp.restart()){
 	RTE* runExpanding = new RTE(data,startUp.getOptions());
 	runExpanding->noise();
 	runExpanding->rteToTime(runName);
+	// runExpanding->splitToTime(runName);
 	delete runExpanding;
 	delete data;
 }
