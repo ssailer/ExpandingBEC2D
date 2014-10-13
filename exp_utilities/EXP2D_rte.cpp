@@ -296,18 +296,18 @@ void RTE::rteToTime(string runName)
 		
 				// boundary conditions end
 		
-				RTE_compute_k_pot(k0,wavefctcp,lambdaSteps);
+				RTE_compute_k_ex(k0,wavefctcp,lambdaSteps);
 				wavefctcp = wavefctVec[i] + half * t_RTE * k0;
 
 				lambdaSteps++;
-				RTE_compute_k_pot(k1,wavefctcp,lambdaSteps);
+				RTE_compute_k_ex(k1,wavefctcp,lambdaSteps);
 				wavefctcp = wavefctVec[i] + half * t_RTE * k1;
 		
-				RTE_compute_k_pot(k2,wavefctcp,lambdaSteps);		
+				RTE_compute_k_ex(k2,wavefctcp,lambdaSteps);		
 				wavefctcp = wavefctVec[i] + t_RTE * k2;
 		
 				lambdaSteps++;
-				RTE_compute_k_pot(k3,wavefctcp,lambdaSteps);
+				RTE_compute_k_ex(k3,wavefctcp,lambdaSteps);
 		
 				wavefctVec[i] += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
@@ -575,6 +575,7 @@ void RTE::splitToTime(string runName){
 	}
 	
 	start = omp_get_wtime();
+	omp_set_num_threads(12);
 	int previousTimes = meta.steps;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
@@ -620,7 +621,7 @@ void RTE::splitToTime(string runName){
 				for(int x = 0; x < rgrid.width(); x++){
 					for(int y = 0; y < rgrid.height(); y++){
 				    	complex<double> value = rgrid(0,x,y,0);
-				    	double V = ( /*PotentialGrid(x,y).real() +*/ opt.g * abs2(value) ) * timestepsize;
+				    	double V = - ( PotentialGrid(x,y).real() + opt.g * abs2(value) ) * timestepsize;
 				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
 				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
 					}
@@ -682,7 +683,7 @@ void RTE::splitToTime(string runName){
 		// plot("3-"+to_string(snapshot_times[j]));
 		
 		try{
-			plotDataToPng("RTE_RGrid"+to_string(snapshot_times[j]),"Control"+to_string(snapshot_times[j]),rgrid,opt);
+			// plotDataToPng("RTE_RGrid"+to_string(snapshot_times[j]),"Control"+to_string(snapshot_times[j]),rgrid,opt);
 			Eval results;
 	
 			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << flush;

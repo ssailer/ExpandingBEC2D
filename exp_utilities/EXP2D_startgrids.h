@@ -63,7 +63,7 @@ void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
 
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
 int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
-int windingnumber = 3;
+int windingnumber = 1;
 
 ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
@@ -88,7 +88,7 @@ for(int i = 0; i < c.size(); i++){
     #pragma omp parallel for
     for(int y = 0; y < opt.grid[2]; y++){
         for(int x = 0; x < opt.grid[1]; x++){   
-            data->wavefunction[0](x,y) *= polar(1.0, (windingnumber  * mypow2(-1,i+1) ) * vortex( y,c[i].y(),x,c[i].x() )) ;
+            data->wavefunction[0](x,y) *= polar(1.0, (windingnumber  /** mypow2(-1,i+1)*/ ) * vortex( y,c[i].y(),x,c[i].x() )) ;
         }
     }
     // g->wavefunction[0](c) complex<double>(0.0,0.0);

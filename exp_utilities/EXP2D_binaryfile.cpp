@@ -23,31 +23,36 @@ binaryFile::binaryFile(const string &file, mode nm)
 	{
 	  struct stat buf;
 	  lstat(filename.c_str(), &buf);
-	  if(S_ISREG(buf.st_mode) && H5Fis_hdf5(filename.c_str())) // Nur normale Dateien ueberpruefen
+	  if(S_ISREG(buf.st_mode)) // Nur normale Dateien ueberpruefen
 		{ 
-		  if(m == in)
-			h5_file = H5Fopen(filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-		  else if(m == append)
-			h5_file = H5Fopen(filename.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
-
-		  if(H5Aexists(h5_file, "SnapshotTimes") > 0){
-
-			hid_t h5a_options;
-
-			h5a_options = H5Aopen(h5_file, "SnapshotTimes", H5P_DEFAULT);
-			int size = (int)(H5Aget_storage_size(h5a_options)/sizeof(int));
-			time_list.resize(size);
-			H5Aread(h5a_options, H5T_STD_I32LE , &time_list.front());
-			H5Aclose(h5a_options);
+		  if(H5Fis_hdf5(filename.c_str())){
+		  	if(m == in)
+				h5_file = H5Fopen(filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+			  	else if(m == append)
+				h5_file = H5Fopen(filename.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+	
+			  	if(H5Aexists(h5_file, "SnapshotTimes") > 0){
+	
+					hid_t h5a_options;
+	
+					h5a_options = H5Aopen(h5_file, "SnapshotTimes", H5P_DEFAULT);
+					int size = (int)(H5Aget_storage_size(h5a_options)/sizeof(int));
+					time_list.resize(size);
+					H5Aread(h5a_options, H5T_STD_I32LE , &time_list.front());
+					H5Aclose(h5a_options);
+					}
+				  	else
+					{
+					  cout << "WARNING for I/O operation on file: "<< filename << " occurred: No valid SnapshotTimes attribute found in file." << endl;
+				}
 			}
-		  else
-			{
-			  cout << "WARNING for I/O operation on file: "<< filename << " occurred: No valid SnapshotTimes attribute found in file." << endl;
+			else {
+				cout << "ERROR for I/O operation. File: "<< filename <<" is not in hdf5 storage format" << endl;
 			}
 		}
 	  else
 		{
-		  cout << "ERROR for I/O operation. File: "<< filename <<" is either not regular or not in hdf5 storage format" << endl;
+		  cout << "ERROR for I/O operation. File: "<< filename <<" is not regular" << endl;
 		}
 	}
   else

@@ -32,6 +32,7 @@ public:
 
     void propagateToGroundState(string runname);
     void formVortices(string runname);
+    void findVortices(string runname);
 
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;

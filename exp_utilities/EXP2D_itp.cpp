@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 5000
+#define VORTICES_BUILD_TIME 1500
 
 using namespace std;
 using namespace Eigen;
@@ -212,6 +212,103 @@ void ITP::formVortices(string runname){
 	// update the ComplexGrid* DATA object outside of this.
 	// CopyEigenToComplexGrid();
 }
+
+
+void ITP::findVortices(string runname)
+{
+	double start;  // starttime of the run
+	bool finished = false;
+	int counter_finished = 0;
+	int state = 0;
+	int old_Ekin = 0;
+
+	// load external Data into wavefct
+	// CopyComplexGridToEigen();
+
+	Eval breakCondition;
+	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	MatrixXcd k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	MatrixXcd k1 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	MatrixXcd k2 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	MatrixXcd k3 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+
+	start = omp_get_wtime();
+
+	//start loop here
+	Eigen::initParallel();
+
+	// plot("ITP-1");
+
+	// do{
+	// 	rescale(wavefct);
+	// 	if(scaleFactor == 1){
+	// 		finished = true;
+	// 	}
+	// } while (finished == false);
+
+	// finished = false;
+
+	// for(int m = 1; scaleFactor < 0.99 && scaleFactor > 1.01; m++){
+	do {
+		for(int m = 0; m < 50; m++){			
+
+			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
+			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+			wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
+			wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);			
+
+			wavefctcp = wavefct;
+	
+			ITP_compute_k(k0,wavefctcp);
+	
+			wavefctcp = wavefct + half * t_ITP * k0;
+			ITP_compute_k(k1,wavefctcp);
+	
+			wavefctcp = wavefct + half * t_ITP * k1;
+			ITP_compute_k(k2,wavefctcp);
+	
+			wavefctcp = wavefct + t_ITP * k2;
+			ITP_compute_k(k3,wavefctcp);
+	
+			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
+	
+			state++;
+
+			// plot("ITP-Groundstate-"+to_string(state)+"-Before-Rescale");
+
+			rescale(wavefct);
+
+			
+				
+		}
+		
+
+		breakCondition.saveData(wavefct,opt,state,runname);
+		breakCondition.evaluateDataITP();
+
+		cli_groundState(runname,start,state,breakCondition.totalResult);
+		int difference = breakCondition.totalResult.Ekin - old_Ekin;
+		if(difference == 0){
+		// if(scaleFactor == 0){
+			counter_finished++;
+		}else{
+			counter_finished = 0;
+		}
+		old_Ekin = breakCondition.totalResult.Ekin;
+		if(counter_finished >= 2){
+			finished = true;
+		}
+		// cli_plot(runname,m,runtime,start,plot);
+	} while (finished == false);
+
+	cout << endl;
+	cout << "Groundstate found." << endl;
+
+	// update the ComplexGrid* DATA object outside of this.
+	// CopyEigenToComplexGrid();
+}
+
+
 void ITP::propagateToGroundState(string runname)
 {
 	double start;  // starttime of the run
@@ -248,7 +345,7 @@ void ITP::propagateToGroundState(string runname)
 
 	// for(int m = 1; scaleFactor < 0.99 && scaleFactor > 1.01; m++){
 	do {
-		for(int m = 0; m < 10; m++){			
+		for(int m = 0; m < 50; m++){			
 
 			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
 			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
@@ -329,7 +426,7 @@ void ITP::cli_groundState(string name, double start,int state,Observables totalR
 			<< std::setw(2) << std::setfill('0') << min << ":"
 			<< std::setw(2) << std::setfill('0') << seconds  << "\r" << flush;
 
-			plot("ITP-Groundstate-"+to_string(state));
+			plot("ITP-"+name+"-"+to_string(state));
 
 
 }
