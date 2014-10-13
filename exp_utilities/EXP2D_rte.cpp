@@ -548,8 +548,8 @@ void RTE::splitToTime(string runName){
 	for(int x = 0; x < kprop.width(); x++){
 	    for(int y = 0; y < kprop.height(); y++){
 	      	double k[2];
-	      	k[0] = opt.klength[1] * 2.0 * sin(M_PI * x / (double) opt.grid[1]);
-	      	k[1] = opt.klength[2] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
+	      	k[0] = opt.klength[1] * 2.0 * sin(M_PI * x / (double) opt.grid[1]) / (2 * opt.min_x);
+	      	k[1] = opt.klength[2] * 2.0 * sin(M_PI * y / (double) opt.grid[2]) / (2 * opt.min_y);
 	      	double T = - (k[0] * k[0] + k[1] * k[1] ) * timestepsize;
 	
 	      	// double T = - (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize;	      
