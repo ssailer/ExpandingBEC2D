@@ -538,13 +538,13 @@ void RTE::splitToTime(string runName){
 	kspace.resize(2);
 	for(int d = 0; d < 2; d++){
 		kspace[d].resize(opt.grid[d+1]);
-		for(int i = 0; i < opt.grid[d+1]/2 - 1; i++){
-			// kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
-			kspace[d][i] = 2.0 * M_PI * i / (2 * opt.min_x);
+		for(int i = 0; i < opt.grid[d+1]/2; i++){
+			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			// kspace[d][i] = 2.0 * M_PI * i / (opt.grid[d+1]);
 		}
 		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
-			// kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
-			kspace[d][i] = 2.0 * M_PI * (i - opt.grid[d+1]) / (2 * opt.min_y);
+			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+			// kspace[d][i] = 2.0 * M_PI * (i - opt.grid[d+1]) / (opt.grid[d+1]);
 		}
 	}
 	double beta = real(h_x) * real(h_x);
@@ -555,7 +555,7 @@ void RTE::splitToTime(string runName){
 	      	// k[1] = opt.klength[2] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
 	      	// double T = - 0.5 * beta * (k[0] * k[0] + k[1] * k[1] ) * timestepsize;
 	
-	      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize;	      
+	      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize / beta;	      
 	      	
 	      	kprop(0,x,y,0) = complex<double>(cos(T),sin(T)) / complex<double>((double)(opt.grid[1]*opt.grid[2]*opt.grid[3]),0.0);	    
 	    }
