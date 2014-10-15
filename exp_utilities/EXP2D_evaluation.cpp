@@ -588,7 +588,7 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 }
 
 inline double Eval::norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y){
-	sqrt( (a.x() - b.x()) * (a.x() - b.x()) * h_x * h_x + (a.y() - b.y()) * (a.y() - b.y()) * h_y * h_y);
+	return sqrt( (a.x() - b.x()) * (a.x() - b.x()) * h_x * h_x + (a.y() - b.y()) * (a.y() - b.y()) * h_y * h_y);
 }
 
 void Eval::getVortexDistance(PathResults &pres){
@@ -609,6 +609,8 @@ void Eval::getVortexDistance(PathResults &pres){
 				{
 					double distance = (it->x - oit->x).norm();
 					double coordDistance = Eval::norm(it->x, oit->x,h_x,h_y);
+					// cout << "Coordinate Distance: " << coordDistance << endl;
+					// cout << "Grid Distance: " << distance << endl;
 					if(distance < shortest_distance)
 						shortest_distance = distance;
 					pairDistanceHistogram(pres, distance, coordDistance);

@@ -99,13 +99,15 @@ void plotPairDistance(string name,string title,PathResults pres){
 
 
 	int n = histogram.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
-	mglData k(n);
-	mglData number(n);
+	mglData m_histogram(n);
+	mglData m_distance(n);
 
 
 	for(int i = 0; i < n; i++){
-		k.a[i] = histogram[i];
-		number.a[i] = distance[i];
+		m_histogram.a[i] = histogram[i];
+		m_distance.a[i] = distance[i];
+		cout << "Histogram: " << m_histogram.a[i] << endl;
+		cout << "Distance: " << m_distance.a[i] << endl;
 	}
 
 	// cout << "copied" << endl;
@@ -118,12 +120,12 @@ void plotPairDistance(string name,string title,PathResults pres){
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	gr.SetRange('x',0.0,distance.back());
-	// gr.SetRange('y',0.0001,10000000);
+	gr.SetRange('y',0.0,2);
 	// gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);
 	// gr.Axis();
-	// gr.Plot(k,number);
+	// gr.Plot(k,m_distance);
 	// gr.SubPlot(2,1,1);
 
 	gr.Axis();
@@ -134,7 +136,7 @@ void plotPairDistance(string name,string title,PathResults pres){
 	// gr.FPlot("x^(-5)");
 
 	// gr.Stem(healing_length);
-	gr.Plot(k,number," .");
+	gr.Plot(m_distance,m_histogram," .");
 
 	name = name + ".png";
 
