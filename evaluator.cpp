@@ -23,8 +23,9 @@ Last Update: 22/07/13
 #include <EXP2D_MatrixData.h>
 #include <main.h>
 #include <EXP2D_tools.h>
-#include <EXP2D_itp.hpp>
-#include <EXP2D_rte.hpp>
+// #include <EXP2D_itp.hpp>
+// #include <EXP2D_rte.hpp>
+#include <EXP2D_binaryfile.h>
 #include <EXP2D_evaluation.h>
 #include <plot_with_mgl.h>
 
@@ -57,7 +58,7 @@ try{
 
 	for(int k = 0; k < files; k++){
 
-		string runName = "Non-Expanding-Set-"+to_string(k+1);
+		string runName = "Expanding-Set-"+to_string(k+1);
 		string evalname = runName + "-Eval.h5";
 
 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::in);
@@ -80,7 +81,7 @@ try{
 	}
 
 
-	string finalRunName = "Non-Expanding";
+	string finalRunName = "Expanding";
 	Eval finalResult;
 	for(int i = 0; i < timeList.size(); i++){
 		cout << "Processing Time: " << timeList[i] << " .. " ;

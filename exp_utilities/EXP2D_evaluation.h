@@ -90,6 +90,10 @@ private:
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid &phase);
 	void findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
+
+	inline double norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y);
+	inline void pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance);
+	void getVortexDistance(PathResults &pres);
 	void calc_fields(ComplexGrid &data, Options &opt);
 	void checkEdges();
 

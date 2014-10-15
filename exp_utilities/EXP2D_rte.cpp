@@ -110,6 +110,7 @@ void RTE::RunSetup(){
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
    	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
 	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * ( half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
+	
 
    	pot_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	pot_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
@@ -578,7 +579,7 @@ void RTE::splitToTime(string runName){
 	}
 	
 	start = omp_get_wtime();
-	omp_set_num_threads(12);
+	omp_set_num_threads(6);
 	int previousTimes = meta.steps;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff

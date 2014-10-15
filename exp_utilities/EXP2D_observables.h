@@ -54,6 +54,8 @@ typedef struct {
 
 struct PathResults {
     list<VortexData> vlist;
+    vector<double> histogram;
+    vector<double> distance;
 };
 
 inline Observables::Observables() :

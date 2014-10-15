@@ -65,7 +65,72 @@ void plotSpectrum(string name,string title, Observables &ares){
 
 	// gr.SetFunc("lg(x)","lg(y)");
 	gr.FPlot("x^(-2)");
-	gr.FPlot("x^(-4.666)");
+	gr.FPlot("x^(-4.66)");
+	// gr.FPlot("x^(-5)");
+
+	// gr.Stem(healing_length);
+	gr.Plot(k,number," .");
+
+	name = name + ".png";
+
+	gr.WritePNG(name.c_str(),"Spectrum",false);
+}
+
+void plotPairDistance(string name,string title,PathResults pres){
+
+	ofstream plotfile;
+    vector<double> histogram;
+	vector<double> distance;
+	
+	plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
+    for (int r = 0; r < pres.distance.size(); r++)             
+	{	
+		if(pres.histogram[r] != 0.0){
+			plotfile << r <<"\t"<< pres.histogram[r] <<"\t" << pres.distance[r] <<"\t";
+			plotfile << endl;
+
+			histogram.push_back(pres.histogram[r]);
+			distance.push_back(pres.distance[r]);
+			
+        }
+	}
+	plotfile << endl << endl;	
+	plotfile.close();
+
+
+	int n = histogram.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
+	mglData k(n);
+	mglData number(n);
+
+
+	for(int i = 0; i < n; i++){
+		k.a[i] = histogram[i];
+		number.a[i] = distance[i];
+	}
+
+	// cout << "copied" << endl;
+
+	mglGraph gr;
+
+	gr.SetMarkSize(0.7);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
+	gr.SetQuality(3);
+	gr.Title(title.c_str());
+	gr.SetRange('x',0.0,distance.back());
+	// gr.SetRange('y',0.0001,10000000);
+	// gr.SetCoor(11); // log-log-coordinates
+
+	// gr.SubPlot(2,1,0);
+	// gr.Axis();
+	// gr.Plot(k,number);
+	// gr.SubPlot(2,1,1);
+
+	gr.Axis();
+
+	// gr.SetFunc("lg(x)","lg(y)");
+	// gr.FPlot("x^(-2)");
+	// gr.FPlot("x^(-4.666)");
 	// gr.FPlot("x^(-5)");
 
 	// gr.Stem(healing_length);

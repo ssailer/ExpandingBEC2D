@@ -25,7 +25,8 @@ Last Update: 22/07/13
 #include <main.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_itp.hpp>
-#include <EXP2D_rte.hpp>
+// #include <EXP2D_rte.hpp>
+#include <EXP2D_binaryfile.h>
 #include <EXP2D_evaluation.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_startgrids.h>
@@ -74,23 +75,23 @@ try{
 	startGrid->wavefunction[0] = groundStateITP->result();
 	delete groundStateITP;
 
-		int vnumber = 0;
-		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
+		// int vnumber = 0;
+		// addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
 		
-		startUp.setVortexnumber(vnumber);
-		cout << endl << "Set Vortices #: " << vnumber << endl;
+		// startUp.setVortexnumber(vnumber);
+		// cout << endl << "Set Vortices #: " << vnumber << endl;
 	
-		string itpname = "ITP-Vortices";
-		ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-		vorticesITP->formVortices(itpname);
+		// string itpname = "ITP-Vortices";
+		// ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		// vorticesITP->formVortices(itpname);
 		// vorticesITP->findVortices(itpname);
 		
-		startGrid->wavefunction[0] = vorticesITP->result();
+		// startGrid->wavefunction[0] = vorticesITP->result();
 	
-		delete vorticesITP;
+		// delete vorticesITP;
 
 
-	string startGridName = "StartGrid_2048x2048_N1000_WN1_sV_alternating.h5";
+	string startGridName = "StartGrid_2048x2048_N1000_noVortices_symmetricPot.h5";
 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	delete dataFile;

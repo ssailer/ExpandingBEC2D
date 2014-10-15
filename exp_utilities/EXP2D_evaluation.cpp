@@ -1,6 +1,6 @@
 #include <EXP2D_evaluation.h>
 
-#define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]
+#define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]*opt.grid[3]
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
 #define VORTEX_SURROUND_DENSITY_RADIUS 5
@@ -73,16 +73,16 @@ void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,st
 
 void Eval::CombinedEval(){
 
-	// ONLY NEEDED UNTIL fixedAspectRatio is saved in BinaryFile::appendEval
-	Observables tmpResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-	for(int sampleindex = 0; sampleindex < contour.size(); sampleindex++){
-		Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-		aspectRatio(obs,sampleindex);
-		tmpResult.fixedAspectRatio += obs.fixedAspectRatio;
-	}
-	tmpResult.fixedAspectRatio /= contour.size();
-	totalResult.fixedAspectRatio = tmpResult.fixedAspectRatio;
-	// ONLY NEEDED ONE TIME
+	// // ONLY NEEDED UNTIL fixedAspectRatio is saved in BinaryFile::appendEval
+	// Observables tmpResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	// for(int sampleindex = 0; sampleindex < contour.size(); sampleindex++){
+	// 	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+	// 	aspectRatio(obs,sampleindex);
+	// 	tmpResult.fixedAspectRatio += obs.fixedAspectRatio;
+	// }
+	// tmpResult.fixedAspectRatio /= contour.size();
+	// totalResult.fixedAspectRatio = tmpResult.fixedAspectRatio;
+	// // ONLY NEEDED ONE TIME
 
 
 	string dirname = "CombinedRunObservables";
@@ -229,7 +229,8 @@ void Eval::evaluateData(){
 		totalResult += calculator(PsiVec[k],k);
 		// cout << "-calculator" << endl;
 		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
-		// cout << "-getVortices" << endl;		
+		// cout << "-getVortices" << endl;
+		getVortexDistance(pres[k]);
 	}	
 	totalResult /= PsiVec.size();
 
@@ -373,6 +374,10 @@ void Eval::plotData(){
 	plotname = runname + "-Spectrum-" + snapShotString;
 	title = "Spectrum " + snapShotString; 
 	plotSpectrum(plotname,title,totalResult);
+
+	plotname = runname + "-PairDistance" + snapShotString;
+	title = "PairDistance" + snapShotString;
+	plotPairDistance(plotname,title,pres[0]);
 
 	plotname = runname + "-Vortices-" + snapShotString;
 	title = "Vortices " + snapShotString;
@@ -580,6 +585,63 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 			vlist.erase(it1,vlist.end());
 		}
 	}
+}
+
+inline double Eval::norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y){
+	sqrt( (a.x() - b.x()) * (a.x() - b.x()) * h_x * h_x + (a.y() - b.y()) * (a.y() - b.y()) * h_y * h_y);
+}
+
+void Eval::getVortexDistance(PathResults &pres){
+
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+
+	pres.histogram.resize(OBSERVABLES_DATA_POINTS_SIZE);
+	pres.distance.resize(OBSERVABLES_DATA_POINTS_SIZE);
+	for (list<VortexData>::iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it)
+	{
+		if(it->n != 0)
+		{
+			double shortest_distance = 65536.0;
+			for(list<VortexData>::iterator oit = pres.vlist.begin(); oit != pres.vlist.end(); ++oit)
+			{
+				if((it != oit) && (oit->n!=0))
+				{
+					double distance = (it->x - oit->x).norm();
+					double coordDistance = Eval::norm(it->x, oit->x,h_x,h_y);
+					if(distance < shortest_distance)
+						shortest_distance = distance;
+					pairDistanceHistogram(pres, distance, coordDistance);
+				}
+			}
+			// if(shortest_distance != 65536.0)
+			// {
+			// 	it->pair_distance = shortest_distance;
+			// 	//inc_pd_histogram(ares.pd_histogram_closest, shortest_distance);
+			// 	av_pair_distance.average(it->pair_distance);
+			// 	if(it->pair_distance > ares.max_pair_distance)
+			// 		ares.max_pair_distance = it->pair_distance;
+			// }
+			// else
+			// 	it->pair_distance = 0.0;
+		}
+		// else
+		// 	it->pair_distance = 0.0;
+	}
+	
+	// // mittlerer Abstand der Vortices
+	// ares.pair_distance_all = av_pair_distance.av();
+	// if(av_pair_distance.av() != 0)
+	// 	ares.pair_distance_nonzero = av_pair_distance.av();
+}
+
+inline void Eval::pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance)
+{
+	double max_distance = sqrt(opt.grid[1]*opt.grid[1] + opt.grid[2]*opt.grid[2] + opt.grid[3]*opt.grid[3]) / 2.0;
+	int index = (pres.histogram.size() - 1) * distance / max_distance;
+	pres.histogram[index] += 0.5;
+	pres.distance[index] = coordDistance;
+
 }
 
 int Eval::getVortexNumber(){

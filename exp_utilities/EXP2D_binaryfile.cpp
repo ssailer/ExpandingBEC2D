@@ -512,6 +512,47 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   H5Pclose(dset_create_props);
   free(vec3);
 
+  string vec7Name = "VortexWinding";
+  samples = results.pres.size();
+  int vec7Ranks[samples];
+  arraysize = 1 + samples;
+  double *vec7;
+
+  for(int k = 0; k < samples; k++){
+  	vec7Ranks[k] = results.pres[k].vlist.size();
+  	arraysize += vec7Ranks[k];
+  }
+
+  vec7 = (double*)malloc(sizeof(double)*arraysize);
+  vec7[0] = samples;
+
+  l = 1 + samples;
+  for(int k = 0; k < samples; k++){
+	vec7[k+1] = vec7Ranks[k];    
+	for(std::list<VortexData>::const_iterator it = results.pres[k].vlist.begin(); it != results.pres[k].vlist.end(); ++it){
+	  vec7[l] = it->n;
+	  l++;
+	}
+  }
+
+
+  if(H5Lexists(h5_observables, vec7Name.c_str(), H5P_DEFAULT)){
+	cout << "Observables " << vec7Name << " already exists for time " << snapShotTime << ". I refuse to write." << endl;
+	return false;
+  }
+
+  dset_create_props = H5Pcreate(H5P_DATASET_CREATE); // default creation property list;
+  dimsf[0] = arraysize;
+
+  dataspace = H5Screate_simple(1,dimsf,NULL);
+  dataset = H5Dcreate(h5_observables,vec7Name.c_str(),H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT);
+  H5Dwrite(dataset,H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec7); 
+
+  H5Dclose(dataset);
+  H5Sclose(dataspace);
+  H5Pclose(dset_create_props);
+  free(vec7);
+
   free(dimsf);
   H5Gclose(h5_observables);
   H5Gclose(h5_timegroup);
@@ -795,6 +836,35 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 		for(int i = 0; i < samples; i++){
 			vec3Ranks[i] = vec3[i+1];
 		}
+
+		string vec7Name = "VortexWinding";
+		vector<double> vec7;
+	
+		if(!H5Lexists(h5_observables, vec7Name.c_str(), H5P_DEFAULT)){
+		cout << "Observables " << vec7Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
+		} else {
+			dataset = H5Dopen(h5_observables, vec7Name.c_str(), H5P_DEFAULT);
+			dataspace = H5Dget_space(dataset);
+			rank = H5Sget_simple_extent_ndims(dataspace);
+			if(rank != 1){
+				cout << "reading VortexWinding: wrong dimensions";
+			}
+			dimf = (hsize_t*)malloc(rank*sizeof(hsize_t));
+			H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+			vec7.resize(dimf[0]);
+			H5Dread(dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec7.data());
+			H5Dclose(dataset);
+			H5Sclose(dataspace);
+			int vec7Ranks[samples];
+			for(int i = 0; i < samples; i++){
+				vec7Ranks[i] = vec7[i+1];
+				if(vec7Ranks[i] != vec3Ranks[i]){
+					cout << "Different number of elements in Vortices and VortexWinding, ignoring VortexWinding";
+				}
+			}
+		}
+
+
 		
 		int l = 1 + samples;
 		for(int k = 0; k < samples; k++){
@@ -803,6 +873,7 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 				VortexData c;
 				Coordinate<int32_t> x(vec3[l],vec3[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
 				c.x = x;
+				c.n = (int) vec7[j];
 				// c.x.x() = vec3[l];
 				// c.x.y() = vec3[l+1];
 				l+=2;
