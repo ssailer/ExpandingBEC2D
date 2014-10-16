@@ -114,12 +114,14 @@ void plotPairDistance(string name,string title,PathResults pres){
 
 	mglGraph gr;
 
+	double maxrange = 10 * sqrt(2); // This is bad, but I have no access to opt.min_x etc.
+
 	gr.SetMarkSize(0.7);
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
-	gr.SetRange('x',0.0,distance.back());
+	gr.SetRange('x',0.0,maxrange);
 	gr.SetRange('y',0.0,2);
 	// gr.SetCoor(11); // log-log-coordinates
 

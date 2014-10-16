@@ -533,6 +533,7 @@ void RTE::splitToTime(string runName){
 	ComplexGrid kprop(opt.grid[0], opt.grid[1], opt.grid[2],opt.grid[3]);
 	ComplexGrid rgrid(opt.grid[0], opt.grid[1], opt.grid[2],opt.grid[3]);
 	ComplexGrid kgrid(opt.grid[0], opt.grid[1], opt.grid[2],opt.grid[3]);
+	ComplexGrid potPlotGrid(opt.grid[0], opt.grid[1], opt.grid[2],opt.grid[3]);
 
 
 	vector<vector<double>> kspace;	
@@ -621,17 +622,20 @@ void RTE::splitToTime(string runName){
 
 				// ComplexGrid potGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
+				
+
 				#pragma omp parallel for
 				for(int x = 0; x < rgrid.width(); x++){
 					for(int y = 0; y < rgrid.height(); y++){
 				    	complex<double> value = rgrid(0,x,y,0);
 				    	double V = - ( /*PotentialGrid(x,y).real()*/ rotatingPotential(x,y,m) + opt.g * abs2(value) ) * timestepsize;
+				    	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
 				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
 				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
 					}
 				}
 				
-				// plotDataToPng("RTE_PotGrid_"+to_string(m),"RTE_PotGrid_"+to_string(m),rgrid,opt);
+				// plotDataToPng("RTE_PotGrid_"+to_string(m),"RTE_PotGrid_"+to_string(m),potPlotGrid,opt);
 
 				// ComplexGrid::fft_unnormalized(rgrid, kgrid, true);
     
@@ -718,10 +722,15 @@ void RTE::splitToTime(string runName){
 }
 
 inline double RTE::rotatingPotential(int &i, int &j, int &t){
-	double alpha = 2 * M_PI / 1000;
-	double x = X(i).real() * cos(alpha * t) + Y(i).real() * sin(alpha * t);
-	double y = - X(i).real() * sin(alpha * t) + Y(i).real() * cos(alpha * t);
-	double potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * x * x + 0.5 * opt.omega_y.real() * opt.omega_y.real() * y * y;
+	double potential;
+	if(t <= 3000){
+		double alpha = 2 * M_PI / 500;
+		double x = X(i).real() * cos(alpha * t) + Y(j).real() * sin(alpha * t);
+		double y = - X(i).real() * sin(alpha * t) + Y(j).real() * cos(alpha * t);
+		potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * x * x + 0.5 * opt.omega_y.real() * opt.omega_y.real() * y * y;
+	} else {
+		potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * X(i).real() * X(i).real() + 0.5 * opt.omega_x.real() * opt.omega_x.real() * Y(j).real() * Y(j).real();
+	}
 	return potential;
 }
 

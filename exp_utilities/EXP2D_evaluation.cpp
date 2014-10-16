@@ -375,9 +375,11 @@ void Eval::plotData(){
 	title = "Spectrum " + snapShotString; 
 	plotSpectrum(plotname,title,totalResult);
 
-	plotname = runname + "-PairDistance" + snapShotString;
-	title = "PairDistance" + snapShotString;
-	plotPairDistance(plotname,title,pres[0]);
+	if(pres[0].vlist.size() >= 0){
+		plotname = runname + "-PairDistance" + snapShotString;
+		title = "PairDistance" + snapShotString;
+		plotPairDistance(plotname,title,pres[0]);
+	}
 
 	plotname = runname + "-Vortices-" + snapShotString;
 	title = "Vortices " + snapShotString;
