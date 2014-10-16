@@ -80,6 +80,7 @@ class RTE
     void RTE_compute_k_ex(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
+    inline double rotatingPotential(int &i, int &j, int &t);
    
 
     // Variables

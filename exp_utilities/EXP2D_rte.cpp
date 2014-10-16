@@ -625,7 +625,7 @@ void RTE::splitToTime(string runName){
 				for(int x = 0; x < rgrid.width(); x++){
 					for(int y = 0; y < rgrid.height(); y++){
 				    	complex<double> value = rgrid(0,x,y,0);
-				    	double V = - ( PotentialGrid(x,y).real() + opt.g * abs2(value) ) * timestepsize;
+				    	double V = - ( /*PotentialGrid(x,y).real()*/ rotatingPotential(x,y,m) + opt.g * abs2(value) ) * timestepsize;
 				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
 				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
 					}
@@ -715,12 +715,14 @@ void RTE::splitToTime(string runName){
 		}
 
 	}
+}
 
-
-
-
-
-
+inline double RTE::rotatingPotential(int &i, int &j, int &t){
+	double alpha = 2 * M_PI / 1000;
+	double x = X(i).real() * cos(alpha * t) + Y(i).real() * sin(alpha * t);
+	double y = - X(i).real() * sin(alpha * t) + Y(i).real() * cos(alpha * t);
+	double potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * x * x + 0.5 * opt.omega_y.real() * opt.omega_y.real() * y * y;
+	return potential;
 }
 
 
