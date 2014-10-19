@@ -80,9 +80,9 @@ if(!startUp.restart()){
 
 	string runName = "Expanding-Set-1";
 	RTE* runExpanding = new RTE(data,startUp.getOptions());
-	runExpanding->noise();
-	// runExpanding->rteToTime(runName);
-	runExpanding->splitToTime(runName);
+	// runExpanding->noise();
+	runExpanding->rteToTime(runName);
+	// runExpanding->splitToTime(runName);
 	delete runExpanding;
 	delete data;
 }

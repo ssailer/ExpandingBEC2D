@@ -5,7 +5,7 @@
 #include <omp.h>
 
 #define EIGEN_VECTORIZE
-#define EIGEN_DONT_PARALLELIZE
+#define EIGEN_PARALLELIZE
 #define EIGEN_NO_DEBUG
 
 using namespace std;
@@ -221,7 +221,8 @@ inline void RTE::rescale(MatrixXcd &wavefct){
 }
 
 void RTE::rteToTime(string runName)
-{
+{	
+	omp_set_num_threads(12);
 	double start;  // starttime of the run
 	int samplesize = wavefctVec.size();
 	keeperOfTime.absoluteSteps = 0;
@@ -269,8 +270,8 @@ void RTE::rteToTime(string runName)
 		vector<int> threadinfo(samplesize);
 		int slowestthread = 0;
 
-		omp_set_num_threads(12);
-		#pragma omp parallel for
+		
+		// #pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
 
 			MatrixXcd wavefctcp = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);

@@ -643,12 +643,13 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 
 void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 {
-	
 
 	int n = opt.grid[1];
 	int m = opt.grid[2];
 
-	mglComplex data(n,m);
+	// mglComplex data(n,m);
+	mglData density(n,m);
+	mglData phase(n,m);
 
 	int i,j,k;
 
@@ -660,7 +661,8 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 	{	
 		k = i+n*j;
 		// data1 = g->at(0,i,j,0);
-		data.a[k] = abs2(wavefct(i,j));
+		density.a[k] = abs2(wavefct(i,j));
+		phase.a[k] = arg(wavefct(i,j));
 	}
 
 	mglGraph gr;
@@ -669,58 +671,56 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 		// gr.Light(0,true);
 		// gr.Alpha(true);
 
-	double xrange = opt.min_x*opt.stateInformation[0];
-	double yrange = opt.min_y*opt.stateInformation[1];
-	gr.SetRange('x',-xrange,xrange);
-	gr.SetRange('y',-yrange,yrange);
+	filename = filename + ".png";
+
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(filename.c_str());
+	// gr.Title(title.c_str());
 	// gr.Alpha(true);
 
 
-
+	double xrange = opt.min_x*opt.stateInformation[0];
+	double yrange = opt.min_y*opt.stateInformation[1];
 	// data.use_abs=false;
-	// string filename = "PHASE-" + filename + ".png";
+	gr.SetRange('x',-xrange,xrange);
+	gr.SetRange('y',-yrange,yrange);
+	gr.SetRange('z',phase);
+	gr.SetRange('c',phase);
 
-	// gr.SetRange('z',data);
-	// gr.SetRange('c',data);
+	gr.SubPlot(2,2,0);
 
-	// // gr.SubPlot(1,2,0);
-
-	// // gr.Rotate(40,40);
-	// // gr.Box();
-	// // gr.Axis();
-	// // gr.Surf(data);
-
-
-	// // gr.SubPlot(2,2,2);
-	// gr.Axis();
-	// gr.Colorbar("_");
-	// gr.Dens(data);
-	// gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+	gr.Rotate(40,40);
+	gr.Box();
+	gr.Axis();
+	gr.Surf(phase);
 
 
-	data.use_abs=true;
-	filename = filename + "-Density-Expanding.png";
-	gr.SetRange('z',data);
-	// gr.SetRange('c',data);
-	gr.SetRange('c',data);
-
-	// gr.SubPlot(1,2,1);
-
-	// // gr.Light(true);
-	// gr.Rotate(40,40);
-	// gr.Box();
-	// gr.Axis();
-
-	// gr.Surf(data);
-
-	// gr.SubPlot(2,2,3);
+	gr.SubPlot(2,2,2);
 	gr.Axis();
 	gr.Colorbar("_");
-	gr.Dens(data);
+	gr.Dens(phase);
+
+
+	// data.use_abs=true;
+	gr.SetRange('x',-xrange,xrange);
+	gr.SetRange('y',-yrange,yrange);
+	gr.SetRange('z',density);
+	gr.SetRange('c',density);
+
+	gr.SubPlot(2,2,1);
+
+	// gr.Light(true);
+	gr.Rotate(40,40);
+	gr.Box();
+	gr.Axis();
+
+	gr.Surf(density);
+
+	gr.SubPlot(2,2,3);
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(density);
 
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 
