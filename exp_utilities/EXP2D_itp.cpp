@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 100
+#define VORTICES_BUILD_TIME 150
 
 using namespace std;
 using namespace Eigen;
@@ -92,8 +92,16 @@ void ITP::RunSetup(){
    	// Precomputing
 
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-   	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
+ //   	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
+	// PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
+
+   	for(int i = 0; i< opt.grid[1]/2; i++){for(int j = 0; j < opt.grid[2]; j++){
+	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i+opt.grid[1]/4) * X(i+opt.grid[1]/4) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
+
+   	for(int i = opt.grid[1]/2; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
+	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i-opt.grid[1]/4) * X(i-opt.grid[1]/4) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
+
+
 
 	itp_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	itp_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
@@ -345,7 +353,7 @@ void ITP::propagateToGroundState(string runname)
 
 	// for(int m = 1; scaleFactor < 0.99 && scaleFactor > 1.01; m++){
 	do {
-		for(int m = 0; m < 10; m++){			
+		for(int m = 0; m < 50; m++){			
 
 			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
 			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);

@@ -23,7 +23,8 @@ private:
 	Options opt;
 	Vector<int32_t> v_left,v_right, v_up, v_down;
 	inline void findMostRightP(c_set &contour, Coordinate<int32_t> &p);
-	inline void findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s/*, Coordinate<int32_t> *initial*/);
+	inline void findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s);
+	inline void findSecondP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s);
 	inline Coordinate<int32_t> nextClockwise(Coordinate<int32_t> &s, int32_t &direction);
 	inline void setDirection(int32_t &direction);
 	

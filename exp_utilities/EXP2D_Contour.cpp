@@ -76,7 +76,7 @@ inline Coordinate<int32_t> Contour::nextClockwise(Coordinate<int32_t> &s, int32_
 	return c; 
 }
 
-inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s/*, Coordinate<int32_t> *initial*/){
+inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s){
 
 	Coordinate<int32_t> tmp = p;
 
@@ -95,6 +95,26 @@ inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordina
 	}
 }
 
+inline void Contour::findSecondP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s){
+
+	Coordinate<int32_t> tmp = p;
+
+
+	for(int x = tmp.x(); x < data.width(); x++){
+
+		if(data(0,x,tmp.y(),0) > 0){
+
+			p = data.make_coord(x,tmp.y(),0);
+			s = p + v_left;
+			// cout <<  p << " | " << s << endl;
+			// initial[0] = p;
+			// initial[1] = s;			
+			break;
+		}
+	}
+	p = data.make_coord(data.width()-1,tmp.y(),0);
+}
+
 inline void Contour::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
 	c_set::iterator max_it = contour.begin();
 	for(c_set::iterator it = contour.begin(); it != contour.end(); ++it){
@@ -107,6 +127,7 @@ inline void Contour::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
 c_set Contour::trackContour(RealGrid &data){
 
 	c_set contour;
+	c_set secondContour;
 	// c_set::iterator it;
 	// std::pair<c_set::iterator,bool> ret;
 
@@ -174,8 +195,21 @@ c_set Contour::trackContour(RealGrid &data){
 			int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.9; // Circumference of a circle going through p, 90%
 			if(contour.size() > size_condition){
 				if((initial[0] == p) && (initial[1] == s)){
+					findMostRightP(contour,p);
+					s = p;
+					p = p+v_right;
+					findSecondP(data,p,s);
+					if(p.x() == opt.grid[1]-1){
+						stop = true;
+					} else {
+						secondContour.insert(contour.begin(),contour.end());
+						contour.clear();
+						contour.insert(p);
+						direction = 0;
+						insert_counter =1;
+					}
+
 					// cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
-					stop = true;
 				}
 			}else if((initial[0] == p) && (initial[1] == s)){
 				// cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
@@ -198,11 +232,31 @@ c_set Contour::trackContour(RealGrid &data){
 		}
 
 		if(insert_counter >= (2 * contour.size() + 1)){
+
+			findMostRightP(contour,p);
+			s = p;
+			p = p+v_right;
+			findSecondP(data,p,s);
+			if(p.x() == opt.grid[1]-1){
+				stop = true;
+			} else {
+				secondContour.insert(contour.begin(),contour.end());
+				contour.clear();
+				contour.insert(p);
+				direction = 0;
+				insert_counter =1;
+			}
+			
+
+			// throw std::string("Contour::trackContour error #1: Surrounded the contour two times.");
+
+
+
 			// cout << "Surrounded the contour two times. Size:" << contour.size() << " Coordinates: " << p << " with initial " << initial[0] << " | " << initial[1] << endl;
 			// string name = "ERROR_1-SurroundedTwoTimes_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
 			// plotContourSurround(name, data,contour,opt);
 
-			throw std::string("Contour::trackContour error #1: Surrounded the contour two times."); 
+			 
 			// findMostRightP(contour,p);
 			// s = p;
 			// p = p + v_right;
@@ -215,6 +269,6 @@ c_set Contour::trackContour(RealGrid &data){
 
 	}while(stop == false);
 	
-
+	contour.insert(secondContour.begin(),secondContour.end());
 	return contour;
 }
