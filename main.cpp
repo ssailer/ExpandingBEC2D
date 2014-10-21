@@ -101,7 +101,7 @@ if(startUp.restart()){
 	tmpOpt.n_it_RTE = startUp.getRunTime();
 	tmpOpt.snapshots = startUp.getSnapShots();
 	RTE* runExpanding = new RTE(data,tmpOpt);
-	runExpanding->rteToTime(runName);
+	runExpanding->splitToTime(runName);
 	delete runExpanding;
 	delete data;
 }

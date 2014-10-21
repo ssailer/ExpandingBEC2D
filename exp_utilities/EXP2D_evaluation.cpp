@@ -579,7 +579,7 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	// }
 	if(opt.initialRun == true){
 		opt.vortexnumber = vlist.size();
-		cout << "Intial Evaluation found " << opt.vortexnumber << " Vortices." << endl;
+		cout << "Evaluation found " << opt.vortexnumber << " Vortices." << endl;
 	} else {
 		if(vlist.size() > opt.vortexnumber){
 			list<VortexData>::iterator it1 = vlist.begin();

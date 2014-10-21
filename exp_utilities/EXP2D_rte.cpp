@@ -573,8 +573,10 @@ void RTE::splitToTime(string runName){
 		initialEval->saveData(wavefctVec,opt,meta.steps,runName);
 		initialEval->evaluateData();
 		initialEval->plotData();
-		opt.vortexnumber = initialEval->getVortexNumber();
-		opt.initialRun = false;
+		// Commenting out both lines below, to switch on behavior in evaluation
+		// This basically counts every Vortex in each step, instead of capping at the initial value
+		// opt.vortexnumber = initialEval->getVortexNumber();
+		// opt.initialRun = false;
 
 		string evalname = runName + "-Eval.h5";
 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
