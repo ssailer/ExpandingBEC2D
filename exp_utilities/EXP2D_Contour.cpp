@@ -98,21 +98,25 @@ inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordina
 inline void Contour::findSecondP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s){
 
 	Coordinate<int32_t> tmp = p;
+	bool end = true;
 
-
-	for(int x = tmp.x(); x < data.width(); x++){
+	for(int x = tmp.x(); x < data.width()-1; x++){
 
 		if(data(0,x,tmp.y(),0) > 0){
 
 			p = data.make_coord(x,tmp.y(),0);
 			s = p + v_left;
+			end = true;
 			// cout <<  p << " | " << s << endl;
 			// initial[0] = p;
 			// initial[1] = s;			
 			break;
 		}
+
 	}
-	p = data.make_coord(data.width()-1,tmp.y(),0);
+	if(end == false){
+		p = data.make_coord(data.width()-1,tmp.y(),0);
+	}
 }
 
 inline void Contour::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
@@ -127,7 +131,7 @@ inline void Contour::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
 c_set Contour::trackContour(RealGrid &data){
 
 	c_set contour;
-	c_set secondContour;
+	c_set wholeContour;
 	// c_set::iterator it;
 	// std::pair<c_set::iterator,bool> ret;
 
@@ -192,9 +196,9 @@ c_set Contour::trackContour(RealGrid &data){
 		if(contour.size() >= 2){
 			double scalingFromRatio;
 			scalingFromRatio = (opt.omega_x.real() > opt.omega_y.real()) ? opt.omega_y.real()/opt.omega_x.real() : opt.omega_x.real()/opt.omega_y.real();
-			int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.9; // Circumference of a circle going through p, 90%
-			if(contour.size() > size_condition){
-				if((initial[0] == p) && (initial[1] == s)){
+			int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.5; // Circumference of a circle going through p, 90%
+			if((initial[0] == p) && (initial[1] == s)){
+				if(contour.size() > size_condition){				
 					findMostRightP(contour,p);
 					s = p;
 					p = p+v_right;
@@ -202,7 +206,7 @@ c_set Contour::trackContour(RealGrid &data){
 					if(p.x() == opt.grid[1]-1){
 						stop = true;
 					} else {
-						secondContour.insert(contour.begin(),contour.end());
+						wholeContour.insert(contour.begin(),contour.end());
 						contour.clear();
 						contour.insert(p);
 						direction = 0;
@@ -211,18 +215,18 @@ c_set Contour::trackContour(RealGrid &data){
 
 					// cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
 				}
-			}else if((initial[0] == p) && (initial[1] == s)){
-				// cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
-				// string name = "ERROR_2-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
-				// plotContourSurround(name, data,contour,opt);
-				findMostRightP(contour,p);
-				s = p;
-				p = p + v_right;
-				contour.clear();
-				findInitialP(data,p,s/*,initial*/);
-				contour.insert(p);
-				direction = 0;
-				insert_counter = 1;	
+			// }else if((initial[0] == p) && (initial[1] == s)){
+			// 	// cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
+			// 	// string name = "ERROR_2-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
+			// 	// plotContourSurround(name, data,contour,opt);
+			// 	findMostRightP(contour,p);
+			// 	s = p;
+			// 	p = p + v_right;
+			// 	contour.clear();
+			// 	findInitialP(data,p,s/*,initial*/);
+			// 	contour.insert(p);
+			// 	direction = 0;
+			// 	insert_counter = 1;	
 			}
 		}
 
@@ -240,7 +244,7 @@ c_set Contour::trackContour(RealGrid &data){
 			if(p.x() == opt.grid[1]-1){
 				stop = true;
 			} else {
-				secondContour.insert(contour.begin(),contour.end());
+				// wholeContour.insert(contour.begin(),contour.end());
 				contour.clear();
 				contour.insert(p);
 				direction = 0;
@@ -269,6 +273,6 @@ c_set Contour::trackContour(RealGrid &data){
 
 	}while(stop == false);
 	
-	contour.insert(secondContour.begin(),secondContour.end());
-	return contour;
+	wholeContour.insert(contour.begin(),contour.end());
+	return wholeContour;
 }
