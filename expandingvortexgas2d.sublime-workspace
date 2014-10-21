@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"find",
+				"findSecondP"
+			],
+			[
+				"ins",
+				"insert_counter"
+			],
+			[
+				"pl",
+				"plot"
+			],
+			[
+				"ratio",
+				"ratioPlot4"
+			],
+			[
 				"Poten",
 				"PotentialGrid"
 			],
@@ -498,22 +514,6 @@
 			[
 				"VO",
 				"VORTEX_SURROUND_DENSITY_RADIUS"
-			],
-			[
-				"V",
-				"VORTEX_SURROUND_DENSITY_RADIUS"
-			],
-			[
-				"phase",
-				"phase_winding"
-			],
-			[
-				"string",
-				"stringException"
-			],
-			[
-				"exce",
-				"exception"
 			]
 		]
 	},
@@ -528,10 +528,10 @@
 			}
 		},
 		{
-			"contents": "Searching 1890 files for \"#include <EXP2D_itp.hpp>\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/evaluator.cpp:\n   24  #include <main.h>\n   25  #include <EXP2D_tools.h>\n   26: // #include <EXP2D_itp.hpp>\n   27  // #include <EXP2D_rte.hpp>\n   28  #include <EXP2D_binaryfile.h>\n\n/home/nhrjr/projects/expandingvortexgas2d/itp.cpp:\n   25  #include <main.h>\n   26  #include <EXP2D_tools.h>\n   27: #include <EXP2D_itp.hpp>\n   28  // #include <EXP2D_rte.hpp>\n   29  #include <EXP2D_binaryfile.h>\n\n/home/nhrjr/projects/expandingvortexgas2d/main.cpp:\n   25  #include <main.h>\n   26  #include <EXP2D_tools.h>\n   27: // #include <EXP2D_itp.hpp>\n   28  #include <EXP2D_binaryfile.h>\n   29  #include <EXP2D_rte.hpp>\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_itp.cpp:\n    1  #define EIGEN_VECTORIZE\n    2  \n    3: #include <EXP2D_itp.hpp>\n    4  #include <omp.h>\n    5  \n\n4 matches across 4 files\n",
+			"contents": "Searching 1890 files for \"#include <EXP2D_itp.hpp>\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/evaluator.cpp:\n   24  #include <main.h>\n   25  #include <EXP2D_tools.h>\n   26: // #include <EXP2D_itp.hpp>\n   27  // #include <EXP2D_rte.hpp>\n   28  #include <EXP2D_binaryfile.h>\n\n/home/nhrjr/projects/expandingvortexgas2d/itp.cpp:\n   25  #include <main.h>\n   26  #include <EXP2D_tools.h>\n   27: #include <EXP2D_itp.hpp>\n   28  // #include <EXP2D_rte.hpp>\n   29  #include <EXP2D_binaryfile.h>\n\n/home/nhrjr/projects/expandingvortexgas2d/main.cpp:\n   25  #include <main.h>\n   26  #include <EXP2D_tools.h>\n   27: // #include <EXP2D_itp.hpp>\n   28  #include <EXP2D_binaryfile.h>\n   29  #include <EXP2D_rte.hpp>\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_itp.cpp:\n    1  #define EIGEN_VECTORIZE\n    2  \n    3: #include <EXP2D_itp.hpp>\n    4  #include <omp.h>\n    5  \n\n4 matches across 4 files\n\n\nSearching 1905 files for \"abs2\" (case sensitive)\n\n~/projects/expandingvortexgas2d/build/evaluator:\n    <binary>\n\n~/projects/expandingvortexgas2d/build/itp:\n    <binary>\n\n~/projects/expandingvortexgas2d/build/main:\n    <binary>\n\n~/projects/expandingvortexgas2d/build/tester:\n    <binary>\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_Contour.cpp:\n   84  	for(int x = tmp.x(); x < data.width(); x++){\n   85  \n   86: 		if(abs2(data(0,x,tmp.y(),0)) > 0){\n   87  \n   88  			p = data.make_coord(x,tmp.y(),0);\n   ..\n  103  	for(int x = tmp.x(); x < data.width(); x++){\n  104  \n  105: 		if(abs2(data(0,x,tmp.y(),0)) > 0){\n  106  \n  107  			p = data.make_coord(x,tmp.y(),0);\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.cpp:\n  416  		for(int x = 0; x < EDGE_RANGE_CHECK; x++){\n  417  			for(int y = 0; y < opt.grid[2]; y++){\n  418: 				sum[k] += abs2(PsiVec[k](0,x,y,0));\n  419  			}\n  420  		}\n  421  		for(int x = opt.grid[1] - EDGE_RANGE_CHECK; x < opt.grid[1]; x++){\n  422  			for(int y = 0; y < opt.grid[2]; y++){\n  423: 				sum[k] += abs2(PsiVec[k](0,x,y,0));\n  424  			}\n  425  		}\n  426  		for(int y = 0; y < EDGE_RANGE_CHECK; y++){\n  427  			for(int x = 0; x < opt.grid[1]; x++){\n  428: 				sum[k] += abs2(PsiVec[k](0,x,y,0));\n  429  			}\n  430  		}\n  431  		for(int y = opt.grid[2] - EDGE_RANGE_CHECK; y < opt.grid[2]; y++){\n  432  			for(int x = 0; x < opt.grid[1]; x++){\n  433: 				sum[k] += abs2(PsiVec[k](0,x,y,0));\n  434  			}\n  435  		}\n  ...\n  462  	// 	number += it->num_points;\n  463  	// 	double sD = it->surroundDens;\n  464: 	// 	cout << \" \" << x << \" \" << y << \"  \" << abs2(PsiVec[0](0,x,y,0)) << \" \" << arg(PsiVec[0](0,x,y,0)) << \" \" << sD << endl;\n  465  	// }\n  466  	// cout << \"Number of Vortices counted: \" << number << \"  \" << endl;\n  ...\n  549  				int y = it->points.front().y() + y_shift;\n  550  				radius.push_back(sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y));\n  551: 				polarDensity.push_back(abs2(PsiVec[0](0,x,y,0)));\n  552  			}\n  553  		}\n  ...\n  662  			{	\n  663  				phase.at(0,x,y,z) = arg(data(0,x,y,z));\n  664: 				if(abs2(data(0,x,y,z)) <= LOWER_THRESHOLD)\n  665  					zeros.at(0,x,y,z) = 0.0;\n  666  				else\n  ...\n  683  // 		c.y() = y;\n  684  // 		do{\n  685: // 			if(abs2(data(0,c)) > 0){\n  686  // 				lineData line;\n  687  // 				line.length = 1;\n  ...\n  690  \n  691  // 				do{	\n  692: // 					if(abs2(data(0,c)) > 0){\n  693  // 						c = c + v_right\n  694  // 					}\n  695: // 					if((abs2(data(0,c)) == 0) && abs2(data(0,c+v_right)) > 0){\n  696  // 						c = c + v_right + v_right;\n  697  // 					}\n  698  // 					line.stop = c;\n  699  // 					line.length++;\n  700: // 				}while(abs2(data(0,c)) > 0);\n  701  				\n  702  \n  ...\n  710  \n  711  void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){\n  712: 	double threshold = 2;//opt.N * 0.10 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;\n  713  	// double upper_threshold = 20.;\n  714  	// cout << \"Threshold \" << threshold << endl;\n  ...\n  726  	for(int i = VORTEX_SURROUND_DENSITY_RADIUS; i < opt.grid[1] - VORTEX_SURROUND_DENSITY_RADIUS; i++){\n  727  	    for(int j = VORTEX_SURROUND_DENSITY_RADIUS; j < opt.grid[2] - VORTEX_SURROUND_DENSITY_RADIUS; j++){\n  728: 	    	if((abs2(data(0,i,j,0)) > threshold)){\n  729     				densityLocationMap_local(0,i,j,0) = 1.;\n  730  				densityCoordinates_local.push_back(data.make_coord(i,j,0));\n  ...\n  897  	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];\n  898  	\n  899: 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;\n  900  \n  901  	cout << \"DensityCounter \" << sampleindex << \" : \" << densityCounter[sampleindex] << endl;\n  ...\n  904  	for(int i = 0; i < opt.grid[1]; i++){\n  905  	    for(int j = 0; j < opt.grid[2]; j++){	    	    		\n  906: 	      	obs.particle_count += abs2(data(0,i,j,0));\n  907  \n  908  	    }\n  ...\n 1006  				phi.push_back( atan2(x_shift * h_x ,y_shift * h_y) * 180 / M_PI + 180);\n 1007  				radius.push_back(sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y));\n 1008: 				polarDensity.push_back(abs2(data(0,i,j,0)));\n 1009  				cartesianCoordinates.push_back(data.make_coord(i,j,0));\n 1010  		}\n ....\n 1088  				obs.k(index) += k;\n 1089  				divisor(index)++;\n 1090: 				double number = abs2(data(0,x,y,z));\n 1091  				obs.number(index) += number;\n 1092  				// obs.particle_count += number;\n ....\n 1121  	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];\n 1122  	\n 1123: 	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;\n 1124  \n 1125  	obs.volume = h_x * h_y * densityCounter[sampleindex];\n 1126  	for(int i = 0; i < opt.grid[1]; i++){\n 1127  	    for(int j = 0; j < opt.grid[2]; j++){	    	    		\n 1128: 	      	obs.particle_count += abs2(data(0,i,j,0));\n 1129  	      	\n 1130  	    }\n ....\n 1187  				obs.k(index) += k;\n 1188  				divisor(index)++;\n 1189: 				double number = abs2(data(0,x,y,z));\n 1190  				obs.number(index) += number;\n 1191  				// obs.particle_count += number;\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_itp.cpp:\n  123  	for(int i=0;i<opt.grid[1]-1;i++){\n  124      	for(int j=0;j<opt.grid[2]-1;j++){\n  125:     		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);\n  126:       		// Integral += abs2(wavefct(i,j));      \n  127      	}\n  128      }\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rte.cpp:\n  210  	for(int i=0;i<opt.grid[1]-1;i++){\n  211      	for(int j=0;j<opt.grid[2]-1;j++){\n  212:     		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);\n  213:       		// Integral += abs2(wavefct(i,j));      \n  214      	}\n  215      }\n  ...\n  630  					for(int y = 0; y < rgrid.height(); y++){\n  631  				    	complex<double> value = rgrid(0,x,y,0);\n  632: 				    	double V = - ( /*PotentialGrid(x,y).real()*/ rotatingPotential(x,y,m) + opt.g * abs2(value) ) * timestepsize;\n  633  				    	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);\n  634  				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_startgrids.h:\n   72  for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){\n   73      for(int x = x_jump; x < opt.grid[1]; x += x_jump){\n   74:         if(abs2(data->wavefunction[0](x,y)) >= 10){\n   75              c.push_back(grid.make_coord(x,y,0));\n   76          }\n   ..\n   79  for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){\n   80      for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){\n   81:         if(abs2(data->wavefunction[0](x,y)) >= 10){\n   82              c.push_back(grid.make_coord(x,y,0));\n   83          }\n   ..\n  116  for(int y = y_jump; y < opt.grid[2]; y += y_jump){\n  117      for(int x = x_jump; x < opt.grid[1]; x += x_jump){\n  118:         if(abs2(data->wavefunction[0](x,y)) >= 10){\n  119              c.push_back(grid.make_coord(x,y,0));\n  120          }\n  ...\n  123  // for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){\n  124  //     for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){\n  125: //         if(abs2(data->wavefunction[0](x,y)) >= 10){\n  126  //             c.push_back(grid.make_coord(x,y,0));\n  127  //         }\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.cpp:\n  217  	{	\n  218  		k = i+n*j;\n  219: 		densData.a[k] = abs2(Psi(0,i,j,0));\n  220  	}\n  221  \n  ...\n  337  	{	\n  338  		k = i+n*j;\n  339: 		density.a[k] = abs2(g->at(0,i,j,0));\n  340  		phase.a[k] = arg(g->at(0,i,j,0));\n  341  \n  342: 		// data.a[k] = abs2(g(0,i,j,0));\n  343  	}\n  344  \n  ...\n  425  	{	\n  426  		k = i+n*j;\n  427: 		density.a[k] = abs2(g(0,i,j,0)); // g(0,i,j,0).real(); // \n  428  		phase.a[k] = arg(g(0,i,j,0)); // g(0,i,j,0).imag(); // \n  429  \n  430: 		// data.a[k] = abs2(g(0,i,j,0));\n  431  	}\n  432  \n  ...\n  511  		k = i+n*j;\n  512  		grid.a[k] = g(0,i,j,0);\n  513: 		// data.a[k] = abs2(g(0,i,j,0));\n  514  	}\n  515  \n  ...\n  566  	{	\n  567  		k = i+n*j;\n  568: 		density.a[k] = abs2(g(0,i,j,0));\n  569  		// phase.a[k] = arg(g(0,i,j,0));\n  570  \n  571: 		// data.a[k] = abs2(g(0,i,j,0));\n  572  	}\n  573  \n  ...\n  662  		k = i+n*j;\n  663  		// data1 = g->at(0,i,j,0);\n  664: 		density.a[k] = abs2(wavefct(i,j));\n  665  		phase.a[k] = arg(wavefct(i,j));\n  666  	}\n  ...\n  748  		k = i+n*j;\n  749  \n  750: 		data.a[k] = abs2(Psi(0,i,j,0));		\n  751  	}\n  752  \n  ...\n  839  		k = i+n*j;\n  840  \n  841: 		data.a[k] = abs2(mPsi(i,j));		\n  842  	}\n  843  \n\n/home/nhrjr/projects/expandingvortexgas2d/observables/bh3observables.cpp:\n  155  			{\n  156  				phase->at(0,x,y,z) = arg(data(0,x,y,z));\n  157: 				if(abs2(data(0,x,y,z)) < zero_threshold)\n  158  					zeros->at(0,x,y,z) = 0.0;\n  159  				else\n  ...\n  849  				Coordinate<int32_t> c = data[0].make_coord(x,y,z);\n  850  				\n  851: 				ares.interaction_int += abs2(data[0](0,c)) * abs2(data[0](0,c)) * options.U / 2.0;\n  852  				\n  853  				double velocity[3] = {	get_phase_diff(c,c+left),\n  ...\n  929  				\n  930  				// pressure energy:\n  931: 				double pressure = abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n  932  				\n  933  				ares.pressure_wo_phase(index) += pressure;\n  ...\n  970  				int index = index_factor * k;\n  971  				Coordinate<int32_t> c = data[0].make_coord(x,y,z);\n  972:                 ares.pressure(index) += abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n  973  			}\n  974  		}\n  ...\n  994  				complex<double> exp_i_phi = data[0](0,c) / sqrt_n;\n  995  				\n  996: 				field[0](0,c) = abs2(data[0](0,c)) * (exp_i_phi - exp_i_phi_back[0]) / exp_i_phi;\n  997: 				field[1](0,c) = abs2(data[0](0,c)) * (exp_i_phi - exp_i_phi_back[1]) / exp_i_phi;\n  998: 				field[2](0,c) = abs2(data[0](0,c)) * (exp_i_phi - exp_i_phi_back[2]) / exp_i_phi;\n  999  			}\n 1000  		}\n ....\n 1029                                           field[2](0,c) - cj[2]};\n 1030  				\n 1031: 				double j2 = abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n 1032: 				double cj2 = abs2(cj[0]) + abs2(cj[1]) + abs2(cj[2]);\n 1033: 				double ij2 = abs2(ij[0]) + abs2(ij[1]) + abs2(ij[2]);\n 1034  				\n 1035  				ares.j(index) += j2;\n ....\n 1089  				\n 1090  				// occupation number\n 1091: 				double number = abs2(data[0](0,c));\n 1092  				ares.number(index) += number;\n 1093  				ares.particle_count += number;\n ....\n 1113  				}\n 1114  				\n 1115: 				double ckinetick = abs2(cvelofield[0]) + abs2(cvelofield[1]) + abs2(cvelofield[2]);\n 1116: 				double kinetick = abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n 1117  				double ikinetick = kinetick - ckinetick;\n 1118  				\n ....\n 1166  				int index = index_factor * k;\n 1167  				\n 1168: 				ares.ckinetick(index) += abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n 1169  			}\n 1170  		}\n ....\n 1208  				int index = index_factor * k;\n 1209  				\n 1210: 				ares.kinetick(index) += abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n 1211  			}\n 1212  		}\n ....\n 1239  				int index = index_factor * k;\n 1240  				\n 1241: 				ares.phase(index) += abs2(field[0](0,c));\n 1242  			}\n 1243  		}\n ....\n 1335  				Coordinate<int32_t> c = data[0].make_coord(x,y,z);\n 1336  				\n 1337: 				g1(0,c) = abs2(data[0](0,c));\n 1338  			}\n 1339  		}\n\n/home/nhrjr/projects/expandingvortexgas2d/observables/bh3observables.cpp~:\n  155  			{\n  156  				phase->at(0,x,y,z) = arg(data(0,x,y,z));\n  157: 				if(abs2(data(0,x,y,z)) < zero_threshold)\n  158  					zeros->at(0,x,y,z) = 0.0;\n  159  				else\n  ...\n  869  				Coordinate<int32_t> c = data[0].make_coord(x,y,z);\n  870  				\n  871: 				ares.interaction_int += abs2(data[0](0,c)) * abs2(data[0](0,c)) * options.U / 2.0;\n  872  				\n  873  				double velocity[3] = {	get_phase_diff(c,c+left),\n  ...\n  947  				\n  948  				// pressure energy:\n  949: 				double pressure = abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n  950  				\n  951  				ares.pressure_wo_phase[index] += pressure;\n  ...\n  986  				int index = index_factor * k;\n  987  				Coordinate<int32_t> c = data[0].make_coord(x,y,z);\n  988: 				ares.pressure[index] += abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n  989  			}\n  990  		}\n  ...\n 1010  				complex<double> exp_i_phi = data[0](0,c) / sqrt_n;\n 1011  				\n 1012: 				field[0](0,c) = abs2(data[0](0,c)) * (exp_i_phi - exp_i_phi_back[0]) / exp_i_phi;\n 1013: 				field[1](0,c) = abs2(data[0](0,c)) * (exp_i_phi - exp_i_phi_back[1]) / exp_i_phi;\n 1014: 				field[2](0,c) = abs2(data[0](0,c)) * (exp_i_phi - exp_i_phi_back[2]) / exp_i_phi;\n 1015  			}\n 1016  		}\n ....\n 1045                                           field[2](0,c) - cj[2]};\n 1046  				\n 1047: 				double j2 = abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n 1048: 				double cj2 = abs2(cj[0]) + abs2(cj[1]) + abs2(cj[2]);\n 1049: 				double ij2 = abs2(ij[0]) + abs2(ij[1]) + abs2(ij[2]);\n 1050  				\n 1051  				ares.j[index] += j2;\n ....\n 1105  				\n 1106  				// occupation number\n 1107: 				double number = abs2(data[0](0,c));\n 1108  				ares.number[index] += number;\n 1109  				ares.particle_count += number;\n ....\n 1129  				}\n 1130  				\n 1131: 				double ckinetick = abs2(cvelofield[0]) + abs2(cvelofield[1]) + abs2(cvelofield[2]);\n 1132: 				double kinetick = abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n 1133  				double ikinetick = kinetick - ckinetick;\n 1134  				\n ....\n 1182  				int index = index_factor * k;\n 1183  				\n 1184: 				ares.ckinetick[index] += abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n 1185  			}\n 1186  		}\n ....\n 1224  				int index = index_factor * k;\n 1225  				\n 1226: 				ares.kinetick[index] += abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n 1227  			}\n 1228  		}\n ....\n 1256  				int index = index_factor * k;\n 1257  				\n 1258: 				ares.phase[index] += abs2(field[0](0,c));\n 1259  			}\n 1260  		}\n ....\n 1353  				Coordinate<int32_t> c = data[0].make_coord(x,y,z);\n 1354  				\n 1355: 				g1(0,c) = abs2(data[0](0,c));\n 1356  			}\n 1357  		}\n\n/home/nhrjr/projects/expandingvortexgas2d/observables/bh3save.cpp:\n   16  using namespace std;\n   17  \n   18: inline double my_abs2(int x, int y, int z, const vector<ComplexGrid> &field)\n   19  {\n   20: 	return abs2(field[0].at(x,y,z)) + abs2(field[1].at(x,y,z));\n   21  }\n   22  \n   ..\n  453  				<< phase(x,y,z) << \" \"\n  454  				<< zeros(x,y,z) << \" \"\n  455: 				<< abs2(data(x,y,z)) << endl;\n  456  			}\n  457  		}\n\n/home/nhrjr/projects/expandingvortexgas2d/observables/bh3save.cpp~:\n   17  using namespace std;\n   18  \n   19: inline double my_abs2(int x, int y, int z, const vector<ComplexGrid> &field)\n   20  {\n   21: 	return abs2(field[0].at(x,y,z)) + abs2(field[1].at(x,y,z));\n   22  }\n   23  \n   ..\n  445  				<< phase(x,y,z) << \" \"\n  446  				<< zeros(x,y,z) << \" \"\n  447: 				<< abs2(data(x,y,z)) << endl;\n  448  			}\n  449  		}\n\n/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3cpupropagator.cpp:\n   86  			{\n   87  				complex<double> value = rgrid[0](0,x,y,z);\n   88: 				double V = abs2(value) * factor;\n   89  				rgrid[0](0,x,y,z) = complex<double>(cos(V), sin(V)) * value;\n   90  			}\n\n/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3cuda1Dpropagator.cu~:\n   62  //__device__ double* dev_rprop;\n   63  \n   64: __device__ static __inline__ double cuCabs2 (cuDoubleComplex x)\n   65  {\n   66  	return cuCreal(x)*cuCreal(x) + cuCimag(x)*cuCimag(x);\n   ..\n  144      \n  145  	\n  146: 	double sum = -dev_options.timestepsize*0.5*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) + dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2));\n  147: 	double diff = dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) - dev_options.g_matrix[1]*cuCabs2(value1) - dev_options.g_matrix[2]*cuCabs2(value2));\n  148  	double delta = diff*diff + 4*devOmega_t*devOmega_t;\n  149  	delta = sqrt(delta);\n  ...\n  182      \n  183  	\n  184: 	double sum = -dev_options.timestepsize/2.*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) + dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2) - 2.*(dev_options.g_matrix[0]+dev_options.g_matrix[1])*dev_options.N*dev_options.fft_factor + 2.*devOmega_t/dev_options.U);\n  185: 	double diff = dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) - dev_options.g_matrix[1]*cuCabs2(value1) - dev_options.g_matrix[2]*cuCabs2(value2));\n  186  	double delta = diff*diff + 4*devOmega_t*devOmega_t;\n  187  	delta = sqrt(delta);\n  ...\n  232      \n  233  	\n  234: 	double sum = -dev_options.timestepsize*0.5*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) + dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2));\n  235: 	double diff = dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) - dev_options.g_matrix[1]*cuCabs2(value1) - dev_options.g_matrix[2]*cuCabs2(value2));\n  236  	double delta = diff*diff + 4*devOmega_t*devOmega_t;\n  237  	delta = sqrt(delta);\n  ...\n  269  	cuDoubleComplex value2 = grid2[index];\n  270  	\n  271: 	double a = -dev_options.timestepsize*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2));\n  272: 	double b = -dev_options.timestepsize*dev_options.U*(dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2));\n  273  	\n  274  	cuDoubleComplex prop;\n  ...\n  292  	cuDoubleComplex value2 = grid2[index];\n  293  	\n  294: 	double a = -dev_options.timestepsize*dev_options.U*(dev_options.g_matrix[0]*cuCabs2(value1) + dev_options.g_matrix[1]*cuCabs2(value2) - (dev_options.g_matrix[0]+dev_options.g_matrix[1])*dev_options.N*dev_options.fft_factor);\n  295: 	double b = -dev_options.timestepsize*dev_options.U*(dev_options.g_matrix[1]*cuCabs2(value1) + dev_options.g_matrix[2]*cuCabs2(value2) - (dev_options.g_matrix[2]+dev_options.g_matrix[1])*dev_options.N*dev_options.fft_factor);\n  296  	\n  297  	cuDoubleComplex prop;\n\n/home/nhrjr/projects/expandingvortexgas2d/propagators/bh3fastcpupropagator.cpp:\n  144  				\n  145  				complex<double> value = rg->at(x,y,z);\n  146: 				double V = abs2(value) * factor;\n  147  				rg->at(x,y,z) = complex<double>(cos(V), sin(V)) * value;\n  148  			}\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/exp2d-obs-line-of-codes.cpp:\n  228  				// occupation number\n  229  				ares.k(index) += k;\n  230: 				double number = abs2(data[0](0,c));\n  231  				ares.number(index) += number;\n  232  				ares.particle_count += number;\n  ...\n  252  				}\n  253  				\n  254: 				double ckinetick = abs2(cvelofield[0]) + abs2(cvelofield[1]) + abs2(cvelofield[2]);\n  255: 				double kinetick = abs2(field[0](0,c)) + abs2(field[1](0,c)) + abs2(field[2](0,c));\n  256  				double ikinetick = kinetick - ckinetick;\n  257  				\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/#bh3cudapropagator.cu#:\n   66  //__constant__ __device__ double devOmega_t;\n   67  \n   68: __device__ static __inline__ double cuCabs2 (cuDoubleComplex x)\n   69  {\n   70  	return cuCreal(x)*cuCreal(x) + cuCimag(x)*cuCimag(x);\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3cpuomppropagator.cpp:\n   67  			{\n   68  				complex<double> value = rgrid[0](x,y,z);\n   69: 				double V = abs2(value) * factor;\n   70  				rgrid[0](x,y,z) = complex<double>(cos(V), sin(V)) * value;\n   71  			}\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3cpuomppropagator.cpp~:\n   67  			{\n   68  				complex<double> value = rgrid[0](x,y,z);\n   69: 				double V = abs2(value) * factor;\n   70  				rgrid[0](x,y,z) = complex<double>(cos(V), sin(V)) * value;\n   71  			}\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3cpupropagator.cpp:\n   86  			{\n   87  				complex<double> value = rgrid[0](x,y,z);\n   88: 				double V = abs2(value) * factor;\n   89  				rgrid[0](x,y,z) = complex<double>(cos(V), sin(V)) * value;\n   90  			}\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3cpupropagator.cpp~:\n   86  			{\n   87  				complex<double> value = rgrid->at(x,y,z);\n   88: 				double V = abs2(value) * factor;\n   89  				rgrid->at(x,y,z) = complex<double>(cos(V), sin(V)) * value;\n   90  			}\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3cudapropagator.cu:\n   66  //__constant__ __device__ double devOmega_t;\n   67  \n   68: __device__ static __inline__ double cuCabs2 (cuDoubleComplex x)\n   69  {\n   70  	return cuCreal(x)*cuCreal(x) + cuCimag(x)*cuCimag(x);\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3cudapropagator.cu~:\n   66  //__constant__ __device__ double devOmega_t;\n   67  \n   68: __device__ static __inline__ double cuCabs2 (cuDoubleComplex x)\n   69  {\n   70  	return cuCreal(x)*cuCreal(x) + cuCimag(x)*cuCimag(x);\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3fastcpupropagator.cpp:\n  144  				\n  145  				complex<double> value = rg->at(x,y,z);\n  146: 				double V = abs2(value) * factor;\n  147  				rg->at(x,y,z) = complex<double>(cos(V), sin(V)) * value;\n  148  			}\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3fastcpupropagator.cpp~:\n  144  				\n  145  				complex<double> value = rg->at(x,y,z);\n  146: 				double V = abs2(value) * factor;\n  147  				rg->at(x,y,z) = complex<double>(cos(V), sin(V)) * value;\n  148  			}\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3fastcudapropagator.cu:\n   53  __constant__ __device__ KParam kp;\n   54  \n   55: __device__ static __inline__ double cuCabs2 (cuDoubleComplex x)\n   56  {\n   57  	return cuCreal(x)*cuCreal(x) + cuCimag(x)*cuCimag(x);\n\n/home/nhrjr/projects/expandingvortexgas2d/resources/bh3propagators_version2(von thorge)/bh3fastcudapropagator.cu~:\n   53  __constant__ __device__ KParam kp;\n   54  \n   55: __device__ static __inline__ double cuCabs2 (cuDoubleComplex x)\n   56  {\n   57  	return cuCreal(x)*cuCreal(x) + cuCimag(x)*cuCimag(x);\n\n~/projects/expandingvortexgas2d/results/spacing21/runData/Expanding-Set-1-StartGrid.h5:\n    <binary>\n\n/home/nhrjr/projects/expandingvortexgas2d/startgrids/bh3defaultgrid.cpp:\n  380  for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){\n  381      for(int x = x_jump; x < opt.grid[1]; x += x_jump){\n  382:         if(abs2(g->at(0,x,y,0)) >= 2){\n  383              c.push_back(g->make_coord(x,y,0));\n  384          }\n  ...\n  387  for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){\n  388      for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){\n  389:         if(abs2(g->at(0,x,y,0)) >= 2){\n  390              c.push_back(g->make_coord(x,y,0));\n  391          }\n\n/home/nhrjr/projects/expandingvortexgas2d/utilities/complexgrid.h:\n  102  \n  103  // for shortening\n  104: template <class T> inline T abs2(const complex<T> &c)\n  105  {\n  106  	return c.real()*c.real() + c.imag()*c.imag();\n\n682 matches across 32 files\n",
 			"settings":
 			{
-				"buffer_size": 919,
+				"buffer_size": 24494,
 				"line_ending": "Unix",
 				"name": "Find Results",
 				"scratch": true
@@ -549,7 +549,7 @@
 			"file": "itp.cpp",
 			"settings":
 			{
-				"buffer_size": 3781,
+				"buffer_size": 3813,
 				"line_ending": "Unix"
 			}
 		},
@@ -586,18 +586,26 @@
 			}
 		},
 		{
-			"file": "results/ratiosPlot.py",
+			"file": "exp_utilities/EXP2D_Contour.cpp",
 			"settings":
 			{
-				"buffer_size": 1326,
+				"buffer_size": 6737,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "pythonScripts/ratiosPlot.py",
+			"file": "exp_utilities/EXP2D_Contour.h",
 			"settings":
 			{
-				"buffer_size": 2289,
+				"buffer_size": 868,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "results/ratiosPlot.py",
+			"settings":
+			{
+				"buffer_size": 1326,
 				"line_ending": "Unix"
 			}
 		},
@@ -693,7 +701,7 @@
 			"file": "results/run.cfg",
 			"settings":
 			{
-				"buffer_size": 996,
+				"buffer_size": 999,
 				"line_ending": "Unix"
 			}
 		},
@@ -709,7 +717,7 @@
 			"file": "exp_utilities/EXP2D_itp.cpp",
 			"settings":
 			{
-				"buffer_size": 12981,
+				"buffer_size": 13647,
 				"line_ending": "Unix"
 			}
 		},
@@ -746,13 +754,10 @@
 			}
 		},
 		{
-			"contents": "\n#!/usr/bin/env python\nimport sys\n# import h5py\n# import pandas as pd\n# import csv\nimport numpy as np\nimport matplotlib.pyplot as plt\n# from scipy.cluster.vq import kmeans, kmeans2, whiten\n\n\ndef main():\n\n	folder = [None] * 3\n	folder[0] = \"EX_run01_12samples_2048x2048_WN1_aV\"\n	folder[1] = \"EX_run02_12samples_2048x2048_WN1_aV_dense\"\n	folder[2] = \"EX_run03_12samples_2048x2048_WN1_sV_dense\"\n\n	datafile1 = folder[0] + \"/CombinedRunObservables/Expanding_Ratios.csv\"\n	datafile2 = folder[1] + \"/CombinedRunObservables/Expanding_Ratios.csv\"\n	datafile3 = folder[2] + \"/CombinedRunObservables/Expanding_Ratios.csv\"\n	# angle = int(sys.argv[1])\n\n	# from_data1 = open(datafile1,\"rb\")\n	# from_data2 = open(datafile2,\"rb\")\n\n	# for row in csv.reader(from_data1)\n\n	# dataset01 = from_data['Timestep']\n	# dataset02 = from_data['1']\n	# dataset03 = from_data['30']\n	# dataset04 = from_data['60']\n	# dataset05 = from_data['88']\n\n	# dataset11 = from_data['Timestep']\n	# dataset12 = from_data['1']\n	# dataset13 = from_data['30']\n	# dataset14 = from_data['60']\n	# dataset15 = from_data['88']\n	maxtimestep = 113\n\n	for angle in range(0,90) :	\n		dataset01=np.loadtxt(datafile1,dtype=float,delimiter=',',skiprows=1,usecols=(1,))\n		dataset02=np.loadtxt(datafile1,dtype=float,delimiter=',',skiprows=1,usecols=(angle+2,))		\n		dataset11=np.loadtxt(datafile2,dtype=float,delimiter=',',skiprows=1,usecols=(1,))\n		dataset12=np.loadtxt(datafile2,dtype=float,delimiter=',',skiprows=1,usecols=(angle+2,))	\n		dataset21=np.loadtxt(datafile3,dtype=float,delimiter=',',skiprows=1,usecols=(1,))\n		dataset22=np.loadtxt(datafile3,dtype=float,delimiter=',',skiprows=1,usecols=(angle+2,))\n\n		dataset01=dataset01[0:maxtimestep]\n		dataset02=dataset02[0:maxtimestep]\n		dataset11=dataset11[0:maxtimestep]\n		dataset12=dataset12[0:maxtimestep]\n		dataset21=dataset21[0:maxtimestep]\n		dataset22=dataset22[0:maxtimestep]\n\n\n\n		fig = plt.figure()\n		ax1 = fig.add_subplot(111)\n		ratioPlot1 = ax1.plot(dataset11,dataset12, c='r', marker='o', label='aV_dense')\n		ratioPlot2 = ax1.plot(dataset01,dataset02, c='b', marker='o', label='aV')\n		ratioPlot3 = ax1.plot(dataset21,dataset22, c='g', marker='o', label='sV')\n		plt.ylabel('Angle '+ str(angle))\n		plt.xlabel('Timestep')\n		plt.legend(loc='best')\n		plt.savefig(\"Combined_Plots_angle_\"+str(angle)+\".png\")\n\n	# ax2 = fig.add_subplot(412)\n	# ratioPlot3 = ax2.plot(dataset1,dataset3,'ro')\n	# plt.ylabel('Angle 30')\n	# plt.xlabel('Timestep')\n\n	# ax3 = fig.add_subplot(413)\n	# ratioPlot4 = ax3.plot(dataset1,dataset4,'ro')\n	# plt.ylabel('Angle 60')\n	# plt.xlabel('Timestep')\n\n	# ax4 = fig.add_subplot(414)\n	# ratioPlot5 = ax4.plot(dataset1,dataset5,'ro')\n	# plt.ylabel('Angle 88')\n	# plt.xlabel('Timestep')\n	\n	\n	# plt.show()\n\n	# plt.plot(dataset1,dataset2)\n	# plt.show()\n\nif __name__ == '__main__':\n   	main()\n\n",
 			"file": "results/usbstick/ratiosPlot_EX.py",
-			"file_size": -1,
-			"file_write_time": -1,
 			"settings":
 			{
-				"buffer_size": 2796,
+				"buffer_size": 3267,
 				"line_ending": "Unix"
 			}
 		}
@@ -934,11 +939,13 @@
 	"expanded_folders":
 	[
 		"/home/nhrjr/projects/expandingvortexgas2d",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities",
 		"/home/nhrjr/projects/expandingvortexgas2d/results",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/usbstick"
 	],
 	"file_history":
 	[
+		"/home/nhrjr/projects/expandingvortexgas2d/results/usbstick/ratiosPlot_EX.py",
 		"/home/nhrjr/projects/gpue/src/split_op.cu",
 		"/home/nhrjr/projects/gpue/bin/run.sh",
 		"/home/nhrjr/projects/gpue/py/vis.py",
@@ -1065,8 +1072,7 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/build/test_speed-g++_Ofast/runtime.txt",
 		"/opt/intel/ipp/bin/ippvars.sh",
 		"/opt/intel/bin/compilervars..sh",
-		"/opt/intel/composer_xe_2013_sp1.2.144/ipp/bin/ippvars.sh",
-		"/opt/intel/bin/compilervars.csh"
+		"/opt/intel/composer_xe_2013_sp1.2.144/ipp/bin/ippvars.sh"
 	],
 	"find":
 	{
@@ -1087,6 +1093,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"abs2",
+			"findSecondP",
+			"aspectRatio",
+			"contour",
+			"40",
+			"20",
+			"40",
+			"+",
+			"8",
 			"80",
 			"60",
 			"plotDataToPng",
@@ -1205,16 +1220,7 @@
 			"1024",
 			"100",
 			"2",
-			"2048",
-			"10",
-			"5",
-			"SetFontSize",
-			"gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);",
-			"1800",
-			"50",
-			"80",
-			"30",
-			"60"
+			"2048"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1232,7 +1238,7 @@
 	"groups":
 	[
 		{
-			"selected": 15,
+			"selected": 8,
 			"sheets":
 			[
 				{
@@ -1248,8 +1254,8 @@
 						"selection":
 						[
 							[
-								2397,
-								2397
+								1635,
+								1635
 							]
 						],
 						"settings":
@@ -1262,36 +1268,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1302,26 +1283,51 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 624.0,
+						"translation.y": 507.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -1329,7 +1335,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 919,
+						"buffer_size": 24494,
 						"regions":
 						{
 							"match":
@@ -1352,6 +1358,746 @@
 									[
 										836,
 										860
+									],
+									[
+										1357,
+										1361
+									],
+									[
+										1520,
+										1524
+									],
+									[
+										1804,
+										1808
+									],
+									[
+										1998,
+										2002
+									],
+									[
+										2168,
+										2172
+									],
+									[
+										2362,
+										2366
+									],
+									[
+										2549,
+										2553
+									],
+									[
+										2902,
+										2906
+									],
+									[
+										3036,
+										3040
+									],
+									[
+										3190,
+										3194
+									],
+									[
+										3323,
+										3327
+									],
+									[
+										3413,
+										3417
+									],
+									[
+										3438,
+										3442
+									],
+									[
+										3609,
+										3613
+									],
+									[
+										3957,
+										3961
+									],
+									[
+										4344,
+										4348
+									],
+									[
+										4619,
+										4623
+									],
+									[
+										4925,
+										4929
+									],
+									[
+										5180,
+										5184
+									],
+									[
+										5372,
+										5376
+									],
+									[
+										5592,
+										5596
+									],
+									[
+										5856,
+										5860
+									],
+									[
+										5999,
+										6003
+									],
+									[
+										6310,
+										6314
+									],
+									[
+										6329,
+										6333
+									],
+									[
+										6350,
+										6354
+									],
+									[
+										6371,
+										6375
+									],
+									[
+										6437,
+										6441
+									],
+									[
+										6696,
+										6700
+									],
+									[
+										6715,
+										6719
+									],
+									[
+										6736,
+										6740
+									],
+									[
+										6757,
+										6761
+									],
+									[
+										6823,
+										6827
+									],
+									[
+										7087,
+										7091
+									],
+									[
+										7523,
+										7527
+									],
+									[
+										7787,
+										7791
+									],
+									[
+										8045,
+										8049
+									],
+									[
+										8318,
+										8322
+									],
+									[
+										8570,
+										8574
+									],
+									[
+										8669,
+										8673
+									],
+									[
+										8766,
+										8770
+									],
+									[
+										8863,
+										8867
+									],
+									[
+										9004,
+										9008
+									],
+									[
+										9123,
+										9127
+									],
+									[
+										9220,
+										9224
+									],
+									[
+										9312,
+										9316
+									],
+									[
+										9434,
+										9438
+									],
+									[
+										9560,
+										9564
+									],
+									[
+										9655,
+										9659
+									],
+									[
+										9845,
+										9849
+									],
+									[
+										10052,
+										10056
+									],
+									[
+										10073,
+										10077
+									],
+									[
+										10261,
+										10265
+									],
+									[
+										10283,
+										10287
+									],
+									[
+										10305,
+										10309
+									],
+									[
+										10548,
+										10552
+									],
+									[
+										10570,
+										10574
+									],
+									[
+										10592,
+										10596
+									],
+									[
+										10743,
+										10747
+									],
+									[
+										10836,
+										10840
+									],
+									[
+										10929,
+										10933
+									],
+									[
+										11131,
+										11135
+									],
+									[
+										11153,
+										11157
+									],
+									[
+										11175,
+										11179
+									],
+									[
+										11220,
+										11224
+									],
+									[
+										11234,
+										11238
+									],
+									[
+										11248,
+										11252
+									],
+									[
+										11285,
+										11289
+									],
+									[
+										11299,
+										11303
+									],
+									[
+										11313,
+										11317
+									],
+									[
+										11447,
+										11451
+									],
+									[
+										11611,
+										11615
+									],
+									[
+										11633,
+										11637
+									],
+									[
+										11655,
+										11659
+									],
+									[
+										11705,
+										11709
+									],
+									[
+										11727,
+										11731
+									],
+									[
+										11749,
+										11753
+									],
+									[
+										11929,
+										11933
+									],
+									[
+										11951,
+										11955
+									],
+									[
+										11973,
+										11977
+									],
+									[
+										12111,
+										12115
+									],
+									[
+										12133,
+										12137
+									],
+									[
+										12155,
+										12159
+									],
+									[
+										12290,
+										12294
+									],
+									[
+										12435,
+										12439
+									],
+									[
+										12632,
+										12636
+									],
+									[
+										12839,
+										12843
+									],
+									[
+										12860,
+										12864
+									],
+									[
+										13048,
+										13052
+									],
+									[
+										13070,
+										13074
+									],
+									[
+										13092,
+										13096
+									],
+									[
+										13323,
+										13327
+									],
+									[
+										13345,
+										13349
+									],
+									[
+										13367,
+										13371
+									],
+									[
+										13518,
+										13522
+									],
+									[
+										13611,
+										13615
+									],
+									[
+										13704,
+										13708
+									],
+									[
+										13906,
+										13910
+									],
+									[
+										13928,
+										13932
+									],
+									[
+										13950,
+										13954
+									],
+									[
+										13995,
+										13999
+									],
+									[
+										14009,
+										14013
+									],
+									[
+										14023,
+										14027
+									],
+									[
+										14060,
+										14064
+									],
+									[
+										14074,
+										14078
+									],
+									[
+										14088,
+										14092
+									],
+									[
+										14222,
+										14226
+									],
+									[
+										14386,
+										14390
+									],
+									[
+										14408,
+										14412
+									],
+									[
+										14430,
+										14434
+									],
+									[
+										14480,
+										14484
+									],
+									[
+										14502,
+										14506
+									],
+									[
+										14524,
+										14528
+									],
+									[
+										14704,
+										14708
+									],
+									[
+										14726,
+										14730
+									],
+									[
+										14748,
+										14752
+									],
+									[
+										14886,
+										14890
+									],
+									[
+										14908,
+										14912
+									],
+									[
+										14930,
+										14934
+									],
+									[
+										15065,
+										15069
+									],
+									[
+										15210,
+										15214
+									],
+									[
+										15381,
+										15385
+									],
+									[
+										15465,
+										15469
+									],
+									[
+										15492,
+										15496
+									],
+									[
+										15623,
+										15627
+									],
+									[
+										15802,
+										15806
+									],
+									[
+										15886,
+										15890
+									],
+									[
+										15913,
+										15917
+									],
+									[
+										16044,
+										16048
+									],
+									[
+										16259,
+										16263
+									],
+									[
+										16538,
+										16542
+									],
+									[
+										16754,
+										16758
+									],
+									[
+										16796,
+										16800
+									],
+									[
+										16838,
+										16842
+									],
+									[
+										16880,
+										16884
+									],
+									[
+										16959,
+										16963
+									],
+									[
+										17001,
+										17005
+									],
+									[
+										17043,
+										17047
+									],
+									[
+										17085,
+										17089
+									],
+									[
+										17308,
+										17312
+									],
+									[
+										17350,
+										17354
+									],
+									[
+										17392,
+										17396
+									],
+									[
+										17434,
+										17438
+									],
+									[
+										17635,
+										17639
+									],
+									[
+										17677,
+										17681
+									],
+									[
+										17719,
+										17723
+									],
+									[
+										17761,
+										17765
+									],
+									[
+										17985,
+										17989
+									],
+									[
+										18027,
+										18031
+									],
+									[
+										18069,
+										18073
+									],
+									[
+										18111,
+										18115
+									],
+									[
+										18190,
+										18194
+									],
+									[
+										18232,
+										18236
+									],
+									[
+										18274,
+										18278
+									],
+									[
+										18316,
+										18320
+									],
+									[
+										18569,
+										18573
+									],
+									[
+										18611,
+										18615
+									],
+									[
+										18713,
+										18717
+									],
+									[
+										18755,
+										18759
+									],
+									[
+										18958,
+										18962
+									],
+									[
+										19000,
+										19004
+									],
+									[
+										19191,
+										19195
+									],
+									[
+										19233,
+										19237
+									],
+									[
+										19541,
+										19545
+									],
+									[
+										19815,
+										19819
+									],
+									[
+										19979,
+										19983
+									],
+									[
+										20001,
+										20005
+									],
+									[
+										20023,
+										20027
+									],
+									[
+										20073,
+										20077
+									],
+									[
+										20095,
+										20099
+									],
+									[
+										20117,
+										20121
+									],
+									[
+										20421,
+										20425
+									],
+									[
+										20717,
+										20721
+									],
+									[
+										21022,
+										21026
+									],
+									[
+										21323,
+										21327
+									],
+									[
+										21626,
+										21630
+									],
+									[
+										21948,
+										21952
+									],
+									[
+										22262,
+										22266
+									],
+									[
+										22557,
+										22561
+									],
+									[
+										22859,
+										22863
+									],
+									[
+										23172,
+										23176
+									],
+									[
+										23480,
+										23484
+									],
+									[
+										23892,
+										23896
+									],
+									[
+										24141,
+										24145
+									],
+									[
+										24376,
+										24380
 									]
 								],
 								"scope": ""
@@ -1360,8 +2106,8 @@
 						"selection":
 						[
 							[
-								648,
-								648
+								921,
+								921
 							]
 						],
 						"settings":
@@ -1374,36 +2120,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1414,20 +2135,45 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"detect_indentation": false,
 							"line_numbers": false,
-							"output_tag": 1,
+							"output_tag": 2,
 							"result_base_dir": "",
 							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
 							"result_line_regex": "^ +([0-9]+):",
@@ -1435,10 +2181,10 @@
 							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 6130.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -1526,7 +2272,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
@@ -1535,15 +2281,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3781,
+						"buffer_size": 3813,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2134,
-								2134
+								1913,
+								1913
 							]
 						],
 						"settings":
@@ -1556,36 +2302,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1596,26 +2317,51 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 663.0,
+						"translation.y": 546.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -1705,7 +2451,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
@@ -1795,7 +2541,7 @@
 						"translation.y": 858.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
@@ -1884,7 +2630,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -1900,8 +2646,8 @@
 						"selection":
 						[
 							[
-								21315,
-								21315
+								11994,
+								11994
 							]
 						],
 						"settings":
@@ -1914,36 +2660,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1954,30 +2675,232 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 10895.0,
+						"translation.y": 4290.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 8,
+					"file": "exp_utilities/EXP2D_Contour.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6737,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1689,
+								1689
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"syntax_mgr_loaded": true,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 789.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "exp_utilities/EXP2D_Contour.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 868,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								406,
+								406
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"syntax_mgr_loaded": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
 					"file": "results/ratiosPlot.py",
 					"semi_transient": false,
 					"settings":
@@ -2062,100 +2985,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "pythonScripts/ratiosPlot.py",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 2289,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								638,
-								638
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content"
-							],
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
+					"buffer": 11,
 					"file": "exp_utilities/EXP2D_observables.h",
 					"semi_transient": false,
 					"settings":
@@ -2241,11 +3075,11 @@
 						"translation.y": 759.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 27,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 12,
 					"file": "exp_utilities/EXP2D_binaryfile.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2331,11 +3165,11 @@
 						"translation.y": 1560.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 13,
 					"file": "exp_utilities/EXP2D_binaryfile.h",
 					"semi_transient": false,
 					"settings":
@@ -2421,11 +3255,11 @@
 						"translation.y": 215.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 14,
 					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
@@ -2510,11 +3344,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 15,
 					"file": "exp_utilities/EXP2D_rte.hpp",
 					"semi_transient": false,
 					"settings":
@@ -2600,11 +3434,11 @@
 						"translation.y": 468.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 16,
 					"file": "exp_utilities/EXP2D_rte.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2630,36 +3464,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -2670,30 +3479,55 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2546.0,
+						"translation.y": 7238.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 17,
 					"file": "utilities/realgrid.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2778,11 +3612,11 @@
 						"translation.y": 2717.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 25,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 18,
 					"file": "exp_utilities/EXP2D_evaluation.h",
 					"semi_transient": false,
 					"settings":
@@ -2867,11 +3701,11 @@
 						"translation.y": 596.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 19,
 					"file": "TODO",
 					"semi_transient": false,
 					"settings":
@@ -2955,11 +3789,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 28,
+					"stack_index": 29,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 20,
 					"file": "exp_utilities/main.h",
 					"semi_transient": false,
 					"settings":
@@ -3043,11 +3877,11 @@
 						"translation.y": 1170.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 21,
 					"file": "exp_utilities/EXP2D_tools.h",
 					"semi_transient": false,
 					"settings":
@@ -3133,24 +3967,24 @@
 						"translation.y": 1086.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 22,
 					"file": "results/run.cfg",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 996,
+						"buffer_size": 999,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								345,
-								345
+								428,
+								428
 							]
 						],
 						"settings":
@@ -3163,36 +3997,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -3203,16 +4012,41 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"syntax_mgr_loaded": true,
@@ -3226,7 +4060,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 23,
 					"file": "/home/nhrjr/test.py",
 					"semi_transient": false,
 					"settings":
@@ -3310,28 +4144,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 24,
 					"file": "exp_utilities/EXP2D_itp.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12981,
+						"buffer_size": 13647,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9074,
-								9074
-							],
-							[
-								9098,
-								9098
+								9861,
+								9861
 							]
 						],
 						"settings":
@@ -3344,36 +4174,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -3384,30 +4189,55 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 809.0,
+						"translation.y": 4407.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 25,
 					"file": "exp_utilities/EXP2D_itp.hpp",
 					"semi_transient": false,
 					"settings":
@@ -3493,11 +4323,11 @@
 						"translation.y": 154.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 26,
+					"stack_index": 27,
 					"type": "text"
 				},
 				{
-					"buffer": 25,
+					"buffer": 26,
 					"file": "exp_utilities/EXP2D_startgrids.h",
 					"semi_transient": false,
 					"settings":
@@ -3583,11 +4413,11 @@
 						"translation.y": 658.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 26,
+					"buffer": 27,
 					"file": "exp_utilities/plot_with_mgl.h",
 					"semi_transient": false,
 					"settings":
@@ -3673,11 +4503,11 @@
 						"translation.y": 560.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 27,
+					"buffer": 28,
 					"file": "exp_utilities/plot_with_mgl.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3703,36 +4533,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -3743,16 +4548,41 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
@@ -3762,24 +4592,24 @@
 						"translation.y": 8515.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 28,
+					"buffer": 29,
 					"file": "results/usbstick/ratiosPlot_EX.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2796,
+						"buffer_size": 3267,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								909,
-								909
+								866,
+								866
 							]
 						],
 						"settings":
@@ -3792,36 +4622,11 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -3832,26 +4637,51 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content"
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"syntax": "Packages/Python/Python.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 117.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 9,
 					"type": "text"
 				}
 			]
@@ -3890,7 +4720,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 244.0
+		"height": 340.0
 	},
 	"output.find_results":
 	{

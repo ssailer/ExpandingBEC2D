@@ -5,7 +5,7 @@
 #include <omp.h>
 
 #define EIGEN_VECTORIZE
-#define EIGEN_PARALLELIZE
+#define EIGEN_DONT_PARALLELIZE
 #define EIGEN_NO_DEBUG
 
 using namespace std;
