@@ -93,12 +93,13 @@ inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordina
 			break;
 		}
 	}
+	// cout << "findInitialP Size:" << " Coordinates: " << p << endl;
 }
 
 inline void Contour::findSecondP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s){
 
 	Coordinate<int32_t> tmp = p;
-	bool end = true;
+	bool found = false;
 
 	for(int x = tmp.x(); x < data.width()-1; x++){
 
@@ -106,7 +107,7 @@ inline void Contour::findSecondP(RealGrid &data,Coordinate<int32_t> &p,Coordinat
 
 			p = data.make_coord(x,tmp.y(),0);
 			s = p + v_left;
-			end = true;
+			found = true;
 			// cout <<  p << " | " << s << endl;
 			// initial[0] = p;
 			// initial[1] = s;			
@@ -114,9 +115,11 @@ inline void Contour::findSecondP(RealGrid &data,Coordinate<int32_t> &p,Coordinat
 		}
 
 	}
-	if(end == false){
+	if(found == false){
+		// cout << "found end" << endl;
 		p = data.make_coord(data.width()-1,tmp.y(),0);
 	}
+	// cout << "findSecondP Size:" << " Coordinates: " << p << " density " << data(0,p.x(),p.y(),0) << endl;
 }
 
 inline void Contour::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
@@ -126,6 +129,7 @@ inline void Contour::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
 			max_it = it;
 	}
 	p = *max_it;
+	// cout << "findMostRightP Size:" << " Coordinates: " << p << endl;
 }
 
 c_set Contour::trackContour(RealGrid &data){
@@ -134,6 +138,8 @@ c_set Contour::trackContour(RealGrid &data){
 	c_set wholeContour;
 	// c_set::iterator it;
 	// std::pair<c_set::iterator,bool> ret;
+
+	double scalingFromRatio = (opt.omega_x.real() > opt.omega_y.real()) ? opt.omega_y.real()/opt.omega_x.real() : opt.omega_x.real()/opt.omega_y.real();
 
 	Coordinate<int32_t> s;
 	Coordinate<int32_t> p = data.make_coord(0,data.height()/2,0);
@@ -183,22 +189,41 @@ c_set Contour::trackContour(RealGrid &data){
 			// std::cout << "Found single point, continuing the search. " << p << endl;
 			// string name = "ERROR_3-SinglePoint_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
 			// plotContourSurround(name, data,contour,opt);
+
+			findMostRightP(contour,p);
 			s = p;
-			p = p + v_right;			
-			contour.clear();
-			findInitialP(data,p,s/*,initial*/);
-			contour.insert(p);
-			direction = 0;
-			insert_counter = 1;
-			singlepoint = false;
+			p = p+v_right;
+
+			findSecondP(data,p,s);
+			if(p.x() == opt.grid[1]-1){
+				stop = true;
+			} else {
+				contour.clear();
+				contour.insert(p);
+				direction = 0;
+				insert_counter =1;
+			}
+
+
+			// s = p;
+			// p = p + v_right;			
+			// contour.clear();
+			// findInitialP(data,p,s/*,initial*/);
+			// contour.insert(p);
+			// direction = 0;
+			// insert_counter = 1;
+			// singlepoint = false;
 		}
 		
-		if(contour.size() >= 2){
-			double scalingFromRatio;
-			scalingFromRatio = (opt.omega_x.real() > opt.omega_y.real()) ? opt.omega_y.real()/opt.omega_x.real() : opt.omega_x.real()/opt.omega_y.real();
-			int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.5; // Circumference of a circle going through p, 90%
+		if(contour.size() >= 500){
+			
+			// int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.5; // Circumference of a circle going through p, 90%
 			if((initial[0] == p) && (initial[1] == s)){
-				if(contour.size() > size_condition){				
+				// if(contour.size() > size_condition){				
+
+					wholeContour.insert(contour.begin(),contour.end());
+					// cout << "Contour saved to wholeContour." << endl;
+
 					findMostRightP(contour,p);
 					s = p;
 					p = p+v_right;
@@ -206,7 +231,6 @@ c_set Contour::trackContour(RealGrid &data){
 					if(p.x() == opt.grid[1]-1){
 						stop = true;
 					} else {
-						wholeContour.insert(contour.begin(),contour.end());
 						contour.clear();
 						contour.insert(p);
 						direction = 0;
@@ -214,7 +238,8 @@ c_set Contour::trackContour(RealGrid &data){
 					}
 
 					// cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
-				}
+				// }
+				// cout << "Found initial conditions with too small contour. Size: " << contour.size() << endl;
 			// }else if((initial[0] == p) && (initial[1] == s)){
 			// 	// cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
 			// 	// string name = "ERROR_2-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
@@ -237,14 +262,22 @@ c_set Contour::trackContour(RealGrid &data){
 
 		if(insert_counter >= (2 * contour.size() + 1)){
 
+			// cout << "Surrounded the contour two times. Size:" << contour.size() << " Coordinates: " << p << " with initial " << initial[0] << " | " << initial[1] << endl;
+			// string name = "ERROR_1-SurroundedTwoTimes_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
+			// plotContourSurround(name, data,contour,opt);
+
+
 			findMostRightP(contour,p);
 			s = p;
 			p = p+v_right;
+
 			findSecondP(data,p,s);
 			if(p.x() == opt.grid[1]-1){
 				stop = true;
 			} else {
 				// wholeContour.insert(contour.begin(),contour.end());
+				// cout << "After surrounding the contour two times. Size:" << contour.size() << " Coordinates: " << p << " with initial " << initial[0] << " | " << initial[1] << endl;
+				// cout << "found new coordinates." << endl;
 				contour.clear();
 				contour.insert(p);
 				direction = 0;
@@ -256,9 +289,7 @@ c_set Contour::trackContour(RealGrid &data){
 
 
 
-			// cout << "Surrounded the contour two times. Size:" << contour.size() << " Coordinates: " << p << " with initial " << initial[0] << " | " << initial[1] << endl;
-			// string name = "ERROR_1-SurroundedTwoTimes_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
-			// plotContourSurround(name, data,contour,opt);
+
 
 			 
 			// findMostRightP(contour,p);
@@ -269,7 +300,9 @@ c_set Contour::trackContour(RealGrid &data){
 			// contour.insert(p);
 			// insert_counter = 1;			
 		}
-
+	if(insert_counter >= opt.grid[1] * opt.grid[2]){
+		stop = true;
+	}
 
 	}while(stop == false);
 	
