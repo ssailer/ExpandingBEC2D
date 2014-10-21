@@ -82,8 +82,8 @@ if(!startUp.restart()){
 	RTE* runExpanding = new RTE(data,startUp.getOptions());
 	cerr << argv[0] << endl;
 	// runExpanding->noise();
-	// runExpanding->rteToTime(runName);
-	runExpanding->splitToTime(runName);
+	runExpanding->rteToTime(runName);
+	// runExpanding->splitToTime(runName);
 	delete runExpanding;
 	delete data;
 }
@@ -101,7 +101,8 @@ if(startUp.restart()){
 	tmpOpt.n_it_RTE = startUp.getRunTime();
 	tmpOpt.snapshots = startUp.getSnapShots();
 	RTE* runExpanding = new RTE(data,tmpOpt);
-	runExpanding->splitToTime(runName);
+	runExpanding->rteToTime(runName);
+	// runExpanding->splitToTime(runName);
 	delete runExpanding;
 	delete data;
 }
