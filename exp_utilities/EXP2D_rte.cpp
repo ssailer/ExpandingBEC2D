@@ -584,7 +584,7 @@ void RTE::splitToTime(string runName){
 	}
 	
 	start = omp_get_wtime();
-	omp_set_num_threads(6);
+	omp_set_num_threads(18);
 	int previousTimes = meta.steps;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
@@ -698,7 +698,7 @@ void RTE::splitToTime(string runName){
 			// plotDataToPng("RTE_RGrid"+to_string(snapshot_times[j]),"Control"+to_string(snapshot_times[j]),rgrid,opt);
 			Eval results;
 	
-			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << flush;
+			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << " ";
 			results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
 			results.evaluateData();
 			results.plotData();
@@ -714,7 +714,7 @@ void RTE::splitToTime(string runName){
 			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
 			delete evalFile;
 
-			cout << " ..Snapshot saved to runData/";
+			cout << " ..Snapshot saved to runData/ ";
 
 		}
 		catch(const std::exception& e) { 

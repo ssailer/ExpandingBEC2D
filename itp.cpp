@@ -56,7 +56,7 @@ try{
 
  	startUp.printInitVar();
 
- 	omp_set_num_threads(12);
+ 	omp_set_num_threads(6);
 	
 	// MatrixData* startGrid = new MatrixData(startUp.getMeta());
 	Options tmpOpt = startUp.getOptions();
@@ -70,28 +70,28 @@ try{
 	// delete groundStateFile;
 
 	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	string groundStateName = "ITP-Groundstate";
+	string groundStateName = "ITP-Groundstate"+to_string(tmpOpt.vortexspacing);
 	groundStateITP->propagateToGroundState(groundStateName);
 	startGrid->wavefunction[0] = groundStateITP->result();
 	delete groundStateITP;
 
-		// int vnumber = 0;
-		// addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
+		int vnumber = 0;
+		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
 		
-		// startUp.setVortexnumber(vnumber);
-		// cout << endl << "Set Vortices #: " << vnumber << endl;
+		startUp.setVortexnumber(vnumber);
+		cout << endl << "Set Vortices #: " << vnumber << endl;
 	
-		// string itpname = "ITP-Vortices";
-		// ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-		// vorticesITP->formVortices(itpname);
-		// // vorticesITP->findVortices(itpname);
+		string itpname = "ITP-Vortices"+to_string(tmpOpt.vortexspacing);
+		ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		vorticesITP->formVortices(itpname);
+		// vorticesITP->findVortices(itpname);
 		
-		// startGrid->wavefunction[0] = vorticesITP->result();
+		startGrid->wavefunction[0] = vorticesITP->result();
 	
-		// delete vorticesITP;
+		delete vorticesITP;
 
 
-	string startGridName = "StartGrid_2048x2048_N1000_splitPotential.h5";
+	string startGridName = "StartGrid_2048x2048_N1000_sV_WN1_40_53_"+to_string(tmpOpt.vortexspacing)+".h5";
 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	delete dataFile;
