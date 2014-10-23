@@ -26,6 +26,13 @@ private:
     std::streambuf * const sbuf;
 };
 
+enum MainControl {
+	SPLIT,
+	RK4,
+};
+
+
+
 class StartUp {
 public:
 	StartUp(int argcTmp, char** argvTmp) : restartValue(false) {
@@ -54,14 +61,26 @@ public:
 	inline string getStartingGridName();
 	inline int getRunTime(){ return opt.n_it_RTE;};
 	inline int getSnapShots(){ return opt.snapshots;};
+	inline MainControl getControl(){return toMainControl(MainControlString);};
+	inline string getRunName(){return runName;};
 private:
+	MainControl toMainControl(const std::string& s);
 	bool restartValue;
 	string startingGridName;
 	MatrixData::MetaData meta;
 	Options opt;
 	int argc;
 	char** argv;
+	string MainControlString = "Empty String";
+	string runName = "Expanding-Set-1";
 };
+
+MainControl StartUp::toMainControl(const std::string& s)
+{
+    if (s == "SPLIT") return SPLIT;
+    if (s == "RK4") return RK4;
+    throw std::runtime_error("Invalid conversion from string to MainControl.");
+}
 
 inline bool StartUp::restart(){
 	return restartValue;
@@ -155,15 +174,18 @@ inline int StartUp::readCli()
 {
 	// Beginning of the options block
 
-    // Define and parse the program options 
+    // Define and parse the program options
 
     namespace po = boost::program_options; 
     po::options_description desc("Options"); 
     desc.add_options() 
       ("help,h", "Print help messages.") 
-      ("config,c",po::value<string>(&opt.config), "Name of the configfile")
+      ("config,c",po::value<string>(&opt.config), "Name of the configfile.")      
       ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data.")
-      ("restart,r","Use if you want to restart the run from LastGrid.");
+      ("restart,r","Use if you want to restart the run from LastGrid.")
+      ("mode,m",po::value<string>(&MainControlString), "Runmode given: Choose between SPLIT and RK4.")
+      ("name,n",po::value<string>(&runName), "Name of the run.");
+
       // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
       // ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
       // ("gauss",po::value<bool>(&opt.startgrid[0]),"Initial Grid has gaussian form.")
@@ -174,10 +196,16 @@ inline int StartUp::readCli()
       // ("expansion,e",po::value<double>(&exp_factor),"Expansion Factor")
       // ("interaction,g",po::value<double> (&opt.g),"Interaction Constant");
 
+    
+
+
+
 
 	po::positional_options_description positionalOptions; 
-	positionalOptions.add("config", 1);
-	positionalOptions.add("directory",1);
+	positionalOptions.add("config", 1);	
+	positionalOptions.add("directory",1);	
+	positionalOptions.add("mode", 1);
+	// positionalOptions.add("name",1);
 
     po::variables_map vm; 
 

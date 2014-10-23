@@ -41,8 +41,8 @@ Last Update: 22/07/13
 
 using namespace std;
 
-int main( int argc, char** argv) 
-{	
+int main( int argc, char** argv){	
+
 try{
 
 	StartUp startUp(argc,argv);	
@@ -56,65 +56,77 @@ try{
 
  	startUp.printInitVar();
 
-
 	Options tmpOpt = startUp.getOptions();
+	MainControl mC = startUp.getControl();
 
-
-if(!startUp.restart()){
-	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
-
-	// cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+	if(!startUp.restart()){
+		MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 	
-	string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
-
-	MatrixData* data = new MatrixData(startUp.getMeta());
-
-	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
-	dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-	delete dataFile;
+		// cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+		
+		string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 	
-	for(int i = 0; i < data->meta.samplesize; i++){
-		data->wavefunction[i] = startGrid->wavefunction[0];
+		MatrixData* data = new MatrixData(startUp.getMeta());
+	
+		binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+		dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+		delete dataFile;
+
+		// addDrivingForce(startGrid,tmpOpt);
+		
+		for(int i = 0; i < data->meta.samplesize; i++){
+			data->wavefunction[i] = startGrid->wavefunction[0];
+		}
+		delete startGrid;
+	
+		string runName = startUp.getRunName();
+		RTE* runExpanding = new RTE(data,startUp.getOptions());
+
+		// runExpanding->noise();
+		if(mC == RK4){
+			cout << "rteToTime()" << endl;
+			runExpanding->rteToTime(runName);
+		}
+		if(mC == SPLIT){
+			cout << "splitToTime()" << endl;
+			runExpanding->splitToTime(runName);
+		}
+
+
+		delete runExpanding;
+		delete data;
 	}
-	delete startGrid;
+	
+	if(startUp.restart()){
+		string runName = startUp.getRunName();
+		string filename = runName + "-LastGrid.h5";
+		MatrixData* data = new MatrixData(startUp.getMeta());
+		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
+	
+		vector<int> timeList = dataFile->getTimeList();
+		dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
+		delete dataFile;
+		tmpOpt.initialRun = false;
+		tmpOpt.n_it_RTE = startUp.getRunTime();
+		tmpOpt.snapshots = startUp.getSnapShots();
+		RTE* runExpanding = new RTE(data,tmpOpt);
 
-	string runName = "Expanding-Set-1";
-	RTE* runExpanding = new RTE(data,startUp.getOptions());
-	cerr << argv[0] << endl;
-	// runExpanding->noise();
-	// runExpanding->rteToTime(runName);
-	runExpanding->splitToTime(runName);
-	delete runExpanding;
-	delete data;
+		if(mC == RK4){
+			cout << "rteToTime()" << endl;
+			runExpanding->rteToTime(runName);
+		}
+		if(mC == SPLIT){
+			cout << "splitToTime()" << endl;
+			runExpanding->splitToTime(runName);
+		}
+
+		delete runExpanding;
+		delete data;
+	}
 }
 
-if(startUp.restart()){
-	string runName = "Expanding-Set-1";
-	string filename = runName + "-LastGrid.h5";
-	MatrixData* data = new MatrixData(startUp.getMeta());
-	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 
-	vector<int> timeList = dataFile->getTimeList();
-	dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
-	delete dataFile;
-	tmpOpt.initialRun = false;
-	tmpOpt.n_it_RTE = startUp.getRunTime();
-	tmpOpt.snapshots = startUp.getSnapShots();
-	RTE* runExpanding = new RTE(data,tmpOpt);
-	// runExpanding->rteToTime(runName);
-	runExpanding->splitToTime(runName);
-	delete runExpanding;
-	delete data;
-}
-
-	
-	
-
-}  // exceptions catcher
-
-
-catch(const std::exception& e) 
-{ 
+catch(const std::exception& e){ 
   	std::cerr << "Unhandled Exception reached the top of main: " 
     	      << e.what() << ", application will now exit" << std::endl; 
 	return ERROR_UNHANDLED_EXCEPTION; 
@@ -124,14 +136,12 @@ catch(expException& e){
 	std::cerr << " Terminating now." << endl;
 	return ERROR_UNHANDLED_EXCEPTION;
 }
-catch (const std::string& errorMessage) 
-{ 
+catch (const std::string& errorMessage){ 
 	std::cerr << errorMessage.c_str(); 
 	std::cerr << " Terminating now." << endl; 
 	return SUCCESS; 
-// the code could be different depending on the exception message 
 }
-cerr << "Run complete. Terminating successfully." << endl; 
+cerr << "[END]" << endl; 
 return SUCCESS; 	
 }
 

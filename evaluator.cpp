@@ -58,7 +58,7 @@ try{
 
 	for(int k = 0; k < files; k++){
 
-		string runName = "Expanding-Set-"+to_string(k+1);
+		string runName = "Expanding-Set-1";
 		string evalname = runName + "-Eval.h5";
 
 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::in);
@@ -81,7 +81,7 @@ try{
 	}
 
 
-	string finalRunName = "Expanding";
+	string finalRunName = "Expanding-Set-1";
 	Eval finalResult;
 	for(int i = 0; i < timeList.size(); i++){
 		cout << "Processing Time: " << timeList[i] << " .. " ;

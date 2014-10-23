@@ -59,6 +59,16 @@ void setGridToGaussian(MatrixData* &data, Options opt)
     }
 };
 
+void addDrivingForce(MatrixData* &data, Options &opt){
+    #pragma omp parallel for
+    for(int i = 0; i < opt.grid[1]; i++){
+        double phase = abs(4*M_PI/opt.grid[1]*i - 2 * M_PI);
+        for(int j = 0; j < opt.grid[1]; j++){
+            data->wavefunction[0](i,j) *= exp(complex<double>(0,phase));
+        }
+    }
+};
+
 void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
 
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;

@@ -223,15 +223,15 @@ void Eval::evaluateData(){
 	for(int k = 0; k < PsiVec.size(); k++){
 		// cout << k << " " ;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k],densityCounter[k]);
-		cout << "-getDensity" << endl;
+		// cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		cout << "-trackContour" << endl;
+		// cout << "-trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
-		cout << "-calculator" << endl;
+		// cout << "-calculator" << endl;
 		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
-		cout << "-getVortices" << endl;
+		// cout << "-getVortices" << endl;
 		getVortexDistance(pres[k]);
-		cout << "-getVortexDistance" << endl;
+		// cout << "-getVortexDistance" << endl;
 	}	
 	totalResult /= PsiVec.size();
 
