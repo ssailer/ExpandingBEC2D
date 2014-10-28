@@ -376,6 +376,10 @@ void Eval::plotData(){
 	title = "Spectrum " + snapShotString; 
 	plotSpectrum(plotname,title,totalResult);
 
+	plotname = runname + "-Radial-Density-" + snapShotString;
+	title = "Radial-Density " + snapShotString; 
+	plotRadialDensity(plotname,title,totalResult);
+
 	if(pres[0].vlist.size() >= 0){
 		plotname = runname + "-PairDistance" + snapShotString;
 		title = "PairDistance" + snapShotString;
@@ -893,6 +897,8 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 	double h[2];
+	double x_max = opt.stateInformation[0] * opt.min_x;
+	double y_max = opt.stateInformation[1] * opt.min_y;
 	h[0] = h_x;
 	h[1] = h_y; 
 	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
@@ -999,22 +1005,32 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	vector<double> radius;
 	vector<Coordinate<int32_t>> cartesianCoordinates;
 
-
+	ArrayXd divisor2(obs.number.size());
+	double r_index_factor = (obs.radialDensity.size() -1) / sqrt(x_max * x_max + y_max * y_max);
 	for(int i = 0; i < opt.grid[1]; i++){
 	    for(int j = 0; j < opt.grid[2]; j++){
 				int x_shift = i - opt.grid[1]/2;
 				int y_shift = j - opt.grid[2]/2;
 				phi.push_back( atan2(x_shift * h_x ,y_shift * h_y) * 180 / M_PI + 180);
-				radius.push_back(sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y));
-				polarDensity.push_back(abs2(data(0,i,j,0)));
+				double r_tmp = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
+				radius.push_back(r_tmp);
+				double dens_tmp = abs2(data(0,i,j,0));
+				polarDensity.push_back(dens_tmp);
 				cartesianCoordinates.push_back(data.make_coord(i,j,0));
+
+				int index = r_index_factor * r_tmp;
+				divisor2(index)++;
+				obs.r(index) += r_tmp;
+				obs.radialDensity(index) += dens_tmp;
 		}
 	}
+	obs.r /= divisor2;
+	obs.radialDensity /= divisor2;
+
 	
 
 	vector<vector<int>> index(361);
-	int phiSize = phi.size();
-	for(int j = 0; j < phiSize; j++){
+	for(int j = 0; j < phi.size(); j++){
 		int i = round(phi[j]);
 		index[i].push_back(j);
 	}
@@ -1033,6 +1049,8 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		}					
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
+
+
 
 	// K-Space
 	ComplexGrid::fft(data, data);

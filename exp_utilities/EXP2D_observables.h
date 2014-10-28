@@ -19,8 +19,8 @@ class Observables {
         
         double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi;
         ArrayXd number;
-        ArrayXd k;
-        ArrayXd angularDensity;
+        ArrayXd k,r;
+        ArrayXd angularDensity,radialDensity;
         ArrayXd fixedAspectRatio;
         
         Observables();
@@ -61,12 +61,16 @@ struct PathResults {
 inline Observables::Observables() :
         number(),
         k(),
+        r(),
+        radialDensity(),
         angularDensity(360),
         fixedAspectRatio(90)
 {
     Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
     number.setZero();
     k.setZero();
+    r.setZero();
+    radialDensity.setZero();
     angularDensity.setZero();
     fixedAspectRatio.setZero();
 }
@@ -76,12 +80,16 @@ inline Observables::Observables() :
 inline Observables::Observables(int avgrid) :
         number(avgrid),
         k(avgrid),
+        r(avgrid),
+        radialDensity(avgrid),
         angularDensity(360),
         fixedAspectRatio(90)
 {
     Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
     number.setZero();
     k.setZero();
+     r.setZero();
+    radialDensity.setZero();
     angularDensity.setZero();
     fixedAspectRatio.setZero();
 }
@@ -103,10 +111,12 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.density = density + a.density;
     ret.volume = volume + a.volume;
     ret.angularDensity = angularDensity + a.angularDensity;
+    ret.radialDensity = radialDensity + a.radialDensity;
 
 
     ret.number = number + a.number; 
     ret.k = k + a.k;
+    ret.r = r + a.r;
     
     return ret;
 }
@@ -128,9 +138,11 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.density = density - a.density;
     ret.volume = volume - a.volume;
     ret.angularDensity = angularDensity - a.angularDensity;
+    ret.radialDensity = radialDensity - a.radialDensity;
 
     ret.number = number - a.number; 
     ret.k = k - a.k;
+    ret.r = r - a.r;
     
     return ret;
 }
@@ -152,9 +164,11 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.density = density * a.density;
     ret.volume = volume * a.volume;
     ret.angularDensity = angularDensity * a.angularDensity;
+    ret.radialDensity = radialDensity * a.radialDensity;
 
     ret.number = number * a.number; 
     ret.k = k * a.k;
+    ret.r = r * a.r;
     
     return ret;
 }
@@ -176,9 +190,11 @@ inline Observables Observables::operator* (double d) const
     ret.density = density * d;
     ret.volume = volume * d;
     ret.angularDensity = angularDensity * d;
+    ret.radialDensity = radialDensity * d;
 
     ret.number = number * d;    
     ret.k = k * d;
+    ret.r = r * d;
 
     return ret;
 }
@@ -200,9 +216,11 @@ inline Observables Observables::operator/ (double d) const
     ret.density = density / d;
     ret.volume = volume / d;
     ret.angularDensity = angularDensity / d;
+    ret.radialDensity = radialDensity / d;
 
     ret.number = number / d;    
     ret.k = k / d;
+    ret.r = r / d;
     
     return ret;
 }

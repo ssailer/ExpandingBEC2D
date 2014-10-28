@@ -65,8 +65,8 @@ void plotSpectrum(string name,string title, Observables &ares){
 
 	// gr.SetFunc("lg(x)","lg(y)");
 	gr.FPlot("x^(-2)");
-	gr.FPlot("x^(-4.66)");
-	// gr.FPlot("x^(-5)");
+	// gr.FPlot("x^(-4.66)");
+	gr.FPlot("x^(-5)");
 
 	// gr.Stem(healing_length);
 	gr.Plot(k,number," .");
@@ -74,6 +74,78 @@ void plotSpectrum(string name,string title, Observables &ares){
 	name = name + ".png";
 
 	gr.WritePNG(name.c_str(),"Spectrum",false);
+}
+
+void plotRadialDensity(string name,string title, Observables &ares){
+
+	ofstream plotfile;
+    vector<double> rval;
+	vector<double> densityval;
+	
+	// plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
+    for (int r = 0; r < ares.radialDensity.size(); r++){	
+		if((ares.r(r) != 0.0) && (ares.radialDensity(r) != 0.0)){
+			// plotfile << r <<"\t"<< ares.r(r) <<"\t" << ares.radialDensity(r) <<"\t";
+			// plotfile << endl;
+			// if(r%10 == 0){ // reduce the number of k's plotted, because it gets cluttered.
+
+				rval.push_back(ares.r(r));
+				densityval.push_back(ares.radialDensity(r));
+			// }
+        }
+	}
+	// plotfile << endl << endl;	
+	// plotfile.close();
+
+
+	int n = rval.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
+	mglData r(n);
+	mglData density(n);
+	// mglData healing_length(2);
+	// healing_length.a[0] = ares.healing_length;
+	// healing_length.a[1] = 10000000;
+
+	// cout << "mgl Reached" << endl;
+
+
+	for(int i = 0; i < n; i++){
+		r.a[i] = rval[i];
+		density.a[i] = densityval[i];
+		// cerr << r.a[i] << " - " << densityval[i] << endl;
+	}
+
+	// cout << "copied" << endl;
+
+	mglGraph gr;
+
+	gr.SetMarkSize(0.7);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
+	gr.SetQuality(3);
+	gr.Title(title.c_str());
+	gr.SetCoor(11); // log-log-coordinates
+	gr.SetRange('x',0.00001,100);
+	gr.SetRange('y',0.00001,100);
+	
+
+	// gr.SubPlot(2,1,0);
+	// gr.Axis();
+	// gr.Plot(k,number);
+	// gr.SubPlot(2,1,1);
+
+	gr.Axis();
+
+	// gr.SetFunc("lg(x)","lg(y)");
+	gr.FPlot("x^(-2)");
+	// gr.FPlot("x^(-4.66)");
+	// gr.FPlot("x^(-5)");
+
+	// gr.Stem(healing_length);
+	gr.Plot(r,density," .");
+
+	name = name + ".png";
+
+	gr.WritePNG(name.c_str(),"Radial Density",false);
 }
 
 void plotPairDistance(string name,string title,PathResults pres){

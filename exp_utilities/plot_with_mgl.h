@@ -70,6 +70,7 @@ protected:
 };
 
 void plotSpectrum(string name,string title,Observables& eval);
+void plotRadialDensity(string name,string title, Observables &ares);
 void plotPairDistance(string name,string title,PathResults pres);
 void plotVortexList(string name,string title,const RealGrid &phase,PathResults &pres,Options &opt);
 void plotContour(string name,string title, ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
