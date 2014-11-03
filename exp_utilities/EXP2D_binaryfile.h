@@ -39,12 +39,14 @@ public:
 
   bool appendSnapshot(const string &name, int time, MatrixData* const &pData, Options &options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
+  bool appendSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data, MatrixData::MetaData &meta, Options &options);
 
   bool appendEval(int snapShotTime, Options opt, MatrixData::MetaData meta, Eval results);
   // bool appendDocString(const string &group, const string &docstring, double time);
 
   bool getSnapshot(const string &name, int time, MatrixData* &pData, Options &options);
   // bool getSnapshot(const string &name, double time, vector<RealGrid> &k);
+  bool getSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data,MatrixData::MetaData &meta, Options &options);
 
   bool getEval(int snapShotTime, Options &options, MatrixData::MetaData &meta, Eval &results);
 

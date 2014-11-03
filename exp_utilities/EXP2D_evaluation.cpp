@@ -32,6 +32,22 @@ void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int exte
 
 }
 
+void Eval::saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber){
+	runname = external_runname;
+	opt = external_opt;
+	snapshot_time = external_snapshot_time;
+	PsiVec.resize(wavefctVec.size());
+	#pragma omp parallel for
+	for(int k = 0; k < wavefctVec.size(); k++){
+		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+		for(int i = 0; i < opt.grid[1]; i++){
+			for(int j = 0; j < opt.grid[2]; j++){
+				PsiVec[k](0,i,j,0) = wavefctVec[k](0,i,j,sliceNumber);
+			}
+		}
+	}
+}
+
 void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname){
 	runname = external_runname;
 	opt = external_opt;

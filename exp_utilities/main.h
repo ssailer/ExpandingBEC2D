@@ -278,6 +278,7 @@ inline int StartUp::readConfig()
 	opt.N                    = root["RunOptions"]["N"];
 	opt.min_x                = root["RunOptions"]["min_x"]; 					
 	opt.min_y                = root["RunOptions"]["min_y"];
+	opt.min_z				 = root["RunOptions"]["min_z"];
 	opt.klength[0] 			 = root["RunOptions"]["klength0"];
 	opt.klength[1] 			 = root["RunOptions"]["klength1"];
 	opt.klength[2] 			 = root["RunOptions"]["klength2"];
@@ -300,6 +301,7 @@ inline int StartUp::readConfig()
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
+	double omega_z_realValue = root["RunOptions"]["omega_z"];
 	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
 	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
 
@@ -307,6 +309,7 @@ inline int StartUp::readConfig()
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
 	opt.omega_y              = complex<double>(omega_y_realValue,0);
+	opt.omega_z 			 = complex<double>(omega_y_realValue,0);
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 

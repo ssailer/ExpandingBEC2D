@@ -31,7 +31,7 @@ typedef struct {
 class SplitStep
 {
   public:
-    SplitStep(MatrixData* &d,const Options &opt);
+    SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
 
     void setOptions(const Options &externaloptions);
     void RunSetup();
@@ -42,21 +42,14 @@ class SplitStep
     // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction
-    MatrixData* pData;
+    // MatrixData* pData;
+    vector<ComplexGrid> wavefctVec;
 
-    // Storage Variable for the runs
-    // MatrixXcd wavefct;
-    vector<MatrixXcd> &wavefctVec;
-    MatrixData::MetaData &meta;
-
-    // void CopyComplexGridToEigen();
-    // void CopyEigenToComplexGrid();
     
     // Coordinates
-    vector<double> x_axis,y_axis;
-    VectorXcd X,Y;
-    MatrixXcd Xmatrix,Ymatrix;
-    VectorXd Xexpanding, Yexpanding;
+    vector<double> x_axis,y_axis, z_axis;
+    VectorXcd X,Y,Z;
+
 
     int samplesize;
 
@@ -73,21 +66,19 @@ class SplitStep
 
   private:
 
+    MatrixData::MetaData meta;
+
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     inline double rotatingPotential(int &i, int &j, int &t);
    
 
     // Variables
-    complex<double> h_x, h_y;
-    complex<double> pot_laplacian_x;
-    complex<double> pot_laplacian_y;
-    vector<double> ranges;
-    Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
-    Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
-    MatrixXcd PotentialGrid;
-    VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
+    complex<double> h_x, h_y,h_z;
+    ComplexGrid PotentialGrid;
 
     stepCounter keeperOfTime;
+
+    int SLICE_NUMBER;
     
     
     // some used constants

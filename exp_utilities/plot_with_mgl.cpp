@@ -178,8 +178,8 @@ void plotPairDistance(string name,string title,PathResults pres){
 	for(int i = 0; i < n; i++){
 		m_histogram.a[i] = histogram[i];
 		m_distance.a[i] = distance[i];
-		cout << "Histogram: " << m_histogram.a[i] << endl;
-		cout << "Distance: " << m_distance.a[i] << endl;
+		// cout << "Histogram: " << m_histogram.a[i] << endl;
+		// cout << "Distance: " << m_distance.a[i] << endl;
 	}
 
 	// cout << "copied" << endl;
