@@ -152,7 +152,7 @@ void ITP::cli(string name,int counter_state, int counter_max, double start)
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
 				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
-			plot("ITP-Vortices-" + to_string(counter_state));
+			// plot("ITP-Vortices-" + to_string(counter_state));
 		}
 	if(counter_state == counter_max)
 	{
