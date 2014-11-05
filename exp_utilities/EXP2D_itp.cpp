@@ -284,9 +284,7 @@ void ITP::findVortices(string runname)
 
 			// plot("ITP-Groundstate-"+to_string(state)+"-Before-Rescale");
 
-			rescale(wavefct);
-
-			
+			rescale(wavefct);			
 				
 		}
 		

@@ -194,7 +194,7 @@ void SplitStep::splitToTime(string runName){
 	      		k[0] = opt.klength[0] * 2.0 * sin(M_PI * x / (double) opt.grid[1]);
 	      		k[1] = opt.klength[1] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
 	      		k[2] = opt.klength[2] * 2.0 * sin(M_PI * z / (double) opt.grid[3]);
-	      		double T = - 0.5 * (k[0] * k[0] + k[1] * k[1] ) * timestepsize / beta;
+	      		double T = - 0.5 * (k[0] * k[0] + k[1] * k[1] + k[2] * k[2] ) * timestepsize; // / beta;
 		
 		      		// double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y] + kspace[2][z]*kspace[2][z]) * timestepsize / beta;	      
 		      		
