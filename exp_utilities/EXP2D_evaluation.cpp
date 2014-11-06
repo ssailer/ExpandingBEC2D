@@ -246,8 +246,8 @@ void Eval::evaluateData(){
 		cout << "-calculator" << endl;
 		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
 		cout << "-getVortices" << endl;
-		getVortexDistance(pres[k]);
-		cout << "-getVortexDistance" << endl;
+		// getVortexDistance(pres[k]);
+		// cout << "-getVortexDistance" << endl;
 	}	
 	totalResult /= PsiVec.size();
 
@@ -396,27 +396,27 @@ void Eval::plotData(){
 	title = "Radial-Density " + snapShotString; 
 	plotRadialDensity(plotname,title,totalResult);
 
-	if(pres[0].vlist.size() >= 0){
-		plotname = runname + "-PairDistance" + snapShotString;
-		title = "PairDistance" + snapShotString;
-		plotPairDistance(plotname,title,pres[0]);
-	}
+	// if(pres[0].vlist.size() >= 0){
+	// 	plotname = runname + "-PairDistance" + snapShotString;
+	// 	title = "PairDistance" + snapShotString;
+	// 	plotPairDistance(plotname,title,pres[0]);
+	// }
 
 	plotname = runname + "-Vortices-" + snapShotString;
 	title = "Vortices " + snapShotString;
 	plotVortexList(plotname,title,phase,pres[0],opt);	
 
-	plotname = runname + "-Density-" + snapShotString;
-	title = "Density " + snapShotString;
-	plotDataToPng(plotname,title,densityLocationMap[0],opt);
+	// plotname = runname + "-Density-" + snapShotString;
+	// title = "Density " + snapShotString;
+	// plotDataToPng(plotname,title,densityLocationMap[0],opt);
 
 	// plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
 	// title = "Density " + snapShotString;
 	// plotVector(plotname,title,x_dist_grad,y_dist_grad,opt);
 
-	plotname = runname + "-Angular-Dens-" + snapShotString;
-	title = "Angular Density " + snapShotString;
-	plotVector(plotname,title,totalResult.angularDensity,opt);	
+	// plotname = runname + "-Angular-Dens-" + snapShotString;
+	// title = "Angular Density " + snapShotString;
+	// plotVector(plotname,title,totalResult.angularDensity,opt);	
 
 	plotname = runname + "-Contour-" + snapShotString;
 	title = "Contour " + snapShotString;

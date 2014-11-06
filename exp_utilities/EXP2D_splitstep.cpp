@@ -198,7 +198,7 @@ void SplitStep::splitToTime(string runName){
 	      		// k[2] = opt.klength[2] * 2.0 * sin(M_PI * z / (double) opt.grid[3]);
 	      		// double T = - 0.5 * (k[0] * k[0] + k[1] * k[1] + k[2] * k[2] ) * timestepsize; // / beta;
 		
-		      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y] + kspace[2][z]*kspace[2][z]) * timestepsize;	      
+		      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y] + kspace[2][z]*kspace[2][z]) * timestepsize * 729.815814984; // / beta;	      
 		      		
 	      		kprop(0,x,y,z) = complex<double>(cos(T),sin(T)) / complex<double>((double)(opt.grid[1]*opt.grid[2]*opt.grid[3]),0.0);	    
 	      	}
@@ -213,8 +213,8 @@ void SplitStep::splitToTime(string runName){
 		initialEval->plotData();
 		// Commenting out both lines below, to switch on behavior in evaluation
 		// This basically counts every Vortex in each step, instead of capping at the initial value
-		// opt.vortexnumber = initialEval->getVortexNumber();
-		// opt.initialRun = false;
+		opt.vortexnumber = initialEval->getVortexNumber();
+		opt.initialRun = false;
 
 		string evalname = runName + "-Eval.h5";
 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
