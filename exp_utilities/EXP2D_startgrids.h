@@ -69,6 +69,17 @@ void addDrivingForce(MatrixData* &data, Options &opt){
     }
 };
 
+// void setGridToParaboloid(MatrixData* &data, Options opt){
+//     complex<double> value;
+//     #pragma omp parallel for
+//     for(int i=0; i < opt.grid[1]; i++){
+//         for(int j=0; j < opt.grid[2]; j++){
+//             value = complex<double>((opt.N/(4 * opt.min_x * opt.min_y )) * exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), 0.0 );
+//                 data->wavefunction[0](i,j) = value;
+//         }
+//     }
+// };
+
 void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
 
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;

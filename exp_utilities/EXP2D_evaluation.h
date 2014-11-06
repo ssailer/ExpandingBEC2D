@@ -40,6 +40,7 @@ public:
 	void evaluateData(); // calculate the observables
 	void evaluateDataITP();
 	void plotData(); // plot Results
+	bool checkResizeCondition();
 	int getVortexNumber();
 
 

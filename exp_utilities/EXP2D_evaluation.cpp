@@ -235,19 +235,19 @@ void Eval::evaluateData(){
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 	
-	// cout << endl << "Evaluating sample #: ";
+	cout << endl << "Evaluating sample #: ";
 	for(int k = 0; k < PsiVec.size(); k++){
-		// cout << k << " " ;
+		cout << k << " " ;
 		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k],densityCounter[k]);
-		// cout << "-getDensity" << endl;
+		cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		// cout << "-trackContour" << endl;
+		cout << "-trackContour" << endl;
 		totalResult += calculator(PsiVec[k],k);
-		// cout << "-calculator" << endl;
+		cout << "-calculator" << endl;
 		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
-		// cout << "-getVortices" << endl;
+		cout << "-getVortices" << endl;
 		getVortexDistance(pres[k]);
-		// cout << "-getVortexDistance" << endl;
+		cout << "-getVortexDistance" << endl;
 	}	
 	totalResult /= PsiVec.size();
 
@@ -730,7 +730,7 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 // }
 
 void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
-	double threshold = 0.0;//opt.N * 0.10 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	double threshold = opt.N * 0.01 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
 	// cout << "Threshold " << threshold << endl;
 
@@ -1141,6 +1141,15 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	obs.k /= divisor;	
 	
 	return obs;
+}
+
+bool Eval::checkResizeCondition(){
+	bool resize = false;
+	double innerCircleDistance = opt.min_x + opt.min_y;
+	if(totalResult.r_max >= (innerCircleDistance * 0.85)){
+		resize = true;
+	}
+	return resize;
 }
 
 

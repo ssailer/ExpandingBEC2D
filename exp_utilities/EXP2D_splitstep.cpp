@@ -158,6 +158,7 @@ void SplitStep::splitToTime(string runName){
 
 	double start;  // starttime of the run
 	int samplesize = wavefctVec.size();
+	bool resize = false;
 	keeperOfTime.absoluteSteps = 0;
 	keeperOfTime.lambdaSteps = 0;
 	keeperOfTime.initialSteps = meta.steps;
@@ -171,32 +172,33 @@ void SplitStep::splitToTime(string runName){
 
 
 
-	// vector<vector<double>> kspace;	
-	// kspace.resize(3);
-	// for(int d = 0; d < 3; d++){
-	// 	kspace[d].resize(opt.grid[d+1]);
-	// 	for(int i = 0; i < opt.grid[d+1]/2; i++){
-	// 		kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
-	// 		// kspace[d][i] = 2.0 * M_PI * i / (opt.grid[d+1]);
-	// 	}
-	// 	for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
-	// 		kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
-	// 		// kspace[d][i] = 2.0 * M_PI * (i - opt.grid[d+1]) / (opt.grid[d+1]);
-	// 	}
-	// }
+	vector<vector<double>> kspace;	
+	kspace.resize(3);
+	for(int d = 0; d < 3; d++){
+		kspace[d].resize(opt.grid[d+1]);
+		for(int i = 0; i < opt.grid[d+1]/2; i++){
+			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			// kspace[d][i] = 2.0 * M_PI * i / (opt.grid[d+1]);
+		}
+		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
+			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+			// kspace[d][i] = 2.0 * M_PI * (i - opt.grid[d+1]) / (opt.grid[d+1]);
+		}
+	}
 	double beta = real(h_x) * real(h_x); // FIXME for all directions, not important if same size in all directions.
 
 	#pragma omp parallel for
 	for(int x = 0; x < opt.grid[1]; x++){
 	    for(int y = 0; y < opt.grid[2]; y++){
 	    	for(int z = 0; z < opt.grid[3]; z++){
-	      		double k[3];
-	      		k[0] = opt.klength[0] * 2.0 * sin(M_PI * x / (double) opt.grid[1]);
-	      		k[1] = opt.klength[1] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
-	      		k[2] = opt.klength[2] * 2.0 * sin(M_PI * z / (double) opt.grid[3]);
-	      		double T = - 0.5 * (k[0] * k[0] + k[1] * k[1] + k[2] * k[2] ) * timestepsize; // / beta;
+
+	      		// double k[3];
+	      		// k[0] = opt.klength[0] * 2.0 * sin(M_PI * x / (double) opt.grid[1]);
+	      		// k[1] = opt.klength[1] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
+	      		// k[2] = opt.klength[2] * 2.0 * sin(M_PI * z / (double) opt.grid[3]);
+	      		// double T = - 0.5 * (k[0] * k[0] + k[1] * k[1] + k[2] * k[2] ) * timestepsize; // / beta;
 		
-		      		// double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y] + kspace[2][z]*kspace[2][z]) * timestepsize / beta;	      
+		      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y] + kspace[2][z]*kspace[2][z]) * timestepsize;	      
 		      		
 	      		kprop(0,x,y,z) = complex<double>(cos(T),sin(T)) / complex<double>((double)(opt.grid[1]*opt.grid[2]*opt.grid[3]),0.0);	    
 	      	}
@@ -235,21 +237,23 @@ void SplitStep::splitToTime(string runName){
 		// #pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
 
-			#pragma omp parallel for
-			for(int x = 0; x < opt.grid[1];x++){
-				for(int y = 0; y < opt.grid[2]; y++){
-					for(int z = 0; z < opt.grid[3]; z++){
-						rgrid(0,x,y,z) = wavefctVec[i](0,x,y,z);
-					}
-				}
-			}
+			// #pragma omp parallel for
+			// for(int x = 0; x < opt.grid[1];x++){
+			// 	for(int y = 0; y < opt.grid[2]; y++){
+			// 		for(int z = 0; z < opt.grid[3]; z++){
+			// 			rgrid(0,x,y,z) = wavefctVec[i](0,x,y,z);
+			// 		}
+			// 	}
+			// }
+
+			
 
 			// list of which thread is working which iteration
 			int lambdaSteps = keeperOfTime.lambdaSteps;
 			threadinfo[i] = omp_get_thread_num();
 			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
 		
-				ComplexGrid::fft_unnormalized(rgrid, kgrid, true);
+				ComplexGrid::fft_unnormalized(wavefctVec[i], kgrid, true);
     
 				#pragma omp parallel for
 				for(int x = 0; x < opt.grid[1]; x++){
@@ -262,7 +266,7 @@ void SplitStep::splitToTime(string runName){
 
 				// plotDataToPng("RTE_KGrid_"+to_string(m),"RTE_KGrid_"+to_string(m),kgrid,opt);
 				
-				ComplexGrid::fft_unnormalized(kgrid, rgrid, false);
+				ComplexGrid::fft_unnormalized(kgrid, wavefctVec[i], false);
 
 				// plotDataToPng("RTE_RGrid_"+to_string(m),"RTE_RGrid_"+to_string(m),rgrid,opt); 
 
@@ -274,11 +278,11 @@ void SplitStep::splitToTime(string runName){
 				for(int x = 0; x < opt.grid[1]; x++){
 					for(int y = 0; y < opt.grid[2]; y++){
 						for(int z = 0; z < opt.grid[3]; z++){	
-				    		complex<double> value = rgrid(0,x,y,z);
-				    		double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*//* +*/ opt.g * abs2(value) ) * timestepsize;
+				    		// complex<double> value = wavefctVec[i](0,x,y,z);
+				    		double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*//* +*/ opt.g * abs2(wavefctVec[i](0,x,y,z)) ) * timestepsize;
 				    		// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
 				    		// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
-				    		rgrid(0,x,y,z) = complex<double>(cos(V),sin(V)) * value;
+				    		wavefctVec[i](0,x,y,z) = complex<double>(cos(V),sin(V)) * wavefctVec[i](0,x,y,z);
 				    	}
 					}
 				}
@@ -305,14 +309,14 @@ void SplitStep::splitToTime(string runName){
 	
 			}
 
-			#pragma omp parallel for
-			for(int x = 0; x < opt.grid[1];x++){
-				for(int y = 0; y < opt.grid[2]; y++){
-					for(int z = 0; z < opt.grid[3]; z++){
-						wavefctVec[i](0,x,y,z) = rgrid(0,x,y,z);
-					}
-				}
-			}
+			// #pragma omp parallel for
+			// for(int x = 0; x < opt.grid[1];x++){
+			// 	for(int y = 0; y < opt.grid[2]; y++){
+			// 		for(int z = 0; z < opt.grid[3]; z++){
+			// 			wavefctVec[i](0,x,y,z) = rgrid(0,x,y,z);
+			// 		}
+			// 	}
+			// }
 	
 		}
 		keeperOfTime.lambdaSteps += 2 * (snapshot_times[j] - previousTimes);
@@ -337,24 +341,28 @@ void SplitStep::splitToTime(string runName){
 		try{
 			// plotDataToPng("RTE_RGrid"+to_string(snapshot_times[j]),"Control"+to_string(snapshot_times[j]),rgrid,opt);
 			Eval results;
-			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << " ";
+			cout << " >> saveData2DSlice() "<< snapshot_times[j] << " ";
 			results.saveData2DSlice(wavefctVec,opt,snapshot_times[j],runName,SLICE_NUMBER);
+			cout << " >> evaluateData() ";
 			results.evaluateData();
+			resize = results.checkResizeCondition();
+			if(resize){cout << " Resize Conditions fulfilled. " << endl;}
+			cout << " >> plotData() ";
 			results.plotData();
 
 			string dataname = runName + "-LastGrid.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
+			cout << " appendSnapshot() ";
 			dataFile->appendSnapshot(runName,snapshot_times[j],wavefctVec,meta,opt);
 			delete dataFile;
 
 			string evalname = runName + "-Eval.h5";
 			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
 			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
+			cout << " appendEval() ";
 			evalFile->appendEval(snapshot_times[j],opt,meta,results);
 			delete evalFile;
-
-			cout << " ..Snapshot saved to runData/ ";
-
+			cout << "!" << endl;
 		}
 		catch(const std::exception& e) { 
 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 

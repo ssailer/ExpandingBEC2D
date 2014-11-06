@@ -389,13 +389,14 @@ void ITP::propagateToGroundState(string runname)
 
 		cli_groundState(runname,start,state,breakCondition.totalResult);
 		int difference = breakCondition.totalResult.Ekin - old_Ekin;
-		if(difference == 0){
+		cout << endl << "Difference: " << std::setprecision (15) << difference << endl;
+		if(difference < 1){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
 			counter_finished = 0;
-		}
-		old_Ekin = breakCondition.totalResult.Ekin;
+			old_Ekin = breakCondition.totalResult.Ekin;
+		}		
 		if(counter_finished >= 2){
 			finished = true;
 		}
