@@ -4,6 +4,8 @@
 #include <omp.h>
 
 #define VORTICES_BUILD_TIME 150
+#define HBAR 1.05 * 10e-34
+#define M 1.44 * 10e-25
 
 using namespace std;
 using namespace Eigen;
@@ -101,10 +103,10 @@ void ITP::RunSetup(){
  //   	for(int i = opt.grid[1]/2; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
 	// PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i-opt.grid[1]/4) * X(i-opt.grid[1]/4) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
 
+   	double factor =  1 / (2);
 
-
-	itp_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
-	itp_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
+	itp_laplacian_x = complex<double>(factor * 1.0,0.0) / (two * h_x * h_x);
+	itp_laplacian_y = complex<double>(factor * 1.0,0.0) / (two * h_y * h_y);
 
 	opt.stateInformation.resize(2);
 	opt.stateInformation[0] = 1.0;
@@ -390,7 +392,7 @@ void ITP::propagateToGroundState(string runname)
 		cli_groundState(runname,start,state,breakCondition.totalResult);
 		int difference = breakCondition.totalResult.Ekin - old_Ekin;
 		cout << endl << "Difference: " << std::setprecision (15) << difference << endl;
-		if(difference < 1){
+		if(difference == 0){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{

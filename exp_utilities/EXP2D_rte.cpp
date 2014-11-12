@@ -112,8 +112,8 @@ void RTE::RunSetup(){
 	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * ( half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
 	
 
-   	pot_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
-	pot_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
+   	pot_laplacian_x = complex<double>(0.5,0.0) / (two * h_x * h_x);
+	pot_laplacian_y = complex<double>(0.5,0.0) / (two * h_y * h_y);
 
 
 }
