@@ -7,6 +7,9 @@
 #define HBAR 1.05 * 10e-34
 #define M 1.44 * 10e-25
 
+#define EIGEN_VECTORIZE
+#define EIGEN_PARALLELIZE
+
 using namespace std;
 using namespace Eigen;
 
@@ -338,7 +341,7 @@ void ITP::propagateToGroundState(string runname)
 	start = omp_get_wtime();
 
 	//start loop here
-	Eigen::initParallel();
+	// Eigen::initParallel();
 
 	// plot("ITP-1");
 
@@ -362,16 +365,16 @@ void ITP::propagateToGroundState(string runname)
 
 			wavefctcp = wavefct;
 	
-			ITP_compute_k(k0,wavefctcp);
+			ITP_compute_k_parallel(k0,wavefctcp);
 	
 			wavefctcp = wavefct + half * t_ITP * k0;
-			ITP_compute_k(k1,wavefctcp);
+			ITP_compute_k_parallel(k1,wavefctcp);
 	
 			wavefctcp = wavefct + half * t_ITP * k1;
-			ITP_compute_k(k2,wavefctcp);
+			ITP_compute_k_parallel(k2,wavefctcp);
 	
 			wavefctcp = wavefct + t_ITP * k2;
-			ITP_compute_k(k3,wavefctcp);
+			ITP_compute_k_parallel(k3,wavefctcp);
 	
 			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
 	
@@ -379,9 +382,7 @@ void ITP::propagateToGroundState(string runname)
 
 			// plot("ITP-Groundstate-"+to_string(state)+"-Before-Rescale");
 
-			rescale(wavefct);
-
-			
+			rescale(wavefct);			
 				
 		}
 		
@@ -466,6 +467,54 @@ inline void ITP::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp){
 	// interaction + potential
 	k.array() -= (PotentialGrid.array() + complex<double>(opt.g,0.0) * ( wavefctcp.conjugate().array() * wavefctcp.array() )) * wavefctcp.array();
 
+}
+
+void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
+	int32_t threads = omp_get_max_threads(); //  omp_get_num_threads();
+	// cerr << "threads" << threads << endl;
+	int subx = opt.grid[1]-2;
+	int suby = opt.grid[2]-2;
+	vector<int32_t> frontx(threads);
+	vector<int32_t> endx(threads);
+	// vector<int32_t> fronty(threads);
+	// vector<int32_t> endy(threads);
+	int32_t partx = opt.grid[1] / threads;
+	// int32_t party = opt.grid[2] / threads;
+
+	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+
+	for(int i = 0; i < threads; i++){
+		if(i == 0){ frontx[i] = (i * partx) + 1;}
+		else{ frontx[i] = (i *partx);}
+		if(i == threads-1){ endx[i] = partx-1;}
+		else{endx[i] = partx;}
 	}
 
+	// // #pragma omp parallel for
+	// for (int i = 0; i < threads; ++i){
+	// 	// cerr << "Thread# " << omp_get_thread_num() << endl;
+	// 	cerr << "kblock = " << frontx[i] << "," << 1 << "," << endx[i] << "," << suby << endl;
+	// 	cerr << frontx[i]-1 << "," << 1 << "," << endx[i] << "," << suby << endl;
+	// 	cerr << frontx[i]   << "," << 1 << "," << endx[i] << "," << suby << endl;
+	// 	cerr << frontx[i]+1 << "," << 1 << "," << endx[i] << "," << suby << endl;
+	// 	cerr << frontx[i]   << "," << 0 << "," << endx[i] << "," << suby << endl;
+	// 	cerr << frontx[i]   << "," << 1 << "," << endx[i] << "," << suby << endl;
+	// 	cerr << frontx[i]   << "," << 2 << "," << endx[i] << "," << suby << endl;
+	// }
+
+
+
+	#pragma omp parallel for
+	for (int i = 0; i < threads; ++i){
+		k.block(frontx[i],1,endx[i],suby).noalias() +=          (wavefctcp.block(frontx[i]-1,1,endx[i],suby)
+														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
+														       + wavefctcp.block(frontx[i]+1,1,endx[i],suby)) * itp_laplacian_x
+														      + (wavefctcp.block(frontx[i]  ,0,endx[i],suby)
+														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
+														       + wavefctcp.block(frontx[i]  ,2,endx[i],suby)) * itp_laplacian_y;	
+		k.block(frontx[i],1,endx[i],suby).array() -= (PotentialGrid.block(frontx[i],1,endx[i],suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
+	}
+
+
+}
 

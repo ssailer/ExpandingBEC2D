@@ -83,9 +83,9 @@ void RTE::RunSetup(){
 	for(int i = 0;i<opt.grid[1];i++){X(i) = complex<double>(x_axis[i],0.0);}
 	for(int j = 0;j<opt.grid[2];j++){Y(j) = complex<double>(y_axis[j],0.0);}
 
-	Xmatrix = MatrixXcd(meta.grid[0]-2,meta.grid[1]-2); Ymatrix = MatrixXcd(meta.grid[0]-2,meta.grid[1]-2);
-	for( int i = 0; i < meta.grid[0]-2; i++){ Xmatrix.col(i) = X.segment(1,meta.grid[0]-2);	}
-	for( int i = 0; i < meta.grid[0]-2; i++){ Ymatrix.row(i) = Y.segment(1,meta.grid[0]-2);	}
+	Xmatrix = MatrixXcd(meta.grid[0],meta.grid[1]); Ymatrix = MatrixXcd(meta.grid[0],meta.grid[1]);
+	for( int i = 0; i < meta.grid[0]; i++){ Xmatrix.col(i) = X;	}
+	for( int i = 0; i < meta.grid[0]; i++){ Ymatrix.row(i) = Y;	}
 
 	Xexpanding = VectorXd::Zero(opt.grid[1]);
 	Yexpanding = VectorXd::Zero(opt.grid[2]);
@@ -414,6 +414,44 @@ void RTE::RTE_compute_k_ex(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
 
 
 
+}
+
+void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
+		int32_t threads = omp_get_max_threads(); //  omp_get_num_threads();
+	// cerr << "threads" << threads << endl;
+	int subx = opt.grid[1]-2;
+	int suby = opt.grid[2]-2;
+	vector<int32_t> frontx(threads);
+	vector<int32_t> endx(threads);
+	// vector<int32_t> fronty(threads);
+	// vector<int32_t> endy(threads);
+	int32_t partx = opt.grid[1] / threads;
+	// int32_t party = opt.grid[2] / threads;
+
+	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+
+	for(int i = 0; i < threads; i++){
+		if(i == 0){ frontx[i] = (i * partx) + 1;}
+		else{ frontx[i] = (i *partx);}
+		if(i == threads-1){ endx[i] = partx-1;}
+		else{endx[i] = partx;}
+	}
+
+
+	#pragma omp parallel for
+	for (int i = 0; i < threads; ++i){
+		k.block(frontx[i],1,endx[i],suby).noalias() +=          (wavefctcp.block(frontx[i]-1,1,endx[i],suby)
+														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
+														       + wavefctcp.block(frontx[i]+1,1,endx[i],suby)) * laplacian_coefficient_x(t)
+														      + (wavefctcp.block(frontx[i]  ,0,endx[i],suby)
+														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
+														       + wavefctcp.block(frontx[i]  ,2,endx[i],suby)) * laplacian_coefficient_y(t);
+
+		k.block(frontx[i],1,endx[i],suby).array() += (wavefctcp.block(frontx[i]+1,1,endx[i],suby).array() - wavefctcp.block(frontx[i]-1,1,endx[i],suby).array()) * Xmatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_x(t)
+									               + (wavefctcp.block(frontx[i]  ,2,endx[i],suby).array() - wavefctcp.block(frontx[i]  ,0,endx[i],suby).array()) * Ymatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_y(t);
+
+		k.block(frontx[i],1,endx[i],suby).array() -= (PotentialGrid.block(frontx[i],1,endx[i],suby).array() + complex<double>(0.0,opt.g) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
+	}
 }
 
 void RTE::RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){

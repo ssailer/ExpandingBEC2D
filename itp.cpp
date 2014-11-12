@@ -56,7 +56,7 @@ try{
 
  	startUp.printInitVar();
 
- 	omp_set_num_threads(12);
+ 	// omp_set_num_threads(12);/
 	
 	// MatrixData* startGrid = new MatrixData(startUp.getMeta());
 	Options tmpOpt = startUp.getOptions();

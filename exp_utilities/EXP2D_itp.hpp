@@ -58,6 +58,7 @@ private:
     void plot(const string name);
 
     inline void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
+    void ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp);
 
     inline void rescale(MatrixXcd &wavefct); 
 
