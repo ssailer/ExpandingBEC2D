@@ -624,7 +624,7 @@ void RTE::splitToTime(string runName){
 	}
 	
 	start = omp_get_wtime();
-	omp_set_num_threads(12);
+	omp_set_num_threads(16);
 	int previousTimes = meta.steps;
 	for(int j = 0; j < snapshot_times.size(); j++){
 		// some information about the computation status and stuff
