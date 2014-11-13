@@ -470,7 +470,7 @@ inline void ITP::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp){
 }
 
 void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
-	int32_t threads = omp_get_max_threads(); //  omp_get_num_threads();
+	int32_t threads = 12; //  omp_get_num_threads();
 	// cerr << "threads" << threads << endl;
 	int subx = opt.grid[1]-2;
 	int suby = opt.grid[2]-2;
