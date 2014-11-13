@@ -392,15 +392,15 @@ void ITP::propagateToGroundState(string runname)
 		breakCondition.evaluateDataITP();
 
 		cli_groundState(runname,start,state,breakCondition.totalResult);
-		int difference = breakCondition.totalResult.Ekin - old_Ekin;
+		int difference = 1 - (old_Ekin / breakCondition.totalResult.Ekin);
 		cout << endl << "Difference: " << std::setprecision (15) << difference << endl;
-		if(difference == 0){
+		if(fabs(difference) <= 0.001){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
-			counter_finished = 0;
-			old_Ekin = breakCondition.totalResult.Ekin;
-		}		
+			counter_finished = 0;			
+		}
+		old_Ekin = breakCondition.totalResult.Ekin;		
 		if(counter_finished >= 2){
 			finished = true;
 		}
