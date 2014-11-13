@@ -314,7 +314,7 @@ void RTE::rteToTime(string runName)
 		
 				wavefctVec[i] += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
-				rescale(wavefctVec[i]);
+				// rescale(wavefctVec[i]);
 		
 				// // Neumann Boundaries
 		
@@ -417,7 +417,7 @@ void RTE::RTE_compute_k_ex(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
 }
 
 void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
-		int32_t threads = omp_get_max_threads(); //  omp_get_num_threads();
+		int32_t threads = 12; //  omp_get_num_threads();
 	// cerr << "threads" << threads << endl;
 	int subx = opt.grid[1]-2;
 	int suby = opt.grid[2]-2;
@@ -428,7 +428,7 @@ void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
 	int32_t partx = opt.grid[1] / threads;
 	// int32_t party = opt.grid[2] / threads;
 
-	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	// k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	for(int i = 0; i < threads; i++){
 		if(i == 0){ frontx[i] = (i * partx) + 1;}

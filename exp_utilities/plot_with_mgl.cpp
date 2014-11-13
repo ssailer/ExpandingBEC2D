@@ -219,8 +219,9 @@ void plotPairDistance(string name,string title,PathResults pres){
 
 void plotVortexList(string name,string title,const RealGrid &phase,PathResults &pres,Options &opt){
 
-	int n = opt.grid[1];
-	int m = opt.grid[2];
+	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
+	int n = opt.grid[1]/factor;
+	int m = opt.grid[2]/factor;
 
 	int size = pres.vlist.size();
 
@@ -230,8 +231,8 @@ void plotVortexList(string name,string title,const RealGrid &phase,PathResults &
 
 	int l = 0;
 	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
-		v_x.a[l] = it->x.x();
-		v_y.a[l] = it->x.y();
+		v_x.a[l] = it->x.x()/factor;
+		v_y.a[l] = it->x.y()/factor;
 		l++;
 	}
 
@@ -240,7 +241,7 @@ void plotVortexList(string name,string title,const RealGrid &phase,PathResults &
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
 	{	
 		k = i+n*j;
-		phaseData.a[k] = phase.at(0,i,j,0);
+		phaseData.a[k] = phase.at(0,factor*i,factor*j,0);
 	}
 
 	mglGraph gr;
@@ -254,8 +255,8 @@ void plotVortexList(string name,string title,const RealGrid &phase,PathResults &
 	// gr.SetRange('y',-opt.min_y,opt.min_y);
 	// gr.SetRange('z',phaseData);
 	// gr.SetRange('c',phaseData);
-	gr.SetRange('x',0,opt.grid[1]);
-	gr.SetRange('y',0,opt.grid[2]);
+	gr.SetRange('x',0,opt.grid[1]/factor);
+	gr.SetRange('y',0,opt.grid[2]/factor);
 
 	gr.Axis();
 	gr.Colorbar();
@@ -268,8 +269,10 @@ void plotVortexList(string name,string title,const RealGrid &phase,PathResults &
 }
 
 void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
-	int n = opt.grid[1];
-	int m = opt.grid[2];
+
+	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
+	int n = opt.grid[1]/factor;
+	int m = opt.grid[2]/factor;
 	int size = contour.size();
 
 	mglData densData(n,m);
@@ -278,8 +281,8 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 
 	int l = 0;
 	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){
-		v_x.a[l] = it->x();
-		v_y.a[l] = it->y();
+		v_x.a[l] = it->x()/factor;
+		v_y.a[l] = it->y()/factor;
 		l++;
 	}
 
@@ -288,7 +291,7 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
 	{	
 		k = i+n*j;
-		densData.a[k] = abs2(Psi(0,i,j,0));
+		densData.a[k] = abs2(Psi(0,factor*i,factor*j,0));
 	}
 
 	mglGraph gr;
@@ -302,8 +305,8 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 	// gr.SetRange('y',-opt.min_y,opt.min_y);
 	// gr.SetRange('z',densData);
 	gr.SetRange('c',densData);
-	gr.SetRange('x',0,opt.grid[1]);
-	gr.SetRange('y',0,opt.grid[2]);
+	gr.SetRange('x',0,opt.grid[1]/factor);
+	gr.SetRange('y',0,opt.grid[2]/factor);
 
 	gr.Axis();
 	gr.Colorbar();
@@ -618,9 +621,9 @@ void plotDataToPng(string filename,string title,RealGrid g,Options &opt){
 void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options &opt)
 {
 	
-
-	int n = opt.grid[1];
-	int m = opt.grid[2];
+	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
+	int n = opt.grid[1]/factor;
+	int m = opt.grid[2]/factor;
 
 	// mglComplex data(n,m);
 	mglData density(n,m);
@@ -637,7 +640,7 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
 	{	
 		k = i+n*j;
-		density.a[k] = abs2(g(0,i,j,0));
+		density.a[k] = abs2(g(0,factor*i,factor*j,0));
 		// phase.a[k] = arg(g(0,i,j,0));
 
 		// data.a[k] = abs2(g(0,i,j,0));
@@ -664,10 +667,10 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 	double range = (xrange > yrange) ? xrange : yrange;
 
 	for( i = 0; i < n; i++){
-		xaxis.a[i] = -xrange + i * 2 * xrange / opt.grid[1];
+		xaxis.a[i] = -xrange + factor*i * 2 * xrange / opt.grid[1];
 	}
 	for( j = 0; j < m; j++){
-		yaxis.a[j] = -yrange + j * 2 * yrange / opt.grid[2];
+		yaxis.a[j] = -yrange + factor*j * 2 * yrange / opt.grid[2];
 	}
 	// data.use_abs=false;
 	gr.SetRange('x',-range,range);
@@ -716,8 +719,9 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 {
 
-	int n = opt.grid[1];
-	int m = opt.grid[2];
+	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
+	int n = opt.grid[1]/factor;
+	int m = opt.grid[2]/factor;
 
 	// mglComplex data(n,m);
 	mglData density(n,m);
@@ -733,9 +737,10 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 	{	
 		k = i+n*j;
 		// data1 = g->at(0,i,j,0);
-		density.a[k] = abs2(wavefct(i,j));
-		phase.a[k] = arg(wavefct(i,j));
+		density.a[k] = abs2(wavefct(factor*i,factor*j));
+		phase.a[k] = arg(wavefct(factor*i,factor*j));
 	}
+	// cout << "arrays have size: k = " <<  k << endl;
 
 	mglGraph gr;
 
@@ -801,9 +806,9 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vector<double> &ranges, vector<double> &Xexpanding,vector<double> &Yexpanding,Options &opt)
 {
 	
-
-	int n = opt.grid[1];
-	int m = opt.grid[2];
+	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
+	int n = opt.grid[1]/factor;
+	int m = opt.grid[2]/factor;
 
 
 
@@ -822,8 +827,8 @@ void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vecto
 		data.a[k] = abs2(Psi(0,i,j,0));		
 	}
 
-	for( i = 0; i < n; i++){ xaxis.a[i] = Xexpanding[i]; }
-	for( j = 0; j < m; j++){ yaxis.a[j] = Yexpanding[j]; }
+	for( i = 0; i < n; i++){ xaxis.a[factor*i] = Xexpanding[factor*i]; }
+	for( j = 0; j < m; j++){ yaxis.a[factor*j] = Yexpanding[factor*j]; }
 
 
 
