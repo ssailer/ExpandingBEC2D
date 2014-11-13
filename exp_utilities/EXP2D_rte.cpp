@@ -299,18 +299,18 @@ void RTE::rteToTime(string runName)
 		
 				// boundary conditions end
 		
-				RTE_compute_k_ex(k0,wavefctcp,lambdaSteps);
+				RTE_compute_k_ex_parallel(k0,wavefctcp,lambdaSteps);
 				wavefctcp = wavefctVec[i] + half * t_RTE * k0;
 
 				lambdaSteps++;
-				RTE_compute_k_ex(k1,wavefctcp,lambdaSteps);
+				RTE_compute_k_ex_parallel(k1,wavefctcp,lambdaSteps);
 				wavefctcp = wavefctVec[i] + half * t_RTE * k1;
 		
-				RTE_compute_k_ex(k2,wavefctcp,lambdaSteps);		
+				RTE_compute_k_ex_parallel(k2,wavefctcp,lambdaSteps);		
 				wavefctcp = wavefctVec[i] + t_RTE * k2;
 		
 				lambdaSteps++;
-				RTE_compute_k_ex(k3,wavefctcp,lambdaSteps);
+				RTE_compute_k_ex_parallel(k3,wavefctcp,lambdaSteps);
 		
 				wavefctVec[i] += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
@@ -433,14 +433,14 @@ void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
 	for(int i = 0; i < threads; i++){
 		if(i == 0){ frontx[i] = (i * partx) + 1;}
 		else{ frontx[i] = (i *partx);}
-		if(i == threads-1){ endx[i] = partx-1;}
+		if(i == threads-1){ endx[i] = partx - 1;}
 		else{endx[i] = partx;}
 	}
 
 
 	#pragma omp parallel for
 	for (int i = 0; i < threads; ++i){
-		k.block(frontx[i],1,endx[i],suby).noalias() +=          (wavefctcp.block(frontx[i]-1,1,endx[i],suby)
+		k.block(frontx[i],1,endx[i],suby).noalias() =          (wavefctcp.block(frontx[i]-1,1,endx[i],suby)
 														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
 														       + wavefctcp.block(frontx[i]+1,1,endx[i],suby)) * laplacian_coefficient_x(t)
 														      + (wavefctcp.block(frontx[i]  ,0,endx[i],suby)
@@ -450,7 +450,7 @@ void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
 		k.block(frontx[i],1,endx[i],suby).array() += (wavefctcp.block(frontx[i]+1,1,endx[i],suby).array() - wavefctcp.block(frontx[i]-1,1,endx[i],suby).array()) * Xmatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_x(t)
 									               + (wavefctcp.block(frontx[i]  ,2,endx[i],suby).array() - wavefctcp.block(frontx[i]  ,0,endx[i],suby).array()) * Ymatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_y(t);
 
-		k.block(frontx[i],1,endx[i],suby).array() -= (PotentialGrid.block(frontx[i],1,endx[i],suby).array() + complex<double>(0.0,opt.g) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
+		k.block(frontx[i],1,endx[i],suby).array() -= (/*PotentialGrid.block(frontx[i],1,endx[i],suby).array() +*/ complex<double>(0.0,opt.g) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
 	}
 }
 
