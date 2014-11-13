@@ -356,7 +356,7 @@ void ITP::propagateToGroundState(string runname)
 
 	// for(int m = 1; scaleFactor < 0.99 && scaleFactor > 1.01; m++){
 	do {
-		for(int m = 0; m < 100; m++){			
+		for(int m = 0; m < 200; m++){			
 
 			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
 			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
@@ -470,7 +470,7 @@ inline void ITP::ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp){
 }
 
 void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
-	int32_t threads = 12; //  omp_get_num_threads();
+	int32_t threads = 16; //  omp_get_num_threads();
 	// cerr << "threads" << threads << endl;
 	int subx = opt.grid[1]-2;
 	int suby = opt.grid[2]-2;
