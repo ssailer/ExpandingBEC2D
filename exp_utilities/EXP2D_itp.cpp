@@ -158,7 +158,7 @@ void ITP::cli(string name,int counter_state, int counter_max, double start)
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
 				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
-			// plot("ITP-Vortices-" + to_string(counter_state));
+			plot("ITP-Vortices-" + to_string(counter_state));
 		}
 	if(counter_state == counter_max)
 	{
@@ -201,16 +201,16 @@ void ITP::formVortices(string runname){
 
 		wavefctcp = wavefct;
 
-		ITP_compute_k(k0,wavefctcp);
+		ITP_compute_k_parallel(k0,wavefctcp);
 
 		wavefctcp = wavefct + half * t_ITP * k0;
-		ITP_compute_k(k1,wavefctcp);
+		ITP_compute_k_parallel(k1,wavefctcp);
 
 		wavefctcp = wavefct + half * t_ITP * k1;
-		ITP_compute_k(k2,wavefctcp);
+		ITP_compute_k_parallel(k2,wavefctcp);
 
 		wavefctcp = wavefct + t_ITP * k2;
-		ITP_compute_k(k3,wavefctcp);
+		ITP_compute_k_parallel(k3,wavefctcp);
 
 		wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
 
