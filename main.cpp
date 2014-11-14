@@ -24,7 +24,7 @@ Last Update: 22/07/13
 #include <EXP2D_MatrixData.h>
 #include <main.h>
 #include <EXP2D_tools.h>
-// #include <EXP2D_itp.hpp>
+#include <EXP2D_itp.hpp>
 #include <EXP2D_binaryfile.h>
 #include <EXP2D_rte.hpp>
 #include <EXP2D_evaluation.h>
@@ -71,6 +71,21 @@ try{
 		binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
 		dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 		delete dataFile;
+
+			int vnumber = 0;
+			addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
+			
+			startUp.setVortexnumber(vnumber);
+			cout << endl << "Set Vortices #: " << vnumber << endl;
+		
+			string itpname = "ITP-Vortices"+to_string(tmpOpt.vortexspacing);
+			ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+			vorticesITP->formVortices(itpname);
+			// vorticesITP->findVortices(itpname);
+				
+			startGrid->wavefunction[0] = vorticesITP->result();
+		
+			delete vorticesITP;
 
 		// addDrivingForce(startGrid,tmpOpt);
 		

@@ -61,7 +61,7 @@ int main( int argc, char** argv)
     }else{
       cout << "Got no input, using default Nv = " << Nv << endl;
     }
-    double r[2] = {32.1215943216e-6,33.2475e-6}; // 2.116e-09;
+    double r[2] = {32.1215943216e-6,44.2475e-6}; // 2.116e-09;
     // alpha = 3.12625609723e-13;
     // beta = 2.1305244952e-18 * Nv * Nv;
     
@@ -93,8 +93,12 @@ int main( int argc, char** argv)
     beta = 4 * hbar * hbar * Nv * Nv / (m * m);
     cout << "beta " << beta << endl;
     vi = 0.0;             // initial
-    dt = 7.0e-5;             // step size for integration
-    tmax = 2.1e-2;          // integrate from ti till tmax
+    dt = 1.0e-7;             // step size for integration
+    tmax = 1.0e-2;          // integrate from ti till tmax
+
+    cout << "xi = " << xi << endl;
+    X[index].push_back(ti);
+    Y[index].push_back(xi);
 
 /* end of initial information */
 
@@ -121,11 +125,11 @@ int main( int argc, char** argv)
   }
 
   std::vector<std::pair<double, double> > xy_pts;
-  for(int i = 1; i < X[0].size(); i++){
-    xy_pts.push_back(std::make_pair(X[0][i],Y[1][i] / Y[0][i] ));
+  for(int i = 0; i < X[0].size(); i++){
+    xy_pts.push_back(std::make_pair(X[0][i],Y[0][i] / Y[1][i] ));
   }
   int number = (int)Nv;
-  string name = "32_33_" + to_string(number) + ".png";
+  string name = "aspect_e-7_Nv_" + to_string(number) + ".png";
   Gnuplot gp;
   gp << "set term pngcairo\n";
   gp << "set output \"" + name + "\" \n";

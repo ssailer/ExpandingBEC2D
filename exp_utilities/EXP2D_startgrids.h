@@ -59,6 +59,40 @@ void setGridToGaussian(MatrixData* &data, Options opt)
     }
 };
 
+double density(double &x, double &y, double &Rx, double &Ry, double &N){
+
+    double value = 2 * (N / M_PI) * (1 / (Rx * Ry)) * (1 - (x*x)/(Rx*Rx) - (y*y)/(Ry*Ry));
+    if(value > 0){
+        return sqrt(value);
+    }else{
+        return 0;
+    }
+};
+
+void setGridToTF(MatrixData* &data, Options opt){
+
+    double m = 87.0 * 1.66e-27;
+    double hbar = 1.054e-34;
+
+    double mu = sqrt(3.0  * opt.g * real(opt.omega_x) * real(opt.omega_y) * opt.N / 8.0);
+    double Ry = sqrt(2.0 * mu / ( real(opt.omega_y)*real(opt.omega_y)));
+    double Rx = sqrt(2.0 * mu / ( real(opt.omega_x)*real(opt.omega_x)));
+
+    double h_x = 2.*opt.min_x/opt.grid[1];
+    double h_y = 2.*opt.min_y/opt.grid[2];
+    vector<double> x(opt.grid[1]);
+    vector<double> y(opt.grid[2]);
+    for(int i=0;i<opt.grid[1];i++){x[i]=-opt.min_x+i*h_x;}
+    for(int j=0;j<opt.grid[2];j++){y[j]=-opt.min_y+j*h_y;}
+
+    #pragma omp parallel for
+    for(int i=0; i < opt.grid[1]; i++){
+        for(int j=0; j < opt.grid[2]; j++){
+            data->wavefunction[0](i,j) = polar(density(x[i],y[j],Rx,Ry,opt.N),0.0);
+        }
+    }
+};
+
 void addDrivingForce(MatrixData* &data, Options &opt){
     #pragma omp parallel for
     for(int i = 0; i < opt.grid[1]; i++){

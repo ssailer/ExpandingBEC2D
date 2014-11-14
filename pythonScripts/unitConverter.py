@@ -98,7 +98,7 @@ def main():
 	N = 2 * 10**5
 	cN = N / a**2
 	cN = N
-	deltaT = 1.0 * 10**-1
+	deltaT = 1.0 * 10**-7
 	cdeltaT = deltaT * (hbar / ( m * a * a))
 
 	# m = 1.
@@ -107,7 +107,7 @@ def main():
 	cRx = Rx / a
 	cRy = Ry / a
 	omega_x = 207 * 2 * math.pi
-	omega_y = 150 * 2 * math.pi
+	omega_y = 180 * 2 * math.pi
 	comega_x = omega_x * m * a * a / hbar
 	comega_y = omega_y * m * a * a / hbar
 	g2d1 = (2.0/3.0) * m * (omega_x**3) * (Rx**4) / (omega_y * N)

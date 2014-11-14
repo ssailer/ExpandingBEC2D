@@ -709,7 +709,7 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 
 	// gr.SubPlot(2,2,3);
 	gr.Axis();
-	gr.Colorbar("_");
+	gr.Colorbar("w{B,0.05}bcyrR_");
 	gr.Dens(xaxis,yaxis,density);
 
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
@@ -775,7 +775,7 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 
 	gr.SubPlot(2,2,2);
 	gr.Axis();
-	gr.Colorbar("_");
+	gr.Colorbar("w{B,0.05}bcyrR_");
 	gr.Dens(phase);
 
 
@@ -796,7 +796,7 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 
 	gr.SubPlot(2,2,3);
 	gr.Axis();
-	gr.Colorbar("_");
+	gr.Colorbar("w{B,0.05}bcyrR_");
 	gr.Dens(density);
 
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
