@@ -98,16 +98,16 @@ def main():
 	N = 2 * 10**5
 	cN = N / a**2
 	cN = N
-	deltaT = 1.0 * 10**-5
+	deltaT = 1.0 * 10**-1
 	cdeltaT = deltaT * (hbar / ( m * a * a))
 
 	# m = 1.
-	Rx = 50 * 10**-6
-	Ry = 52 * 10**-6
+	Rx = 32.12 * 10**-6
+	Ry = 66.495/2 * 10**-6
 	cRx = Rx / a
 	cRy = Ry / a
 	omega_x = 207 * 2 * math.pi
-	omega_y = 200 * 2 * math.pi
+	omega_y = 150 * 2 * math.pi
 	comega_x = omega_x * m * a * a / hbar
 	comega_y = omega_y * m * a * a / hbar
 	g2d1 = (2.0/3.0) * m * (omega_x**3) * (Rx**4) / (omega_y * N)
@@ -124,9 +124,9 @@ def main():
 
 	# g2d = 4 *math.pi * hbar * 5.1 * 10**-35 / m
 	
-	g2d =  (g2d1 + g2d2)/2 #5.26777092251e-71 #15.0 #1.0e-9 
-	cg2d =  15.0 #(cg2d2 + cg2d1)/2
-	# cg2d = g2d / m
+	g2d = (g2d1) #5.26777092251e-71 #15.0 #1.0e-9 
+	# cg2d =  15.0 #(cg2d2 + cg2d1)/2
+	cg2d = g2d * m / ( hbar **2 )
 	# N = 1000 #200000
 	# # omega_x = 40.0
 	# # omega_y = 80.0
@@ -136,9 +136,9 @@ def main():
 	Ry = math.sqrt(2.0 * mu2d / (m * omega_y**2))
 	Rx = math.sqrt(2.0 * mu2d / (m * omega_x**2))
 
-	cmu2d = math.sqrt( 3.0 * m * cg2d * comega_x * comega_y * N / 8.0)
-	cRy = math.sqrt(2.0 * cmu2d / (m * comega_y**2))
-	cRx = math.sqrt(2.0 * cmu2d / (m * comega_x**2))
+	cmu2d = math.sqrt( 3.0  * cg2d * comega_x * comega_y * cN / 8.0)
+	cRy = math.sqrt(2.0 * cmu2d / ( comega_y**2))
+	cRx = math.sqrt(2.0 * cmu2d / ( comega_x**2))
 	# cRx = Rx * a;
 	# cRy = Ry * a;
 
@@ -146,8 +146,8 @@ def main():
 	# print omega_x, omega_y
 	# # print comega_x, comega_y
 	print "#2-----------"
-	# print g2d, Rx , Ry
-	print cg2d / 4 / math.pi
+	print g2d, Rx , Ry
+	# print cg2d / 4 / math.pi
 	print cg2d, cRx , cRy 
 	# # print 10**-5 / (m * a**2)
 	# print (2.0/3.0) * (omega_x**3 / omega_y) * 2.0**Rx / N

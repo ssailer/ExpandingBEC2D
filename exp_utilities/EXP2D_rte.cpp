@@ -101,8 +101,8 @@ void RTE::RunSetup(){
    	complex<double> tmp;  	
    	for(int t = 0; t < coefSize; t++){
    	tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t,0.0) * t_RTE );   	
-   	laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
-   	laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
+   	laplacian_coefficient_x(t) = i_unit / ( four * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
+   	laplacian_coefficient_y(t) = i_unit / ( four * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
    	gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
    	gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * lambda_y(tmp));
    	}
@@ -292,10 +292,10 @@ void RTE::rteToTime(string runName)
 		
 				// boundary conditions -- Dirichlet
 		
-				wavefctVec[i].row(0) = VectorXcd::Zero(opt.grid[1]);
-				wavefctVec[i].row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-				wavefctVec[i].col(0) = VectorXcd::Zero(opt.grid[2]);
-				wavefctVec[i].col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
+				// wavefctVec[i].row(0) = VectorXcd::Zero(opt.grid[1]);
+				// wavefctVec[i].row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+				// wavefctVec[i].col(0) = VectorXcd::Zero(opt.grid[2]);
+				// wavefctVec[i].col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
 		
 				// boundary conditions end
 		
@@ -599,7 +599,7 @@ void RTE::splitToTime(string runName){
 	      	// k[1] = opt.klength[2] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
 	      	// double T = - 0.5 * beta * (k[0] * k[0] + k[1] * k[1] ) * timestepsize;
 	
-	      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize / beta;	      
+	      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize;	      
 	      	
 	      	kprop(0,x,y,0) = complex<double>(cos(T),sin(T)) / complex<double>((double)(opt.grid[1]*opt.grid[2]*opt.grid[3]),0.0);	    
 	    }
