@@ -487,7 +487,7 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 	for(int i = 0; i < threads; i++){
 		if(i == 0){ frontx[i] = (i * partx) + 1;}
 		else{ frontx[i] = (i *partx);}
-		if(i == threads-1){ endx[i] = partx-1;}
+		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
 		else{endx[i] = partx;}
 	}
 
@@ -507,12 +507,12 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 
 	#pragma omp parallel for
 	for (int i = 0; i < threads; ++i){
-		k.block(frontx[i],1,endx[i],suby).noalias() =          (wavefctcp.block(frontx[i]-1,1,endx[i],suby)
-														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
-														       + wavefctcp.block(frontx[i]+1,1,endx[i],suby)) * itp_laplacian_x
-														      + (wavefctcp.block(frontx[i]  ,0,endx[i],suby)
-														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
-														       + wavefctcp.block(frontx[i]  ,2,endx[i],suby)) * itp_laplacian_y;	
+		k.block(frontx[i],1,endx[i],suby).noalias() =       (wavefctcp.block(frontx[i]-1,1,endx[i],suby)
+													 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
+													       + wavefctcp.block(frontx[i]+1,1,endx[i],suby)) * itp_laplacian_x
+													      + (wavefctcp.block(frontx[i]  ,0,endx[i],suby)
+													 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
+													       + wavefctcp.block(frontx[i]  ,2,endx[i],suby)) * itp_laplacian_y;	
 		k.block(frontx[i],1,endx[i],suby).array() -= (PotentialGrid.block(frontx[i],1,endx[i],suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
 	}
 

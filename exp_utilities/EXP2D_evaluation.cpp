@@ -118,6 +118,8 @@ void Eval::CombinedEval(){
   						 << std::setw(15) << "Y_max"
   						 << std::setw(15) << "D_max"
   						 << std::setw(15) << "D_min"
+  						 << std::setw(15) << "Rx"
+						 << std::setw(15) << "Ry"
   						 << std::setw(15) << "D_max/D_min"
   						 << std::setw(15) << "D_max Angle"
   						 << std::setw(15) << "D_min Angle"
@@ -138,6 +140,8 @@ void Eval::CombinedEval(){
 					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
  					 << std::setw(15) << totalResult.r_max
  					 << std::setw(15) << totalResult.r_min
+ 					 << std::setw(15) << totalResult.Rx
+ 					 << std::setw(15) << totalResult.Ry
  					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
  					 << std::setw(15) << totalResult.r_max_phi
  					 << std::setw(15) << totalResult.r_min_phi
@@ -161,6 +165,8 @@ void Eval::CombinedEval(){
   						 << "," << "Y_max"
   						 << "," << "D_max"
   						 << "," << "D_min"
+  						 << "," << "Rx"
+						 << "," << "Ry"
   						 << "," << "D_max/D_min"
   						 << "," << "D_max Angle"
   						 << "," << "D_min Angle"
@@ -181,6 +187,8 @@ void Eval::CombinedEval(){
 					 << "," << opt.min_y * opt.stateInformation[1]
  					 << "," << totalResult.r_max
  					 << "," << totalResult.r_min
+ 					 << "," << totalResult.Rx
+					 << "," << totalResult.Ry
  					 << "," << totalResult.r_max / totalResult.r_min  
  					 << "," << totalResult.r_max_phi
  					 << "," << totalResult.r_min_phi
@@ -270,6 +278,8 @@ void Eval::evaluateData(){
   						 << std::setw(15) << "Y_max"
   						 << std::setw(15) << "D_max"
   						 << std::setw(15) << "D_min"
+  						 << std::setw(15) << "Rx"
+						 << std::setw(15) << "Ry"
   						 << std::setw(15) << "D_max/D_min"
   						 << std::setw(15) << "D_max Angle"
   						 << std::setw(15) << "D_min Angle"
@@ -293,6 +303,8 @@ void Eval::evaluateData(){
  					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
  					 << std::setw(15) << totalResult.r_max_phi
  					 << std::setw(15) << totalResult.r_min_phi
+ 					 << std::setw(15) << totalResult.Rx
+ 					 << std::setw(15) << totalResult.Ry
  					 << std::setw(15) << totalResult.aspectRatio 
  					 << std::setw(15) << totalResult.aspectRatioAngle 
 					 << std::setw(15) << totalResult.particle_count
@@ -861,7 +873,7 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	// cRadius.erase(cRadius.begin());
 	// divisor_counter.erase(divisor_counter.begin());
 	cRadius[0] += cRadius[360]; cRadius.pop_back();
-	divisor_counter[0] += cRadius[360]; divisor_counter.pop_back();
+	divisor_counter[0] += divisor_counter[360]; divisor_counter.pop_back();
 
 	for(int i = 0; i < 360; i++){
 		if(divisor_counter[i] == 0){
@@ -870,7 +882,8 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 		cRadius[i] /= divisor_counter[i];
 	}
-
+	obs.Rx = cRadius[0];
+	obs.Ry = cRadius[90];
 	// string name = "cRadius_" + to_string(sampleindex) + "_" + to_string(sampleindex);
 	// plotVector(name,cRadius,opt);
 

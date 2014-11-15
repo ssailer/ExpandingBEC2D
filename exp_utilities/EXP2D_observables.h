@@ -17,7 +17,7 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi;
+        double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi, Rx, Ry;
         ArrayXd number;
         ArrayXd k,r;
         ArrayXd angularDensity,radialDensity;
@@ -66,7 +66,7 @@ inline Observables::Observables() :
         angularDensity(360),
         fixedAspectRatio(90)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
     number.setZero();
     k.setZero();
     r.setZero();
@@ -85,7 +85,7 @@ inline Observables::Observables(int avgrid) :
         angularDensity(360),
         fixedAspectRatio(90)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
     number.setZero();
     k.setZero();
      r.setZero();
@@ -108,6 +108,8 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.r_min = r_min + a.r_min;
     ret.r_max_phi = r_max_phi + a.r_max_phi;    
     ret.r_min_phi = r_min_phi + a.r_min_phi;
+    ret.Rx = Rx + a.Rx;
+    ret.Ry = Ry + a.Ry;
     ret.density = density + a.density;
     ret.volume = volume + a.volume;
     ret.angularDensity = angularDensity + a.angularDensity;
@@ -135,6 +137,8 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.r_min = r_min - a.r_min;
     ret.r_max_phi = r_max_phi - a.r_max_phi; 
     ret.r_min_phi = r_min_phi - a.r_min_phi;
+    ret.Rx = Rx - a.Rx;
+    ret.Ry = Ry - a.Ry;
     ret.density = density - a.density;
     ret.volume = volume - a.volume;
     ret.angularDensity = angularDensity - a.angularDensity;
@@ -161,6 +165,8 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.r_min = r_min * a.r_min;
     ret.r_max_phi = r_max_phi * a.r_max_phi; 
     ret.r_min_phi = r_min_phi * a.r_min_phi;
+    ret.Rx = Rx * a.Rx;
+    ret.Ry = Ry * a.Ry;
     ret.density = density * a.density;
     ret.volume = volume * a.volume;
     ret.angularDensity = angularDensity * a.angularDensity;
@@ -187,6 +193,8 @@ inline Observables Observables::operator* (double d) const
     ret.r_min = r_min * d;
     ret.r_max_phi = r_max_phi * d; 
     ret.r_min_phi = r_min_phi * d;
+    ret.Rx = Rx * d;
+    ret.Ry = Ry * d;
     ret.density = density * d;
     ret.volume = volume * d;
     ret.angularDensity = angularDensity * d;
@@ -213,6 +221,8 @@ inline Observables Observables::operator/ (double d) const
     ret.r_min = r_min / d;
     ret.r_max_phi = r_max_phi / d; 
     ret.r_min_phi = r_min_phi / d;
+    ret.Rx = Rx / d;
+    ret.Ry = Ry / d;
     ret.density = density / d;
     ret.volume = volume / d;
     ret.angularDensity = angularDensity / d;

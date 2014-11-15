@@ -433,7 +433,7 @@ void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
 	for(int i = 0; i < threads; i++){
 		if(i == 0){ frontx[i] = (i * partx) + 1;}
 		else{ frontx[i] = (i *partx);}
-		if(i == threads-1){ endx[i] = partx - 1;}
+		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
 		else{endx[i] = partx;}
 	}
 
@@ -450,7 +450,7 @@ void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
 		k.block(frontx[i],1,endx[i],suby).array() += (wavefctcp.block(frontx[i]+1,1,endx[i],suby).array() - wavefctcp.block(frontx[i]-1,1,endx[i],suby).array()) * Xmatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_x(t)
 									               + (wavefctcp.block(frontx[i]  ,2,endx[i],suby).array() - wavefctcp.block(frontx[i]  ,0,endx[i],suby).array()) * Ymatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_y(t);
 
-		k.block(frontx[i],1,endx[i],suby).array() -= (/*PotentialGrid.block(frontx[i],1,endx[i],suby).array() +*/ complex<double>(0.0,opt.g) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
+		k.block(frontx[i],1,endx[i],suby).array() -= i_unit * (/*PotentialGrid.block(frontx[i],1,endx[i],suby).array() +*/ complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
 	}
 }
 
@@ -584,11 +584,11 @@ void RTE::splitToTime(string runName){
 		kspace[d].resize(opt.grid[d+1]);
 		for(int i = 0; i < opt.grid[d+1]/2; i++){
 			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
-			// kspace[d][i] = 2.0 * M_PI * i / (opt.grid[d+1]);
+			// kspace[d][i] = M_PI * i / (2.0 * opt.min_x *opt.grid[d+1]);
 		}
 		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
 			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
-			// kspace[d][i] = 2.0 * M_PI * (i - opt.grid[d+1]) / (opt.grid[d+1]);
+			// kspace[d][i] = M_PI * (i - opt.grid[d+1]) / (2.0 * opt.min_y * opt.grid[d+1]);
 		}
 	}
 	double beta = real(h_x) * real(h_x);
@@ -613,8 +613,8 @@ void RTE::splitToTime(string runName){
 		initialEval->plotData();
 		// Commenting out both lines below, to switch on behavior in evaluation
 		// This basically counts every Vortex in each step, instead of capping at the initial value
-		// opt.vortexnumber = initialEval->getVortexNumber();
-		// opt.initialRun = false;
+		opt.vortexnumber = initialEval->getVortexNumber();
+		opt.initialRun = false;
 
 		string evalname = runName + "-Eval.h5";
 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
@@ -672,7 +672,7 @@ void RTE::splitToTime(string runName){
 				for(int x = 0; x < rgrid.width(); x++){
 					for(int y = 0; y < rgrid.height(); y++){
 				    	complex<double> value = rgrid(0,x,y,0);
-				    	double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*//* +*/ opt.g * abs2(value) ) * timestepsize;
+				    	double V = - ( PotentialGrid(x,y).real() /*rotatingPotential(x,y,m)*/ + opt.g * abs2(value) ) * timestepsize;
 				    	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
 				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
 				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;

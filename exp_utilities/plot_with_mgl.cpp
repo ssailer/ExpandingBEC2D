@@ -18,7 +18,7 @@ void plotSpectrum(string name,string title, Observables &ares){
 		if(ares.k(r) != 0.0){
 			plotfile << r <<"\t"<< ares.k(r) <<"\t" << ares.number(r) <<"\t";
 			plotfile << endl;
-			if(r%10 == 0){ // reduce the number of k's plotted, because it gets cluttered.
+			if(r%2 == 0){ // reduce the number of k's plotted, because it gets cluttered.
 				kval.push_back(ares.k(r));
 				numberval.push_back(ares.number(r));
 			}
@@ -52,8 +52,8 @@ void plotSpectrum(string name,string title, Observables &ares){
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
-	gr.SetRange('x',0.01,20);
-	gr.SetRange('y',0.0001,10000000);
+	gr.SetRange('x',0.00001,20);
+	gr.SetRange('y',0.00000001,10000000);
 	gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);
