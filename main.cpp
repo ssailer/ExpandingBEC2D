@@ -60,7 +60,8 @@ try{
 	MainControl mC = startUp.getControl();
 
 	if(!startUp.restart()){
-		MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+		
+		// MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 	
 		// cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 		
