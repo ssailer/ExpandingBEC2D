@@ -394,7 +394,7 @@ void ITP::propagateToGroundState(string runname)
 		cli_groundState(runname,start,state,breakCondition.totalResult);
 		double difference = 1 - (old_Ekin / breakCondition.totalResult.Ekin);
 		cout << endl << "Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 0.001){
+		if(fabs(difference) <= 0.01){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{

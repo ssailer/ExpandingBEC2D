@@ -69,11 +69,11 @@ try{
 	// groundStateFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 	// delete groundStateFile;
 
-	// ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	// string groundStateName = "ITP-Groundstate";
-	// groundStateITP->propagateToGroundState(groundStateName);
-	// startGrid->wavefunction[0] = groundStateITP->result();
-	// delete groundStateITP;
+	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+	string groundStateName = "ITP-Groundstate";
+	groundStateITP->propagateToGroundState(groundStateName);
+	startGrid->wavefunction[0] = groundStateITP->result();
+	delete groundStateITP;
 
 		int vnumber = 0;
 		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);

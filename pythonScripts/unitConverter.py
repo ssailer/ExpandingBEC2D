@@ -95,8 +95,8 @@ def main():
 
 	
 	a = 10**-5
-	N = 2 * 10**5
-	# cN = N * a**2
+	N = 2 * 10**4
+	cN = N * a**2
 	cN = N
 	deltaT = 1.0 * 10**-5
 	cdeltaT = deltaT / (hbar / ( m * a * a))
