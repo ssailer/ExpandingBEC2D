@@ -95,11 +95,11 @@ def main():
 
 	
 	a = 10**-5
-	N = 2 * 10**4
-	cN = N * a**2
+	N = 2 * 10**5
+	cN = N / a**2
 	cN = N
 	deltaT = 1.0 * 10**-5
-	cdeltaT = deltaT / (hbar / ( m * a * a))
+	cdeltaT = deltaT / (hbar / (m * a * a))
 
 	# m = 1.
 	Rx = 32.12 * 10**-6
@@ -127,6 +127,10 @@ def main():
 	g2d = (g2d1) #5.26777092251e-71 #15.0 #1.0e-9 
 	# cg2d =  15.0 #(cg2d2 + cg2d1)/2
 	cg2d = g2d * m / ( hbar **2 )
+	# cN = 1000
+	# cg2d = 11
+	# comega_x = 172
+	# comega_y = 178
 	# N = 1000 #200000
 	# # omega_x = 40.0
 	# # omega_y = 80.0

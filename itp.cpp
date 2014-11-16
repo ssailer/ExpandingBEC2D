@@ -69,8 +69,17 @@ try{
 	// groundStateFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 	// delete groundStateFile;
 
+		// int vnumber = 0;
+		// addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
+		
+		// startUp.setVortexnumber(vnumber);
+		// cout << endl << "Set Vortices #: " << vnumber << endl;
+
 	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
 	string groundStateName = "ITP-Groundstate";
+
+
+
 	groundStateITP->propagateToGroundState(groundStateName);
 	startGrid->wavefunction[0] = groundStateITP->result();
 	delete groundStateITP;

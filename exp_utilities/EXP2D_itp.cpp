@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 500
+#define VORTICES_BUILD_TIME 8000
 #define HBAR 1.05 * 10e-34
 #define M 1.44 * 10e-25
 
@@ -106,7 +106,7 @@ void ITP::RunSetup(){
  //   	for(int i = opt.grid[1]/2; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
 	// PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i-opt.grid[1]/4) * X(i-opt.grid[1]/4) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
 
-   	double factor =  1 / (2);
+   	double factor =  1.0;// / (2);
 
 	itp_laplacian_x = complex<double>(factor * 1.0,0.0) / (two * h_x * h_x);
 	itp_laplacian_y = complex<double>(factor * 1.0,0.0) / (two * h_y * h_y);
