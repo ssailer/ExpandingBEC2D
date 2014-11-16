@@ -67,7 +67,7 @@ try{
 		
 		// string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 	
-		// MatrixData* data = new MatrixData(startUp.getMeta());
+		MatrixData* data = new MatrixData(startUp.getMeta());
 	
 		// binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
 		// dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
