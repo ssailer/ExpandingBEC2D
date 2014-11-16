@@ -64,28 +64,36 @@ try{
 	
 		// cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 		
-		string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+		// string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 	
-		MatrixData* data = new MatrixData(startUp.getMeta());
+		// MatrixData* data = new MatrixData(startUp.getMeta());
 	
-		binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
-		dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-		delete dataFile;
+		// binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+		// dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+		// delete dataFile;
 
-			// int vnumber = 0;
-			// addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
+
+			Options tmpOpt = startUp.getOptions();
+			MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+	
+			setGridToTF(startGrid,startUp.getOptions());
+	
+			int vnumber = 0;
+			addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
 			
-			// startUp.setVortexnumber(vnumber);
-			// cout << endl << "Set Vortices #: " << vnumber << endl;
+			startUp.setVortexnumber(vnumber);
+			cout << endl << "Set Vortices #: " << vnumber << endl;
 		
-			// string itpname = "ITP-Vortices"+to_string(tmpOpt.vortexspacing);
-			// ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-			// vorticesITP->formVortices(itpname);
-			// // vorticesITP->findVortices(itpname);
-				
-			// startGrid->wavefunction[0] = vorticesITP->result();
+			string itpname = "ITP-Vortices"+to_string(tmpOpt.vortexspacing);
+			ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+			vorticesITP->formVortices(itpname);
+			// vorticesITP->findVortices(itpname);
+			
+			startGrid->wavefunction[0] = vorticesITP->result();
 		
-			// delete vorticesITP;
+			delete vorticesITP;
+
+
 
 		// addDrivingForce(startGrid,tmpOpt);
 		

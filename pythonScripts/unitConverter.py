@@ -94,12 +94,12 @@ def main():
 	# radiusy
 
 	
-	a = 10**-6
+	a = 10**-5
 	N = 2 * 10**5
-	cN = N / a**2
+	# cN = N * a**2
 	cN = N
 	deltaT = 1.0 * 10**-5
-	cdeltaT = deltaT * (hbar / ( m * a * a))
+	cdeltaT = deltaT / (hbar / ( m * a * a))
 
 	# m = 1.
 	Rx = 32.12 * 10**-6
@@ -107,7 +107,7 @@ def main():
 	cRx = Rx / a
 	cRy = Ry / a
 	omega_x = 207 * 2 * math.pi
-	omega_y = 180 * 2 * math.pi
+	omega_y = 200 * 2 * math.pi
 	comega_x = omega_x * m * a * a / hbar
 	comega_y = omega_y * m * a * a / hbar
 	g2d1 = (2.0/3.0) * m * (omega_x**3) * (Rx**4) / (omega_y * N)
@@ -148,7 +148,16 @@ def main():
 	print "#2-----------"
 	print g2d, Rx , Ry
 	# print cg2d / 4 / math.pi
-	print cg2d, cRx , cRy 
+	print "                 "
+	print "   NEW UNITS"
+	print "                 "
+	print "potential x", "potential y"
+	print comega_x, comega_y
+	print "g", "Rx", "Ry"
+	print cg2d, cRx , cRy
+	print "number"
+	print cN
+	print "                 " 
 	# # print 10**-5 / (m * a**2)
 	# print (2.0/3.0) * (omega_x**3 / omega_y) * 2.0**Rx / N
 	Ry = 30.0
