@@ -77,9 +77,6 @@ try{
 
 	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
 	string groundStateName = "ITP-Groundstate";
-
-
-
 	groundStateITP->propagateToGroundState(groundStateName);
 	startGrid->wavefunction[0] = groundStateITP->result();
 	delete groundStateITP;

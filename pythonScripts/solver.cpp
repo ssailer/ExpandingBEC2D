@@ -50,7 +50,7 @@ double delta;
 const double hbar = 1.054e-34;
 const double m = 87 * 1.66e-27;
 const double N = 2.0e5;
-const double g = 15.0 * hbar * hbar / m;
+const double g = 11.6625932355 * hbar * hbar / m;
 
 int main( int argc, char** argv)
 {
@@ -61,7 +61,7 @@ int main( int argc, char** argv)
     }else{
       cout << "Got no input, using default Nv = " << Nv << endl;
     }
-    double r[2] = {32.1215943216e-6,44.2475e-6}; // 2.116e-09;
+    double r[2] = {30.6644e-6,31.7386e-6}; // 2.116e-09;
     // alpha = 3.12625609723e-13;
     // beta = 2.1305244952e-18 * Nv * Nv;
     
@@ -93,8 +93,8 @@ int main( int argc, char** argv)
     beta = 4 * hbar * hbar * Nv * Nv / (m * m);
     cout << "beta " << beta << endl;
     vi = 0.0;             // initial
-    dt = 1.0e-7;             // step size for integration
-    tmax = 1.0e-2;          // integrate from ti till tmax
+    dt = 1.3e-6;             // step size for integration
+    tmax = 195e-6;          // integrate from ti till tmax
 
     cout << "xi = " << xi << endl;
     X[index].push_back(ti);
@@ -129,7 +129,7 @@ int main( int argc, char** argv)
     xy_pts.push_back(std::make_pair(X[0][i],Y[0][i] / Y[1][i] ));
   }
   int number = (int)Nv;
-  string name = "aspect_e-7_Nv_" + to_string(number) + ".png";
+  string name = "aspect_e-6_Nv_" + to_string(number) + ".png";
   Gnuplot gp;
   gp << "set term pngcairo\n";
   gp << "set output \"" + name + "\" \n";

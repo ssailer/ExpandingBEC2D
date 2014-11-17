@@ -91,7 +91,7 @@ class RTE
     vector<double> ranges;
     Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
-    MatrixXcd PotentialGrid;
+    MatrixXcd PotentialGrid,AbsorbingPotentialGrid;
     VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
 
     stepCounter keeperOfTime;

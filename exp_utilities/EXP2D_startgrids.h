@@ -53,7 +53,7 @@ void setGridToGaussian(MatrixData* &data, Options opt)
     #pragma omp parallel for
     for(int i=0; i < opt.grid[1]; i++){
         for(int j=0; j < opt.grid[2]; j++){
-            value = complex<double>((opt.N/(4 * opt.min_x * opt.min_y )) * exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), 0.0 );
+            value = complex<double>(sqrt(opt.N) * exp( -(x[i] * x[i])/(2.*sigma_x*sigma_x) - (y[j] * y[j])/(2.*sigma_y*sigma_y) ), 0.0 );
                 data->wavefunction[0](i,j) = value;
         }
     }
@@ -88,7 +88,7 @@ void setGridToTF(MatrixData* &data, Options opt){
     #pragma omp parallel for
     for(int i=0; i < opt.grid[1]; i++){
         for(int j=0; j < opt.grid[2]; j++){
-            data->wavefunction[0](i,j) = polar(density(x[i],y[j],Rx,Ry,opt.N),0.0);
+            data->wavefunction[0](i,j) = complex<double>(density(x[i],y[j],Rx,Ry,opt.N),0.0);
         }
     }
 };

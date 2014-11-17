@@ -76,7 +76,11 @@ void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,st
 	pres.resize(numberOfSamples*opt.samplesize);
 	
 	for(int k = 0; k < numberOfSamples; k++){
-		totalResult += extEval[k].totalResult;
+		if(k == 0){
+			totalResult = extEval[k].totalResult;
+		}else{
+			totalResult += extEval[k].totalResult;
+		}
 		for(int i = 0; i < opt.samplesize;i++){
 			contour[i+k*opt.samplesize] = extEval[k].contour[i];
 			pres[i+k*opt.samplesize].vlist = extEval[k].pres[i].vlist;
@@ -300,11 +304,11 @@ void Eval::evaluateData(){
 					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
  					 << std::setw(15) << totalResult.r_max
  					 << std::setw(15) << totalResult.r_min
+ 					 << std::setw(15) << totalResult.Rx
+ 					 << std::setw(15) << totalResult.Ry
  					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
  					 << std::setw(15) << totalResult.r_max_phi
  					 << std::setw(15) << totalResult.r_min_phi
- 					 << std::setw(15) << totalResult.Rx
- 					 << std::setw(15) << totalResult.Ry
  					 << std::setw(15) << totalResult.aspectRatio 
  					 << std::setw(15) << totalResult.aspectRatioAngle 
 					 << std::setw(15) << totalResult.particle_count

@@ -81,7 +81,8 @@ void ITP::RunSetup(){
 
 	// Grid Spacing variables
 	h_x = complex<double>((2.*opt.min_x/opt.grid[1]),0.0);
-  	h_y = complex<double>((2.*opt.min_y/opt.grid[2]),0.0); 
+  	h_y = complex<double>((2.*opt.min_y/opt.grid[2]),0.0);
+  	cout << "Grid Spacing: " << h_x << " " << h_y << endl;  
 
   	// Coordinate vectors/arrays in different forms etc.
   	x_axis.resize(opt.grid[1]);
@@ -192,10 +193,10 @@ void ITP::formVortices(string runname){
 
 	for(int m = 1; m <= VORTICES_BUILD_TIME; m++){
 
-		wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
-		wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-		wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
-		wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
+		// wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
+		// wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+		// wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
+		// wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
 
 		
 
@@ -266,23 +267,23 @@ void ITP::findVortices(string runname)
 	do {
 		for(int m = 0; m < 50; m++){			
 
-			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
-			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-			wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
-			wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);			
+			// wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
+			// wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+			// wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
+			// wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);			
 
 			wavefctcp = wavefct;
 	
-			ITP_compute_k(k0,wavefctcp);
+			ITP_compute_k_parallel(k0,wavefctcp);
 	
 			wavefctcp = wavefct + half * t_ITP * k0;
-			ITP_compute_k(k1,wavefctcp);
+			ITP_compute_k_parallel(k1,wavefctcp);
 	
 			wavefctcp = wavefct + half * t_ITP * k1;
-			ITP_compute_k(k2,wavefctcp);
+			ITP_compute_k_parallel(k2,wavefctcp);
 	
 			wavefctcp = wavefct + t_ITP * k2;
-			ITP_compute_k(k3,wavefctcp);
+			ITP_compute_k_parallel(k3,wavefctcp);
 	
 			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
 	
@@ -357,12 +358,12 @@ void ITP::propagateToGroundState(string runname)
 
 	// for(int m = 1; scaleFactor < 0.99 && scaleFactor > 1.01; m++){
 	do {
-		for(int m = 0; m < 300; m++){			
+		for(int m = 0; m < 100; m++){
 
-			wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
-			wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-			wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
-			wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);			
+			// wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
+			// wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
+			// wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
+			// wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
 
 			wavefctcp = wavefct;
 	
@@ -392,9 +393,9 @@ void ITP::propagateToGroundState(string runname)
 		breakCondition.evaluateDataITP();
 
 		cli_groundState(runname,start,state,breakCondition.totalResult);
-		double difference = 1 - (old_Ekin / breakCondition.totalResult.Ekin);
+		double difference = (breakCondition.totalResult.Ekin - old_Ekin) ;
 		cout << endl << "Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 0.01){
+		if(fabs(difference) <= 0.000001){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
@@ -491,6 +492,7 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 		else{endx[i] = partx;}
 	}
 
+
 	// // #pragma omp parallel for
 	// for (int i = 0; i < threads; ++i){
 	// 	// cerr << "Thread# " << omp_get_thread_num() << endl;
@@ -515,6 +517,12 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 													       + wavefctcp.block(frontx[i]  ,2,endx[i],suby)) * itp_laplacian_y;	
 		k.block(frontx[i],1,endx[i],suby).array() -= (PotentialGrid.block(frontx[i],1,endx[i],suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
 	}
+
+	k.row(0) = - (PotentialGrid.row(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(0).conjugate().array() * wavefctcp.row(0).array() )) * wavefctcp.row(0).array();
+	k.row(opt.grid[1]-1) = - (PotentialGrid.row(opt.grid[1]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(opt.grid[1]-1).conjugate().array() * wavefctcp.row(opt.grid[1]-1).array() )) * wavefctcp.row(opt.grid[1]-1).array();
+	k.col(0) = - (PotentialGrid.col(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(0).conjugate().array() * wavefctcp.col(0).array() )) * wavefctcp.col(0).array();
+	k.col(opt.grid[2]-1) = - (PotentialGrid.col(opt.grid[2]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(opt.grid[2]-1).conjugate().array() * wavefctcp.col(opt.grid[2]-1).array() )) * wavefctcp.col(opt.grid[2]-1).array();
+
 
 
 }

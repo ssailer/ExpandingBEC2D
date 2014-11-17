@@ -398,8 +398,8 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
 	/// PREPARE THE DOUBLE ARRAYS
 	string vec1Name = "Averages";
-	int vec1Rank = 11;
-	double vec1[11];
+	int vec1Rank = 13;
+	double vec1[13];
 	vec1[0] = results.totalResult.Ekin;
 	vec1[1] = results.totalResult.particle_count;
 	vec1[2] = results.totalResult.healing_length;
@@ -411,6 +411,8 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 	vec1[8] = results.totalResult.r_min;
 	vec1[9] = results.totalResult.r_max_phi;
 	vec1[10] = results.totalResult.r_min_phi;
+	vec1[11] = results.totalResult.Rx;
+	vec1[12] = results.totalResult.Ry;
 
   if(H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT))
 	{
@@ -742,7 +744,7 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 	if(!H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT)){
 		cout << "Observables " << vec1Name << " doesn't exists for time " << snapShotTime << ". Cannot read." << endl;
 	} else {		
-		int vec1Rank = 12;
+		int vec1Rank = 13;
 		vector<double> vec1(vec1Rank);
 		
 		dataset = H5Dopen(h5_observables, vec1Name.c_str(), H5P_DEFAULT);
@@ -768,6 +770,8 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 		results.totalResult.r_min = vec1[8];
 		results.totalResult.r_max_phi = vec1[9];
 		results.totalResult.r_min_phi = vec1[10];
+		results.totalResult.Rx = vec1[11];
+		results.totalResult.Ry = vec1[12];
 	}
 
 	 bool readState[2];

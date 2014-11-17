@@ -101,13 +101,14 @@ def main():
 	deltaT = 1.0 * 10**-5
 	cdeltaT = deltaT / (hbar / (m * a * a))
 
+
 	# m = 1.
 	Rx = 32.12 * 10**-6
 	Ry = 66.495/2 * 10**-6
 	cRx = Rx / a
 	cRy = Ry / a
-	omega_x = 207 * 2 * math.pi
-	omega_y = 200 * 2 * math.pi
+	omega_x = 200 * 2 * math.pi
+	omega_y = 150 * 2 * math.pi
 	comega_x = omega_x * m * a * a / hbar
 	comega_y = omega_y * m * a * a / hbar
 	g2d1 = (2.0/3.0) * m * (omega_x**3) * (Rx**4) / (omega_y * N)
@@ -175,6 +176,39 @@ def main():
 	print "alpha =", alpha
 	print "beta =", beta
 	print "delta =", delta
+	print "             "
+	print m * a * a / hbar
+
+	N = 2.0 * 10**5
+	hbar = hbar * 10**12
+	omega_z = 1207 * 2 * math.pi
+	As = 5.8 * 10**-3
+	g2D = As * N * math.sqrt(8.0 * math.pi * omega_z * hbar**3 / m)
+	
+	
+	Ag = 25.0 / 1024.0
+	OmegaG = hbar / ( m * Ag * Ag)
+	
+	cN = N * Ag * Ag
+	omega_x = 30 * 2 * math.pi
+	omega_y = 50 * 2 * math.pi
+	
+	comega_x = omega_x / OmegaG
+	comega_y = omega_y / OmegaG
+	deltaT = 10**-6  * OmegaG
+	
+	cg2D = g2D * Ag * Ag / (hbar * OmegaG)
+	print "          "
+	print "          "
+	print "          "
+	print "m / hbar ", m / hbar, 1.0/730.0
+	print "Ag = ", Ag
+	print "OmegaG = ", OmegaG
+	print "N = ", cN
+	print "Omega X, Omega Y", comega_x, comega_y
+	print "delta T", deltaT
+	print "g2D = ", g2D
+	print "cg2D = ", cg2D
 
 
 
