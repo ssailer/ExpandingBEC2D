@@ -116,6 +116,8 @@ void addDrivingForce(MatrixData* &data, Options &opt){
 
 void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
 
+double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x  * opt.min_y );
+
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
 int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
 int windingnumber = 1;
@@ -126,19 +128,20 @@ vector<Coordinate<int32_t>> c;
 
 for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){
     for(int x = x_jump; x < opt.grid[1]; x += x_jump){
-        if(abs2(data->wavefunction[0](x,y)) >= 10){
+        if(abs2(data->wavefunction[0](x,y)) >= LOWER_THRESHOLD){
             c.push_back(grid.make_coord(x,y,0));
         }
     }
 }
 for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
     for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){
-        if(abs2(data->wavefunction[0](x,y)) >= 10){
+        if(abs2(data->wavefunction[0](x,y)) >= LOWER_THRESHOLD){
             c.push_back(grid.make_coord(x,y,0));
         }
     }
 }
 
+MatrixData test(1,opt.grid[1],opt.grid[2],0,0,opt.min_x,opt.min_y);
 for(int i = 0; i < c.size(); i++){
     #pragma omp parallel for
     for(int y = 0; y < opt.grid[2]; y++){
@@ -148,10 +151,6 @@ for(int i = 0; i < c.size(); i++){
     }
     // g->wavefunction[0](c) complex<double>(0.0,0.0);
 }
-
-
-
-
 vnumber += c.size() * windingnumber;
     // return opt.vortexnumber;
 }

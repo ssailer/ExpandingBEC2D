@@ -690,7 +690,7 @@ int Eval::getVortexNumber(){
 }
 
 void Eval::calc_fields(ComplexGrid &data, Options &opt){
-	double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); ; //opt.N * 0.05 / data.width() / data.height() / data.depth();
+	double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)

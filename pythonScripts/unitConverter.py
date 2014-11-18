@@ -181,21 +181,23 @@ def main():
 
 	N = 2.0 * 10**5
 	hbar = hbar * 10**12
+	# hbar = 1
+	# m = 1
 	omega_z = 1207 * 2 * math.pi
 	As = 5.8 * 10**-3
 	g2D = As * N * math.sqrt(8.0 * math.pi * omega_z * hbar**3 / m)
 	
 	
-	Ag = 25.0 / 1024.0
+	Ag = 50.0 / 1024.0
 	OmegaG = hbar / ( m * Ag * Ag)
 	
 	cN = N * Ag * Ag
-	omega_x = 30 * 2 * math.pi
-	omega_y = 50 * 2 * math.pi
+	omega_x = 20 * 2 * math.pi
+	omega_y = 27 * 2 * math.pi
 	
 	comega_x = omega_x / OmegaG
 	comega_y = omega_y / OmegaG
-	deltaT = 10**-6  * OmegaG
+	deltaT = 10**-5  * OmegaG
 	
 	cg2D = g2D * Ag * Ag / (hbar * OmegaG)
 	print "          "
@@ -207,8 +209,9 @@ def main():
 	print "N = ", cN
 	print "Omega X, Omega Y", comega_x, comega_y
 	print "delta T", deltaT
-	print "g2D = ", g2D
-	print "cg2D = ", cg2D
+	# print "g2D = ", g2D
+	# print "cg2D = ", cg2D
+	print "g2D", math.sqrt(8 * math.pi) * 5.8 / 200
 
 
 

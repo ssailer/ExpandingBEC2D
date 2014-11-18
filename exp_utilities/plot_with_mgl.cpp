@@ -12,20 +12,20 @@ void plotSpectrum(string name,string title, Observables &ares){
     vector<double> kval;
 	vector<double> numberval;
 	
-	plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
+	// plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
     for (int r = 0; r < ares.number.size(); r++)             
 	{	
 		if(ares.k(r) != 0.0){
-			plotfile << r <<"\t"<< ares.k(r) <<"\t" << ares.number(r) <<"\t";
-			plotfile << endl;
-			if(r%2 == 0){ // reduce the number of k's plotted, because it gets cluttered.
+			// plotfile << r <<"\t"<< ares.k(r) <<"\t" << ares.number(r) <<"\t";
+			// plotfile << endl;
+			// if(r%2 == 0){ // reduce the number of k's plotted, because it gets cluttered.
 				kval.push_back(ares.k(r));
 				numberval.push_back(ares.number(r));
-			}
+			// }
         }
 	}
-	plotfile << endl << endl;	
-	plotfile.close();
+	// plotfile << endl << endl;	
+	// plotfile.close();
 
 
 	int n = kval.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
@@ -52,8 +52,8 @@ void plotSpectrum(string name,string title, Observables &ares){
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
-	gr.SetRange('x',0.00001,20);
-	gr.SetRange('y',0.00000001,10000000);
+	gr.SetRange('x',k);
+	gr.SetRange('y',number);
 	gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);
@@ -124,8 +124,8 @@ void plotRadialDensity(string name,string title, Observables &ares){
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	gr.SetCoor(11); // log-log-coordinates
-	gr.SetRange('x',0.00001,100);
-	gr.SetRange('y',0.00001,100);
+	gr.SetRange('x',r);
+	gr.SetRange('y',density);
 	
 
 	// gr.SubPlot(2,1,0);
