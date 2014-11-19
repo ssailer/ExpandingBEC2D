@@ -103,16 +103,13 @@ void RTE::RunSetup(){
 	double hbar = 1.054 * 1.0e-34;
 	double a = 1.0e-5;
 
-	double coordTrafoFactor = m * a * a / hbar;
-	cout << "coordTrafoFactor = " << coordTrafoFactor << endl;
-
    	complex<double> tmp;  	
    	for(int t = 0; t < coefSize; t++){
    	tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t,0.0) * t_RTE );   	
    	laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
    	laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
-   	gradient_coefficient_x(t) = /*complex<double>(coordTrafoFactor,0.0) **/ lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
-   	gradient_coefficient_y(t) = /*complex<double>(coordTrafoFactor,0.0) **/ lambda_y_dot(tmp) / (two * h_y * lambda_y(tmp));
+   	gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
+   	gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * lambda_y(tmp));
    	}
 
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
@@ -122,8 +119,8 @@ void RTE::RunSetup(){
 	plotDataToPngEigen("Potential", PotentialGrid,opt);
 
 
-	int leftB = opt.grid[1] * 0.15;
-	int rightB = opt.grid[1] * 0.85;
+	int leftB = opt.grid[1] * 0.20;
+	int rightB = opt.grid[1] * 0.80;
 	AbsorbingPotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 	for(int i = 0; i< opt.grid[1]; i++){
 		for(int j = 0; j < opt.grid[2]; j++){
@@ -257,7 +254,7 @@ inline void RTE::rescale(MatrixXcd &wavefct){
 
 void RTE::rteToTime(string runName)
 {	
-	omp_set_num_threads(12);
+	omp_set_num_threads(16);
 	cout << "Starting Runge-Kutta-4th Order Expansion!" << endl;
 	double start;  // starttime of the run
 	int samplesize = wavefctVec.size();
@@ -405,7 +402,7 @@ void RTE::rteToTime(string runName)
 }
 
 void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
-	int32_t threads = 12;
+	int32_t threads = 16;
 	int subx = opt.grid[1]-2;
 	int suby = opt.grid[2]-2;
 	vector<int32_t> frontx(threads);
@@ -434,8 +431,8 @@ void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
 		k.block(frontx[i],1,endx[i],suby).array() += (wavefctcp.block(frontx[i]+1,1,endx[i],suby).array() - wavefctcp.block(frontx[i]-1,1,endx[i],suby).array()) * Xmatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_x(t)
 									               + (wavefctcp.block(frontx[i]  ,2,endx[i],suby).array() - wavefctcp.block(frontx[i]  ,0,endx[i],suby).array()) * Ymatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_y(t);
 
-		k.block(frontx[i],1,endx[i],suby).array() -= i_unit * (/*complex<double>(potFactorByExpansion,0.0) * PotentialGrid.block(frontx[i],1,endx[i],suby).array()*/
-															 + complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() ))
+		k.block(frontx[i],1,endx[i],suby).array() -= i_unit * (opt.potFactor * PotentialGrid.block(frontx[i],1,endx[i],suby).array()+ 
+															complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() ))
 															 // + i_unit * AbsorbingPotentialGrid.block(frontx[i],1,endx[i],suby).array())
 														 * wavefctcp.block(frontx[i],1,endx[i],suby).array();
 	}
@@ -641,8 +638,6 @@ void RTE::splitToTime(string runName){
 		vector<int> threadinfo(samplesize);
 		int slowestthread = 0;
 
-		// omp_set_num_threads(12);
-		// #pragma omp parallel for
 		for(int i = 0; i < samplesize; i++){
 
 			#pragma omp parallel for

@@ -81,20 +81,20 @@ try{
 	startGrid->wavefunction[0] = groundStateITP->result();
 	delete groundStateITP;
 
-		int vnumber = 0;
-		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
+		// int vnumber = 0;
+		// addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
 		
-		startUp.setVortexnumber(vnumber);
-		cout << endl << "Set Vortices #: " << vnumber << endl;
+		// startUp.setVortexnumber(vnumber);
+		// cout << endl << "Set Vortices #: " << vnumber << endl;
 	
-		string itpname = "ITP-Vortices"+to_string(tmpOpt.vortexspacing);
-		ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-		vorticesITP->formVortices(itpname);
-		// vorticesITP->findVortices(itpname);
+		// string itpname = "ITP-Vortices"+to_string(tmpOpt.vortexspacing);
+		// ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		// vorticesITP->formVortices(itpname);
+		// // vorticesITP->findVortices(itpname);
 		
-		startGrid->wavefunction[0] = vorticesITP->result();
+		// startGrid->wavefunction[0] = vorticesITP->result();
 	
-		delete vorticesITP;
+		// delete vorticesITP;
 
 
 	string startGridName = "StartGrid_2048_2048_SSFT_EX_1V.h5";
