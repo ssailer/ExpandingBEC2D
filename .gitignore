@@ -5,6 +5,7 @@ Makefile
 build/
 *~
 *.dat
+*.png
 *.gch
 /.project
 /results
