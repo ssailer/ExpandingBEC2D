@@ -82,6 +82,10 @@ class RTE
     void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     inline double rotatingPotential(int &i, int &j, int &t);
+
+    void ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t);
+    void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
+    void MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut);
    
 
     // Variables
@@ -92,6 +96,7 @@ class RTE
     Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
     MatrixXcd PotentialGrid,AbsorbingPotentialGrid;
+    MatrixXcd wavefctcp, k0, k1, k2, k3;
     VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
 
     stepCounter keeperOfTime;

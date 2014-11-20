@@ -78,9 +78,9 @@ int main( int argc, char** argv)
     double energy;
     int key;
     const string method[3] = {"simple Euler","modified Euler","4th order Runge-Kutta"};
-    vector<double> T;
-    vector<double> X;
-    vector<double> Y;
+    vector<double> T, X, Y, Xdot, Ydot;
+
+
 
 
 /* output: file and formats */
@@ -126,6 +126,7 @@ int main( int argc, char** argv)
         r[0] = xf;
         v[0] = vf;
         X.push_back(xf);
+        Xdot.push_back(vf);
 
         xi = r[1];
         vi = v[1];
@@ -134,6 +135,7 @@ int main( int argc, char** argv)
         r[1] = xf;
         v[1] = vf;
         Y.push_back(xf);
+        Ydot.push_back(vf);
 
         ti = tf;
     }

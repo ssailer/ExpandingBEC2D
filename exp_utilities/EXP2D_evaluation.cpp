@@ -710,43 +710,8 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 }
 
 
-
-// findLongestLines(){
-// 	Coordinate<int32_t> c = PsiVec[0].make_coord(0,0,0);
-// 	vector<lineData> xlines;
-// 	vector<lineData> ylines;
-
-// 	for(int32_t y = 0; y < opt.grid[2]; y++){
-// 		c.y() = y;
-// 		do{
-// 			if(abs2(data(0,c)) > 0){
-// 				lineData line;
-// 				line.length = 1;
-// 				line.start = c;
-// 				c = c + v_right;
-
-// 				do{	
-// 					if(abs2(data(0,c)) > 0){
-// 						c = c + v_right
-// 					}
-// 					if((abs2(data(0,c)) == 0) && abs2(data(0,c+v_right)) > 0){
-// 						c = c + v_right + v_right;
-// 					}
-// 					line.stop = c;
-// 					line.length++;
-// 				}while(abs2(data(0,c)) > 0);
-				
-
-				
-// 				xlines.push_back(line);
-// 			}
-// 		}
-// 		c = c + v_up;
-// 	}
-// }
-
 void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
-	double threshold = opt.N * 0.01 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	double threshold = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 	// double upper_threshold = 20.;
 	// cout << "Threshold " << threshold << endl;
 

@@ -188,7 +188,7 @@ def main():
 	g2D = As * N * math.sqrt(8.0 * math.pi * omega_z * hbar**3 / m)
 	
 	
-	Ag = 50.0 / 1024.0
+	Ag = 75.0 / 1024.0
 	print "Rx, Ry", 757.009 * Ag, 566.006 * Ag
 	OmegaG = hbar / ( m * Ag * Ag)
 	
@@ -198,7 +198,7 @@ def main():
 	
 	comega_x = omega_x / OmegaG
 	comega_y = omega_y / OmegaG
-	deltaT = 10**-5  * OmegaG
+	deltaT = 5.0 * 10**-6  * OmegaG
 	
 	cg2D = g2D * Ag * Ag / (hbar * OmegaG)
 	print "          "

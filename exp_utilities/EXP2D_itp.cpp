@@ -506,6 +506,13 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 	// 	cerr << frontx[i]   << "," << 2 << "," << endx[i] << "," << suby << endl;
 	// }
 
+	// NEUMANN BOUNDARY CONDITIONS
+	k.row(0) = - (PotentialGrid.row(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(0).conjugate().array() * wavefctcp.row(0).array() )) * wavefctcp.row(0).array();
+	k.row(opt.grid[1]-1) = - (PotentialGrid.row(opt.grid[1]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(opt.grid[1]-1).conjugate().array() * wavefctcp.row(opt.grid[1]-1).array() )) * wavefctcp.row(opt.grid[1]-1).array();
+	k.col(0) = - (PotentialGrid.col(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(0).conjugate().array() * wavefctcp.col(0).array() )) * wavefctcp.col(0).array();
+	k.col(opt.grid[2]-1) = - (PotentialGrid.col(opt.grid[2]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(opt.grid[2]-1).conjugate().array() * wavefctcp.col(opt.grid[2]-1).array() )) * wavefctcp.col(opt.grid[2]-1).array();
+	// END CONDITIONS
+
 
 
 	#pragma omp parallel for
@@ -519,12 +526,7 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 		k.block(frontx[i],1,endx[i],suby).array() -= (PotentialGrid.block(frontx[i],1,endx[i],suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
 	}
 
-	k.row(0) = - (PotentialGrid.row(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(0).conjugate().array() * wavefctcp.row(0).array() )) * wavefctcp.row(0).array();
-	k.row(opt.grid[1]-1) = - (PotentialGrid.row(opt.grid[1]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(opt.grid[1]-1).conjugate().array() * wavefctcp.row(opt.grid[1]-1).array() )) * wavefctcp.row(opt.grid[1]-1).array();
-	k.col(0) = - (PotentialGrid.col(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(0).conjugate().array() * wavefctcp.col(0).array() )) * wavefctcp.col(0).array();
-	k.col(opt.grid[2]-1) = - (PotentialGrid.col(opt.grid[2]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(opt.grid[2]-1).conjugate().array() * wavefctcp.col(opt.grid[2]-1).array() )) * wavefctcp.col(opt.grid[2]-1).array();
-
-
+	
 
 }
 

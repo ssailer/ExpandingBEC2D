@@ -15,8 +15,8 @@ def main():
 
 	# datafile = 'linma1_run07_4x12samples_no_vortices/Combined_Observables.dat'
 	datafile1 = sys.argv[1] + "/CombinedRunObservables/Expanding_Ratios.csv"
-	datafile2 = sys.argv[2] + "/CombinedRunObservables/Expanding_Ratios.csv"
-	angle = int(sys.argv[3])
+	# datafile2 = sys.argv[2] + "/CombinedRunObservables/Expanding_Ratios.csv"
+	angle = int(sys.argv[2])
 
 	# cols = ["Timestep","X_max","Y_max","D_max","D_min","D_Ratio","D_max_Angle","D_min_Angle","Ratio","RatioAngle","N","V","Density","E_kin"]
 
@@ -26,8 +26,8 @@ def main():
 	dataset01=np.loadtxt(datafile1,dtype=float,delimiter=',',skiprows=1,usecols=(1,))
 	dataset02=np.loadtxt(datafile1,dtype=float,delimiter=',',skiprows=1,usecols=(angle+2,))
 
-	dataset11=np.loadtxt(datafile2,dtype=float,delimiter=',',skiprows=1,usecols=(1,))
-	dataset12=np.loadtxt(datafile2,dtype=float,delimiter=',',skiprows=1,usecols=(angle+2,))
+	# dataset11=np.loadtxt(datafile2,dtype=float,delimiter=',',skiprows=1,usecols=(1,))
+	# dataset12=np.loadtxt(datafile2,dtype=float,delimiter=',',skiprows=1,usecols=(angle+2,))
 
 	# from_data1 = open(datafile1,"rb")
 	# from_data2 = open(datafile2,"rb")
@@ -49,7 +49,7 @@ def main():
 	fig = plt.figure()
 	ax1 = fig.add_subplot(111)
 	ratioPlot2 = ax1.plot(dataset01,dataset02, c='b', marker='o', label='first')
-	ratioPlot3 = ax1.plot(dataset11,dataset12, c='r', marker='o', label='second')
+	# ratioPlot3 = ax1.plot(dataset11,dataset12, c='r', marker='o', label='second')
 	plt.ylabel('Angle 0')
 	plt.xlabel('Timestep')
 	plt.legend(loc='upper right')

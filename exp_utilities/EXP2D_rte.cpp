@@ -99,50 +99,21 @@ void RTE::RunSetup(){
    	gradient_coefficient_x = VectorXcd::Zero(coefSize);
    	gradient_coefficient_y = VectorXcd::Zero(coefSize);
 
-   	double m = 87 * 1.66 * 1.0e-27;
-	double hbar = 1.054 * 1.0e-34;
-	double a = 1.0e-5;
-
    	complex<double> tmp;  	
    	for(int t = 0; t < coefSize; t++){
-   	tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t,0.0) * t_RTE );   	
-   	laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
-   	laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
-   	gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
-   	gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * lambda_y(tmp));
+   		tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t,0.0) * t_RTE );   	
+   		laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
+   		laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
+   		gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
+   		gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * lambda_y(tmp));
    	}
 
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-   	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * ( half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );
-	}}
-	plotDataToPngEigen("Potential", PotentialGrid,opt);
-
-
-	int leftB = opt.grid[1] * 0.20;
-	int rightB = opt.grid[1] * 0.80;
-	AbsorbingPotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	for(int i = 0; i< opt.grid[1]; i++){
-		for(int j = 0; j < opt.grid[2]; j++){
-
-			if(i < leftB){				
-				AbsorbingPotentialGrid(i,j) = complex<double>(cos(M_PI/2 * i/leftB),0.0);
-			}
-			if(i > rightB){
-				AbsorbingPotentialGrid(i,j) = complex<double>(sin(M_PI/2 * (rightB -i)/leftB),0.0);
-			}
-			if(j < leftB){				
-				AbsorbingPotentialGrid(i,j) = complex<double>(cos(M_PI/2 * (j)/leftB),0.0);
-			}
-			if(j > rightB){
-				AbsorbingPotentialGrid(i,j) = complex<double>(sin(M_PI/2 * (rightB -j)/leftB),0.0);
-			}
+   	for(int i = 0; i< opt.grid[1]; i++){
+   		for(int j = 0; j < opt.grid[2]; j++){
+			PotentialGrid(i,j) = ( half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );
 		}
 	}
-	AbsorbingPotentialGrid.array() = AbsorbingPotentialGrid.array() * AbsorbingPotentialGrid.array();
-	plotDataToPngEigen("Absorbing", AbsorbingPotentialGrid,opt);
-		
-	
 
    	pot_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	pot_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
@@ -262,6 +233,12 @@ void RTE::rteToTime(string runName)
 	keeperOfTime.lambdaSteps = 0;
 	keeperOfTime.initialSteps = meta.steps;
 
+	wavefctcp = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	k0 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	k1 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	k2 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+	k3 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+
 	if(opt.initialRun == true){
 		Eval* initialEval = new Eval;
 		initialEval->saveData(wavefctVec,opt,meta.steps,runName);
@@ -287,64 +264,20 @@ void RTE::rteToTime(string runName)
 		int slowestthread = 0;		
 
 		for(int i = 0; i < samplesize; i++){
-
-			MatrixXcd wavefctcp = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-			MatrixXcd k0 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-			MatrixXcd k1 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-			MatrixXcd k2 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-			MatrixXcd k3 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-
 			// list of which thread is working which iteration
 			int lambdaSteps = keeperOfTime.lambdaSteps;
 			threadinfo[i] = omp_get_thread_num();
-			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
+			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){				
 		
-				wavefctcp = wavefctVec[i];
-		
-				// boundary conditions -- Dirichlet
-		
-				wavefctVec[i].row(0) = VectorXcd::Zero(opt.grid[1]);
-				wavefctVec[i].row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-				wavefctVec[i].col(0) = VectorXcd::Zero(opt.grid[2]);
-				wavefctVec[i].col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
-		
-				// boundary conditions end
-		
-				RTE_compute_k_ex_parallel(k0,wavefctcp,lambdaSteps);
-				wavefctcp = wavefctVec[i] + half * t_RTE * k0;
+				ComputeDeltaPsi(wavefctVec[i],wavefctcp,lambdaSteps);
 
-				lambdaSteps++;
-				RTE_compute_k_ex_parallel(k1,wavefctcp,lambdaSteps);
-				wavefctcp = wavefctVec[i] + half * t_RTE * k1;
-		
-				RTE_compute_k_ex_parallel(k2,wavefctcp,lambdaSteps);		
-				wavefctcp = wavefctVec[i] + t_RTE * k2;
-		
-				lambdaSteps++;
-				RTE_compute_k_ex_parallel(k3,wavefctcp,lambdaSteps);
-		
-				wavefctVec[i] += (t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
-
-				// rescale(wavefctVec[i]);
-		
-				// // Neumann Boundaries
-		
-				// wavefctVec[i].col(0).real() = wavefctVec[i].col(1).real();
-				// wavefctVec[i].col(opt.grid[2]-1).real() = wavefctVec[i].col(opt.grid[2]-2).real();
-				// wavefctVec[i].row(0).real() = wavefctVec[i].row(0).real();
-				// wavefctVec[i].row(opt.grid[1]-1).real() = wavefctVec[i].row(opt.grid[1]-2).real();
-		
-				// // Boundaries
-		
 				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
    				stateOfLoops[i]= m - previousTimes;
    				if(omp_get_thread_num() == slowestthread){
    					int counter_max = snapshot_times[j] - previousTimes;
    					cli(stepname,slowestthread,threadinfo,stateOfLoops,counter_max,start);
-   				}
-	
-			}
-	
+   				}	
+			}	
 		}
 		keeperOfTime.lambdaSteps += 2 * (snapshot_times[j] - previousTimes);
 		keeperOfTime.absoluteSteps = snapshot_times[j] - keeperOfTime.initialSteps;	
@@ -368,13 +301,9 @@ void RTE::rteToTime(string runName)
 		coord[0] = opt.min_x * opt.stateInformation[0];
 		coord[1] = opt.min_y * opt.stateInformation[1];
 		pData->update(real(tmp),snapshot_times[j],coord);
-
-		// plot("3-"+to_string(snapshot_times[j]));
 		
 		try{
-			Eval results;
-	
-			// cout << " >> Evaluating Datafiles "<< snapshot_times[j] << flush;
+			Eval results;	
 			results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
 			results.evaluateData();
 			results.plotData();
@@ -389,16 +318,143 @@ void RTE::rteToTime(string runName)
 			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
 			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
 			delete evalFile;
-
-			// cout << " ..Snapshot saved to runData/";
-
 		}
 		catch(const std::exception& e) { 
 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 
 			throw e; 
 		}
-
 	}
+}
+
+void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
+
+	int32_t threads = 16;
+	int32_t subx = opt.grid[1]-2;
+	int32_t suby = opt.grid[2]-2;
+	vector<int32_t> frontx(threads);
+	vector<int32_t> endx(threads);
+	int32_t partx = opt.grid[1] / threads;
+
+	for(int i = 0; i < threads; i++){
+		if(i == 0){ frontx[i] = (i * partx) + 1;}
+		else{ frontx[i] = (i *partx);}
+		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
+		else{endx[i] = partx;}
+	}
+
+	#pragma omp parallel
+	{	
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]);
+		}
+
+		#pragma omp for
+		for(int i = 0; i < threads; ++i)		{
+			singleK(k0,wavefctcp,frontx[i],endx[i],subx,suby,t);
+		}
+
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * t_RTE * k0.block(i * partx,0,partx,opt.grid[2]);
+		}
+
+		#pragma omp barrier
+		#pragma omp single
+		{
+			t++;
+		}
+
+		#pragma omp for
+		for (int i = 0; i < threads; ++i){
+			singleK(k1,wavefctcp,frontx[i],endx[i],subx,suby,t);
+		}
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * t_RTE * k1.block(i * partx,0,partx,opt.grid[2]);
+		}
+	
+		#pragma omp for
+		for (int i = 0; i < threads; ++i){
+			singleK(k2,wavefctcp,frontx[i],endx[i],subx,suby,t);
+		}
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + t_RTE * k2.block(i * partx,0,partx,opt.grid[2]);
+		}	
+		
+		#pragma omp barrier
+		#pragma omp single
+		{
+			t++;
+		}
+	
+		#pragma omp for
+		for (int i = 0; i < threads; ++i){
+			singleK(k3,wavefctcp,frontx[i],endx[i],subx,suby,t);
+		}
+	
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = one/six * ( k0.block(i * partx,0,partx,opt.grid[2]) + two * k1.block(i * partx,0,partx,opt.grid[2]) + two * k2.block(i * partx,0,partx,opt.grid[2]) + k3.block(i * partx,0,partx,opt.grid[2]));
+		}
+
+		#pragma omp barrier
+		#pragma omp single
+		{
+			MSDBoundaries(wavefct,wavefctcp);
+		}
+
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefct.block(i * partx,0,partx,opt.grid[2]) = t_RTE * wavefctcp.block(i * partx,0,partx,opt.grid[2]);
+		}
+	}	
+
+}
+
+void RTE::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t){
+	k.block(front,1,end,suby).noalias() =  (wavefctcp.block(front-1,1,end,suby)	- two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front+1,1,end,suby)) * laplacian_coefficient_x(t)
+										 + (wavefctcp.block(front  ,0,end,suby) - two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front  ,2,end,suby)) * laplacian_coefficient_y(t);
+
+	k.block(front,1,end,suby).array() += (wavefctcp.block(front+1,1,end,suby).array() - wavefctcp.block(front-1,1,end,suby).array()) * Xmatrix.block(front,1,end,suby).array() * gradient_coefficient_x(t)
+									   + (wavefctcp.block(front  ,2,end,suby).array() - wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,1,end,suby).array() * gradient_coefficient_y(t);
+
+	k.block(front,1,end,suby).array() -= i_unit * (/*opt.potFactor * PotentialGrid.block(front,1,end,suby).array() +*/ complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() )) * wavefctcp.block(front,1,end,suby).array();
+}
+
+void RTE::MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut){
+	#pragma omp parallel for
+	for(int x = 1; x < opt.grid[1]-1; x++){		
+		if(U(x,1).imag() != 0.0){
+			Ut(x,0) = i_unit * U(x,0) * Ut(x,1).imag() / U(x,1).imag();
+		}else{
+			Ut(x,0) = zero;
+		}
+		if(U(x,opt.grid[2]-2).imag() != 0.0){
+			Ut(x,opt.grid[2]-1) = i_unit * U(x,opt.grid[2]-1) * Ut(x,opt.grid[2]-2).imag() / U(x,opt.grid[2]-2).imag();
+		}else{
+			Ut(x,opt.grid[2]-1) = zero;
+		}
+	}
+	#pragma omp parallel for
+	for(int y = 1; y < opt.grid[2]-1; y++){
+		if(U(1,y).imag() != 0.0){
+			Ut(0,y) = i_unit * U(0,y) * Ut(1,y).imag() / U(1,y).imag();
+		}else{
+			Ut(0,y) = zero;
+		}
+		if(U(opt.grid[1]-2,y).imag() != 0.0){
+			Ut(opt.grid[1]-1,y) = i_unit * U(opt.grid[1]-1,y) * Ut(opt.grid[1]-2,y).imag() / U(opt.grid[1]-2,y).imag();
+		}else{
+			Ut(opt.grid[1]-1,y) = zero;
+		}
+	}
+	Ut(0,0) = (Ut(0,1) + Ut(1,0)) / two;
+	Ut(0,opt.grid[2]-1) = (Ut(0,opt.grid[2]-2) + Ut(1,opt.grid[2]-1)) / two;
+	Ut(opt.grid[1]-1,0) = (Ut(opt.grid[1]-2,0) + Ut(opt.grid[1]-1,1)) / two;
+	Ut(opt.grid[1]-1,opt.grid[2]-1) = (Ut(opt.grid[1]-2,opt.grid[2]-1) + Ut(opt.grid[1]-1,opt.grid[2]-2)) / two;
+
 }
 
 void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
@@ -417,7 +473,6 @@ void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
 		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
 		else{endx[i] = partx;}
 	}
-
 
 	#pragma omp parallel for
 	for (int i = 0; i < threads; ++i){
@@ -671,16 +726,16 @@ void RTE::splitToTime(string runName){
 
 				
 
-				#pragma omp parallel for
-				for(int x = 0; x < rgrid.width(); x++){
-					for(int y = 0; y < rgrid.height(); y++){
-				    	complex<double> value = rgrid(0,x,y,0);
-				    	double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*/ /*+*/ opt.g * abs2(value) ) * timestepsize;
-				    	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
-				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
-				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
-					}
-				}
+				// #pragma omp parallel for
+				// for(int x = 0; x < rgrid.width(); x++){
+				// 	for(int y = 0; y < rgrid.height(); y++){
+				//     	complex<double> value = rgrid(0,x,y,0);
+				//     	double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*/ /*+*/ opt.g * abs2(value) ) * timestepsize;
+				//     	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
+				//     	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
+				//     	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
+				// 	}
+				// }
 				
 				// plotDataToPng("RTE_PotGrid_"+to_string(m),"RTE_PotGrid_"+to_string(m),potPlotGrid,opt);
 

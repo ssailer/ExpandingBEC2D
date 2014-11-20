@@ -39,8 +39,8 @@ void setGridToDoubleGaussian(MatrixData* &data, Options opt)
 
 void setGridToGaussian(MatrixData* &data, Options opt)
 {
-    double sigma_x = opt.min_x/4;
-    double sigma_y = opt.min_y/4;
+    double sigma_x = opt.min_x/8;
+    double sigma_y = opt.min_y/8;
     double h_x = 2.*opt.min_x/opt.grid[1];
     double h_y = 2.*opt.min_y/opt.grid[2];
     vector<double> x(opt.grid[1]);
