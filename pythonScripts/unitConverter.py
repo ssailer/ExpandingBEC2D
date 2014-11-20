@@ -188,7 +188,7 @@ def main():
 	g2D = As * N * math.sqrt(8.0 * math.pi * omega_z * hbar**3 / m)
 	
 	
-	Ag = 75.0 / 1024.0
+	Ag = 75.0 / 2048.0
 	print "Rx, Ry", 757.009 * Ag, 566.006 * Ag
 	OmegaG = hbar / ( m * Ag * Ag)
 	
