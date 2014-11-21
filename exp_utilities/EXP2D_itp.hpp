@@ -60,6 +60,8 @@ private:
     inline void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
     void ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp);
 
+    inline double rotatingPotential(int i, int j, int angle);
+
     inline void rescale(MatrixXcd &wavefct); 
 
     // Variables

@@ -98,8 +98,12 @@ void ITP::RunSetup(){
    	// Precomputing
 
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-   	for(int i = 0; i< opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){
-	PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
+   	for(int i = 0; i< opt.grid[1]; i++){
+   		for(int j = 0; j < opt.grid[2]; j++){
+   			PotentialGrid(i,j) = complex<double>(rotatingPotential(i,j,45),0.0);
+			// PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );
+   		}
+   	}
 
  //   	for(int i = 0; i< opt.grid[1]/2; i++){for(int j = 0; j < opt.grid[2]; j++){
 	// PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i+opt.grid[1]/4) * X(i+opt.grid[1]/4) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );}}
@@ -396,7 +400,7 @@ void ITP::propagateToGroundState(string runname)
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
 		double difference = (old_Ekin - breakCondition.totalResult.Ekin) / old_Ekin ;
 		cout << endl << "Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 0.001){
+		if(fabs(difference) <= 0.0001){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
@@ -525,8 +529,14 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 													       + wavefctcp.block(frontx[i]  ,2,endx[i],suby)) * itp_laplacian_y;	
 		k.block(frontx[i],1,endx[i],suby).array() -= (PotentialGrid.block(frontx[i],1,endx[i],suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
 	}
+}
 
-	
-
+inline double ITP::rotatingPotential(int i, int j, int angle){
+	double potential;
+		double alpha = 2 * M_PI / 360;
+		double x = X(i).real() * cos(alpha * angle) + Y(j).real() * sin(alpha * angle);
+		double y = - X(i).real() * sin(alpha * angle) + Y(j).real() * cos(alpha * angle);
+		potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * x * x + 0.5 * opt.omega_y.real() * opt.omega_y.real() * y * y;
+	return potential;
 }
 

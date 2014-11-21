@@ -198,6 +198,12 @@ def main():
 	
 	comega_x = omega_x / OmegaG
 	comega_y = omega_y / OmegaG
+
+	alpha = 2 * math.pi / 360;
+	t = 45
+	cRomega_x = comega_x * math.cos(alpha * t) + comega_y * math.sin(alpha * t);
+	cRomega_y = - comega_x * math.sin(alpha * t) + comega_y * math.cos(alpha * t);
+
 	deltaT = 5.0 * 10**-6  * OmegaG
 	
 	cg2D = g2D * Ag * Ag / (hbar * OmegaG)
@@ -209,6 +215,7 @@ def main():
 	print "OmegaG = ", OmegaG
 	print "N = ", cN
 	print "Omega X, Omega Y", comega_x, comega_y
+	print "cRomega X, cRomega Y", cRomega_x, cRomega_y
 	print "delta T", deltaT
 	# print "g2D = ", g2D
 	# print "cg2D = ", cg2D
