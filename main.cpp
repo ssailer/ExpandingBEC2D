@@ -73,7 +73,6 @@ try{
 		dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 		delete dataFile;
 
-		cerr << tmpOpt.omega_x << " " << tmpOpt.omega_y << endl;
 
 
 			// Options tmpOpt = startUp.getOptions();

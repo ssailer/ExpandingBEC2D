@@ -267,9 +267,22 @@ void RTE::rteToTime(string runName)
 			// list of which thread is working which iteration
 			int lambdaSteps = keeperOfTime.lambdaSteps;
 			threadinfo[i] = omp_get_thread_num();
-			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){				
+			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
+
+				// k0 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+				// k1 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+				// k2 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+				// k3 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
+
+				// wavefctcp = wavefctVec[i];				
 		
 				ComputeDeltaPsi(wavefctVec[i],wavefctcp,lambdaSteps);
+
+				// wavefctcp = (one/six) * ( k0 + two * k1 + two * k2 + k3);
+
+				// MSDBoundaries(wavefctVec[i],wavefctcp);
+
+				// wavefctVec[i] += t_RTE * wavefctcp; //(t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
 
 				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
    				stateOfLoops[i]= m - previousTimes;
@@ -350,7 +363,7 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 		}
 
 		#pragma omp for
-		for(int i = 0; i < threads; ++i)		{
+		for(int i = 0; i < threads; ++i){
 			singleK(k0,wavefctcp,frontx[i],endx[i],subx,suby,t);
 		}
 
@@ -366,7 +379,7 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 		}
 
 		#pragma omp for
-		for (int i = 0; i < threads; ++i){
+		for(int i = 0; i < threads; ++i){
 			singleK(k1,wavefctcp,frontx[i],endx[i],subx,suby,t);
 		}
 		#pragma omp for
@@ -375,7 +388,7 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 		}
 	
 		#pragma omp for
-		for (int i = 0; i < threads; ++i){
+		for(int i = 0; i < threads; ++i){
 			singleK(k2,wavefctcp,frontx[i],endx[i],subx,suby,t);
 		}
 		#pragma omp for
@@ -390,13 +403,13 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 		}
 	
 		#pragma omp for
-		for (int i = 0; i < threads; ++i){
+		for(int i = 0; i < threads; ++i){
 			singleK(k3,wavefctcp,frontx[i],endx[i],subx,suby,t);
 		}
 	
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
-			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = one/six * ( k0.block(i * partx,0,partx,opt.grid[2]) + two * k1.block(i * partx,0,partx,opt.grid[2]) + two * k2.block(i * partx,0,partx,opt.grid[2]) + k3.block(i * partx,0,partx,opt.grid[2]));
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = (one/six) * ( k0.block(i * partx,0,partx,opt.grid[2]) + two * k1.block(i * partx,0,partx,opt.grid[2]) + two * k2.block(i * partx,0,partx,opt.grid[2]) + k3.block(i * partx,0,partx,opt.grid[2]));
 		}
 
 		#pragma omp barrier
@@ -407,7 +420,7 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
-			wavefct.block(i * partx,0,partx,opt.grid[2]) = t_RTE * wavefctcp.block(i * partx,0,partx,opt.grid[2]);
+			wavefct.block(i * partx,0,partx,opt.grid[2]) += t_RTE * wavefctcp.block(i * partx,0,partx,opt.grid[2]);
 		}
 	}	
 
@@ -424,7 +437,7 @@ void RTE::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &e
 }
 
 void RTE::MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut){
-	#pragma omp parallel for
+	// #pragma omp parallel for
 	for(int x = 1; x < opt.grid[1]-1; x++){		
 		if(U(x,1).imag() != 0.0){
 			Ut(x,0) = i_unit * U(x,0) * Ut(x,1).imag() / U(x,1).imag();
@@ -437,7 +450,7 @@ void RTE::MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut){
 			Ut(x,opt.grid[2]-1) = zero;
 		}
 	}
-	#pragma omp parallel for
+	// #pragma omp parallel for
 	for(int y = 1; y < opt.grid[2]-1; y++){
 		if(U(1,y).imag() != 0.0){
 			Ut(0,y) = i_unit * U(0,y) * Ut(1,y).imag() / U(1,y).imag();
