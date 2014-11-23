@@ -204,7 +204,7 @@ def main():
 	cRomega_x = comega_x * math.cos(alpha * t) + comega_y * math.sin(alpha * t);
 	cRomega_y = - comega_x * math.sin(alpha * t) + comega_y * math.cos(alpha * t);
 
-	deltaT = 5.0 * 10**-6  * OmegaG
+	deltaT = 1.0 * 10**-6  * OmegaG
 	
 	cg2D = g2D * Ag * Ag / (hbar * OmegaG)
 	print "          "

@@ -398,11 +398,11 @@ void Eval::plotData(){
 	string title = "Density " + snapShotString;
 	plotDataToPngExpanding(plotname,title,PsiVec[0],opt);
 
-	if(opt.runmode.compare(1,1,"1") == 0){
-		title = "Density " + snapShotString;
-		plotname = runname + "-ExpandingFrame-" + snapShotString;
-		plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
-	}
+	// if(opt.runmode.compare(1,1,"1") == 0){
+	// 	title = "Density " + snapShotString;
+	// 	plotname = runname + "-ExpandingFrame-" + snapShotString;
+	// 	plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
+	// }
 
 	plotname = runname + "-Spectrum-" + snapShotString;
 	title = "Spectrum " + snapShotString; 
