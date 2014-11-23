@@ -398,11 +398,11 @@ void Eval::plotData(){
 	string title = "Density " + snapShotString;
 	plotDataToPngExpanding(plotname,title,PsiVec[0],opt);
 
-	if(opt.runmode.compare(1,1,"1") == 0){
-		title = "Density " + snapShotString;
-		plotname = runname + "-ExpandingFrame-" + snapShotString;
-		plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
-	}
+	// if(opt.runmode.compare(1,1,"1") == 0){
+	// 	title = "Density " + snapShotString;
+	// 	plotname = runname + "-ExpandingFrame-" + snapShotString;
+	// 	plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
+	// }
 
 	plotname = runname + "-Spectrum-" + snapShotString;
 	title = "Spectrum " + snapShotString; 
@@ -430,9 +430,9 @@ void Eval::plotData(){
 	// title = "Density " + snapShotString;
 	// plotVector(plotname,title,x_dist_grad,y_dist_grad,opt);
 
-	// plotname = runname + "-Angular-Dens-" + snapShotString;
-	// title = "Angular Density " + snapShotString;
-	// plotVector(plotname,title,totalResult.angularDensity,opt);	
+	plotname = runname + "-Angular-Dens-" + snapShotString;
+	title = "Angular Density " + snapShotString;
+	plotVector(plotname,title,totalResult.angularDensity,opt);	
 
 	plotname = runname + "-Contour-" + snapShotString;
 	title = "Contour " + snapShotString;
@@ -690,7 +690,7 @@ int Eval::getVortexNumber(){
 }
 
 void Eval::calc_fields(ComplexGrid &data, Options &opt){
-	double LOWER_THRESHOLD = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); //opt.N * 0.05 / data.width() / data.height() / data.depth();
+	double LOWER_THRESHOLD = 0.0; // opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	for(int x = 0; x < data.width(); x++)
 	{
 		for(int y = 0; y < data.height(); y++)
@@ -705,8 +705,8 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 			}
 		}
 	}
-	// string name = "Test Zeros";
-	// plotDataToPng(name, *zeros, opt);
+	string name = "Test Zeros"+to_string(snapshot_time);
+	plotDataToPng(name, name, zeros, opt);
 }
 
 

@@ -331,6 +331,9 @@ void RTE::rteToTime(string runName)
 			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
 			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
 			delete evalFile;
+
+			string deltaname = runName + "deltapsi" + to_string(snapshot_times[j]);
+			plotDataToPngEigen(deltaname,wavefctcp,opt);
 		}
 		catch(const std::exception& e) { 
 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 
