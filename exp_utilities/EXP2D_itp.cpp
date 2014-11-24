@@ -402,7 +402,7 @@ void ITP::propagateToGroundState(string runname)
 		
 
 		// cli_groundState(runname,start,state,breakCondition.totalResult);
-		plot(name+"-"+to_string(state));
+		plot(runname+"-"+to_string(state));
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
 		double difference = (old_scalefactor - scalefactor);
 		cout << endl << "ITP Difference: " << std::setprecision (15) << difference << endl;
