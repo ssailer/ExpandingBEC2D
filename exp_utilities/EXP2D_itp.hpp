@@ -65,7 +65,7 @@ private:
 
     inline double rotatingPotential(int i, int j, int angle);
 
-    inline void rescale(MatrixXcd &wavefct); 
+    inline double rescale(MatrixXcd &wavefct); 
 
     // Variables
     complex<double> h_x, h_y;

@@ -100,8 +100,8 @@ void ITP::RunSetup(){
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
    	for(int i = 0; i< opt.grid[1]; i++){
    		for(int j = 0; j < opt.grid[2]; j++){
-   			PotentialGrid(i,j) = complex<double>(rotatingPotential(i,j,45),0.0);
-			// PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );
+   			// PotentialGrid(i,j) = complex<double>(rotatingPotential(i,j,45),0.0);
+			PotentialGrid(i,j) = complex<double>(opt.potFactor,0.0) * /*two **/ (half * opt.omega_x * opt.omega_x * ( /*0.05 * X(i) * X(i) * X(i) * X(i) -*/ X(i) * X(i) ) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );
    		}
    	}
 
@@ -127,7 +127,7 @@ void ITP::plot(const string name){
 		plotDataToPngEigen(name, wavefct,opt);
 }
 
-inline void ITP::rescale(MatrixXcd &wavefct){	
+inline double ITP::rescale(MatrixXcd &wavefct){	
 
 	// cout << "Rescale " << h_x << " " << h_y << endl;
 	double Integral = 0.;  
@@ -142,6 +142,7 @@ inline void ITP::rescale(MatrixXcd &wavefct){
 	scaleFactor = opt.N/Integral;	
 	// cout << "Integral : " << Integral << " scalefactor: " << scaleFactor << " " << sqrt(scaleFactor) << endl;
 	wavefct.array() *= sqrt(scaleFactor);
+	return scaleFactor;
 }
 
 void ITP::cli(string name,int counter_state, int counter_max, double start)
@@ -332,7 +333,8 @@ void ITP::propagateToGroundState(string runname)
 	bool finished = false;
 	int counter_finished = 0;
 	int state = 0;
-	double old_Ekin = 0;
+	double old_scalefactor = 0;
+	double scalefactor = 0;
 
 	// load external Data into wavefct
 	// CopyComplexGridToEigen();
@@ -390,25 +392,28 @@ void ITP::propagateToGroundState(string runname)
 
 			// plot("ITP-Groundstate-"+to_string(state)+"-Before-Rescale");
 
-			rescale(wavefct);			
+			scalefactor = rescale(wavefct);			
 				
 		}
 		
 
-		breakCondition.saveData(wavefct,opt,state,runname);
-		breakCondition.evaluateDataITP();
+		// breakCondition.saveData(wavefct,opt,state,runname);
+		// breakCondition.evaluateDataITP();
+		
 
-		cli_groundState(runname,start,state,breakCondition.totalResult);
+		// cli_groundState(runname,start,state,breakCondition.totalResult);
+		plot(name+"-"+to_string(state));
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
-		double difference = (old_Ekin - breakCondition.totalResult.Ekin) / old_Ekin ;
-		cout << endl << "Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 0.00000000001){
+		double difference = (old_scalefactor - scalefactor);
+		cout << endl << "ITP Difference: " << std::setprecision (15) << difference << endl;
+		if(fabs(difference) <= 1.0e-9){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
 			counter_finished = 0;			
 		}
-		old_Ekin = breakCondition.totalResult.Ekin;		
+		old_scalefactor = scalefactor;
+		// old_Ekin = breakCondition.totalResult.Ekin;		
 		if(counter_finished >= 2){
 			finished = true;
 		}
@@ -566,12 +571,6 @@ void ITP::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp){
 			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * t_ITP * k0.block(i * partx,0,partx,opt.grid[2]);
 		}
 
-		// #pragma omp barrier
-		// #pragma omp single
-		// {
-		// 	t++;
-		// }
-
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
 			singleK(k1,wavefctcp,frontx[i],endx[i],subx,suby);
@@ -590,12 +589,6 @@ void ITP::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp){
 			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + t_ITP * k2.block(i * partx,0,partx,opt.grid[2]);
 		}	
 		
-		// #pragma omp barrier
-		// #pragma omp single
-		// {
-		// 	t++;
-		// }
-	
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
 			singleK(k3,wavefctcp,frontx[i],endx[i],subx,suby);

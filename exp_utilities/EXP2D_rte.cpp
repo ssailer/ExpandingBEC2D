@@ -108,12 +108,31 @@ void RTE::RunSetup(){
    		gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * lambda_y(tmp));
    	}
 
+   	double x0 = opt.grid[1] * 0.20 / 2;
+   	double y0 = opt.grid[2] * 0.20 / 2;
+   	double rx = opt.min_x - x0;
+	double ry = opt.min_y - y0;
+	double strength = 5;
+
+
    	PotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+   	AbsorbingPotentialGrid = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
    	for(int i = 0; i< opt.grid[1]; i++){
    		for(int j = 0; j < opt.grid[2]; j++){
 			PotentialGrid(i,j) = ( half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );
+
+			if( fabs(X(i)) >= rx ){
+				AbsorbingPotentialGrid(i,j) = complex<double>(strength * cos((M_PI / 2) * (fabs(X(i)) - opt.min_x)/x0)*cos((M_PI / 2) * (fabs(X(i)) - opt.min_x)/x0),0.0);
+			}
+			if( fabs(Y(j)) >= ry ){
+				AbsorbingPotentialGrid(i,j) = complex<double>(strength * cos((M_PI / 2) * (fabs(Y(j)) - opt.min_y)/y0)*cos((M_PI / 2) * (fabs(Y(j)) - opt.min_y)/y0),0.0);
+			}
+			if( fabs(X(i)) >= rx && fabs(Y(j)) >= ry){
+				AbsorbingPotentialGrid(i,j) = complex<double>(strength * cos((M_PI / 2) * (fabs(X(i)) - opt.min_x)/x0)*cos((M_PI / 2) * (fabs(X(i)) - opt.min_x)/x0),0.0) + complex<double>(strength * cos((M_PI / 2) * (fabs(Y(j)) - opt.min_y)/y0)*cos((M_PI / 2) * (fabs(Y(j)) - opt.min_y)/y0),0.0);
+			}
 		}
 	}
+	plotDataToPngEigen("Absorbing",AbsorbingPotentialGrid,opt);
 
    	pot_laplacian_x = complex<double>(1.0,0.0) / (two * h_x * h_x);
 	pot_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
@@ -415,11 +434,11 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = (one/six) * ( k0.block(i * partx,0,partx,opt.grid[2]) + two * k1.block(i * partx,0,partx,opt.grid[2]) + two * k2.block(i * partx,0,partx,opt.grid[2]) + k3.block(i * partx,0,partx,opt.grid[2]));
 		}
 
-		#pragma omp barrier
-		#pragma omp single
-		{
-			MSDBoundaries(wavefct,wavefctcp);
-		}
+		// #pragma omp barrier
+		// #pragma omp single
+		// {
+		// 	MSDBoundaries(wavefct,wavefctcp);
+		// }
 
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
@@ -436,7 +455,7 @@ void RTE::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &e
 	k.block(front,1,end,suby).array() += (wavefctcp.block(front+1,1,end,suby).array() - wavefctcp.block(front-1,1,end,suby).array()) * Xmatrix.block(front,1,end,suby).array() * gradient_coefficient_x(t)
 									   + (wavefctcp.block(front  ,2,end,suby).array() - wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,1,end,suby).array() * gradient_coefficient_y(t);
 
-	k.block(front,1,end,suby).array() -= i_unit * (/*opt.potFactor * PotentialGrid.block(front,1,end,suby).array() +*/ complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() )) * wavefctcp.block(front,1,end,suby).array();
+	k.block(front,1,end,suby).array() -= (AbsorbingPotentialGrid.block(front,1,end,suby).array() + i_unit * (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() ))) * wavefctcp.block(front,1,end,suby).array();
 }
 
 void RTE::MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut){
