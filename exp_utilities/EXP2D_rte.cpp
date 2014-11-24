@@ -742,16 +742,16 @@ void RTE::splitToTime(string runName){
 
 				
 
-				// #pragma omp parallel for
-				// for(int x = 0; x < rgrid.width(); x++){
-				// 	for(int y = 0; y < rgrid.height(); y++){
-				//     	complex<double> value = rgrid(0,x,y,0);
-				//     	double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*/ /*+*/ opt.g * abs2(value) ) * timestepsize;
-				//     	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
-				//     	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
-				//     	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
-				// 	}
-				// }
+				#pragma omp parallel for
+				for(int x = 0; x < rgrid.width(); x++){
+					for(int y = 0; y < rgrid.height(); y++){
+				    	complex<double> value = rgrid(0,x,y,0);
+				    	double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*/ /*+*/ opt.g * abs2(value) ) * timestepsize;
+				    	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
+				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
+				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
+					}
+				}
 				
 				// plotDataToPng("RTE_PotGrid_"+to_string(m),"RTE_PotGrid_"+to_string(m),potPlotGrid,opt);
 

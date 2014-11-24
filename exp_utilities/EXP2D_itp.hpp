@@ -60,6 +60,9 @@ private:
     inline void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
     void ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp);
 
+    void ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp);
+    void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby);
+
     inline double rotatingPotential(int i, int j, int angle);
 
     inline void rescale(MatrixXcd &wavefct); 
@@ -69,9 +72,9 @@ private:
     complex<double> itp_laplacian_x;
     complex<double> itp_laplacian_y;
 
-     Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
+    Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
-    MatrixXcd PotentialGrid;
+    MatrixXcd PotentialGrid,wavefctcp,k0,k1,k2,k3;
 
     double pi, scaleFactor;
     complex<double>  zero,half,one,two,four,six,i_unit;

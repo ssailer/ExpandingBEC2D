@@ -338,11 +338,11 @@ void ITP::propagateToGroundState(string runname)
 	// CopyComplexGridToEigen();
 
 	Eval breakCondition;
-	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	MatrixXcd k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	MatrixXcd k1 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	MatrixXcd k2 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	MatrixXcd k3 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k1 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k2 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k3 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	start = omp_get_wtime();
 
@@ -369,20 +369,22 @@ void ITP::propagateToGroundState(string runname)
 			// wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
 			// wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
 
-			wavefctcp = wavefct;
+			ComputeDeltaPsi(wavefct, wavefctcp);
+
+			// wavefctcp = wavefct;
 	
-			ITP_compute_k_parallel(k0,wavefctcp);
+			// ITP_compute_k_parallel(k0,wavefctcp);
 	
-			wavefctcp = wavefct + half * t_ITP * k0;
-			ITP_compute_k_parallel(k1,wavefctcp);
+			// wavefctcp = wavefct + half * t_ITP * k0;
+			// ITP_compute_k_parallel(k1,wavefctcp);
 	
-			wavefctcp = wavefct + half * t_ITP * k1;
-			ITP_compute_k_parallel(k2,wavefctcp);
+			// wavefctcp = wavefct + half * t_ITP * k1;
+			// ITP_compute_k_parallel(k2,wavefctcp);
 	
-			wavefctcp = wavefct + t_ITP * k2;
-			ITP_compute_k_parallel(k3,wavefctcp);
+			// wavefctcp = wavefct + t_ITP * k2;
+			// ITP_compute_k_parallel(k3,wavefctcp);
 	
-			wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
+			// wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
 	
 			state++;
 
@@ -400,7 +402,7 @@ void ITP::propagateToGroundState(string runname)
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
 		double difference = (old_Ekin - breakCondition.totalResult.Ekin) / old_Ekin ;
 		cout << endl << "Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 0.000001){
+		if(fabs(difference) <= 0.00000000001){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
@@ -529,6 +531,105 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 													       + wavefctcp.block(frontx[i]  ,2,endx[i],suby)) * itp_laplacian_y;	
 		k.block(frontx[i],1,endx[i],suby).array() -= (PotentialGrid.block(frontx[i],1,endx[i],suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() )) * wavefctcp.block(frontx[i],1,endx[i],suby).array();
 	}
+}
+
+void ITP::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp){
+
+	int32_t threads = 16;
+	int32_t subx = opt.grid[1]-2;
+	int32_t suby = opt.grid[2]-2;
+	vector<int32_t> frontx(threads);
+	vector<int32_t> endx(threads);
+	int32_t partx = opt.grid[1] / threads;
+
+	for(int i = 0; i < threads; i++){
+		if(i == 0){ frontx[i] = (i * partx) + 1;}
+		else{ frontx[i] = (i *partx);}
+		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
+		else{endx[i] = partx;}
+	}
+
+	#pragma omp parallel
+	{	
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]);
+		}
+
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			singleK(k0,wavefctcp,frontx[i],endx[i],subx,suby);
+		}
+
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * t_ITP * k0.block(i * partx,0,partx,opt.grid[2]);
+		}
+
+		// #pragma omp barrier
+		// #pragma omp single
+		// {
+		// 	t++;
+		// }
+
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			singleK(k1,wavefctcp,frontx[i],endx[i],subx,suby);
+		}
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * t_ITP * k1.block(i * partx,0,partx,opt.grid[2]);
+		}
+	
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			singleK(k2,wavefctcp,frontx[i],endx[i],subx,suby);
+		}
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + t_ITP * k2.block(i * partx,0,partx,opt.grid[2]);
+		}	
+		
+		// #pragma omp barrier
+		// #pragma omp single
+		// {
+		// 	t++;
+		// }
+	
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			singleK(k3,wavefctcp,frontx[i],endx[i],subx,suby);
+		}
+	
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = (one/six) * ( k0.block(i * partx,0,partx,opt.grid[2]) + two * k1.block(i * partx,0,partx,opt.grid[2]) + two * k2.block(i * partx,0,partx,opt.grid[2]) + k3.block(i * partx,0,partx,opt.grid[2]));
+		}
+
+		#pragma omp barrier
+		#pragma omp single
+		{
+			// NEUMANN BOUNDARY CONDITIONS
+			wavefctcp.row(0) = - (PotentialGrid.row(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(0).conjugate().array() * wavefctcp.row(0).array() )) * wavefctcp.row(0).array();
+			wavefctcp.row(opt.grid[1]-1) = - (PotentialGrid.row(opt.grid[1]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(opt.grid[1]-1).conjugate().array() * wavefctcp.row(opt.grid[1]-1).array() )) * wavefctcp.row(opt.grid[1]-1).array();
+			wavefctcp.col(0) = - (PotentialGrid.col(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(0).conjugate().array() * wavefctcp.col(0).array() )) * wavefctcp.col(0).array();
+			wavefctcp.col(opt.grid[2]-1) = - (PotentialGrid.col(opt.grid[2]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(opt.grid[2]-1).conjugate().array() * wavefctcp.col(opt.grid[2]-1).array() )) * wavefctcp.col(opt.grid[2]-1).array();
+			// END CONDITIONS
+		}
+
+		#pragma omp for
+		for(int i = 0; i < threads; ++i){
+			wavefct.block(i * partx,0,partx,opt.grid[2]) += t_ITP * wavefctcp.block(i * partx,0,partx,opt.grid[2]);
+		}
+	}	
+
+}
+
+void ITP::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby){
+	k.block(front,1,end,suby).noalias() =  (wavefctcp.block(front-1,1,end,suby)	- two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front+1,1,end,suby)) * itp_laplacian_x
+										 + (wavefctcp.block(front  ,0,end,suby) - two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front  ,2,end,suby)) * itp_laplacian_y;
+
+	k.block(front,1,end,suby).array() -= ( PotentialGrid.block(front,1,end,suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() )) * wavefctcp.block(front,1,end,suby).array();
 }
 
 inline double ITP::rotatingPotential(int i, int j, int angle){
