@@ -63,6 +63,10 @@ public:
 	inline int getSnapShots(){ return opt.snapshots;};
 	inline MainControl getControl(){return toMainControl(MainControlString);};
 	inline string getRunName(){return runName;};
+
+
+	inline void convertToDimensionless();
+	inline void convertFromDimensionless();
 private:
 	MainControl toMainControl(const std::string& s);
 	bool restartValue;
@@ -141,7 +145,8 @@ inline void StartUp::printInitVar()
 				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
 				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << "Vortices will be added: " << opt.runmode[3] << endl
+				<< "ITP Step: " << opt.ITP_step << "\t" << "RTE Step: " << opt.RTE_step << endl
+				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << endl
 				<< "RTE potential on: " << opt.runmode[2] << endl
 				<< "Runmode: " << opt.runmode << endl
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
@@ -313,6 +318,8 @@ inline int StartUp::readConfig()
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
+	convertToDimensionless();
+
 	meta.grid[0] = opt.grid[1];
 	meta.grid[1] = opt.grid[2];
 	meta.coord[0] = opt.min_x;
@@ -384,6 +391,27 @@ inline void StartUp::writeConfig(){
 				 << "samplesize = " << opt.samplesize << ";\n"
 				 << "}";
 	datafile.close();
+}
+
+inline void StartUp::convertToDimensionless(){
+
+	double m = 87 * 1.66 * 1.0e-27;
+	double hbar = 1.054 * 10e-22;	
+	double Ag = 2 * opt.min_x / opt.grid[1];
+	double OmegaG = hbar / ( m * Ag * Ag);
+	opt.N *= Ag * Ag;
+	opt.min_x /= Ag;
+	opt.min_y /= Ag;
+	opt.ITP_step *= OmegaG;
+	opt.RTE_step *= OmegaG;
+	opt.omega_x *= 2.0 * M_PI / OmegaG;
+	opt.omega_y *= 2.0 * M_PI / OmegaG;
+	opt.dispersion_x *= 2.0 * M_PI / OmegaG;
+	opt.dispersion_y *= 2.0 * M_PI / OmegaG;
+}
+
+inline void StartUp::convertFromDimensionless(){
+	cout << "WATCH OUT: StartUp::convertFromDimensionless() is not yet implemented" << endl;
 }
 
 

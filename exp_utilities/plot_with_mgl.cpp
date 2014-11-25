@@ -52,8 +52,8 @@ void plotSpectrum(string name,string title, Observables &ares){
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
-	gr.SetRange('x',1.0e-20,4);
-	gr.SetRange('y',1.0e-20,10);
+	gr.SetRange('x',1.0e-10,4);
+	gr.SetRange('y',1.0e-10,20);
 	gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);
@@ -124,8 +124,8 @@ void plotRadialDensity(string name,string title, Observables &ares){
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	gr.SetCoor(11); // log-log-coordinates
-	gr.SetRange('x',1.0e-20,1.0e5);
-	gr.SetRange('y',1.0e-20,10);
+	gr.SetRange('x',1.0e-10,2.0e4);
+	gr.SetRange('y',1.0e-10,20);
 	
 
 	// gr.SubPlot(2,1,0);

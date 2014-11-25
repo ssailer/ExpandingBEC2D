@@ -193,7 +193,7 @@ def main():
 	OmegaG = hbar / ( m * Ag * Ag)
 	
 	cN = N * Ag * Ag
-	omega_x = 40 * 2 * math.pi
+	omega_x = 20 * 2 * math.pi
 	omega_y = 30 * 2 * math.pi
 	
 	comega_x = omega_x / OmegaG

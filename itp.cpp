@@ -98,7 +98,7 @@ try{
 		// delete vorticesITP;
 
 
-	string startGridName = "StartGrid_2048_2048_SSFT_EX_1V.h5";
+	string startGridName = "StartGrid_2048_2048.h5";
 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	delete dataFile;
