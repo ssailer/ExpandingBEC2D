@@ -434,11 +434,11 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = (one/six) * ( k0.block(i * partx,0,partx,opt.grid[2]) + two * k1.block(i * partx,0,partx,opt.grid[2]) + two * k2.block(i * partx,0,partx,opt.grid[2]) + k3.block(i * partx,0,partx,opt.grid[2]));
 		}
 
-		// #pragma omp barrier
-		// #pragma omp single
-		// {
-		// 	MSDBoundaries(wavefct,wavefctcp);
-		// }
+		#pragma omp barrier
+		#pragma omp single
+		{
+			MSDBoundaries(wavefct,wavefctcp);
+		}
 
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
@@ -455,7 +455,7 @@ void RTE::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &e
 	k.block(front,1,end,suby).array() += (wavefctcp.block(front+1,1,end,suby).array() - wavefctcp.block(front-1,1,end,suby).array()) * Xmatrix.block(front,1,end,suby).array() * gradient_coefficient_x(t)
 									   + (wavefctcp.block(front  ,2,end,suby).array() - wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,1,end,suby).array() * gradient_coefficient_y(t);
 
-	k.block(front,1,end,suby).array() -= (AbsorbingPotentialGrid.block(front,1,end,suby).array() + i_unit * (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() ))) * wavefctcp.block(front,1,end,suby).array();
+	k.block(front,1,end,suby).array() -= (/*AbsorbingPotentialGrid.block(front,1,end,suby).array() +*/ i_unit * (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() ))) * wavefctcp.block(front,1,end,suby).array();
 }
 
 void RTE::MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut){

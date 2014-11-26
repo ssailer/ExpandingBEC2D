@@ -712,12 +712,13 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 
 
 void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
-	double threshold = opt.N * 0.01; //  / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	 //  / 
 	// double upper_threshold = 20.;
 	// cout << "Threshold " << threshold << endl;
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2]; 
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	double threshold = opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
 
 	// RealGrid densityLocationMap = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
