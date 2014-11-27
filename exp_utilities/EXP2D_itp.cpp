@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 8000
+#define VORTICES_BUILD_TIME 300
 #define HBAR 1.05 * 10e-34
 #define M 1.44 * 10e-25
 
@@ -223,7 +223,7 @@ void ITP::formVortices(string runname){
 
 		rescale(wavefct);
 
-		cli(runname,m,VORTICES_BUILD_TIME,start);	
+		// cli(runname,m,VORTICES_BUILD_TIME,start);	
 	}
 
 	// rescale(wavefct);
@@ -406,7 +406,7 @@ void ITP::propagateToGroundState(string runname)
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
 		double difference = (old_scalefactor - scalefactor);
 		cout << endl << "ITP Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 1.0e-8){
+		if(fabs(difference) <= 1.0e-7){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
