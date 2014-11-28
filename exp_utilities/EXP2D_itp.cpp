@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 300
+#define VORTICES_BUILD_TIME 15000
 #define HBAR 1.05 * 10e-34
 #define M 1.44 * 10e-25
 
@@ -147,7 +147,7 @@ inline double ITP::rescale(MatrixXcd &wavefct){
 
 void ITP::cli(string name,int counter_state, int counter_max, double start)
 {
-	if(counter_state%(counter_max/100)==0)
+	if(counter_state%(counter_max/10)==0)
 		{
 			int seconds;
 			int min;
@@ -205,25 +205,49 @@ void ITP::formVortices(string runname){
 
 		
 
-		wavefctcp = wavefct;
+		// wavefctcp = wavefct;
 
-		ITP_compute_k_parallel(k0,wavefctcp);
+		// ITP_compute_k_parallel(k0,wavefctcp);
 
-		wavefctcp = wavefct + half * t_ITP * k0;
-		ITP_compute_k_parallel(k1,wavefctcp);
+		// wavefctcp = wavefct + half * t_ITP * k0;
+		// ITP_compute_k_parallel(k1,wavefctcp);
 
-		wavefctcp = wavefct + half * t_ITP * k1;
-		ITP_compute_k_parallel(k2,wavefctcp);
+		// wavefctcp = wavefct + half * t_ITP * k1;
+		// ITP_compute_k_parallel(k2,wavefctcp);
 
-		wavefctcp = wavefct + t_ITP * k2;
-		ITP_compute_k_parallel(k3,wavefctcp);
+		// wavefctcp = wavefct + t_ITP * k2;
+		// ITP_compute_k_parallel(k3,wavefctcp);
 
-		wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
+		// wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
 
 
-		rescale(wavefct);
+		// rescale(wavefct);
 
-		// cli(runname,m,VORTICES_BUILD_TIME,start);	
+
+			ComputeDeltaPsi(wavefct, wavefctcp);
+
+			// wavefctcp = wavefct;
+	
+			// ITP_compute_k_parallel(k0,wavefctcp);
+	
+			// wavefctcp = wavefct + half * t_ITP * k0;
+			// ITP_compute_k_parallel(k1,wavefctcp);
+	
+			// wavefctcp = wavefct + half * t_ITP * k1;
+			// ITP_compute_k_parallel(k2,wavefctcp);
+	
+			// wavefctcp = wavefct + t_ITP * k2;
+			// ITP_compute_k_parallel(k3,wavefctcp);
+	
+			// wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
+	
+			state++;
+
+			// plot("ITP-Groundstate-"+to_string(state)+"-Before-Rescale");
+
+			scalefactor = rescale(wavefct);	
+
+		cli(runname,m,VORTICES_BUILD_TIME,start);	
 	}
 
 	// rescale(wavefct);

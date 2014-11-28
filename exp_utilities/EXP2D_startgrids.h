@@ -116,7 +116,7 @@ void addDrivingForce(MatrixData* &data, Options &opt){
 
 void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
 
-double LOWER_THRESHOLD = opt.N * 0.10 / (4. * opt.min_x  * opt.min_y );
+double LOWER_THRESHOLD = opt.N * 0.20 / (4. * opt.min_x  * opt.min_y );
 
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
 int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
