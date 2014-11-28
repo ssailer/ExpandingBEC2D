@@ -182,14 +182,17 @@ void ITP::CopyEigenToComplexGrid(){
 
 void ITP::formVortices(string runname){
 	double start;  // starttime of the run
+	int state = 0;
+	double scalefactor = 0;
+	double old_scalefactor = 0;
 
 	// CopyComplexGridToEigen();
 
-	MatrixXcd wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	MatrixXcd k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	MatrixXcd k1 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	MatrixXcd k2 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	MatrixXcd k3 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	wavefctcp = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k0 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k1 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k2 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
+	k3 = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	start = omp_get_wtime();
 
@@ -247,7 +250,13 @@ void ITP::formVortices(string runname){
 
 			scalefactor = rescale(wavefct);	
 
-		cli(runname,m,VORTICES_BUILD_TIME,start);	
+		cli(runname,m,VORTICES_BUILD_TIME,start);
+		if(m%(VORTICES_BUILD_TIME/100)==0)
+		{
+			double difference = (old_scalefactor - scalefactor);
+			cout << endl << "ITP Difference: " << std::setprecision (15) << difference << flush;
+			old_scalefactor = scalefactor;
+		}	
 	}
 
 	// rescale(wavefct);
