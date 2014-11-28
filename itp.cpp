@@ -71,9 +71,9 @@ try{
 	startGrid->wavefunction[0] = groundStateITP->result();
 	delete groundStateITP;
 	
-	string bfString = "StartGrid_2048_2048_NV_30_30.h5";
+	string bfString = "StartGrid_2048_2048_NV_groundstate.h5";
 	binaryFile* bF = new binaryFile(bfString,binaryFile::in);
-	bF->appendSnapshot("StarGrid",0,startGrid,tmpOpt);
+	bF->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	delete bF;
 
 	
@@ -100,7 +100,7 @@ try{
 		delete vorticesITP;
 
 
-	string startGridName = "StartGrid_2048_2048_30_30.h5";
+	string startGridName = "StartGrid_2048_2048.h5";
 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	delete dataFile;
