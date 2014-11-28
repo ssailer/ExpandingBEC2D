@@ -62,20 +62,26 @@ try{
 	Options tmpOpt = startUp.getOptions();
 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 
-	// setGridToTF(startGrid,startUp.getOptions());
+	setGridToTF(startGrid,startUp.getOptions());
 	// // setGridToGaussian(startGrid,startUp.getOptions());
 
-	// ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	// string groundStateName = "ITP-Groundstate";
-	// groundStateITP->propagateToGroundState(groundStateName);
-	// startGrid->wavefunction[0] = groundStateITP->result();
-	// delete groundStateITP;
+	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+	string groundStateName = "ITP-Groundstate";
+	groundStateITP->propagateToGroundState(groundStateName);
+	startGrid->wavefunction[0] = groundStateITP->result();
+	delete groundStateITP;
 	
-		string startName = "StartGrid_2048_2048_NV.h5";
-		binaryFile* startFile = new binaryFile(startName,binaryFile::in);
-		startFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-		delete startFile;
-		tmpOpt = startUp.getOptions();
+	string bfString = "StartGrid_2048_2048_NV_30_30.h5";
+	binaryFile* bF = new binaryFile(bfString,binaryFile::in);
+	bF->appendSnapshot("StarGrid",0,startGrid,tmpOpt);
+	delete bF;
+
+	
+	//string startName = "StartGrid_2048_2048_NV.h5";
+	//	binaryFile* startFile = new binaryFile(startName,binaryFile::in);
+	//	startFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+	//	delete startFile;
+	//	tmpOpt = startUp.getOptions();
 
 		int vnumber = 0;
 		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
@@ -94,7 +100,7 @@ try{
 		delete vorticesITP;
 
 
-	string startGridName = "StartGrid_2048_2048.h5";
+	string startGridName = "StartGrid_2048_2048_30_30.h5";
 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
 	dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 	delete dataFile;

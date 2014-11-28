@@ -399,7 +399,7 @@ inline void StartUp::convertToDimensionless(){
 	double hbar = 1.054 * 10e-22;	
 	double Ag = 2 * opt.min_x / opt.grid[1];
 	double OmegaG = hbar / ( m * Ag * Ag);
-	opt.N *= Ag * Ag;
+	// opt.N *= Ag * Ag;
 	opt.min_x /= Ag;
 	opt.min_y /= Ag;
 	opt.ITP_step *= OmegaG;
