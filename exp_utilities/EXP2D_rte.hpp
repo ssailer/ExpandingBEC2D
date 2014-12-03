@@ -83,7 +83,7 @@ class RTE
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     inline double rotatingPotential(int &i, int &j, int &t);
 
-    void ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t);
+    void ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,complex<double> delta_T);
     void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
     void MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut);
    
@@ -93,6 +93,7 @@ class RTE
     complex<double> pot_laplacian_x;
     complex<double> pot_laplacian_y;
     vector<double> ranges;
+    VectorXcd t_RTE;
     Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
     MatrixXcd PotentialGrid,AbsorbingPotentialGrid;
@@ -106,7 +107,7 @@ class RTE
     
     double pi;
     complex<double>  zero,half,one,two,four,six,i_unit;
-    complex<double> t_RTE;
+    
 
     // little helper functions for stuff
 

@@ -55,19 +55,11 @@ void RTE::RunSetup(){
 	// wavefct = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
 
 	// the time-step sizes for Runge-Kutta integration for both schemes as complex valued variables
-	t_RTE = complex<double>(opt.RTE_step,0.0);
+	// t_RTE = complex<double>(opt.RTE_step,0.0);
 
 	// Maximum x and y ranges of the grid after expanding for the full runtime.
 	// Needed to compute the growing plots.
-	ranges.resize(2);
-	complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
-	ranges[0] = opt.min_x * real(lambda_x(tmp3));
-	ranges[1] = opt.min_y * real(lambda_y(tmp3));
 
-	if(ranges[0] > ranges[1])
-		ranges[1] = ranges[0];
-	else if(ranges[1] > ranges[0])
-		ranges[0] = ranges[1];
 
 	// Grid Spacing variables
 	h_x = complex<double>((2.*opt.min_x/opt.grid[1]),0.0);
@@ -98,15 +90,55 @@ void RTE::RunSetup(){
    	laplacian_coefficient_y = VectorXcd::Zero(coefSize);
    	gradient_coefficient_x = VectorXcd::Zero(coefSize);
    	gradient_coefficient_y = VectorXcd::Zero(coefSize);
+   	t_RTE = VectorXcd::Zero(opt.n_it_RTE - meta.steps + 1);
 
-   	complex<double> tmp;  	
+   	complex<double> tmp;
+   	int l = 0;
+   	double adaptiveStep = opt.RTE_step;
+   	double bigger;
+   	bool waitingFor1 = true;
+   	bool waitingFor2 = true;
+   	complex<double> l_x, l_y;  	
    	for(int t = 0; t < coefSize; t++){
-   		tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t,0.0) * t_RTE );   	
-   		laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * lambda_x(tmp) * lambda_x(tmp) );
-   		laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * lambda_y(tmp) * lambda_y(tmp) );
-   		gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * lambda_x(tmp));
-   		gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * lambda_y(tmp));
+   		l_x = lambda_x(tmp);
+   		l_y = lambda_y(tmp);
+
+   		if(t % 2 == 0){
+   			bigger = (l_x.real() >= l_y.real()) ? l_x.real() : l_y.real();
+   			if(bigger >= 1.5){
+   				if(waitingFor1 == true){
+   					adaptiveStep = opt.RTE_step / 2.0;
+   					waitingFor1 = false;
+   				}
+   			}else if(bigger >= 2.0){
+   				if(waitingFor2 == true){
+   					adaptiveStep = opt.RTE_step / 10.0;
+   					waitingFor2 = false;
+   				}
+   			}   			
+   			t_RTE(l) = adaptiveStep;
+   			l++;
+   		}
+   		
+   		tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t * adaptiveStep,0.0) );   	
+   		laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * l_x * l_x );
+   		laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * l_y * l_y );
+   		gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * l_x);
+   		gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * l_y);	   		
    	}
+
+   	ranges.resize(2);
+	// complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
+	ranges[0] = opt.min_x * real(lambda_x(tmp));
+	ranges[1] = opt.min_y * real(lambda_y(tmp));
+	cout << "Max ExpFactor: " << real(lambda_x(tmp)) << "  " << real(lambda_y(tmp)) << endl;
+
+	if(ranges[0] > ranges[1])
+		ranges[1] = ranges[0];
+	else if(ranges[1] > ranges[0])
+		ranges[0] = ranges[1];
+	cout << "Max Ranges: " << ranges[0] << "  " << ranges[1] << endl;
+
 
    	double x0 = opt.grid[1] * 0.20 / 2;
    	double y0 = opt.grid[2] * 0.20 / 2;
@@ -193,9 +225,9 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 void RTE::plot(const string name){
 
 	if(opt.runmode.compare(1,1,"1") == 0){
-		complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
-		Xexpanding = x_expand(tmp);
-		Yexpanding = y_expand(tmp);
+		// complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
+		Xexpanding = x_expand(opt.t_abs);
+		Yexpanding = y_expand(opt.t_abs);
 		plotDataToPngEigenExpanding(name, wavefctVec[0],ranges,Xexpanding,Yexpanding,opt);
 	}
 	if(opt.runmode.compare(1,1,"0") == 0){
@@ -295,7 +327,8 @@ void RTE::rteToTime(string runName)
 
 				// wavefctcp = wavefctVec[i];				
 		
-				ComputeDeltaPsi(wavefctVec[i],wavefctcp,lambdaSteps);
+				ComputeDeltaPsi(wavefctVec[i],wavefctcp,lambdaSteps,t_RTE(m-1));
+				opt.t_abs += t_RTE(m-1);
 
 				// wavefctcp = (one/six) * ( k0 + two * k1 + two * k2 + k3);
 
@@ -308,21 +341,22 @@ void RTE::rteToTime(string runName)
    				if(omp_get_thread_num() == slowestthread){
    					int counter_max = snapshot_times[j] - previousTimes;
    					cli(stepname,slowestthread,threadinfo,stateOfLoops,counter_max,start);
-   				}	
+   				}
+   					
 			}	
 		}
 		keeperOfTime.lambdaSteps += 2 * (snapshot_times[j] - previousTimes);
 		keeperOfTime.absoluteSteps = snapshot_times[j] - keeperOfTime.initialSteps;	
 		previousTimes = snapshot_times[j];
 
-		complex<double> tmp = complex<double>(snapshot_times[j] * opt.RTE_step,0.0);
-		opt.t_abs = tmp;  
+		// complex<double> tmp = complex<double>(snapshot_times[j] * opt.RTE_step,0.0);
+		// opt.t_abs = tmp;  
 
 		opt.stateInformation.resize(2);
 		if(opt.runmode.compare(1,1,"1") == 0){
-			opt.stateInformation[0] = real(lambda_x(tmp)); // needed for expansion and the computing of the gradient etc.
-			opt.stateInformation[1] = real(lambda_y(tmp));
-			cout << opt.stateInformation[0] << "  " << opt.stateInformation[1] << endl;
+			opt.stateInformation[0] = real(lambda_x(opt.t_abs)); // needed for expansion and the computing of the gradient etc.
+			opt.stateInformation[1] = real(lambda_y(opt.t_abs));
+			cout << opt.stateInformation[0] << "  " << opt.stateInformation[1] << "  " << opt.t_abs << endl;
 		}
 		if(opt.runmode.compare(1,1,"0") == 0){
 			opt.stateInformation[0] = 1.0;
@@ -332,7 +366,7 @@ void RTE::rteToTime(string runName)
 		vector<double> coord(2);
 		coord[0] = opt.min_x * opt.stateInformation[0];
 		coord[1] = opt.min_y * opt.stateInformation[1];
-		pData->update(real(tmp),snapshot_times[j],coord);
+		pData->update(real(opt.t_abs),snapshot_times[j],coord);
 		
 		try{
 			Eval results;	
@@ -361,7 +395,7 @@ void RTE::rteToTime(string runName)
 	}
 }
 
-void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
+void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,complex<double> delta_T){
 
 	int32_t threads = 16;
 	int32_t subx = opt.grid[1]-2;
@@ -391,7 +425,7 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
-			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * t_RTE * k0.block(i * partx,0,partx,opt.grid[2]);
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * delta_T * k0.block(i * partx,0,partx,opt.grid[2]);
 		}
 
 		#pragma omp barrier
@@ -406,7 +440,7 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 		}
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
-			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * t_RTE * k1.block(i * partx,0,partx,opt.grid[2]);
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + half * delta_T * k1.block(i * partx,0,partx,opt.grid[2]);
 		}
 	
 		#pragma omp for
@@ -415,7 +449,7 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 		}
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
-			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + t_RTE * k2.block(i * partx,0,partx,opt.grid[2]);
+			wavefctcp.block(i * partx,0,partx,opt.grid[2]) = wavefct.block(i * partx,0,partx,opt.grid[2]) + delta_T * k2.block(i * partx,0,partx,opt.grid[2]);
 		}	
 		
 		#pragma omp barrier
@@ -442,7 +476,7 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t){
 
 		#pragma omp for
 		for(int i = 0; i < threads; ++i){
-			wavefct.block(i * partx,0,partx,opt.grid[2]) += t_RTE * wavefctcp.block(i * partx,0,partx,opt.grid[2]);
+			wavefct.block(i * partx,0,partx,opt.grid[2]) += delta_T * wavefctcp.block(i * partx,0,partx,opt.grid[2]);
 		}
 	}	
 
