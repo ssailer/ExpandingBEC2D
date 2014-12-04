@@ -10,7 +10,7 @@ from scipy.cluster.vq import kmeans, kmeans2, whiten
 def main():
 	Ag = 150.0 / 2048.0
 	m = 87 * 1.66 * 1.0e-27;
-	hbar = 1.054 * 10e-22;	
+	hbar = 1.054 * 1.0e-22;	
 	OmegaG = hbar / ( m * Ag * Ag);
 	datafile = 'stuff.dat'
 
@@ -19,21 +19,40 @@ def main():
 	from_data = pd.read_csv(datafile,header=0,names=cols)
 
 	dataset1 = from_data['Timestep']
+
 	dataset2 = from_data['Rx']
 	dataset3 = from_data['Ry']
 	# dataset4 = from_data['D_Ratio']
 	# dataset5 = from_data['D_max_Angle']
-	dataset1 = dataset1 / OmegaG / 3.2
+	dataset1 = dataset1 * ( 0.0340119 / OmegaG )
+	dataset1 *= 1000.0
 	dataset2 = dataset2 * Ag
 	dataset3 = dataset3 * Ag
+	value = 0;
+	timeline = []
+	for i in range(0,13):
+		value +=  1000.0 * 5000 * 0.0340119 / OmegaG
+		timeline.append(value)
+	for i in range(13,26):
+		value +=  1000.0 * 5000 * 0.0340119 / OmegaG / 2.0
+		timeline.append(value)
+	for i in range(26,len(dataset1)):
+		value +=  1000.0 * 5000 * 0.0340119 / OmegaG / 10.0
+		timeline.append(value)
+	print dataset1
+	print timeline
 
-	datafile2 = 'ode_11_Rx_Ry.dat'
+	datafile2 = 'ode_30_Rx_Ry.dat'
 	# datafile3 = 'ode_1000_Rx_Ry.dat'
 
 	from_data2 = pd.read_csv(datafile2,header=1,names=cols)
 	data1 = from_data2['Timestep']
+	data1 *= 1000.0
 	data2 = from_data2['Rx']
 	data3 = from_data2['Ry']
+
+	ratio1 = dataset2 / dataset3
+	ratio2 = data2 / data3
 
 
 	# from_data3 = pd.read_csv(datafile3,header=1,names=cols)
@@ -72,27 +91,32 @@ def main():
 	
 	
 	fig = plt.figure()
-	ax1 = fig.add_subplot(211)
-	ax1.plot(dataset1,dataset2,'ro',color='g',label='Rx')
-	ax1.plot(dataset1,dataset3,'ro',color='b',label='Ry')
-	ax1.plot(data1,data2,color='y',label='Rx_sim')
-	ax1.plot(data1,data3,color='r',label='Ry_sim')
-	# ax1.plot(dataa1,dataa2,color='y',label='Rx_sim')
-	# ax1.plot(dataa1,dataa3,color='r',label='Ry_sim')
-	# ax1.plot(data1,data2,'ro',color='y',label='Rx_sim')
-	# ax1.plot(data1,data3,'ro',color='r',label='Ry_sim')
-	# ratioPlot2 = ax1.plot(dataset1,dataset3,'ro')
-	# ax1.set_xlim([0.01,4])
-	# ax1.set_ylim([0.0001,10000000])
-	# ax1.set_xscale('log')
-	# ax1.set_yscale('log')
-	plt.ylabel('Radii')
-	plt.xlabel('Time')
-	plt.legend(loc='upper left')
 
-	# ax1 = fig.add_subplot(212)
+	ax1 = fig.add_subplot(311)
 	# ax1.plot(dataset1,dataset2,'ro',color='g',label='Rx')
 	# ax1.plot(dataset1,dataset3,'ro',color='b',label='Ry')
+	ax1.plot(timeline,dataset2,'.',color='b',label='Rx GPE')
+	ax1.plot(data1,data2,color='r',label='Rx Hydro')
+
+	plt.ylabel('Radii in micrometer')
+	plt.xlabel('Time in ms')
+	plt.legend(loc='upper left')
+
+	ax1 = fig.add_subplot(312)	
+
+	ax1.plot(dataset1,dataset3,'.',color='b',label='Ry GPE')
+	ax1.plot(data1,data3,color='r',label='Ry Hydro')
+	plt.ylabel('Radii in micrometer')
+	plt.xlabel('Time in ms')
+	plt.legend(loc='upper left')
+
+	ax1 = fig.add_subplot(313)
+
+	ax1.plot(dataset1,ratio1,'.',color='b',label='Rx/Ry GPE')
+	ax1.plot(data1,ratio2,color='r',label='R Hydro')
+	plt.ylabel('Aspect Ratio R_x / R_y in micrometer')
+	plt.xlabel('Time in ms')
+	plt.legend(loc='upper right')	
 
 	# ratioPlot2 = ax1.plot(dataset1,dataset3,'ro')
 	# ax1.set_xlim([0.01,4])
@@ -147,7 +171,7 @@ def main():
 	# # plt.xlabel('radial k-Vector')
 	# 
 	
-	plt.savefig('Rx_Ry_Nv.png')
+	plt.savefig('Rx_Ry_Nv.pdf')
 	plt.show()
 
 	# plt.plot(dataset1,dataset2)

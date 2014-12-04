@@ -314,10 +314,10 @@ void Eval::evaluateData(){
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
 	datafile << std::left << std::setw(15) << snapshot_time
+					 << std::setw(15) << opt.t_abs.real()
 					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
 					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
-					 << std::setw(15) << opt.t_abs
- 					 << std::setw(15) << totalResult.r_max
+					 << std::setw(15) << totalResult.r_max
  					 << std::setw(15) << totalResult.r_min
  					 << std::setw(15) << totalResult.Rx
  					 << std::setw(15) << totalResult.Ry

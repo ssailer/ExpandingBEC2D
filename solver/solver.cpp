@@ -100,7 +100,7 @@ int main( int argc, char** argv)
     cout << "beta " << beta << endl;
             // initial
     dt = 1.0e-7;             // step size for integration
-    tmax = 6.0e-2;          // integrate from ti till tmax
+    tmax = 100.0e-3;          // integrate from ti till tmax
 
     cout << "xi = " << xi << endl;
     X.push_back(r[0]);
