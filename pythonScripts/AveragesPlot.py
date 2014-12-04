@@ -8,28 +8,42 @@ from scipy.cluster.vq import kmeans, kmeans2, whiten
 
 
 def main():
+	Ag = 150.0 / 2048.0
+	m = 87 * 1.66 * 1.0e-27;
+	hbar = 1.054 * 10e-22;	
+	OmegaG = hbar / ( m * Ag * Ag);
+	datafile = 'stuff.dat'
 
-	datafile = 'linma1_run07_4x12samples_no_vortices/Combined_Observables.dat'
+	cols = ["Timestep","Rx","Ry"]
 
-	cols = ["Timestep","X_max","Y_max","D_max","D_min","D_Ratio","D_max_Angle","D_min_Angle","Ratio","RatioAngle","N","V","Density","E_kin"]
-
-	from_data = pd.read_csv(datafile,
-		header=0,
-		names=cols)
+	from_data = pd.read_csv(datafile,header=0,names=cols)
 
 	dataset1 = from_data['Timestep']
-	dataset2 = from_data['Ratio']
-	dataset3 = from_data['RatioAngle']
-	dataset4 = from_data['D_Ratio']
-	dataset5 = from_data['D_max_Angle']
+	dataset2 = from_data['Rx']
+	dataset3 = from_data['Ry']
+	# dataset4 = from_data['D_Ratio']
+	# dataset5 = from_data['D_max_Angle']
+	dataset1 = dataset1 / OmegaG / 3.2
+	dataset2 = dataset2 * Ag
+	dataset3 = dataset3 * Ag
 
-	for i in range(0,len(dataset3)):
-		if dataset2[i] < 1:
-			dataset2[i] = 1/dataset2[i]
+	datafile2 = 'ode_11_Rx_Ry.dat'
+	# datafile3 = 'ode_1000_Rx_Ry.dat'
+
+	from_data2 = pd.read_csv(datafile2,header=1,names=cols)
+	data1 = from_data2['Timestep']
+	data2 = from_data2['Rx']
+	data3 = from_data2['Ry']
 
 
+	# from_data3 = pd.read_csv(datafile3,header=1,names=cols)
+	# dataa1 = from_data3['Timestep']
+	# dataa2 = from_data3['Rx']
+	# dataa3 = from_data3['Ry']
 
-
+	# for i in range(0,len(dataset3)):
+	# 	if dataset2[i] < 1:
+	# 		dataset2[i] = 1/dataset2[i]
 
 	# hdf5_file_name = 'test06/runData/Expanding_RunEval.h5'
 	# group_name = '/800/Observables'
@@ -58,29 +72,51 @@ def main():
 	
 	
 	fig = plt.figure()
-	ax1 = fig.add_subplot(221)
-	ratioPlot = ax1.plot(dataset1,dataset2,'ro')
+	ax1 = fig.add_subplot(211)
+	ax1.plot(dataset1,dataset2,'ro',color='g',label='Rx')
+	ax1.plot(dataset1,dataset3,'ro',color='b',label='Ry')
+	ax1.plot(data1,data2,color='y',label='Rx_sim')
+	ax1.plot(data1,data3,color='r',label='Ry_sim')
+	# ax1.plot(dataa1,dataa2,color='y',label='Rx_sim')
+	# ax1.plot(dataa1,dataa3,color='r',label='Ry_sim')
+	# ax1.plot(data1,data2,'ro',color='y',label='Rx_sim')
+	# ax1.plot(data1,data3,'ro',color='r',label='Ry_sim')
+	# ratioPlot2 = ax1.plot(dataset1,dataset3,'ro')
 	# ax1.set_xlim([0.01,4])
 	# ax1.set_ylim([0.0001,10000000])
 	# ax1.set_xscale('log')
 	# ax1.set_yscale('log')
-	plt.ylabel('Ratio')
-	plt.xlabel('Timestep')
+	plt.ylabel('Radii')
+	plt.xlabel('Time')
+	plt.legend(loc='upper left')
 
-	ax2 = fig.add_subplot(222)
-	anglePlot = ax2.plot(dataset1,dataset3,'ro')
-	plt.ylabel('Angle')
-	plt.xlabel('Timestep')
+	# ax1 = fig.add_subplot(212)
+	# ax1.plot(dataset1,dataset2,'ro',color='g',label='Rx')
+	# ax1.plot(dataset1,dataset3,'ro',color='b',label='Ry')
 
-	ax3 = fig.add_subplot(223)
-	anglePlot = ax3.plot(dataset1,dataset4,'ro')
-	plt.ylabel('D_Ratio')
-	plt.xlabel('Timestep')
+	# ratioPlot2 = ax1.plot(dataset1,dataset3,'ro')
+	# ax1.set_xlim([0.01,4])
+	# ax1.set_ylim([0.0001,10000000])
+	# ax1.set_xscale('log')
+	# ax1.set_yscale('log')
+	# plt.ylabel('Rx')
+	# plt.xlabel('Timestep')
+	# plt.legend(loc='upper left')
 
-	ax4 = fig.add_subplot(224)
-	anglePlot = ax4.plot(dataset1,dataset5,'ro')
-	plt.ylabel('D_max_Angle')
-	plt.xlabel('Timestep')
+	# ax2 = fig.add_subplot(212)
+	# anglePlot = 
+	# plt.ylabel('Ry')
+	# plt.xlabel('Timestep')
+
+	# ax3 = fig.add_subplot(223)
+	# anglePlot = ax3.plot(dataset1,dataset4,'ro')
+	# plt.ylabel('D_Ratio')
+	# plt.xlabel('Timestep')
+
+	# ax4 = fig.add_subplot(224)
+	# anglePlot = ax4.plot(dataset1,dataset5,'ro')
+	# plt.ylabel('D_max_Angle')
+	# plt.xlabel('Timestep')
 
 
 	# envelope_plot(dataset1,dataset2,winsize=20,ax=ax2)
@@ -111,7 +147,7 @@ def main():
 	# # plt.xlabel('radial k-Vector')
 	# 
 	
-	plt.savefig('linma1_run06_4x12samples_mixed_vortices/Combined_Plots.png')
+	plt.savefig('Rx_Ry_Nv.png')
 	plt.show()
 
 	# plt.plot(dataset1,dataset2)

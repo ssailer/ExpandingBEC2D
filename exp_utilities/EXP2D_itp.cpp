@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 1000
+#define VORTICES_BUILD_TIME 20000
 #define HBAR 1.05 * 10e-34
 #define M 1.44 * 10e-25
 
@@ -439,7 +439,7 @@ void ITP::propagateToGroundState(string runname)
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
 		double difference = (old_scalefactor - scalefactor);
 		cout << endl << "ITP Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 1.0e-8){
+		if(fabs(difference) <= 1.0e-6){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{

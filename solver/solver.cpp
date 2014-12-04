@@ -49,8 +49,8 @@ double beta;
 double* PchangingValue;
 const double hbar = 1.054e-22;
 const double m = 87 * 1.66e-27;
-const double N = 2.0e5;
-const double g = (hbar * hbar / (m * m)) * sqrt(8.0 * M_PI) * 4 * N / M_PI;
+const double N = 1.0e5;
+const double g = (hbar * hbar / (m * m)) * 0.145384439929 * 4 * N / M_PI;
 
 int main( int argc, char** argv)
 {   
@@ -84,13 +84,13 @@ int main( int argc, char** argv)
 
 
 /* output: file and formats */
-    // ofstream file;
-    // string name = "ode_" + to_string(Nv) + "_" + to_string(index) + ".dat";
-    // file.open (name);
-    // file.precision(20);
-    // file.setf(ios::fixed | ios::showpoint);
-    // cout.precision(20);
-    // cout.setf(ios::fixed | ios::showpoint);
+    ofstream file;
+    string name = "ode_" + to_string(Nv) + "_Rx_Ry.dat";
+    file.open (name);
+    file.precision(20);
+    file.setf(ios::fixed | ios::showpoint);
+    cout.precision(20);
+    cout.setf(ios::fixed | ios::showpoint);
 
 /* initial information */
     key =  2;             // select a method (key = 0, 1, 2)
@@ -99,8 +99,8 @@ int main( int argc, char** argv)
     beta = 4 * hbar * hbar * Nv * Nv / (m * m);
     cout << "beta " << beta << endl;
             // initial
-    dt = 1.0e-6;             // step size for integration
-    tmax = 1.0e-1;          // integrate from ti till tmax
+    dt = 1.0e-7;             // step size for integration
+    tmax = 6.0e-2;          // integrate from ti till tmax
 
     cout << "xi = " << xi << endl;
     X.push_back(r[0]);
@@ -108,9 +108,9 @@ int main( int argc, char** argv)
 
 /* end of initial information */
 
-    // file << setw(30) << method[key] << endl;
-    // file << setw(12) << "t" << setw(12) <<"x"<< setw(12) << "x'" << endl;
-    // file << setw(12) << ti << setw(12) << xi << setw(12) << vi   << endl;
+    file << setw(30) << method[key] << endl;
+    file << setw(12) << "t" << "," << setw(12) << "Rx"<< "," << setw(12) << "Ry" << endl;
+    
 
 
 /* integration of ODE */
@@ -140,18 +140,35 @@ int main( int argc, char** argv)
         ti = tf;
     }
 
-
-  std::vector<std::pair<double, double> > xy_pts;
-  for(int i = 0; i < T.size(); i++){
-    xy_pts.push_back(std::make_pair(T[i],X[i] / Y[i] ));
+  ti = 0.0;
+  for(int i = 0; i < X.size(); ++i){
+    file << setw(12) << ti << "," << setw(12) << X[i] << setw(12) << "," << Y[i]   << endl;
+    ti += dt;
   }
-  int number = (int)Nv;
-  string name = "aspect_e-5_Nv_" + to_string(number) + ".png";
-  Gnuplot gp;
-  gp << "set term pngcairo\n";
-  gp << "set output \"" + name + "\" \n";
-  gp << "plot '-' with lines\n";
-  gp.send1d(xy_pts);
+
+
+  // std::vector<std::pair<double, double> > xy_pts;
+  // for(int i = 0; i < T.size(); i++){
+  //   xy_pts.push_back(std::make_pair(T[i],X[i]));
+  // }
+  // int number = (int)Nv;
+  // string name = "aspect_Nv_" + to_string(number) + "RX.png";
+  // cout << "Now plotting" << endl;
+  // Gnuplot gp;
+  // gp << "set term pngcairo\n";
+  // gp << "set output \"" + name + "\" \n";
+  // gp << "plot '-' with lines\n";
+  // gp.send1d(xy_pts);
+
+  // for(int i = 0; i < T.size(); i++){
+  //   xy_pts.push_back(std::make_pair(T[i],Y[i]));
+  // }
+  // name = "aspect_Nv_" + to_string(number) + "RY.png";
+  // cout << "Now plotting" << endl;
+  // gp << "set term pngcairo\n";
+  // gp << "set output \"" + name + "\" \n";
+  // gp << "plot '-' with lines\n";
+  // gp.send1d(xy_pts);
 
 
     // system ("pause");

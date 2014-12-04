@@ -409,8 +409,8 @@ void Eval::plotData(){
 	// ranges[1] = opt.min_y * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*tmp3*tmp3));
 	
 
-	string plotname = runname + "-Control-Plot-" + snapShotString + " " + to_string(opt.t_abs.real());
-	string title = "Density " + snapShotString;
+	string plotname = runname + "-Control-Plot-" + snapShotString;
+	string title = "Density " + snapShotString + " " + to_string(opt.t_abs.real());
 	plotDataToPngExpanding(plotname,title,PsiVec[0],opt);
 
 	// if(opt.runmode.compare(1,1,"1") == 0){
@@ -449,8 +449,8 @@ void Eval::plotData(){
 	title = "Angular Density " + snapShotString;
 	plotVector(plotname,title,totalResult.angularDensity,opt);	
 
-	plotname = runname + "-Contour-" + snapShotString+ " " + to_string(opt.t_abs.real());
-	title = "Contour " + snapShotString;
+	plotname = runname + "-Contour-" + snapShotString;
+	title = "Contour " + snapShotString + " " + to_string(opt.t_abs.real());
 	plotContour(plotname,title,PsiVec[0],contour[0],opt);
 
 
@@ -914,7 +914,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	double h[2];
 	double x_max = opt.stateInformation[0] * opt.min_x;
 	double y_max = opt.stateInformation[1] * opt.min_y;
-	double rmax[2];
+	vector<double> rmax(2);
 	rmax[0] = x_max;
 	rmax[1] = y_max;
 	h[0] = h_x;
@@ -1077,7 +1077,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	divisor.setZero();
 	
 	vector<vector<double>> kspace;
-	
+
 	kspace.resize(2);
 	for(int d = 0; d < 2; d++){
 		// set k-space
@@ -1091,12 +1091,12 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 			kspace[d][i] = (M_PI / rmax[d]) * (double)i;
 		}
 		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
-		for(int i = -(opt.grid[d+1]/2)+1; i < 0; i++){
+		for(int i = (opt.grid[d+1]/2)+1; i < opt.grid[d+1]; i++){
 		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
 			// kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
 			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
-			kspace[d][i] = (M_PI / rmax[d]) * (double)i;
+			kspace[d][i] = -(M_PI / rmax[d]) * (double)(opt.grid[d+1] - i);
 		}
 	}
 
@@ -1132,12 +1132,14 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		}
 	}
 	
+	
 	#pragma omp parallel for schedule(guided,1)
 	for(int l = 0; l < obs.number.size(); l++){
 		if(divisor[l] == 0){
 			divisor[l] = 1;
 		}
 	}
+	
 
 	obs.number /= divisor;
 	obs.k /= divisor;	

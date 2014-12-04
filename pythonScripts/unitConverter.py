@@ -189,8 +189,9 @@ def main():
 	
 	
 	Ag = 150.0 / 2048.0
-	print "Rx, Ry", 757.009 * Ag, 566.006 * Ag
+	print "Rx, Ry", 676.007  * Ag, 455.29 * Ag
 	OmegaG = hbar / ( m * Ag * Ag)
+	       
 	
 	cN = N * Ag * Ag
 	omega_x = 20 * 2 * math.pi
