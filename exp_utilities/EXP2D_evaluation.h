@@ -42,6 +42,7 @@ public:
 	void plotData(); // plot Results
 	bool checkResizeCondition();
 	int getVortexNumber();
+	void convertFromDimensionless();
 
 
 	// Observables.h

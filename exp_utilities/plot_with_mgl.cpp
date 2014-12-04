@@ -53,7 +53,7 @@ void plotSpectrum(string name,string title, Observables &ares){
 	gr.SetQuality(3);
 	gr.Title(title.c_str());
 	gr.SetRange('x',1.0e-4,4);
-	gr.SetRange('y',1.0e-10,20);
+	gr.SetRange('y',1.0e-10,100);
 	gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);

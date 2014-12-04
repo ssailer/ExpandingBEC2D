@@ -29,7 +29,19 @@ void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int exte
 			}
 		}
 	}
+	convertFromDimensionless();
 
+}
+
+void Eval::convertFromDimensionless(){
+	opt.min_x *= opt.Ag;
+	opt.min_y *= opt.Ag;
+	opt.t_abs /= opt.OmegaG;
+	opt.t_abs *= 1000.0; // conversion to ms
+	opt.omega_x /= 2.0 * M_PI / opt.OmegaG;
+	opt.omega_y /= 2.0 * M_PI / opt.OmegaG;
+	opt.dispersion_x /= 2.0 * M_PI / opt.OmegaG;
+	opt.dispersion_y /= 2.0 * M_PI / opt.OmegaG;
 }
 
 void Eval::saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber){
@@ -60,7 +72,8 @@ void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapsh
 		for(int j = 0; j < opt.grid[2]; j++){		
 			PsiVec[0](0,i,j,0) = wavefct(i,j);
 		}
-	}		
+	}
+	convertFromDimensionless();		
 }
 
 void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval){
@@ -278,6 +291,7 @@ void Eval::evaluateData(){
   		ofstream datafile;
   		datafile.open(filename.c_str(), ios::out | ios::app);
   		datafile << std::left << std::setw(15) << "Timestep"
+  						 << std::setw(15) << "Time"
   						 << std::setw(15) << "X_max"
   						 << std::setw(15) << "Y_max"
   						 << std::setw(15) << "D_max"
@@ -302,6 +316,7 @@ void Eval::evaluateData(){
 	datafile << std::left << std::setw(15) << snapshot_time
 					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
 					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
+					 << std::setw(15) << opt.t_abs
  					 << std::setw(15) << totalResult.r_max
  					 << std::setw(15) << totalResult.r_min
  					 << std::setw(15) << totalResult.Rx
@@ -375,26 +390,26 @@ void Eval::plotData(){
 	
 	runname = dirname + "/" + runname;
 
-	vector<double> Xexpanding(opt.grid[1]);
-	vector<double> Yexpanding(opt.grid[2]);
-	double b_x = opt.min_x * opt.stateInformation[0];
-	double b_y = opt.min_y * opt.stateInformation[1];
-	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
-	for(int i = 0; i < opt.grid[1]; i++){
-		Xexpanding[i] = -b_x + h_x * i;
-	}
-	for(int i = 0; i < opt.grid[2]; i++){
-		Yexpanding[i] = -b_y + h_y * i;
-	}
+	// vector<double> Xexpanding(opt.grid[1]);
+	// vector<double> Yexpanding(opt.grid[2]);
+	// double b_x = opt.min_x * opt.stateInformation[0];
+	// double b_y = opt.min_y * opt.stateInformation[1];
+	// double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	// double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	// for(int i = 0; i < opt.grid[1]; i++){
+	// 	Xexpanding[i] = -b_x + h_x * i;
+	// }
+	// for(int i = 0; i < opt.grid[2]; i++){
+	// 	Yexpanding[i] = -b_y + h_y * i;
+	// }
 
-	vector<double> ranges(2);
-	complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
-	ranges[0] = opt.min_x * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*tmp3*tmp3));
-	ranges[1] = opt.min_y * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*tmp3*tmp3));
+	// vector<double> ranges(2);
+	// complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
+	// ranges[0] = opt.min_x * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*tmp3*tmp3));
+	// ranges[1] = opt.min_y * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*tmp3*tmp3));
 	
 
-	string plotname = runname + "-Control-Plot-" + snapShotString;
+	string plotname = runname + "-Control-Plot-" + snapShotString + " " + to_string(opt.t_abs.real());
 	string title = "Density " + snapShotString;
 	plotDataToPngExpanding(plotname,title,PsiVec[0],opt);
 
@@ -434,7 +449,7 @@ void Eval::plotData(){
 	title = "Angular Density " + snapShotString;
 	plotVector(plotname,title,totalResult.angularDensity,opt);	
 
-	plotname = runname + "-Contour-" + snapShotString;
+	plotname = runname + "-Contour-" + snapShotString+ " " + to_string(opt.t_abs.real());
 	title = "Contour " + snapShotString;
 	plotContour(plotname,title,PsiVec[0],contour[0],opt);
 
@@ -718,7 +733,7 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 
 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
-	double threshold = opt.N * 0.01 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
+	double threshold = opt.N * 0.001 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
 
 	// RealGrid densityLocationMap = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
@@ -899,6 +914,9 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	double h[2];
 	double x_max = opt.stateInformation[0] * opt.min_x;
 	double y_max = opt.stateInformation[1] * opt.min_y;
+	double rmax[2];
+	rmax[0] = x_max;
+	rmax[1] = y_max;
 	h[0] = h_x;
 	h[1] = h_y; 
 	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
@@ -1065,20 +1083,20 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 		// set k-space
 		kspace[d].resize(opt.grid[d+1]);
 		// for (int i=0; i<opt.grid[d+1]/2; i++){
-		for(int i = 0; i < opt.grid[d+1]/2; i++){
+		for(int i = 0; i <= opt.grid[d+1]/2; i++){
 		// for (int32_t i = 0; i < kspace[d].size()/2; i++){
-			kspace[d][i] = opt.klength[d]/**opt.stateInformation[0]*/*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]/**opt.stateInformation[0]*/*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
 			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)i) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
-			// kspace[d][i] = opt.klength[d] * M_PI / ( (double)(opt.grid[d+1]/2 - i) * h[d] );
+			kspace[d][i] = (M_PI / rmax[d]) * (double)i;
 		}
 		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
-		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
+		for(int i = -(opt.grid[d+1]/2)+1; i < 0; i++){
 		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
-			kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
+			// kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
 			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
-			// kspace[d][i] = - opt.klength[d] * M_PI / ( (double)(i - opt.grid[d+1]/2 + 1) * h[d]);
+			kspace[d][i] = (M_PI / rmax[d]) * (double)i;
 		}
 	}
 

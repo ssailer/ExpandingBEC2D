@@ -40,6 +40,8 @@ typedef struct Options {
     int vortexnumber;
     int vortexspacing;
     double potFactor;
+    double Ag;
+    double OmegaG;
     
     string runmode; // Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
                      // second char determines if expanding coordinates are used or not
@@ -48,7 +50,7 @@ typedef struct Options {
     string workingdirectory;   // remove it from here, only needed in the program itself
     bool initialRun;
 
-    Options () : N(100), stateInformation(2), t_abs(0,0), snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true) {}
+    Options () : N(100000), stateInformation(2), t_abs(0,0), snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true) {}
     
 } Options;
 

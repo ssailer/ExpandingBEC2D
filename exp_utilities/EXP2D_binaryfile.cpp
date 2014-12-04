@@ -168,7 +168,8 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
 
   if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
 	hid_t    h5a_options, dataspace;
-	double tmpOpt1[25];
+
+	double tmpOpt1[30];
 
 	tmpOpt1[0] = options.N;
 	for(int i= 0; i < 3; i++)
@@ -176,28 +177,34 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
 
 	 tmpOpt1[4] = options.stateInformation[0];
 	 tmpOpt1[5] = options.stateInformation[1];
-	 tmpOpt1[6] = options.omega_x.real();
-	 tmpOpt1[7] = options.omega_y.real();
-	 tmpOpt1[8] = options.dispersion_x.real();
-	 tmpOpt1[9] = options.dispersion_y.real();
-	 tmpOpt1[10] = options.min_x;
-	 tmpOpt1[11] = options.min_y;
-	 tmpOpt1[12] = options.t_abs.real();
-	 tmpOpt1[13] = options.exp_factor.real();
-	 tmpOpt1[14] = options.g;
-	 tmpOpt1[15] = options.ITP_step;
-	 tmpOpt1[16] = options.RTE_step;
+	 tmpOpt1[6] = options.stateInformation[2];
+	 tmpOpt1[7] = options.omega_x.real();
+	 tmpOpt1[8] = options.omega_y.real();
+	 tmpOpt1[9] = options.omega_z.real();
+	 tmpOpt1[10] = options.dispersion_x.real();
+	 tmpOpt1[11] = options.dispersion_y.real();
+	 tmpOpt1[12] = options.min_x;
+	 tmpOpt1[13] = options.min_y;
+	 tmpOpt1[14] = options.min_z;
+	 tmpOpt1[15] = options.t_abs.real();
+	 tmpOpt1[16] = options.exp_factor.real();
+	 tmpOpt1[17] = options.g;
+	 tmpOpt1[18] = options.ITP_step;
+	 tmpOpt1[19] = options.RTE_step;
+
 
 	for(int i = 0; i<4;i++)
-	  tmpOpt1[i+17] = options.grid[i];
+	  tmpOpt1[i+20] = options.grid[i];
 
-	tmpOpt1[21] = options.potFactor;
-	tmpOpt1[22] = options.samplesize;
-	tmpOpt1[23] = options.vortexnumber;
-	tmpOpt1[24] = options.vortexspacing;  
+	tmpOpt1[24] = options.potFactor;
+	tmpOpt1[25] = options.samplesize;
+	tmpOpt1[26] = options.vortexnumber;
+	tmpOpt1[27] = options.vortexspacing;
+	tmpOpt1[28] = options.Ag;
+	tmpOpt1[29] = options.OmegaG;    
 
 	//copy options to file
-	hsize_t dimsf[1] = {25};
+	hsize_t dimsf[1] = {30};
 	dataspace = H5Screate_simple(1, dimsf, NULL);
 
 	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
@@ -266,7 +273,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, vector<Com
 
   if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
 	hid_t    h5a_options, dataspace;
-	double tmpOpt1[28];
+	double tmpOpt1[30];
 
 	tmpOpt1[0] = options.N;
 	for(int i= 0; i < 3; i++)
@@ -289,16 +296,19 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, vector<Com
 	 tmpOpt1[18] = options.ITP_step;
 	 tmpOpt1[19] = options.RTE_step;
 
+
 	for(int i = 0; i<4;i++)
 	  tmpOpt1[i+20] = options.grid[i];
 
 	tmpOpt1[24] = options.potFactor;
 	tmpOpt1[25] = options.samplesize;
 	tmpOpt1[26] = options.vortexnumber;
-	tmpOpt1[27] = options.vortexspacing;  
+	tmpOpt1[27] = options.vortexspacing;
+	tmpOpt1[28] = options.Ag;
+	tmpOpt1[29] = options.OmegaG;    
 
 	//copy options to file
-	hsize_t dimsf[1] = {28};
+	hsize_t dimsf[1] = {30};
 	dataspace = H5Screate_simple(1, dimsf, NULL);
 
 	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
@@ -336,36 +346,42 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
   if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){      
 	hid_t    h5a_options, dataspace_opt;
-	double tmpOpt1[25];
+	double tmpOpt1[30];
 
 	tmpOpt1[0] = options.N;
 	for(int i= 0; i < 3; i++)
 	  tmpOpt1[i+1] = options.klength[i];
 
-	tmpOpt1[4] = options.stateInformation[0];
-	tmpOpt1[5] = options.stateInformation[1];
-	tmpOpt1[6] = options.omega_x.real();
-	tmpOpt1[7] = options.omega_y.real();
-	tmpOpt1[8] = options.dispersion_x.real();
-	tmpOpt1[9] = options.dispersion_y.real();
-	tmpOpt1[10] = options.min_x;
-	tmpOpt1[11] = options.min_y;
-	tmpOpt1[12] = options.t_abs.real();
-	tmpOpt1[13] = options.exp_factor.real();
-	tmpOpt1[14] = options.g;
-	tmpOpt1[15] = options.ITP_step;
-	tmpOpt1[16] = options.RTE_step;
+	 tmpOpt1[4] = options.stateInformation[0];
+	 tmpOpt1[5] = options.stateInformation[1];
+	 tmpOpt1[6] = options.stateInformation[2];
+	 tmpOpt1[7] = options.omega_x.real();
+	 tmpOpt1[8] = options.omega_y.real();
+	 tmpOpt1[9] = options.omega_z.real();
+	 tmpOpt1[10] = options.dispersion_x.real();
+	 tmpOpt1[11] = options.dispersion_y.real();
+	 tmpOpt1[12] = options.min_x;
+	 tmpOpt1[13] = options.min_y;
+	 tmpOpt1[14] = options.min_z;
+	 tmpOpt1[15] = options.t_abs.real();
+	 tmpOpt1[16] = options.exp_factor.real();
+	 tmpOpt1[17] = options.g;
+	 tmpOpt1[18] = options.ITP_step;
+	 tmpOpt1[19] = options.RTE_step;
+
 
 	for(int i = 0; i<4;i++)
-	  tmpOpt1[i+17] = options.grid[i];
+	  tmpOpt1[i+20] = options.grid[i];
 
-	tmpOpt1[21] = options.potFactor;
-	tmpOpt1[22] = options.samplesize;
-	tmpOpt1[23] = options.vortexnumber; 
-	tmpOpt1[24] = options.vortexspacing; 
+	tmpOpt1[24] = options.potFactor;
+	tmpOpt1[25] = options.samplesize;
+	tmpOpt1[26] = options.vortexnumber;
+	tmpOpt1[27] = options.vortexspacing;
+	tmpOpt1[28] = options.Ag;
+	tmpOpt1[29] = options.OmegaG;    
 
-	  //copy options to file
-	hsize_t dimsf[1] = {25};
+	//copy options to file
+	hsize_t dimsf[1] = {30};
 	dataspace_opt = H5Screate_simple(1, dimsf, NULL);
 
 	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
@@ -684,37 +700,41 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 	hid_t h5a_options;
 	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
 
-	double tmpOpt1[25];
+	double tmpOpt1[30];
 
 	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
 
 	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
 	options.N = tmpOpt1[0];
 	for(int i= 0; i < 3; i++){
-		options.klength[i] = tmpOpt1[i+1];
+	 options.klength[i] = tmpOpt1[i+1];
 	}
 	options.stateInformation[0] = tmpOpt1[4];
 	options.stateInformation[1] = tmpOpt1[5];
-	options.omega_x = complex<double>(tmpOpt1[6],0.0);
-	options.omega_y = complex<double>(tmpOpt1[7],0.0);
-	options.dispersion_x = complex<double>(tmpOpt1[8],0.0);
-	options.dispersion_x = complex<double>(tmpOpt1[9],0.0);
-	options.min_x = tmpOpt1[10];
-	options.min_y = tmpOpt1[11];
-	options.t_abs = complex<double>(tmpOpt1[12],0.0);
-	options.exp_factor = complex<double>(tmpOpt1[13],0.0);
-	options.g = tmpOpt1[14];
-	options.ITP_step = tmpOpt1[15];
-	options.RTE_step = tmpOpt1[16];
+	options.stateInformation[2] = tmpOpt1[6];
+	options.omega_x = complex<double>(tmpOpt1[7],0.0);
+	options.omega_y = complex<double>(tmpOpt1[8],0.0);
+	options.omega_z = complex<double>(tmpOpt1[9],0.0);
+	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
+	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
+	options.min_x = tmpOpt1[12];
+	options.min_y = tmpOpt1[13];
+	options.min_z = tmpOpt1[14];
+	options.t_abs = complex<double>(tmpOpt1[15],0.0);
+	options.exp_factor = complex<double>(tmpOpt1[16],0.0);
+	options.g = tmpOpt1[17];
+	options.ITP_step = tmpOpt1[18];
+	options.RTE_step = tmpOpt1[19];
 
-	for(int i = 0; i<4;i++){
-	 	options.grid[i] = (uint32_t)tmpOpt1[i+17];
-	}
+	for(int i = 0; i<4;i++)
+	  options.grid[i] = (uint32_t)tmpOpt1[i+20];
 
-	options.potFactor = tmpOpt1[21];
-	options.samplesize = (int)tmpOpt1[22];
-	options.vortexnumber = (int)tmpOpt1[23];
-	options.vortexspacing = (int)tmpOpt1[24];              
+	options.potFactor = tmpOpt1[24];
+	options.samplesize = (int)tmpOpt1[25];
+	options.vortexnumber = (int)tmpOpt1[26];
+	options.vortexspacing = (int)tmpOpt1[27];
+	options.Ag = tmpOpt1[28];
+	options.OmegaG = tmpOpt1[29];              
 
 	H5Aclose(h5a_options);
 
@@ -1033,7 +1053,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 
 	// int sizeOfOptions = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
 
-	double tmpOpt1[25];
+	double tmpOpt1[30];
 
 	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
 
@@ -1044,25 +1064,30 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 	}
 	options.stateInformation[0] = tmpOpt1[4];
 	options.stateInformation[1] = tmpOpt1[5];
-	options.omega_x = complex<double>(tmpOpt1[6],0.0);
-	options.omega_y = complex<double>(tmpOpt1[7],0.0);
-	options.dispersion_x = complex<double>(tmpOpt1[8],0.0);
-	options.dispersion_y = complex<double>(tmpOpt1[9],0.0);
-	options.min_x = tmpOpt1[10];
-	options.min_y = tmpOpt1[11];
-	options.t_abs = complex<double>(tmpOpt1[12],0.0);
-	options.exp_factor = complex<double>(tmpOpt1[13],0.0);
-	options.g = tmpOpt1[14];
-	options.ITP_step = tmpOpt1[15];
-	options.RTE_step = tmpOpt1[16];
+	options.stateInformation[2] = tmpOpt1[6];
+	options.omega_x = complex<double>(tmpOpt1[7],0.0);
+	options.omega_y = complex<double>(tmpOpt1[8],0.0);
+	options.omega_z = complex<double>(tmpOpt1[9],0.0);
+	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
+	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
+	options.min_x = tmpOpt1[12];
+	options.min_y = tmpOpt1[13];
+	options.min_z = tmpOpt1[14];
+	options.t_abs = complex<double>(tmpOpt1[15],0.0);
+	options.exp_factor = complex<double>(tmpOpt1[16],0.0);
+	options.g = tmpOpt1[17];
+	options.ITP_step = tmpOpt1[18];
+	options.RTE_step = tmpOpt1[19];
 
 	for(int i = 0; i<4;i++)
-	  options.grid[i] = (uint32_t)tmpOpt1[i+17];
+	  options.grid[i] = (uint32_t)tmpOpt1[i+20];
 
-	options.potFactor = tmpOpt1[21];
-	options.samplesize = (int)tmpOpt1[22];
-	options.vortexnumber = (int)tmpOpt1[23];
-	options.vortexspacing = (int)tmpOpt1[24];              
+	options.potFactor = tmpOpt1[24];
+	options.samplesize = (int)tmpOpt1[25];
+	options.vortexnumber = (int)tmpOpt1[26];
+	options.vortexspacing = (int)tmpOpt1[27];
+	options.Ag = tmpOpt1[28];
+	options.OmegaG = tmpOpt1[29];              
 
 	H5Aclose(h5a_options);
 
@@ -1139,7 +1164,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Comple
 
 	// int sizeOfOptions = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
 
-	double tmpOpt1[28];
+	double tmpOpt1[30];
 
 	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
 
@@ -1171,7 +1196,9 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Comple
 	options.potFactor = tmpOpt1[24];
 	options.samplesize = (int)tmpOpt1[25];
 	options.vortexnumber = (int)tmpOpt1[26];
-	options.vortexspacing = (int)tmpOpt1[27];              
+	options.vortexspacing = (int)tmpOpt1[27];
+	options.Ag = tmpOpt1[28];
+	options.OmegaG = tmpOpt1[29];              
 
 	H5Aclose(h5a_options);
 

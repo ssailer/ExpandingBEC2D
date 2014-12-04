@@ -397,17 +397,17 @@ inline void StartUp::convertToDimensionless(){
 
 	double m = 87 * 1.66 * 1.0e-27;
 	double hbar = 1.054 * 10e-22;	
-	double Ag = 2 * opt.min_x / opt.grid[1];
-	double OmegaG = hbar / ( m * Ag * Ag);
-	// opt.N *= Ag * Ag;
-	opt.min_x /= Ag;
-	opt.min_y /= Ag;
-	opt.ITP_step *= OmegaG;
-	opt.RTE_step *= OmegaG;
-	opt.omega_x *= 2.0 * M_PI / OmegaG;
-	opt.omega_y *= 2.0 * M_PI / OmegaG;
-	opt.dispersion_x *= 2.0 * M_PI / OmegaG;
-	opt.dispersion_y *= 2.0 * M_PI / OmegaG;
+	opt.Ag = 2 * opt.min_x / opt.grid[1];
+	opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
+
+	opt.min_x /= opt.Ag;
+	opt.min_y /= opt.Ag;
+	opt.ITP_step *= opt.OmegaG;
+	opt.RTE_step *= opt.OmegaG;
+	opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
+	opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
+	opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
+	opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
 }
 
 inline void StartUp::convertFromDimensionless(){

@@ -77,11 +77,11 @@ try{
 	delete bF;
 
 	
-	//string startName = "StartGrid_2048_2048_NV.h5";
-	//	binaryFile* startFile = new binaryFile(startName,binaryFile::in);
-	//	startFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-	//	delete startFile;
-	//	tmpOpt = startUp.getOptions();
+		// string startName = "StartGrid_2048_2048_NV_groundstate.h5";
+		// binaryFile* startFile = new binaryFile(startName,binaryFile::in);
+		// startFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+		// delete startFile;
+		// tmpOpt = startUp.getOptions();
 
 		int vnumber = 0;
 		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
