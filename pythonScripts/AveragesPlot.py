@@ -8,9 +8,9 @@ from scipy.cluster.vq import kmeans, kmeans2, whiten
 
 
 def main():
-	Ag = 150.0 / 2048.0
-	m = 87 * 1.66 * 1.0e-27;
-	hbar = 1.054 * 1.0e-22;	
+	Ag = 300.0 / 2048.0
+	m = 87.0 * 1.66e-27;
+	hbar = 1.054e-22;	
 	OmegaG = hbar / ( m * Ag * Ag);
 	datafile = 'stuff.dat'
 

@@ -396,7 +396,7 @@ inline void StartUp::writeConfig(){
 inline void StartUp::convertToDimensionless(){
 
 	double m = 87 * 1.66 * 1.0e-27;
-	double hbar = 1.054 * 10e-22;	
+	double hbar = 1.054 * 1.0e-22;	
 	opt.Ag = 2 * opt.min_x / opt.grid[1];
 	opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
 
