@@ -130,13 +130,13 @@ void ITP::plot(const string name){
 inline double ITP::rescale(MatrixXcd &wavefct){	
 
 	// cout << "Rescale " << h_x << " " << h_y << endl;
-	double Integral = 0.;  
-	for(int i=0;i<opt.grid[1]-1;i++){
-    	for(int j=0;j<opt.grid[2]-1;j++){
-    		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);
+	double Integral = 0.0;  
+	// for(int i=0;i<opt.grid[1]-1;i++){
+    	// for(int j=0;j<opt.grid[2]-1;j++){
+    		Integral = real(h_x)*real(h_y)*wavefct.cwiseAbs2().sum()
       		// Integral += abs2(wavefct(i,j));      
-    	}
-    }
+    	// }
+    // }
     // cout << "Integral" << Integral << endl;
     
 	scaleFactor = opt.N/Integral;	

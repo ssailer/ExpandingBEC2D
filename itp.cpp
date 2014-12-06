@@ -55,33 +55,35 @@ try{
  	#endif
 
  	startUp.printInitVar();
+ 	Options tmpOpt = startUp.getOptions();
+ 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 
  	// omp_set_num_threads(12);/
+	if(!startUp.restart()){
+		// MatrixData* startGrid = new MatrixData(startUp.getMeta());
+			
+		setGridToTF(startGrid,startUp.getOptions());
+		// // setGridToGaussian(startGrid,startUp.getOptions());
 	
-	// MatrixData* startGrid = new MatrixData(startUp.getMeta());
-	Options tmpOpt = startUp.getOptions();
-	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+		ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		string groundStateName = "ITP-Groundstate";
+		groundStateITP->propagateToGroundState(groundStateName);
+		startGrid->wavefunction[0] = groundStateITP->result();
+		delete groundStateITP;
+		
+		string bfString = "StartGrid_2048_2048_NV_groundstate.h5";
+		binaryFile* bF = new binaryFile(bfString,binaryFile::out);
+		bF->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
+		delete bF;
+	}
 
-	setGridToTF(startGrid,startUp.getOptions());
-	// // setGridToGaussian(startGrid,startUp.getOptions());
-
-	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	string groundStateName = "ITP-Groundstate";
-	groundStateITP->propagateToGroundState(groundStateName);
-	startGrid->wavefunction[0] = groundStateITP->result();
-	delete groundStateITP;
-	
-	string bfString = "StartGrid_2048_2048_NV_groundstate.h5";
-	binaryFile* bF = new binaryFile(bfString,binaryFile::out);
-	bF->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
-	delete bF;
-
-	
-		// string startName = "StartGrid_2048_2048_NV_groundstate.h5";
-		// binaryFile* startFile = new binaryFile(startName,binaryFile::in);
-		// startFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-		// delete startFile;
-		// tmpOpt = startUp.getOptions();
+	if(startUp.restart()){	
+		string startName = "StartGrid_2048_2048_NV_groundstate.h5";
+		binaryFile* startFile = new binaryFile(startName,binaryFile::in);
+		startFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+		delete startFile;
+		tmpOpt = startUp.getOptions();
+	}
 
 		int vnumber = 0;
 		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
