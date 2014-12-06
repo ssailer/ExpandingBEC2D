@@ -139,7 +139,7 @@ inline double ITP::rescale(MatrixXcd &wavefct){
     // }
     // cout << "Integral" << Integral << endl;
     double value = opt.N/Integral;
-    particelNumber = Integral;	
+    particleNumber = Integral;	
 	// cout << "Integral : " << Integral << " scalefactor: " << scaleFactor << " " << sqrt(scaleFactor) << endl;
 	wavefct.array() *= sqrt(value);
 	return value;
@@ -168,7 +168,7 @@ void ITP::cli(string name,int counter_state, int counter_max, double start)
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
 				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100))
 				 << " Rescale Diff: " << std::setprecision (15) << difference
-				 << " Particle Number: " << std::setprecision(15) << particelNumber
+				 << " Particle Number: " << std::setprecision(15) << particleNumber
 				 << "%\r" << flush;
 			plot("ITP-Vortices-" + to_string(counter_state));
 		}
