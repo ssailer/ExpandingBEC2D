@@ -133,7 +133,7 @@ inline double ITP::rescale(MatrixXcd &wavefct){
 	double Integral = 0.0;  
 	// for(int i=0;i<opt.grid[1]-1;i++){
     	// for(int j=0;j<opt.grid[2]-1;j++){
-    		Integral = real(h_x)*real(h_y)*wavefct.cwiseAbs2().sum()
+    		Integral = real(h_x)*real(h_y)*wavefct.cwiseAbs2().sum();
       		// Integral += abs2(wavefct(i,j));      
     	// }
     // }
