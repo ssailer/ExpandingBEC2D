@@ -399,7 +399,7 @@ void ITP::propagateToGroundState(string runname)
 		}else{
 			counter_finished = 0;			
 		}
-		old_scalefactor = scalefactor;
+		old_scaleFactor = scaleFactor;
 		// old_Ekin = breakCondition.totalResult.Ekin;		
 		if(counter_finished >= 2){
 			finished = true;
