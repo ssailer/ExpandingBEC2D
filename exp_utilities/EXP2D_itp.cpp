@@ -127,7 +127,7 @@ void ITP::plot(const string name){
 		plotDataToPngEigen(name, wavefct,opt);
 }
 
-inline  ITP::rescale(MatrixXcd &wavefct){	
+inline double ITP::rescale(MatrixXcd &wavefct){	
 
 	// cout << "Rescale " << h_x << " " << h_y << endl;
 	double Integral = 0.0;  
