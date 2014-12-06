@@ -127,7 +127,7 @@ void ITP::plot(const string name){
 		plotDataToPngEigen(name, wavefct,opt);
 }
 
-inline double ITP::rescale(MatrixXcd &wavefct){	
+inline  ITP::rescale(MatrixXcd &wavefct){	
 
 	// cout << "Rescale " << h_x << " " << h_y << endl;
 	double Integral = 0.0;  
@@ -138,11 +138,10 @@ inline double ITP::rescale(MatrixXcd &wavefct){
     	// }
     // }
     // cout << "Integral" << Integral << endl;
-    
-	scaleFactor = opt.N/Integral;	
+    double value = opt.N/Integral;	
 	// cout << "Integral : " << Integral << " scalefactor: " << scaleFactor << " " << sqrt(scaleFactor) << endl;
-	wavefct.array() *= sqrt(scaleFactor);
-	return scaleFactor;
+	wavefct.array() *= sqrt(value);
+	return value;
 }
 
 void ITP::cli(string name,int counter_state, int counter_max, double start)
@@ -159,11 +158,16 @@ void ITP::cli(string name,int counter_state, int counter_max, double start)
 			min = (total / 60) % 60;
 			seconds = total % 60;
 
+			double difference = (old_scaleFactor - scaleFactor);
+			old_scaleFactor = scaleFactor;
+
 			cout << "  " << name << " with " << VORTICES_BUILD_TIME << " Steps: "
 				 << std::setw(2) << std::setfill('0') << hour << ":"
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
-				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%\r" << flush;
+				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100))
+				 << " Rescale Difference: " << std::setprecision (15) << difference
+				 << "%\r" << flush;
 			plot("ITP-Vortices-" + to_string(counter_state));
 		}
 	if(counter_state == counter_max)
@@ -183,8 +187,8 @@ void ITP::CopyEigenToComplexGrid(){
 void ITP::formVortices(string runname){
 	double start;  // starttime of the run
 	int state = 0;
-	double scalefactor = 0;
-	double old_scalefactor = 0;
+	double scaleFactor = 0;
+	double old_scaleFactor = 0;
 
 	// CopyComplexGridToEigen();
 
@@ -196,67 +200,15 @@ void ITP::formVortices(string runname){
 
 	start = omp_get_wtime();
 
-	//start loop here
-	Eigen::initParallel();
-
 	for(int m = 1; m <= VORTICES_BUILD_TIME; m++){
 
-		// wavefct.row(0) = VectorXcd::Zero(opt.grid[1]);
-		// wavefct.row(opt.grid[1]-1) = VectorXcd::Zero(opt.grid[1]);
-		// wavefct.col(0) = VectorXcd::Zero(opt.grid[2]);
-		// wavefct.col(opt.grid[2]-1) = VectorXcd::Zero(opt.grid[2]);
+		ComputeDeltaPsi(wavefct, wavefctcp);
 
-		
+		state++;
 
-		// wavefctcp = wavefct;
-
-		// ITP_compute_k_parallel(k0,wavefctcp);
-
-		// wavefctcp = wavefct + half * t_ITP * k0;
-		// ITP_compute_k_parallel(k1,wavefctcp);
-
-		// wavefctcp = wavefct + half * t_ITP * k1;
-		// ITP_compute_k_parallel(k2,wavefctcp);
-
-		// wavefctcp = wavefct + t_ITP * k2;
-		// ITP_compute_k_parallel(k3,wavefctcp);
-
-		// wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);
-
-
-		// rescale(wavefct);
-
-
-			ComputeDeltaPsi(wavefct, wavefctcp);
-
-			// wavefctcp = wavefct;
-	
-			// ITP_compute_k_parallel(k0,wavefctcp);
-	
-			// wavefctcp = wavefct + half * t_ITP * k0;
-			// ITP_compute_k_parallel(k1,wavefctcp);
-	
-			// wavefctcp = wavefct + half * t_ITP * k1;
-			// ITP_compute_k_parallel(k2,wavefctcp);
-	
-			// wavefctcp = wavefct + t_ITP * k2;
-			// ITP_compute_k_parallel(k3,wavefctcp);
-	
-			// wavefct += (t_ITP/six) * ( k0 + two * k1 + two * k2 + k3);			
-	
-			state++;
-
-			// plot("ITP-Groundstate-"+to_string(state)+"-Before-Rescale");
-
-			scalefactor = rescale(wavefct);	
+		scaleFactor = rescale(wavefct);	
 
 		cli(runname,m,VORTICES_BUILD_TIME,start);
-		if(m%(VORTICES_BUILD_TIME/100)==0)
-		{
-			double difference = (old_scalefactor - scalefactor);
-			cout << endl << "ITP Difference: " << std::setprecision (15) << difference << flush;
-			old_scalefactor = scalefactor;
-		}	
 	}
 
 	// rescale(wavefct);

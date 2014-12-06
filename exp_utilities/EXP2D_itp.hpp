@@ -76,7 +76,7 @@ private:
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
     MatrixXcd PotentialGrid,wavefctcp,k0,k1,k2,k3;
 
-    double pi, scaleFactor;
+    double pi, scaleFactor, old_scaleFactor;
     complex<double>  zero,half,one,two,four,six,i_unit;
     complex<double> t_ITP;
 
