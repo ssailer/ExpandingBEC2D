@@ -166,10 +166,10 @@ void ITP::cli(string name,int counter_state, int counter_max, double start)
 				 << std::setw(2) << std::setfill('0') << hour << ":"
 				 << std::setw(2) << std::setfill('0') << min << ":"
 				 << std::setw(2) << std::setfill('0') << seconds  << "    "
-				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100))
+				 << std::setw(3) << std::setfill('0') << (counter_state/(counter_max/100)) << "%"
 				 << " Rescale Diff: " << std::setprecision (15) << difference
 				 << " Particle Number: " << std::setprecision(15) << particleNumber
-				 << "%\r" << flush;
+				 << "\r" << flush;
 			plot("ITP-Vortices-" + to_string(counter_state));
 		}
 	if(counter_state == counter_max)
@@ -189,8 +189,8 @@ void ITP::CopyEigenToComplexGrid(){
 void ITP::formVortices(string runname){
 	double start;  // starttime of the run
 	int state = 0;
-	double scaleFactor = 0;
-	double old_scaleFactor = 0;
+	scaleFactor = 0;
+	old_scaleFactor = 0;
 
 	// CopyComplexGridToEigen();
 
@@ -320,8 +320,8 @@ void ITP::propagateToGroundState(string runname)
 	bool finished = false;
 	int counter_finished = 0;
 	int state = 0;
-	double old_scalefactor = 0;
-	double scalefactor = 0;
+	old_scaleFactor = 0;
+	scaleFactor = 0;
 
 	// load external Data into wavefct
 	// CopyComplexGridToEigen();
@@ -379,7 +379,7 @@ void ITP::propagateToGroundState(string runname)
 
 			// plot("ITP-Groundstate-"+to_string(state)+"-Before-Rescale");
 
-			scalefactor = rescale(wavefct);			
+			scaleFactor = rescale(wavefct);			
 				
 		}
 		
@@ -391,7 +391,7 @@ void ITP::propagateToGroundState(string runname)
 		// cli_groundState(runname,start,state,breakCondition.totalResult);
 		plot(runname+"-"+to_string(state));
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
-		double difference = (old_scalefactor - scalefactor);
+		double difference = (old_scaleFactor - scaleFactor);
 		cout << endl << "ITP Difference: " << std::setprecision (15) << difference << endl;
 		if(fabs(difference) <= 1.0e-6){
 		// if(scaleFactor == 0){
