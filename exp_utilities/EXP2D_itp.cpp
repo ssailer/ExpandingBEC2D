@@ -147,7 +147,7 @@ inline double ITP::rescale(MatrixXcd &wavefct){
 
 void ITP::cli(string name,int counter_state, int counter_max, double start)
 {
-	if(counter_state%(counter_max/10)==0)
+	if(counter_state%(counter_max/100)==0)
 		{
 			int seconds;
 			int min;
