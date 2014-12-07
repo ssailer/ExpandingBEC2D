@@ -98,6 +98,7 @@ void RTE::RunSetup(){
    	double bigger;
    	bool waitingFor1 = true;
    	bool waitingFor2 = true;
+   	bool waitingFor3 = true;
    	complex<double> l_x, l_y;  	
    	for(int t = 0; t < coefSize; t++){
    		l_x = lambda_x(tmp);
@@ -105,18 +106,24 @@ void RTE::RunSetup(){
 
    		if(t % 2 == 0){
    			bigger = (l_x.real() >= l_y.real()) ? l_x.real() : l_y.real();
-   			if(bigger >= 1.5){
+   			if(bigger >= 2.0){
    				if(waitingFor1 == true){
-   					adaptiveStep = opt.RTE_step / 2.0;
+   					adaptiveStep /= 2.0;
    					waitingFor1 = false;
    				}
    			}
    			if(bigger >= 4.0){
    				if(waitingFor2 == true){
-   					adaptiveStep = opt.RTE_step / 10.0;
+   					adaptiveStep /= 2.0;
    					waitingFor2 = false;
    				}
-   			}   			
+   			}
+   			if(bigger >= 6.0){
+   				if(waitingFor2 == true){
+   					adaptiveStep /= 2.0;
+   					waitingFor3 = false;
+   				}
+   			}     			
    			t_RTE(l) = adaptiveStep;
    			l++;
    		}
@@ -132,7 +139,8 @@ void RTE::RunSetup(){
 	// complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
 	ranges[0] = opt.min_x * real(lambda_x(tmp));
 	ranges[1] = opt.min_y * real(lambda_y(tmp));
-	cout << "Max ExpFactor: " << real(lambda_x(tmp)) << "  " << real(lambda_y(tmp)) << " with a time of  " << real(tmp) << endl;
+	double arr = real(tmp) * 1000.0 / opt.OmegaG;
+	cout << "Max ExpFactor: " << real(lambda_x(tmp)) << "  " << real(lambda_y(tmp)) << " with a time of " << std::setprecision(15) << arr << " ms" << " " << t_RTE(0) / opt.OmegaG << " " <<  t_RTE(l-1) / opt.OmegaG<< endl;
 
 	if(ranges[0] > ranges[1])
 		ranges[1] = ranges[0];
