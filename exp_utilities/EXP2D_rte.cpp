@@ -111,7 +111,7 @@ void RTE::RunSetup(){
    					waitingFor1 = false;
    				}
    			}
-   			if(bigger >= 2.0){
+   			if(bigger >= 4.0){
    				if(waitingFor2 == true){
    					adaptiveStep = opt.RTE_step / 10.0;
    					waitingFor2 = false;
