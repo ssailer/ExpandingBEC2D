@@ -720,8 +720,8 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 			}
 		}
 	}
-	string name = "Test Zeros"+to_string(snapshot_time);
-	plotDataToPng(name, name, zeros, opt);
+	// string name = "Test Zeros"+to_string(snapshot_time);
+	// plotDataToPng(name, name, zeros, opt);
 }
 
 
