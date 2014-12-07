@@ -25,7 +25,7 @@ void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int exte
 		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 		for(int i = 0; i < opt.grid[1]; i++){
 			for(int j = 0; j < opt.grid[2]; j++){		
-				PsiVec[k](0,i,j,0) = wavefctVec[k](i,j);
+				PsiVec[k](0,i,j,0) = wavefctVec[k](i,j) / complex<double>(opt.Ag,0.0);
 			}
 		}
 	}

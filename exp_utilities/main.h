@@ -142,8 +142,10 @@ inline void StartUp::printInitVar()
 {
 	std::cout.setf(std::ios::boolalpha);
 	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
-				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
-				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
+				<< "Gridpoints in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
+				<< "Gridpoints in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
+				<< "Coordinates in x-direction: " << opt.min_x << endl
+				<< "Coordinates in y-direction: " << opt.min_y << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
 				<< "ITP Step: " << opt.ITP_step << "\t" << "RTE Step: " << opt.RTE_step << endl
 				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << endl
