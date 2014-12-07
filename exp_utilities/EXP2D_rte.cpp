@@ -132,7 +132,7 @@ void RTE::RunSetup(){
 	// complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
 	ranges[0] = opt.min_x * real(lambda_x(tmp));
 	ranges[1] = opt.min_y * real(lambda_y(tmp));
-	cout << "Max ExpFactor: " << real(lambda_x(tmp)) << "  " << real(lambda_y(tmp)) << endl;
+	cout << "Max ExpFactor: " << real(lambda_x(tmp)) << "  " << real(lambda_y(tmp)) << " with a time of  " << real(tmp) << endl;
 
 	if(ranges[0] > ranges[1])
 		ranges[1] = ranges[0];
