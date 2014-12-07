@@ -92,7 +92,7 @@ void RTE::RunSetup(){
    	gradient_coefficient_y = VectorXcd::Zero(coefSize);
    	t_RTE = VectorXcd::Zero(opt.n_it_RTE - meta.steps + 1);
 
-   	complex<double> tmp;
+   	complex<double> tmp(0.0,0.0);
    	int l = 0;
    	double adaptiveStep = opt.RTE_step;
    	double bigger;
@@ -110,7 +110,8 @@ void RTE::RunSetup(){
    					adaptiveStep = opt.RTE_step / 2.0;
    					waitingFor1 = false;
    				}
-   			}else if(bigger >= 2.0){
+   			}
+   			if(bigger >= 2.0){
    				if(waitingFor2 == true){
    					adaptiveStep = opt.RTE_step / 10.0;
    					waitingFor2 = false;
