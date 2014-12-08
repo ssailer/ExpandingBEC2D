@@ -24,25 +24,25 @@ def main():
 	dataset3 = from_data['Ry']
 	# dataset4 = from_data['D_Ratio']
 	# dataset5 = from_data['D_max_Angle']
-	dataset1 = dataset1 * ( 0.0340119 / OmegaG )
-	dataset1 *= 1000.0
-	dataset2 = dataset2 * Ag
-	dataset3 = dataset3 * Ag
-	value = 0;
-	timeline = []
-	for i in range(0,13):
-		value +=  1000.0 * 5000 * 0.0340119 / OmegaG
-		timeline.append(value)
-	for i in range(13,26):
-		value +=  1000.0 * 5000 * 0.0340119 / OmegaG
-		timeline.append(value)
-	for i in range(26,len(dataset1)):
-		value +=  1000.0 * 5000 * 0.0340119 / OmegaG 
-		timeline.append(value)
+	# dataset1 = dataset1 * ( 0.0340119 / OmegaG )
+	# dataset1 *= 1000.0
+	# dataset2 = dataset2 * Ag
+	# dataset3 = dataset3 * Ag
+	# value = 0;
+	# timeline = []
+	# for i in range(0,13):
+	# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG
+	# 	timeline.append(value)
+	# for i in range(13,26):
+	# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG
+	# 	timeline.append(value)
+	# for i in range(26,len(dataset1)):
+	# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG 
+	# 	timeline.append(value)
 	# print dataset1
 	# print timeline
 
-	datafile2 = 'ode_30_Rx_Ry.dat'
+	datafile2 = 'ode_1_Rx_Ry.dat'
 	# datafile3 = 'ode_1000_Rx_Ry.dat'
 
 	from_data2 = pd.read_csv(datafile2,header=1,names=cols)
@@ -59,31 +59,31 @@ def main():
 
 	ax1 = fig.add_subplot(311)
 
-	ax1.plot(timeline,dataset2,'.',color='b',label='Rx GPE')
+	ax1.plot(dataset1,dataset2,'.',color='b',label='Rx GPE')
 	ax1.plot(data1,data2,color='r',label='Rx Hydro')
 
 	name = "Radii in "
 	name += r'$\mu m$'
 	plt.ylabel(name)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='30 Vortices')
+	plt.legend(loc='upper left',title='1 Vortex')
 
 	ax1 = fig.add_subplot(312)	
 
-	ax1.plot(timeline,dataset3,'.',color='b',label='Ry GPE')
+	ax1.plot(dataset1,dataset3,'.',color='b',label='Ry GPE')
 	ax1.plot(data1,data3,color='r',label='Ry Hydro')
 	plt.ylabel(name)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='30 Vortices')
+	plt.legend(loc='upper left',title='1 Vortex')
 
 	ax1 = fig.add_subplot(313)
 
 	name2 = "Aspect Ratio R_x / R_y"
-	ax1.plot(timeline,ratio1,'.',color='b',label='Rx/Ry GPE')
-	ax1.plot(data1,ratio2,color='r',label='R Hydro')
+	ax1.plot(dataset1,ratio1,'.',color='b',label='Rx/Ry GPE')
+	ax1.plot(data1,ratio2,color='r',label='Rx/Ry Hydro')
 	plt.ylabel(name2)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper right',title='30 Vortices')
+	plt.legend(loc='upper right',title='1 Vortex')
 
 	# txt = ''' These graphs describe a situation with 30 Vortices in the initial setup.'''
 
