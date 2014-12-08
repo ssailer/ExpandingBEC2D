@@ -307,6 +307,7 @@ void Eval::evaluateData(){
   						 << std::setw(15) << "V"
   						 << std::setw(15) << "N/V"
   						 << std::setw(15) << "E_kin"
+  						 << std::setw(15) << "N_0 in d.u."
   				 << endl;
   		datafile.close();
   	} 
@@ -330,6 +331,7 @@ void Eval::evaluateData(){
 					 << std::setw(15) << totalResult.volume
 					 << std::setw(15) << totalResult.density
 					 << std::setw(15) << totalResult.Ekin
+					 << std::setw(15) << abs2(PsiVec[0](0,opt.grid[1]/2,opt.grid[2]/2,0)*opt.Ag)
 			 << endl;
 	datafile.close();
 
