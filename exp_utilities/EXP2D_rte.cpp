@@ -716,30 +716,33 @@ void RTE::splitToTime(string runName){
 	ComplexGrid potPlotGrid(opt.grid[0], opt.grid[1], opt.grid[2],opt.grid[3]);
 
 
-	vector<vector<double>> kspace;	
-	kspace.resize(2);
+	vector<vector<double>> kspace(2);
 	for(int d = 0; d < 2; d++){
 		kspace[d].resize(opt.grid[d+1]);
-		for(int i = 0; i < opt.grid[d+1]/2; i++){
-			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
-			// kspace[d][i] = M_PI * i / (2.0 * opt.min_x *opt.grid[d+1]);
+		for(int i = 0; i <= opt.grid[d+1]/2; i++){
+			kspace[d][i] = (M_PI / opt.min_x) * (double)i;
 		}
-		for(int i = opt.grid[d+1]/2; i < opt.grid[d+1]; i++){
-			kspace[d][i] = opt.klength[d]*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
-			// kspace[d][i] = M_PI * (i - opt.grid[d+1]) / (2.0 * opt.min_y * opt.grid[d+1]);
+
+		for(int i = (opt.grid[d+1]/2)+1; i < opt.grid[d+1]; i++){
+			kspace[d][i] = -(M_PI / opt.min_x) * (double)(opt.grid[d+1] - i);
 		}
 	}
-	double beta = real(h_x) * real(h_x);
-	for(int x = 0; x < kprop.width(); x++){
-	    for(int y = 0; y < kprop.height(); y++){
-	      	double k[2];
-	      	// k[0] = opt.klength[1] * 2.0 * sin(M_PI * x / (double) opt.grid[1]);
-	      	// k[1] = opt.klength[2] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
-	      	// double T = - 0.5 * beta * (k[0] * k[0] + k[1] * k[1] ) * timestepsize;
-	
-	      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize;	      
-	      	
-	      	kprop(0,x,y,0) = complex<double>(cos(T),sin(T)) / complex<double>((double)(opt.grid[1]*opt.grid[2]*opt.grid[3]),0.0);	    
+
+	#pragma omp parallel for
+	for(int x = 0; x < opt.grid[1]; x++){
+	    for(int y = 0; y < opt.grid[2]; y++){
+	    	for(int z = 0; z < opt.grid[3]; z++){
+
+	      		// double k[3];
+	      		// k[0] = opt.klength[0] * 2.0 * sin(M_PI * x / (double) opt.grid[1]);
+	      		// k[1] = opt.klength[1] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
+	      		// k[2] = opt.klength[2] * 2.0 * sin(M_PI * z / (double) opt.grid[3]);
+	      		// double T = - 0.5 * (k[0] * k[0] + k[1] * k[1] + k[2] * k[2] ) * timestepsize; // / beta;
+		
+		      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y] + kspace[2][z]*kspace[2][z]) * timestepsize; // / beta;	      
+		      		
+	      		kprop(0,x,y,z) = complex<double>(cos(T),sin(T)) / complex<double>((double)(opt.grid[1]*opt.grid[2]*opt.grid[3]),0.0);	    
+	      	}
 	    }
 	}
 	plotDataToPng("RTE_Kprop","Control",kprop,opt);

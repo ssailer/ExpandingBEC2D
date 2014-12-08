@@ -65,11 +65,11 @@ try{
 		setGridToTF(startGrid,startUp.getOptions());
 		// // setGridToGaussian(startGrid,startUp.getOptions());
 	
-		ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-		string groundStateName = "ITP-Groundstate";
-		groundStateITP->propagateToGroundState(groundStateName);
-		startGrid->wavefunction[0] = groundStateITP->result();
-		delete groundStateITP;
+		// ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		// string groundStateName = "ITP-Groundstate";
+		// groundStateITP->propagateToGroundState(groundStateName);
+		// startGrid->wavefunction[0] = groundStateITP->result();
+		// delete groundStateITP;
 		
 		string bfString = "StartGrid_2048_2048_NV_groundstate.h5";
 		binaryFile* bF = new binaryFile(bfString,binaryFile::out);
@@ -83,7 +83,6 @@ try{
 		startFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 		delete startFile;
 		tmpOpt = startUp.getOptions();
-	}
 
 		int vnumber = 0;
 		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
@@ -101,12 +100,17 @@ try{
 	
 		delete vorticesITP;
 
+		string startGridName = "StartGrid_2048_2048.h5";
+		binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
+		dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
+		delete dataFile;
+		delete startGrid;	
+	}
 
-	string startGridName = "StartGrid_2048_2048.h5";
-	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
-	dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
-	delete dataFile;
-	delete startGrid;		
+
+
+
+	
 
 }
 catch(const std::exception& e) 

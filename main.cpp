@@ -73,31 +73,6 @@ try{
 		dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 		delete dataFile;
 
-
-			// Options tmpOpt = startUp.getOptions();
-			// MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
-	
-			// setGridToTF(startGrid,startUp.getOptions());
-	
-			// int vnumber = 0;
-			// addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
-			
-			// startUp.setVortexnumber(vnumber);
-			// cout << endl << "Set Vortices #: " << vnumber << endl;
-		
-			// string itpname = "ITP-Vortices"+to_string(tmpOpt.vortexspacing);
-			// ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-			// vorticesITP->formVortices(itpname);
-			// // vorticesITP->findVortices(itpname);
-			
-			// startGrid->wavefunction[0] = vorticesITP->result();
-		
-			// delete vorticesITP;
-
-
-
-		// addDrivingForce(startGrid,tmpOpt);
-		
 		for(int i = 0; i < data->meta.samplesize; i++){
 			data->wavefunction[i] = startGrid->wavefunction[0];
 		}
