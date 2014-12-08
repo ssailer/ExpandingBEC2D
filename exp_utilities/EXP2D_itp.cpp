@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 80000
+#define VORTICES_BUILD_TIME 8000
 #define HBAR 1.05 * 10e-34
 #define M 1.44 * 10e-25
 
