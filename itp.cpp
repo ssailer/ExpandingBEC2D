@@ -65,11 +65,11 @@ try{
 		setGridToTF(startGrid,startUp.getOptions());
 		// // setGridToGaussian(startGrid,startUp.getOptions());
 	
-		// ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-		// string groundStateName = "ITP-Groundstate";
-		// groundStateITP->propagateToGroundState(groundStateName);
-		// startGrid->wavefunction[0] = groundStateITP->result();
-		// delete groundStateITP;
+		ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		string groundStateName = "ITP-Groundstate";
+		groundStateITP->propagateToGroundState(groundStateName);
+		startGrid->wavefunction[0] = groundStateITP->result();
+		delete groundStateITP;
 		
 		string bfString = "StartGrid_2048_2048_NV_groundstate.h5";
 		binaryFile* bF = new binaryFile(bfString,binaryFile::out);
