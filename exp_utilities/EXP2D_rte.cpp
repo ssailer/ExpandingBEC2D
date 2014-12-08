@@ -745,7 +745,7 @@ void RTE::splitToTime(string runName){
 	      	}
 	    }
 	}
-	plotDataToPng("RTE_Kprop","Control",kprop,opt);
+	// plotDataToPng("RTE_Kprop","Control",kprop,opt);
 
 	if(opt.initialRun == true){
 		Eval* initialEval = new Eval;
