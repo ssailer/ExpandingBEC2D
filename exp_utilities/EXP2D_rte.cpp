@@ -328,22 +328,9 @@ void RTE::rteToTime(string runName)
 			int lambdaSteps = keeperOfTime.lambdaSteps;
 			threadinfo[i] = omp_get_thread_num();
 			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
-
-				// k0 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-				// k1 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-				// k2 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-				// k3 = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
-
-				// wavefctcp = wavefctVec[i];				
 		
 				ComputeDeltaPsi(wavefctVec[i],wavefctcp,lambdaSteps,t_RTE(m-1));
-				opt.t_abs += t_RTE(m-1);
-
-				// wavefctcp = (one/six) * ( k0 + two * k1 + two * k2 + k3);
-
-				// MSDBoundaries(wavefctVec[i],wavefctcp);
-
-				// wavefctVec[i] += t_RTE * wavefctcp; //(t_RTE/six) * ( k0 + two * k1 + two * k2 + k3);
+				opt.t_abs += t_RTE(m-1);				
 
 				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
    				stateOfLoops[i]= m - previousTimes;
@@ -498,7 +485,7 @@ void RTE::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &e
 	k.block(front,1,end,suby).array() += (wavefctcp.block(front+1,1,end,suby).array() - wavefctcp.block(front-1,1,end,suby).array()) * Xmatrix.block(front,1,end,suby).array() * gradient_coefficient_x(t)
 									   + (wavefctcp.block(front  ,2,end,suby).array() - wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,1,end,suby).array() * gradient_coefficient_y(t);
 
-	k.block(front,1,end,suby).array() -= (/*AbsorbingPotentialGrid.block(front,1,end,suby).array() +*/ i_unit * (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() ))) * wavefctcp.block(front,1,end,suby).array();
+	k.block(front,1,end,suby).array() -= i_unit * ( PotentialGrid.block(front,1,end,suby).array() + (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() ))) * wavefctcp.block(front,1,end,suby).array();
 }
 
 void RTE::MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut){

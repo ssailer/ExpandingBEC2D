@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 500
+#define VORTICES_BUILD_TIME 2000
 #define HBAR 1.05 * 10e-34
 #define M 1.44 * 10e-25
 
@@ -147,7 +147,7 @@ inline double ITP::rescale(MatrixXcd &wavefct){
 
 void ITP::cli(string name,int counter_state, int counter_max, double start)
 {
-	if(counter_state%(counter_max/100)==0)
+	if(counter_state%(counter_max/10)==0)
 		{
 			int seconds;
 			int min;
@@ -393,7 +393,7 @@ void ITP::propagateToGroundState(string runname)
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
 		double difference = (old_scaleFactor - scaleFactor);
 		cout << endl << "ITP Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 1.0e-6){
+		if(fabs(difference) <= 1.0e-8){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{

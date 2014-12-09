@@ -43,7 +43,7 @@ void plotSpectrum(string name,string title, Observables &ares){
 		number.a[i] = numberval[i];
 	}
 
-	// cout << "copied" << endl;
+	// cout << "copied" << endl;  
 
 	mglGraph gr;
 
