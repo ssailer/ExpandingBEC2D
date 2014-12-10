@@ -92,17 +92,17 @@ void RTE::RunSetup(){
    	gradient_coefficient_y = VectorXcd::Zero(coefSize);
    	t_RTE = VectorXcd::Zero(opt.n_it_RTE - meta.steps + 1);
 
-   	complex<double> tmp(0.0,0.0);
+   	complex<double> absTime(meta.time,0.0);
    	int l = 0;
    	double adaptiveStep = opt.RTE_step;
    	double bigger;
    	bool waitingFor1 = true;
    	bool waitingFor2 = true;
    	bool waitingFor3 = true;
-   	complex<double> l_x, l_y;  	
+   	complex<double> l_x, l_y;
    	for(int t = 0; t < coefSize; t++){
-   		l_x = lambda_x(tmp);
-   		l_y = lambda_y(tmp);
+   		l_x = lambda_x(absTime);
+   		l_y = lambda_y(absTime);
 
    		if(t % 2 == 0){
    			bigger = (l_x.real() >= l_y.real()) ? l_x.real() : l_y.real();
@@ -128,19 +128,19 @@ void RTE::RunSetup(){
    			l++;
    		}
    		
-   		tmp = complex<double>(meta.time,0.0) + ( half * complex<double>(t * adaptiveStep,0.0) );   	
    		laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * l_x * l_x );
    		laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * l_y * l_y );
-   		gradient_coefficient_x(t) = lambda_x_dot(tmp) / (two * h_x * l_x);
-   		gradient_coefficient_y(t) = lambda_y_dot(tmp) / (two * h_y * l_y);	   		
+   		gradient_coefficient_x(t) = lambda_x_dot(absTime) / (two * h_x * l_x);
+   		gradient_coefficient_y(t) = lambda_y_dot(absTime) / (two * h_y * l_y);
+   		absTime += ( half * complex<double>(adaptiveStep,0.0) );	   		
    	}
 
    	ranges.resize(2);
 	// complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
-	ranges[0] = opt.min_x * real(lambda_x(tmp));
-	ranges[1] = opt.min_y * real(lambda_y(tmp));
-	double arr = real(tmp) * 1000.0 / opt.OmegaG;
-	cout << "Max ExpFactor: " << real(lambda_x(tmp)) << "  " << real(lambda_y(tmp)) << " with a time of " << std::setprecision(15) << arr << " ms" << " " << t_RTE(0) / opt.OmegaG << " " <<  t_RTE(l-1) / opt.OmegaG<< endl;
+	ranges[0] = opt.min_x * real(lambda_x(absTime));
+	ranges[1] = opt.min_y * real(lambda_y(absTime));
+	double arr = real(absTime) * 1000.0 / opt.OmegaG;
+	cout << "Max ExpFactor: " << real(lambda_x(absTime)) << "  " << real(lambda_y(absTime)) << " with a time of " << std::setprecision(15) << arr << " ms" << " " << t_RTE(0) / opt.OmegaG << " " <<  t_RTE(l-1) / opt.OmegaG<< endl;
 
 	if(ranges[0] > ranges[1])
 		ranges[1] = ranges[0];
