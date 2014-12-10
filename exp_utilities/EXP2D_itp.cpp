@@ -393,7 +393,7 @@ void ITP::propagateToGroundState(string runname)
 		// cout << endl << "breakC = " << breakCondition.totalResult.Ekin << " " << "Old Ekin " << old_Ekin;
 		double difference = (old_scaleFactor - scaleFactor);
 		cout << endl << "ITP Difference: " << std::setprecision (15) << difference << endl;
-		if(fabs(difference) <= 1.0e-8){
+		if(fabs(difference) <= 1.0e-9){
 		// if(scaleFactor == 0){
 			counter_finished++;
 		}else{
