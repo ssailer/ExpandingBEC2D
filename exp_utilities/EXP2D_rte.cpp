@@ -190,7 +190,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/10))==0){
 		int seconds, min, hour, total, expectedhour, expectedmin, expectedseconds;
 		double totalstate = 0;
-		double totalmaxpercent = (double)counter_max * (double)meta.samplesize / 100;
+		double totalmaxpercent = (double)counter_max * (double)meta.samplesize / 10;
 		for(int i = 0; i < meta.samplesize; i++){
 			totalstate += stateOfLoops[i];
 		}
