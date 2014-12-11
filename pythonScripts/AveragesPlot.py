@@ -14,18 +14,18 @@ def main():
 	OmegaG = hbar / ( m * Ag * Ag);
 	datafile = 'stuff.dat'
 
-	cols = ["Timestep","Rx","Ry"]
+	cols = ["Timestep","Time","X_max","Y_max","D_max","D_min","Rx","Ry","D_max/D_min","D_maxAngle","D_minAngle","Ratio","RatioAngle","N","V","N/V","E_kin","N_0"]
 
-	from_data = pd.read_csv(datafile,header=0,names=cols)
+	from_data = pd.read_csv(datafile,header=0,sep=',',names=cols)
 
-	dataset1 = from_data['Timestep']
+	dataset1 = from_data['Time']
 
 	dataset2 = from_data['Rx']
 	dataset3 = from_data['Ry']
 	# dataset4 = from_data['D_Ratio']
 	# dataset5 = from_data['D_max_Angle']
 	# dataset1 = dataset1 * ( 0.0340119 / OmegaG )
-	# dataset1 *= 1000.0
+	# dataset1 *= 1.33
 	# dataset2 = dataset2 * Ag
 	# dataset3 = dataset3 * Ag
 	# value = 0;
@@ -42,16 +42,21 @@ def main():
 	# print dataset1
 	# print timeline
 
-	datafile2 = 'ode_1_Rx_Ry.dat'
+	datafile2 = 'ode_Rx_Ry.dat'
 	# datafile3 = 'ode_1000_Rx_Ry.dat'
 
-	from_data2 = pd.read_csv(datafile2,header=1,names=cols)
-	data1 = from_data2['Timestep']
+	cols2 = ["Time","Rx", "Ry"]
+
+	from_data2 = pd.read_csv(datafile2,header=1,names=cols2)
+	data1 = from_data2['Time']
 	data1 *= 1000.0
 	data2 = from_data2['Rx']
 	data3 = from_data2['Ry']
 
 	ratio1 = dataset2 / dataset3
+	# ratio1 = from_data['D_max/D_min']
+	# ratio1[17:] = 1/ratio1[17:]
+
 	ratio2 = data2 / data3
 	
 	fig = plt.figure()
