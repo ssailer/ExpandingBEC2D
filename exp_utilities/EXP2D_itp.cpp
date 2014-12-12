@@ -210,7 +210,7 @@ void ITP::formVortices(string runname){
 
 		scaleFactor = rescale(wavefct);	
 
-		// cli(runname,m,VORTICES_BUILD_TIME,start);
+		cli(runname,m,VORTICES_BUILD_TIME,start);
 	}
 
 	// rescale(wavefct);

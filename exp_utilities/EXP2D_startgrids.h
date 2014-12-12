@@ -78,6 +78,10 @@ void setGridToTF(MatrixData* &data, Options opt){
     double Ry = sqrt(2.0 * mu / ( real(opt.omega_y)*real(opt.omega_y)));
     double Rx = sqrt(2.0 * mu / ( real(opt.omega_x)*real(opt.omega_x)));
 
+    cout << "Thomas Fermi Radii set to Rx = " << Rx << " and Ry = " << Ry << endl;
+    double n0 = 2 * (opt.N / M_PI) * (1 / (Rx * Ry));
+    cout << "n_0 = " << n0 << endl;
+
     double h_x = 2.*opt.min_x/opt.grid[1];
     double h_y = 2.*opt.min_y/opt.grid[2];
     vector<double> x(opt.grid[1]);
@@ -116,7 +120,15 @@ void addDrivingForce(MatrixData* &data, Options &opt){
 
 void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
 
-double LOWER_THRESHOLD = opt.N / (4. * opt.min_x  * opt.min_y );
+double maximum = 0;
+for(int i = 0; i < opt.grid[1]; ++i){
+    for(int j = 0; j < opt.grid[2]; ++j){
+        double value = abs2(data->wavefunction[0](i,j));
+        maximum = ( value > maximum) ? value : maximum;
+    }
+}
+
+double LOWER_THRESHOLD = maximum * 0.5; // opt.N / (4. * opt.min_x  * opt.min_y );
 
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
 int y_jump = opt.vortexspacing; // opt.grid[2] / 5;

@@ -12,7 +12,7 @@ def main():
 	m = 87.0 * 1.66e-27;
 	hbar = 1.054e-22;	
 	OmegaG = hbar / ( m * Ag * Ag);
-	datafile = 'stuff.dat'
+	datafile = 'stuff3.dat'
 
 	cols = ["Timestep","Time","X_max","Y_max","D_max","D_min","Rx","Ry","D_max/D_min","D_maxAngle","D_minAngle","Ratio","RatioAngle","N","V","N/V","E_kin","N_0"]
 
@@ -62,10 +62,12 @@ def main():
 	fig = plt.figure()
 	fig.set_size_inches(10.0,12.0)
 
-	ax1 = fig.add_subplot(311)
+	ax1 = fig.add_subplot(211)
 
-	ax1.plot(dataset1,dataset2,'.',color='b',label='Rx GPE')
+	ax1.plot(dataset1,dataset2,'.',color='r',label='Rx GPE')
 	ax1.plot(data1,data2,color='r',label='Rx Hydro')
+	ax1.plot(dataset1,dataset3,'.',color='b',label='Ry GPE')
+	ax1.plot(data1,data3,color='b',label='Ry Hydro')
 
 	name = "Radii in "
 	name += r'$\mu m$'
@@ -73,15 +75,14 @@ def main():
 	plt.xlabel('Time in ms')
 	plt.legend(loc='upper left',title='1 Vortex')
 
-	ax1 = fig.add_subplot(312)	
+	# ax1 = fig.add_subplot(312)	
 
-	ax1.plot(dataset1,dataset3,'.',color='b',label='Ry GPE')
-	ax1.plot(data1,data3,color='r',label='Ry Hydro')
-	plt.ylabel(name)
-	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='1 Vortex')
 
-	ax1 = fig.add_subplot(313)
+	# plt.ylabel(name)
+	# plt.xlabel('Time in ms')
+	# plt.legend(loc='upper left',title='1 Vortex')
+
+	ax1 = fig.add_subplot(212)
 
 	name2 = "Aspect Ratio R_x / R_y"
 	ax1.plot(dataset1,ratio1,'.',color='b',label='Rx/Ry GPE')

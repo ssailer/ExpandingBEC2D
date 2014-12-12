@@ -49,8 +49,8 @@ double beta;
 double* PchangingValue;
 const double hbar = 1.054e-22;
 const double m = 87 * 1.66e-27;
-const double N = 1.0e4;
-const double g = (hbar * hbar / (m * m)) * 0.145 * (4.0 * 2.0) * N / M_PI;
+const double N = 1.0e5;
+const double g = (hbar * hbar / (m * m)) * 0.145 * (4.0) * N / M_PI;
 
 int main( int argc, char** argv)
 {   
@@ -100,7 +100,7 @@ int main( int argc, char** argv)
     cout << "beta " << beta << endl;
             // initial
     dt = 1.0e-7;             // step size for integration
-    tmax = 100.0e-3;          // integrate from ti till tmax
+    tmax = 30.0e-3;          // integrate from ti till tmax
 
     cout << "xi = " << xi << endl;
     X.push_back(r[0]);

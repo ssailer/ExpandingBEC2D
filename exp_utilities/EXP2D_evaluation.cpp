@@ -54,10 +54,11 @@ void Eval::saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_o
 		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 		for(int i = 0; i < opt.grid[1]; i++){
 			for(int j = 0; j < opt.grid[2]; j++){
-				PsiVec[k](0,i,j,0) = wavefctVec[k](0,i,j,sliceNumber);
+				PsiVec[k](0,i,j,0) = wavefctVec[k](0,i,j,sliceNumber) / complex<double>(opt.Ag,0.0);
 			}
 		}
 	}
+	convertFromDimensionless();
 }
 
 void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname){
@@ -70,7 +71,7 @@ void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapsh
 	
 	for(int i = 0; i < opt.grid[1]; i++){
 		for(int j = 0; j < opt.grid[2]; j++){		
-			PsiVec[0](0,i,j,0) = wavefct(i,j);
+			PsiVec[0](0,i,j,0) = wavefct(i,j) / complex<double>(opt.Ag,0.0);
 		}
 	}
 	convertFromDimensionless();		
@@ -291,47 +292,49 @@ void Eval::evaluateData(){
   		ofstream datafile;
   		datafile.open(filename.c_str(), ios::out | ios::app);
   		datafile << std::left << std::setw(15) << "Timestep"
-  						 << std::setw(15) << "Time"
-  						 << std::setw(15) << "X_max"
-  						 << std::setw(15) << "Y_max"
-  						 << std::setw(15) << "D_max"
-  						 << std::setw(15) << "D_min"
-  						 << std::setw(15) << "Rx"
-						 << std::setw(15) << "Ry"
-  						 << std::setw(15) << "D_max/D_min"
-  						 << std::setw(15) << "D_max Angle"
-  						 << std::setw(15) << "D_min Angle"
-  						 << std::setw(15) << "Ratio"
-  						 << std::setw(15) << "RatioAngle"
-  						 << std::setw(15) << "N"
-  						 << std::setw(15) << "V"
-  						 << std::setw(15) << "N/V"
-  						 << std::setw(15) << "E_kin"
-  						 << std::setw(15) << "N_0 in d.u."
+  						 << std::setw(15) << ",Time"
+  						 << std::setw(15) << ",X_max"
+  						 << std::setw(15) << ",Y_max"
+  						 << std::setw(15) << ",D_max"
+  						 << std::setw(15) << ",D_min"
+  						 << std::setw(15) << ",Rx"
+						 << std::setw(15) << ",Ry"
+  						 << std::setw(15) << ",D_max/D_min"
+  						 << std::setw(15) << ",D_max Angle"
+  						 << std::setw(15) << ",D_min Angle"
+  						 << std::setw(15) << ",Ratio"
+  						 << std::setw(15) << ",RatioAngle"
+  						 << std::setw(15) << ",N"
+  						 << std::setw(15) << ",V"
+  						 << std::setw(15) << ",N/V"
+  						 << std::setw(15) << ",E_kin"
+  						 << std::setw(15) << ",n0"
   				 << endl;
   		datafile.close();
-  	} 
+  	}
+
+  	double n0 = 2 * (opt.N / M_PI) * (1 / (totalResult.Rx * totalResult.Ry)); 
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
 	datafile << std::left << std::setw(15) << snapshot_time
-					 << std::setw(15) << opt.t_abs.real()
-					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
-					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
-					 << std::setw(15) << totalResult.r_max
- 					 << std::setw(15) << totalResult.r_min
- 					 << std::setw(15) << totalResult.Rx
- 					 << std::setw(15) << totalResult.Ry
- 					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
- 					 << std::setw(15) << totalResult.r_max_phi
- 					 << std::setw(15) << totalResult.r_min_phi
- 					 << std::setw(15) << totalResult.aspectRatio 
- 					 << std::setw(15) << totalResult.aspectRatioAngle 
-					 << std::setw(15) << totalResult.particle_count
-					 << std::setw(15) << totalResult.volume
-					 << std::setw(15) << totalResult.density
-					 << std::setw(15) << totalResult.Ekin
-					 << std::setw(15) << abs2(PsiVec[0](0,opt.grid[1]/2,opt.grid[2]/2,0)*opt.Ag)
+					 << std::setw(15) << "," << opt.t_abs.real()
+					 << std::setw(15) << "," << opt.min_x * opt.stateInformation[0]
+					 << std::setw(15) << "," << opt.min_y * opt.stateInformation[1]
+					 << std::setw(15) << "," << totalResult.r_max
+ 					 << std::setw(15) << "," << totalResult.r_min
+ 					 << std::setw(15) << "," << totalResult.Rx
+ 					 << std::setw(15) << "," << totalResult.Ry
+ 					 << std::setw(15) << "," << totalResult.r_max / totalResult.r_min  
+ 					 << std::setw(15) << "," << totalResult.r_max_phi
+ 					 << std::setw(15) << "," << totalResult.r_min_phi
+ 					 << std::setw(15) << "," << totalResult.aspectRatio 
+ 					 << std::setw(15) << "," << totalResult.aspectRatioAngle 
+					 << std::setw(15) << "," << totalResult.particle_count
+					 << std::setw(15) << "," << totalResult.volume
+					 << std::setw(15) << "," << totalResult.density
+					 << std::setw(15) << "," << totalResult.Ekin
+					 << std::setw(15) << "," << n0
 			 << endl;
 	datafile.close();
 

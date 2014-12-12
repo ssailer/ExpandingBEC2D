@@ -123,7 +123,7 @@ void RTE::RunSetup(){
    					adaptiveStep /= 2.0;
    					waitingFor3 = false;
    				}
-   			}     			
+   			} 			
    			t_RTE(l) = adaptiveStep;
    			l++;
    		}
@@ -179,6 +179,15 @@ void RTE::RunSetup(){
 	pot_laplacian_y = complex<double>(1.0,0.0) / (two * h_y * h_y);
 
 
+	double mu = sqrt(3.0  * opt.g * real(opt.omega_x) * real(opt.omega_y) * opt.N / 8.0);
+    double Ry = sqrt(2.0 * mu / ( real(opt.omega_y)*real(opt.omega_y))) * opt.Ag;
+    double Rx = sqrt(2.0 * mu / ( real(opt.omega_x)*real(opt.omega_x))) * opt.Ag;
+
+    cout << "Initial Thomas Fermi Radii set to Rx = " << Rx << " and Ry = " << Ry << endl;
+    double n0 = 2 * (opt.N / M_PI) * (1 / (Rx * Ry));
+    cout << "n_0 = " << n0 << endl;
+
+
 }
 
 void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start)
@@ -190,7 +199,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 	if(fmod((float)stateOfLoops[slowestthread],(float)(counter_max/10))==0){
 		int seconds, min, hour, total, expectedhour, expectedmin, expectedseconds;
 		double totalstate = 0;
-		double totalmaxpercent = (double)counter_max * (double)meta.samplesize / 10;
+		double totalmaxpercent = (double)counter_max * (double)meta.samplesize / 100;
 		for(int i = 0; i < meta.samplesize; i++){
 			totalstate += stateOfLoops[i];
 		}
@@ -218,7 +227,7 @@ void RTE::cli(string name,int &slowestthread, vector<int> threadinfo, vector<int
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    "
 			 << std::setw(3) << std::setfill('0') << (int)totalPercent << "% "
-			 << " threads: " << stateOfLoops.size()
+			 // << " threads: " << stateOfLoops.size()
 			 << " remaining runtime: "
 			 << std::setw(2) << std::setfill('0') << expectedhour << ":"
 			 << std::setw(2) << std::setfill('0') << expectedmin << ":"
