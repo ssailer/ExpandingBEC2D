@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 2000
+#define VORTICES_BUILD_TIME 200
 #define HBAR 1.05 * 10e-34
 #define M 1.44 * 10e-25
 
@@ -210,7 +210,7 @@ void ITP::formVortices(string runname){
 
 		scaleFactor = rescale(wavefct);	
 
-		cli(runname,m,VORTICES_BUILD_TIME,start);
+		// cli(runname,m,VORTICES_BUILD_TIME,start);
 	}
 
 	// rescale(wavefct);

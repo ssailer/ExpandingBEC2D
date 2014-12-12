@@ -188,7 +188,7 @@ def main():
 	g2D = As * N * math.sqrt(8.0 * math.pi * omega_z * hbar**3 / m)
 	
 	
-	Ag = 150.0 / 2048.0
+	Ag = 200.0 / 2048.0
 	print "Rx, Ry", 676.007  * Ag, 455.29 * Ag
 	OmegaG = hbar / ( m * Ag * Ag)
 	       
@@ -220,8 +220,8 @@ def main():
 	print "delta T", deltaT
 	# print "g2D = ", g2D
 	# print "cg2D = ", cg2D
-	print "g2D", math.sqrt(8 * math.pi) * 5.8 / 200
-
+	print "g2D", (math.sqrt(8 * math.pi) * 5.8 / 200 )
+	print "test", math.sqrt(8 * math.pi) / math.pi
 
 
 
