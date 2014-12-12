@@ -183,7 +183,7 @@ def main():
 	hbar = hbar * 10**12
 	# hbar = 1
 	# m = 1
-	omega_z = 1207 * 2 * math.pi
+	omega_z = 10 * 2 * math.pi
 	As = 5.8 * 10**-3
 	g2D = As * N * math.sqrt(8.0 * math.pi * omega_z * hbar**3 / m)
 	
@@ -219,9 +219,9 @@ def main():
 	# print "cRomega X, cRomega Y", cRomega_x, cRomega_y
 	print "delta T", deltaT
 	# print "g2D = ", g2D
-	# print "cg2D = ", cg2D
+	print "cg2D = ", cg2D
 	print "g2D", (math.sqrt(8 * math.pi) * 5.8 / 200 )
-	print "test", math.sqrt(8 * math.pi) / math.pi
+	print "test", 8.0 / (math.pi), 15.0 / (4 * math.pi)
 
 
 
