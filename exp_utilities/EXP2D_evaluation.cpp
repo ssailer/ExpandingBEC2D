@@ -747,7 +747,7 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 		}
 	}
 
-	double threshold = maximum * 0.1 ;  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
+	double threshold = maximum * 0.01 ;  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
 
 	// RealGrid densityLocationMap = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
