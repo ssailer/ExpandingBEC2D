@@ -8,11 +8,12 @@ from scipy.cluster.vq import kmeans, kmeans2, whiten
 
 
 def main():
-	Ag = 300.0 / 2048.0
+	Ag = 100.0 / 2048.0
 	m = 87.0 * 1.66e-27;
 	hbar = 1.054e-22;	
 	OmegaG = hbar / ( m * Ag * Ag);
-	datafile = 'stuff5.dat'
+
+	datafile = 'stuff6.dat'
 
 	cols = ["Timestep","Time","X_max","Y_max","D_max","D_min","Rx","Ry","D_max/D_min","D_maxAngle","D_minAngle","Ratio","RatioAngle","N","V","N/V","E_kin","N_0"]
 
@@ -22,25 +23,28 @@ def main():
 
 	dataset2 = from_data['Rx']
 	dataset3 = from_data['Ry']
-	# dataset4 = from_data['D_Ratio']
-	# dataset5 = from_data['D_max_Angle']
-	# dataset1 = dataset1 * ( 0.0340119 / OmegaG )
-	# dataset1 *= 1.33
-	# dataset2 = dataset2 * Ag
-	# dataset3 = dataset3 * Ag
-	# value = 0;
-	# timeline = []
-	# for i in range(0,13):
-	# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG
-	# 	timeline.append(value)
-	# for i in range(13,26):
-	# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG
-	# 	timeline.append(value)
-	# for i in range(26,len(dataset1)):
-	# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG 
-	# 	timeline.append(value)
-	# print dataset1
-	# print timeline
+
+
+
+				# dataset4 = from_data['D_Ratio']
+				# dataset5 = from_data['D_max_Angle']
+				# dataset1 = dataset1 * ( 0.0340119 / OmegaG )
+				# dataset1 *= 1.33
+				# dataset2 = dataset2 * Ag
+				# dataset3 = dataset3 * Ag
+				# value = 0;
+				# timeline = []
+				# for i in range(0,13):
+				# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG
+				# 	timeline.append(value)
+				# for i in range(13,26):
+				# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG
+				# 	timeline.append(value)
+				# for i in range(26,len(dataset1)):
+				# 	value +=  1000.0 * 5000 * 0.0340119 / OmegaG 
+				# 	timeline.append(value)
+				# print dataset1
+				# print timeline
 
 	datafile2 = 'ode_Rx_Ry.dat'
 	# datafile3 = 'ode_1000_Rx_Ry.dat'
@@ -73,7 +77,7 @@ def main():
 	name += r'$\mu m$'
 	plt.ylabel(name)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='46 Vortex')
+	plt.legend(loc='upper left',title='no Vortices')
 
 	# ax1 = fig.add_subplot(312)	
 
@@ -82,14 +86,14 @@ def main():
 	# plt.xlabel('Time in ms')
 	# plt.legend(loc='upper left',title='1 Vortex')
 
-	ax1 = fig.add_subplot(212)
+	ax2 = fig.add_subplot(212)
 
 	name2 = "Aspect Ratio R_x / R_y"
-	ax1.plot(dataset1,ratio1,'.',color='b',label='Rx/Ry GPE')
-	ax1.plot(data1,ratio2,color='r',label='Rx/Ry Hydro')
+	ax2.plot(dataset1,ratio1,'.',color='black',label='Rx/Ry GPE')
+	ax2.plot(data1,ratio2,color='g',label='Rx/Ry Hydro')
 	plt.ylabel(name2)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper right',title='46 Vortex')
+	plt.legend(loc='upper right',title='no Vortices')
 
 	# txt = ''' These graphs describe a situation with 30 Vortices in the initial setup.'''
 

@@ -279,7 +279,7 @@ void Eval::evaluateData(){
   	if(stat (filename.c_str(), &buffer) != 0){
   		ofstream datafile;
   		datafile.open(filename.c_str(), ios::out | ios::app);
-  		datafile << std::left << std::setw(15) << "Timestep"
+  		datafile << std::left << std::setw(15) << "Timestep,"
   						 << std::setw(15) << "Time,"
   						 << std::setw(15) << "X_max,"
   						 << std::setw(15) << "Y_max,"
@@ -296,7 +296,7 @@ void Eval::evaluateData(){
   						 << std::setw(15) << "V,"
   						 << std::setw(15) << "N/V,"
   						 << std::setw(15) << "E_kin,"
-  						 << std::setw(15) << "n0,"
+  						 << std::setw(15) << "n0"
   				 << endl;
   		datafile.close();
   	}
@@ -305,7 +305,7 @@ void Eval::evaluateData(){
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
-	datafile << std::left << std::setw(15) << snapshot_time
+	datafile << std::left << std::setw(15) << snapshot_time << ","
 					 << std::setw(15)  << opt.t_abs.real() << ","
 					 << std::setw(15)  << opt.min_x * opt.stateInformation[0] << ","
 					 << std::setw(15)  << opt.min_y * opt.stateInformation[1] << ","
@@ -322,7 +322,7 @@ void Eval::evaluateData(){
 					 << std::setw(15)  << totalResult.volume << ","
 					 << std::setw(15)  << totalResult.density << ","
 					 << std::setw(15)  << totalResult.Ekin << ","
-					 << std::setw(15)  << n0 << ","
+					 << std::setw(15)  << n0
 			 << endl;
 	datafile.close();
 
