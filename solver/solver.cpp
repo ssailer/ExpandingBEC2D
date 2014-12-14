@@ -50,7 +50,7 @@ double* PchangingValue;
 const double hbar = 1.054e-22;
 const double m = 87 * 1.66e-27;
 const double N = 2.0e5;
-const double g = (hbar * hbar / (m * m)) * 0.145 * (6.0) * N / M_PI;
+const double g = (hbar * hbar / (m * m)) * 0.145 * (4.0) * 0.75 * N / M_PI;
 
 int main( int argc, char** argv)
 {   

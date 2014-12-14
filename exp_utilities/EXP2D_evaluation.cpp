@@ -107,18 +107,6 @@ void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,st
 
 void Eval::CombinedEval(){
 
-	// // ONLY NEEDED UNTIL fixedAspectRatio is saved in BinaryFile::appendEval
-	// Observables tmpResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-	// for(int sampleindex = 0; sampleindex < contour.size(); sampleindex++){
-	// 	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-	// 	aspectRatio(obs,sampleindex);
-	// 	tmpResult.fixedAspectRatio += obs.fixedAspectRatio;
-	// }
-	// tmpResult.fixedAspectRatio /= contour.size();
-	// totalResult.fixedAspectRatio = tmpResult.fixedAspectRatio;
-	// // ONLY NEEDED ONE TIME
-
-
 	string dirname = "CombinedRunObservables";
     struct stat st;
     	if(stat(dirname.c_str(),&st) != 0){
@@ -292,23 +280,23 @@ void Eval::evaluateData(){
   		ofstream datafile;
   		datafile.open(filename.c_str(), ios::out | ios::app);
   		datafile << std::left << std::setw(15) << "Timestep"
-  						 << std::setw(15) << ",Time"
-  						 << std::setw(15) << ",X_max"
-  						 << std::setw(15) << ",Y_max"
-  						 << std::setw(15) << ",D_max"
-  						 << std::setw(15) << ",D_min"
-  						 << std::setw(15) << ",Rx"
-						 << std::setw(15) << ",Ry"
-  						 << std::setw(15) << ",D_max/D_min"
-  						 << std::setw(15) << ",D_max Angle"
-  						 << std::setw(15) << ",D_min Angle"
-  						 << std::setw(15) << ",Ratio"
-  						 << std::setw(15) << ",RatioAngle"
-  						 << std::setw(15) << ",N"
-  						 << std::setw(15) << ",V"
-  						 << std::setw(15) << ",N/V"
-  						 << std::setw(15) << ",E_kin"
-  						 << std::setw(15) << ",n0"
+  						 << std::setw(15) << "Time,"
+  						 << std::setw(15) << "X_max,"
+  						 << std::setw(15) << "Y_max,"
+  						 << std::setw(15) << "D_max,"
+  						 << std::setw(15) << "D_min,"
+  						 << std::setw(15) << "Rx,"
+						 << std::setw(15) << "Ry,"
+  						 << std::setw(15) << "D_max/D_min,"
+  						 << std::setw(15) << "D_max Angle,"
+  						 << std::setw(15) << "D_min Angle,"
+  						 << std::setw(15) << "Ratio,"
+  						 << std::setw(15) << "RatioAngle,"
+  						 << std::setw(15) << "N,"
+  						 << std::setw(15) << "V,"
+  						 << std::setw(15) << "N/V,"
+  						 << std::setw(15) << "E_kin,"
+  						 << std::setw(15) << "n0,"
   				 << endl;
   		datafile.close();
   	}
@@ -318,23 +306,23 @@ void Eval::evaluateData(){
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
 	datafile << std::left << std::setw(15) << snapshot_time
-					 << std::setw(15) << "," << opt.t_abs.real()
-					 << std::setw(15) << "," << opt.min_x * opt.stateInformation[0]
-					 << std::setw(15) << "," << opt.min_y * opt.stateInformation[1]
-					 << std::setw(15) << "," << totalResult.r_max
- 					 << std::setw(15) << "," << totalResult.r_min
- 					 << std::setw(15) << "," << totalResult.Rx
- 					 << std::setw(15) << "," << totalResult.Ry
- 					 << std::setw(15) << "," << totalResult.r_max / totalResult.r_min  
- 					 << std::setw(15) << "," << totalResult.r_max_phi
- 					 << std::setw(15) << "," << totalResult.r_min_phi
- 					 << std::setw(15) << "," << totalResult.aspectRatio 
- 					 << std::setw(15) << "," << totalResult.aspectRatioAngle 
-					 << std::setw(15) << "," << totalResult.particle_count
-					 << std::setw(15) << "," << totalResult.volume
-					 << std::setw(15) << "," << totalResult.density
-					 << std::setw(15) << "," << totalResult.Ekin
-					 << std::setw(15) << "," << n0
+					 << std::setw(15)  << opt.t_abs.real() << ","
+					 << std::setw(15)  << opt.min_x * opt.stateInformation[0] << ","
+					 << std::setw(15)  << opt.min_y * opt.stateInformation[1] << ","
+					 << std::setw(15)  << totalResult.r_max << ","
+ 					 << std::setw(15)  << totalResult.r_min << ","
+ 					 << std::setw(15)  << totalResult.Rx << ","
+ 					 << std::setw(15)  << totalResult.Ry << ","
+ 					 << std::setw(15)  << totalResult.r_max / totalResult.r_min   << ","
+ 					 << std::setw(15)  << totalResult.r_max_phi << ","
+ 					 << std::setw(15)  << totalResult.r_min_phi << ","
+ 					 << std::setw(15)  << totalResult.aspectRatio  << ","
+ 					 << std::setw(15)  << totalResult.aspectRatioAngle  << ","
+					 << std::setw(15)  << totalResult.particle_count << ","
+					 << std::setw(15)  << totalResult.volume << ","
+					 << std::setw(15)  << totalResult.density << ","
+					 << std::setw(15)  << totalResult.Ekin << ","
+					 << std::setw(15)  << n0 << ","
 			 << endl;
 	datafile.close();
 
@@ -747,7 +735,7 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 		}
 	}
 
-	double threshold = maximum * 0.01 ;  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
+	double threshold = maximum * 0.05 ;  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
 
 	// RealGrid densityLocationMap = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
