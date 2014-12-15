@@ -726,19 +726,10 @@ void RTE::splitToTime(string runName){
 
 	#pragma omp parallel for
 	for(int x = 0; x < opt.grid[1]; x++){
-	    for(int y = 0; y < opt.grid[2]; y++){
-	    	for(int z = 0; z < opt.grid[3]; z++){
-
-	      		// double k[3];
-	      		// k[0] = opt.klength[0] * 2.0 * sin(M_PI * x / (double) opt.grid[1]);
-	      		// k[1] = opt.klength[1] * 2.0 * sin(M_PI * y / (double) opt.grid[2]);
-	      		// k[2] = opt.klength[2] * 2.0 * sin(M_PI * z / (double) opt.grid[3]);
-	      		// double T = - 0.5 * (k[0] * k[0] + k[1] * k[1] + k[2] * k[2] ) * timestepsize; // / beta;
-		
-		      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y] + kspace[2][z]*kspace[2][z]) * timestepsize; // / beta;	      
+	    for(int y = 0; y < opt.grid[2]; y++){		
+		    double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize; // / beta;	      
 		      		
-	      		kprop(0,x,y,z) = complex<double>(cos(T),sin(T)) / complex<double>((double)(opt.grid[1]*opt.grid[2]*opt.grid[3]),0.0);	    
-	      	}
+	      	kprop(0,x,y,0) = complex<double>(cos(T),sin(T)) / complex<double>((double)(opt.grid[1]*opt.grid[2]),0.0);	    	      	
 	    }
 	}
 	// plotDataToPng("RTE_Kprop","Control",kprop,opt);
@@ -807,7 +798,7 @@ void RTE::splitToTime(string runName){
 				for(int x = 0; x < rgrid.width(); x++){
 					for(int y = 0; y < rgrid.height(); y++){
 				    	complex<double> value = rgrid(0,x,y,0);
-				    	double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*/ /*+*/ opt.g * abs2(value) ) * timestepsize;
+				    	double V = - ( PotentialGrid(x,y).real() /*rotatingPotential(x,y,m)*/ + opt.g * abs2(value) ) * timestepsize;
 				    	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
 				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
 				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;

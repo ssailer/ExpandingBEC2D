@@ -13,7 +13,7 @@ def main():
 	hbar = 1.054e-22;	
 	OmegaG = hbar / ( m * Ag * Ag);
 
-	datafile = 'stuff6.dat'
+	datafile = 'stuff8.dat'
 
 	cols = ["Timestep","Time","X_max","Y_max","D_max","D_min","Rx","Ry","D_max/D_min","D_maxAngle","D_minAngle","Ratio","RatioAngle","N","V","N/V","E_kin","N_0"]
 
@@ -66,18 +66,25 @@ def main():
 	fig = plt.figure()
 	fig.set_size_inches(10.0,12.0)
 
-	ax1 = fig.add_subplot(211)
-
+	ax1 = fig.add_subplot(311)
 	ax1.plot(dataset1,dataset2,'.',color='r',label='Rx GPE')
 	ax1.plot(data1,data2,color='r',label='Rx Hydro')
-	ax1.plot(dataset1,dataset3,'.',color='b',label='Ry GPE')
-	ax1.plot(data1,data3,color='b',label='Ry Hydro')
 
 	name = "Radii in "
 	name += r'$\mu m$'
 	plt.ylabel(name)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='no Vortices')
+	plt.legend(loc='upper left',title='46 Vortices')
+
+	ax2 = fig.add_subplot(312)
+	ax2.plot(dataset1,dataset3,'.',color='b',label='Ry GPE')
+	ax2.plot(data1,data3,color='b',label='Ry Hydro')
+
+	name = "Radii in "
+	name += r'$\mu m$'
+	plt.ylabel(name)
+	plt.xlabel('Time in ms')
+	plt.legend(loc='upper left',title='46 Vortices')
 
 	# ax1 = fig.add_subplot(312)	
 
@@ -86,14 +93,14 @@ def main():
 	# plt.xlabel('Time in ms')
 	# plt.legend(loc='upper left',title='1 Vortex')
 
-	ax2 = fig.add_subplot(212)
+	ax3 = fig.add_subplot(313)
 
 	name2 = "Aspect Ratio R_x / R_y"
-	ax2.plot(dataset1,ratio1,'.',color='black',label='Rx/Ry GPE')
-	ax2.plot(data1,ratio2,color='g',label='Rx/Ry Hydro')
+	ax3.plot(dataset1,ratio1,'.',color='black',label='Rx/Ry GPE')
+	ax3.plot(data1,ratio2,color='g',label='Rx/Ry Hydro')
 	plt.ylabel(name2)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper right',title='no Vortices')
+	plt.legend(loc='upper right',title='46 Vortices')
 
 	# txt = ''' These graphs describe a situation with 30 Vortices in the initial setup.'''
 

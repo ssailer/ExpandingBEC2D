@@ -3,9 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 200
-#define HBAR 1.05 * 10e-34
-#define M 1.44 * 10e-25
+#define VORTICES_BUILD_TIME 500
 
 #define EIGEN_VECTORIZE
 #define EIGEN_PARALLELIZE
