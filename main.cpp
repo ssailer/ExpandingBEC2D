@@ -85,10 +85,17 @@ try{
 		if(mC == RK4){
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
+
+			string startGridName = "StartGrid_2048_2048_rte.h5";
+			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
+			dataFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
+			delete dataFile;
 		}
 		if(mC == SPLIT){
 			cout << "splitToTime()" << endl;
 			runExpanding->splitToTime(runName);
+
+
 		}
 
 
