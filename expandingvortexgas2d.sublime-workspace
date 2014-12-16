@@ -563,7 +563,7 @@
 			"file": "results/run.cfg",
 			"settings":
 			{
-				"buffer_size": 1257,
+				"buffer_size": 1256,
 				"line_ending": "Unix"
 			}
 		},
@@ -611,7 +611,15 @@
 			"file": "exp_utilities/EXP2D_itp.cpp",
 			"settings":
 			{
-				"buffer_size": 21509,
+				"buffer_size": 21458,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pythonScripts/stuff8.dat",
+			"settings":
+			{
+				"buffer_size": 9499,
 				"line_ending": "Unix"
 			}
 		},
@@ -619,7 +627,7 @@
 			"file": "exp_utilities/EXP2D_rte.cpp",
 			"settings":
 			{
-				"buffer_size": 35931,
+				"buffer_size": 35465,
 				"line_ending": "Unix"
 			}
 		},
@@ -680,6 +688,14 @@
 			}
 		},
 		{
+			"file": "pythonScripts/stuff7.dat",
+			"settings":
+			{
+				"buffer_size": 6172,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "exp_utilities/EXP2D_evaluation.h",
 			"settings":
 			{
@@ -696,14 +712,6 @@
 			}
 		},
 		{
-			"file": "pythonScripts/stuff5.dat",
-			"settings":
-			{
-				"buffer_size": 38360,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "exp_utilities/plot_with_mgl.h",
 			"settings":
 			{
@@ -716,14 +724,6 @@
 			"settings":
 			{
 				"buffer_size": 7507,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pythonScripts/stuff.dat",
-			"settings":
-			{
-				"buffer_size": 14976,
 				"line_ending": "Unix"
 			}
 		},
@@ -763,7 +763,15 @@
 			"file": "pythonScripts/AveragesPlot.py",
 			"settings":
 			{
-				"buffer_size": 3461,
+				"buffer_size": 3624,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pythonScripts/stuff5.dat",
+			"settings":
+			{
+				"buffer_size": 6269,
 				"line_ending": "Unix"
 			}
 		},
@@ -771,15 +779,7 @@
 			"file": "results/remoteResults/Reference_ExpVortex13/runObservables/Expanding-Set-1_Observables.dat",
 			"settings":
 			{
-				"buffer_size": 1711,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pythonScripts/stuff6.dat",
-			"settings":
-			{
-				"buffer_size": 1729,
+				"buffer_size": 10063,
 				"line_ending": "Unix"
 			}
 		},
@@ -803,7 +803,15 @@
 			"file": "solver/solver.cpp",
 			"settings":
 			{
-				"buffer_size": 6019,
+				"buffer_size": 6017,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pythonScripts/stuff2.dat",
+			"settings":
+			{
+				"buffer_size": 15205,
 				"line_ending": "Unix"
 			}
 		},
@@ -1014,11 +1022,13 @@
 	],
 	"file_history":
 	[
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff6.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff5.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/Expanding-Set-1_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/solver/solver.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff2.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/remoteResults/Reference_ExpVortex10/runObservables/Expanding-Set-1_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/effect01/runObservables/Expanding-Set-1_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/remoteResults/split.cfg",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/bigsize01/runObservables/Expanding-Set-1_Observables.dat",
@@ -1139,9 +1149,7 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/results/test-observables-own-3/spectrum0.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/observables/bh3save.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/utilities/complexgrid.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/results/test-observables-own-2/spectrum10.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/results/test-observables-own-2/spectrum5.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/results/test-observables-own-2/spectrum1.dat"
+		"/home/nhrjr/projects/expandingvortexgas2d/results/test-observables-own-2/spectrum10.dat"
 	],
 	"find":
 	{
@@ -1162,6 +1170,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"80",
+			"no",
+			"ax2",
 			"getDensity",
 			"VORTEX_SURROUND_DENSITY_RADIUS",
 			"NUMBER_OF_VORTICES",
@@ -1286,10 +1297,7 @@
 			"cli_ground",
 			"10",
 			"cli_ground",
-			"1024",
-			"512",
-			"1024",
-			"512"
+			"1024"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1307,7 +1315,7 @@
 	"groups":
 	[
 		{
-			"selected": 19,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -1323,8 +1331,8 @@
 						"selection":
 						[
 							[
-								2210,
-								2210
+								2997,
+								2997
 							]
 						],
 						"settings":
@@ -1332,71 +1340,71 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 599.0,
+						"translation.y": 755.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 25,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1421,16 +1429,6 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
@@ -1441,21 +1439,36 @@
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
@@ -1466,16 +1479,11 @@
 								"bh_double_quote_open",
 								"bh_double_quote_close",
 								"bh_double_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
@@ -1485,7 +1493,7 @@
 						"translation.y": 39.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1574,7 +1582,7 @@
 						"translation.y": 971.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 29,
+					"stack_index": 30,
 					"type": "text"
 				},
 				{
@@ -1662,7 +1670,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 35,
+					"stack_index": 36,
 					"type": "text"
 				},
 				{
@@ -1751,7 +1759,7 @@
 						"translation.y": 529.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
@@ -1760,15 +1768,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1257,
+						"buffer_size": 1256,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								162,
-								162
+								440,
+								440
 							]
 						],
 						"settings":
@@ -1776,41 +1784,6 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
@@ -1821,26 +1794,61 @@
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
 								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 39.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1928,7 +1936,7 @@
 						"translation.y": 4819.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 26,
+					"stack_index": 27,
 					"type": "text"
 				},
 				{
@@ -2016,7 +2024,7 @@
 						"translation.y": 2281.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
@@ -2032,8 +2040,8 @@
 						"selection":
 						[
 							[
-								3064,
-								3064
+								4645,
+								4645
 							]
 						],
 						"settings":
@@ -2041,61 +2049,61 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
 								"bh_double_quote_close",
-								"bh_double_quote_content"
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
@@ -2103,10 +2111,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 819.0,
+						"translation.y": 1404.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -2195,7 +2203,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
@@ -2284,7 +2292,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 28,
+					"stack_index": 29,
 					"type": "text"
 				},
 				{
@@ -2293,15 +2301,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 21509,
+						"buffer_size": 21458,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								201,
-								201
+								172,
+								172
 							]
 						],
 						"settings":
@@ -2309,88 +2317,88 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
 								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
 								"bh_double_quote_close",
-								"bh_double_quote_content"
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 624.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 12,
-					"file": "exp_utilities/EXP2D_rte.cpp",
+					"file": "pythonScripts/stuff8.dat",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 35931,
+						"buffer_size": 9499,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7883,
-								7883
+								3810,
+								3810
 							]
 						],
 						"settings":
@@ -2403,70 +2411,159 @@
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax_mgr_loaded": true,
+							"word_wrap": false
+						},
+						"translation.x": 653.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "exp_utilities/EXP2D_rte.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 35465,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								28896,
+								28896
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2379.0,
+						"translation.y": 9048.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 14,
 					"file": "pythonScripts/stuff4.dat",
 					"semi_transient": false,
 					"settings":
@@ -2551,11 +2648,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 15,
 					"file": "results/effect01/runObservables/Expanding-Set-1_Observables.dat",
 					"semi_transient": false,
 					"settings":
@@ -2640,11 +2737,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 16,
 					"file": "exp_utilities/EXP2D_itp.hpp",
 					"semi_transient": false,
 					"settings":
@@ -2670,56 +2767,56 @@
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
@@ -2727,14 +2824,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 363.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 17,
 					"file": "exp_utilities/EXP2D_splitstep.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2819,11 +2916,11 @@
 						"translation.y": 2109.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 18,
 					"file": "results/usbstick/EX_run05_4samples_sV_WN1_spacing30-90/DmaxPlot.py",
 					"semi_transient": false,
 					"settings":
@@ -2908,11 +3005,11 @@
 						"translation.y": 819.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 37,
+					"stack_index": 38,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 19,
 					"file": "results/usbstick/EX_run05_4samples_sV_WN1_spacing30-90/ratiosPlot_EX.py",
 					"semi_transient": false,
 					"settings":
@@ -2997,11 +3094,11 @@
 						"translation.y": 468.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 38,
+					"stack_index": 39,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 20,
 					"file": "exp_utilities/EXP2D_evaluation.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3027,69 +3124,158 @@
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3630.0,
+						"translation.y": 13868.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 21,
+					"file": "pythonScripts/stuff7.dat",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6172,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6172,
+								6172
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax_mgr_loaded": true,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
 					"file": "exp_utilities/EXP2D_evaluation.h",
 					"semi_transient": false,
 					"settings":
@@ -3174,11 +3360,11 @@
 						"translation.y": 1014.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 23,
 					"file": "exp_utilities/plot_with_mgl.cpp",
 					"semi_transient": false,
 					"settings":
@@ -3263,100 +3449,11 @@
 						"translation.y": 4134.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
-					"file": "pythonScripts/stuff5.dat",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 38360,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								424,
-								424
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content"
-							],
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"word_wrap": false
-						},
-						"translation.x": 204.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 23,
+					"buffer": 24,
 					"file": "exp_utilities/plot_with_mgl.h",
 					"semi_transient": false,
 					"settings":
@@ -3442,11 +3539,11 @@
 						"translation.y": 273.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 27,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 25,
 					"file": "exp_utilities/EXP2D_observables.h",
 					"semi_transient": false,
 					"settings":
@@ -3532,96 +3629,7 @@
 						"translation.y": 2593.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 32,
-					"type": "text"
-				},
-				{
-					"buffer": 25,
-					"file": "pythonScripts/stuff.dat",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14976,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2961,
-								2961
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"word_wrap": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 20,
+					"stack_index": 33,
 					"type": "text"
 				},
 				{
@@ -3710,7 +3718,7 @@
 						"translation.y": 3378.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 36,
+					"stack_index": 37,
 					"type": "text"
 				},
 				{
@@ -3800,7 +3808,7 @@
 						"translation.y": 876.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
@@ -3890,7 +3898,7 @@
 						"translation.y": 230.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 33,
+					"stack_index": 34,
 					"type": "text"
 				},
 				{
@@ -3979,7 +3987,7 @@
 						"translation.y": 78.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 31,
+					"stack_index": 32,
 					"type": "text"
 				},
 				{
@@ -3988,19 +3996,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3461,
+						"buffer_size": 3624,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2219,
-								2219
-							],
-							[
-								2254,
-								2254
+								549,
+								549
 							]
 						],
 						"settings":
@@ -4013,56 +4017,56 @@
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"spell_check": false,
 							"syntax": "Packages/Python/Python.tmLanguage",
@@ -4070,27 +4074,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 663.0,
+						"translation.y": 234.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
 					"buffer": 31,
-					"file": "results/remoteResults/Reference_ExpVortex13/runObservables/Expanding-Set-1_Observables.dat",
+					"file": "pythonScripts/stuff5.dat",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1711,
+						"buffer_size": 6269,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								15,
-								15
+								6269,
+								6269
 							]
 						],
 						"settings":
@@ -4103,83 +4107,83 @@
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"syntax_mgr_loaded": true,
 							"word_wrap": false
 						},
 						"translation.x": 0.0,
-						"translation.y": -0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
 					"buffer": 32,
-					"file": "pythonScripts/stuff6.dat",
+					"file": "results/remoteResults/Reference_ExpVortex13/runObservables/Expanding-Set-1_Observables.dat",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1729,
+						"buffer_size": 10063,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1729,
-								1729
+								0,
+								0
 							]
 						],
 						"settings":
@@ -4251,7 +4255,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -4340,7 +4344,7 @@
 						"translation.y": 39.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
@@ -4429,7 +4433,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
@@ -4438,15 +4442,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6019,
+						"buffer_size": 6017,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1303,
-								1303
+								1404,
+								1404
 							]
 						],
 						"settings":
@@ -4459,56 +4463,56 @@
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
-								"bh_angle_content"
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
 							],
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"syntax_mgr_loaded": true,
@@ -4516,14 +4520,103 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 247.0,
+						"translation.y": 468.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 36,
+					"file": "pythonScripts/stuff2.dat",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15205,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								15205,
+								15205
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax_mgr_loaded": true,
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 236.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 37,
 					"file": "exp_utilities/EXP2D_binaryfile.cpp",
 					"semi_transient": false,
 					"settings":
@@ -4607,11 +4700,11 @@
 						"translation.y": 3421.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
-					"buffer": 37,
+					"buffer": 38,
 					"file": "exp_utilities/EXP2D_tools.h",
 					"semi_transient": false,
 					"settings":
@@ -4697,11 +4790,11 @@
 						"translation.y": 195.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 30,
+					"stack_index": 31,
 					"type": "text"
 				},
 				{
-					"buffer": 38,
+					"buffer": 39,
 					"file": "exp_utilities/EXP2D_binaryfile.h",
 					"semi_transient": false,
 					"settings":
@@ -4787,7 +4880,7 @@
 						"translation.y": 390.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 34,
+					"stack_index": 35,
 					"type": "text"
 				}
 			]

@@ -74,7 +74,7 @@ def main():
 	name += r'$\mu m$'
 	plt.ylabel(name)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='46 Vortices')
+	plt.legend(loc='upper left',title='80 Vortices')
 
 	ax2 = fig.add_subplot(312)
 	ax2.plot(dataset1,dataset3,'.',color='b',label='Ry GPE')
@@ -84,7 +84,7 @@ def main():
 	name += r'$\mu m$'
 	plt.ylabel(name)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='46 Vortices')
+	plt.legend(loc='upper left',title='80 Vortices')
 
 	# ax1 = fig.add_subplot(312)	
 
@@ -100,7 +100,7 @@ def main():
 	ax3.plot(data1,ratio2,color='g',label='Rx/Ry Hydro')
 	plt.ylabel(name2)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper right',title='46 Vortices')
+	plt.legend(loc='upper right',title='80 Vortices')
 
 	# txt = ''' These graphs describe a situation with 30 Vortices in the initial setup.'''
 
