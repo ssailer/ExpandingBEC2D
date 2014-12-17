@@ -13,7 +13,7 @@ def main():
 	hbar = 1.054e-22;	
 	OmegaG = hbar / ( m * Ag * Ag);
 
-	datafile = 'stuff8.dat'
+	datafile = 'stuff9.dat'
 
 	cols = ["Timestep","Time","X_max","Y_max","D_max","D_min","Rx","Ry","D_max/D_min","D_maxAngle","D_minAngle","Ratio","RatioAngle","N","V","N/V","E_kin","N_0"]
 
@@ -74,7 +74,7 @@ def main():
 	name += r'$\mu m$'
 	plt.ylabel(name)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='80 Vortices')
+	plt.legend(loc='upper left',title='11 Vortices')
 
 	ax2 = fig.add_subplot(312)
 	ax2.plot(dataset1,dataset3,'.',color='b',label='Ry GPE')
@@ -84,7 +84,7 @@ def main():
 	name += r'$\mu m$'
 	plt.ylabel(name)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper left',title='80 Vortices')
+	plt.legend(loc='upper left',title='11 Vortices')
 
 	# ax1 = fig.add_subplot(312)	
 
@@ -100,7 +100,7 @@ def main():
 	ax3.plot(data1,ratio2,color='g',label='Rx/Ry Hydro')
 	plt.ylabel(name2)
 	plt.xlabel('Time in ms')
-	plt.legend(loc='upper right',title='80 Vortices')
+	plt.legend(loc='upper right',title='11 Vortices')
 
 	# txt = ''' These graphs describe a situation with 30 Vortices in the initial setup.'''
 
