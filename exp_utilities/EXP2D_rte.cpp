@@ -398,6 +398,10 @@ void RTE::rteToTime(string runName)
 			throw e; 
 		}
 	}
+	string startGridName = "StartGrid_2048_2048_rte.h5";
+	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
+	dataFile->appendSnapshot("StartGrid",0,pData,opt);
+	delete dataFile;
 }
 
 void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,complex<double> delta_T){
