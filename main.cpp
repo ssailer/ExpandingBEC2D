@@ -115,6 +115,9 @@ try{
 		tmpOpt.initialRun = false;
 		tmpOpt.n_it_RTE = startUp.getRunTime();
 		tmpOpt.snapshots = startUp.getSnapShots();
+		data->meta.steps = 0;
+		data->meta.time = 0.0;
+		tmpOpt.t_abs = complex<double>(0.0,0.0);
 		RTE* runExpanding = new RTE(data,tmpOpt);
 
 		if(mC == RK4){
