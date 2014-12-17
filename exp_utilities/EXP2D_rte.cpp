@@ -105,26 +105,29 @@ void RTE::RunSetup(){
    		l_x = lambda_x(absTime);
    		l_y = lambda_y(absTime);
 
+
+
    		if(t % 2 == 0){
    			bigger = (l_x.real() >= l_y.real()) ? l_x.real() : l_y.real();
-   			if(bigger >= 2.0){
-   				if(waitingFor1 == true){
-   					adaptiveStep /= 2.0;
-   					waitingFor1 = false;
-   				}
-   			}
-   			if(bigger >= 4.0){
-   				if(waitingFor2 == true){
-   					adaptiveStep /= 2.0;
-   					waitingFor2 = false;
-   				}
-   			}
-   			if(bigger >= 6.0){
-   				if(waitingFor2 == true){
-   					adaptiveStep /= 2.0;
-   					waitingFor3 = false;
-   				}
-   			} 			
+   			// if(bigger >= 2.0){
+   			// 	if(waitingFor1 == true){
+   			// 		adaptiveStep /= 2.0;
+   			// 		waitingFor1 = false;
+   			// 	}
+   			// }
+   			// if(bigger >= 4.0){
+   			// 	if(waitingFor2 == true){
+   			// 		adaptiveStep /= 2.0;
+   			// 		waitingFor2 = false;
+   			// 	}
+   			// }
+   			// if(bigger >= 6.0){
+   			// 	if(waitingFor2 == true){
+   			// 		adaptiveStep /= 2.0;
+   			// 		waitingFor3 = false;
+   			// 	}
+   			// } 		
+   			adaptiveStep = opt.RTE_step / bigger;	
    			t_RTE(l) = adaptiveStep;
    			l++;
    		}
@@ -135,8 +138,6 @@ void RTE::RunSetup(){
    		gradient_coefficient_y(t) = lambda_y_dot(absTime) / (two * h_y * l_y);
    		absTime += ( half * complex<double>(adaptiveStep,0.0) );	   		
    	}
-   	cout << "absTime" << absTime << endl;
-   	cout << opt.omega_x << " " << opt.omega_y << " " << opt.dispersion_x << " " << opt.dispersion_y << endl;
 
    	ranges.resize(2);
 	// complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);

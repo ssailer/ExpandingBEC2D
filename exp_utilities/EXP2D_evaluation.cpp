@@ -539,51 +539,46 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	VortexData vortex;
 					// Charakteristika eines gefundenen Vortex
 
-	// cout << "findVortices_before iterator" << endl;
-
-
+	Vector<int32_t> down = phase.make_vector(0,-2,0);
+	Vector<int32_t> right = phase.make_vector(2,0,0);
+	Vector<int32_t> up = phase.make_vector(0,2,0);
+	Vector<int32_t> left = phase.make_vector(-2,0,0);
 
 	for(vector<Coordinate<int32_t>>::const_iterator it = densityCoordinates.begin(); it != densityCoordinates.end(); ++it){
 
-	// for (int z = 0; z < phase.depth(); z++)
-	// {
-		// for (int x = 0; x < phase.width(); x++)
-	// 	{
-			// for (int y = 0; y < phase.height(); y++)
-	// 		{
+		Coordinate<int32_t> c = *it; // phase.make_coord(x,y,z);
 
-				Coordinate<int32_t> c = *it; // phase.make_coord(x,y,z);
-				Vector<int32_t> down = phase.make_vector(0,-1,0);
-				Vector<int32_t> right = phase.make_vector(1,0,0);
-				Vector<int32_t> up = phase.make_vector(0,1,0);
-				Vector<int32_t> left = phase.make_vector(-1,0,0);
-					
-				int phase_winding = get_phase_jump(c, down, phase) + get_phase_jump(c+down, right, phase) + get_phase_jump(c+down+right, up, phase) + get_phase_jump(c+right, left, phase);
-				// int mass_zeros = zeros.at(0,c) + zeros.at(0,c+down) + zeros.at(0,c+down+right) + zeros.at(0,c+right);
-				// if(mass_zeros < 4 && mass_zeros >= 0)
-				if(phase_winding != 0)
-				{
-					vortex.n = phase_winding;
-					vortex.x = c + phase.make_vector(0.5, -0.5, 0);
-					// cout << vortex.x << endl;
-					vortex.points.clear();
-					vortex.points.push_back(c);
-					vortex.num_points = 1;
-					vlist.push_back(vortex);					
-				}
-				/*if(get_vortex(phase.make_coord(x,y,z), phase, zeros, mass_zeros, checked, vortex)) // prueft auf Vortices
-				{
-					vlist.push_back(vortex);					// und er wird in der Liste zurueckgegeben
-				}*/
-	// 		}
-		// }
+			
+		int phase_winding = get_phase_jump(c, down, phase) + get_phase_jump(c+down, right, phase) + get_phase_jump(c+down+right, up, phase) + get_phase_jump(c+right, left, phase);
 
+		if(phase_winding != 0){
+			vortex.n = phase_winding;
+			vortex.x = c + phase.make_vector(1, -1, 0);
+			vortex.points.clear();
+			vortex.points.push_back(c);
+			vortex.num_points = 1;
+			vlist.push_back(vortex);					
+		}
 	}
 
+	cout << "Vortexnumber before surround dens check: " << vlist.size() << endl;
+
 	// CHECK DENSITY AROUND VORTEX
+	vector<list<VortexData>::iterator> to_delete;
 
+	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
+		list<VortexData>::iterator it1 = it;
+		
+		for(++it1; it1 != vlist.end();){
+			Vector<int32_t> distance = it->x - it1->x;
+			if( distance.norm() <= 2.0){
+				it1 = vlist.erase(it1);
+			}else{
+				++it1;
+			}
+		}
 
-	// cout << "findVortices before denscheck" << endl;
+	}
 
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		vector<double> polarDensity;
