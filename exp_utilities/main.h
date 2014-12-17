@@ -29,6 +29,7 @@ private:
 enum MainControl {
 	SPLIT,
 	RK4,
+	RK4_RESTART
 };
 
 
@@ -83,6 +84,7 @@ MainControl StartUp::toMainControl(const std::string& s)
 {
     if (s == "SPLIT") return SPLIT;
     if (s == "RK4") return RK4;
+    if (s == "RK4_RESTART") return RK4_RESTART;
     throw std::runtime_error("Invalid conversion from string to MainControl.");
 }
 

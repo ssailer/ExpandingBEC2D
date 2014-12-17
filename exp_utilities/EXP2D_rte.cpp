@@ -93,6 +93,7 @@ void RTE::RunSetup(){
    	t_RTE = VectorXcd::Zero(opt.n_it_RTE - meta.steps + 1);
 
    	complex<double> absTime(meta.time,0.0);
+   	cout << "absTime" << absTime << endl;
    	int l = 0;
    	double adaptiveStep = opt.RTE_step;
    	double bigger;
@@ -134,6 +135,8 @@ void RTE::RunSetup(){
    		gradient_coefficient_y(t) = lambda_y_dot(absTime) / (two * h_y * l_y);
    		absTime += ( half * complex<double>(adaptiveStep,0.0) );	   		
    	}
+   	cout << "absTime" << absTime << endl;
+   	cout << opt.omega_x << " " << opt.omega_y << " " << opt.dispersion_x << " " << opt.dispersion_y << endl;
 
    	ranges.resize(2);
 	// complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
@@ -142,10 +145,10 @@ void RTE::RunSetup(){
 	double arr = real(absTime) * 1000.0 / opt.OmegaG;
 	cout << "Max ExpFactor: " << real(lambda_x(absTime)) << "  " << real(lambda_y(absTime)) << " with a time of " << std::setprecision(15) << arr << " ms" << " " << t_RTE(0) / opt.OmegaG << " " <<  t_RTE(l-1) / opt.OmegaG<< endl;
 
-	if(ranges[0] > ranges[1])
-		ranges[1] = ranges[0];
-	else if(ranges[1] > ranges[0])
-		ranges[0] = ranges[1];
+	// if(ranges[0] > ranges[1])
+	// 	ranges[1] = ranges[0];
+	// else if(ranges[1] > ranges[0])
+	// 	ranges[0] = ranges[1];
 	cout << "Max Ranges: " << ranges[0] << "  " << ranges[1] << endl;
 
 
