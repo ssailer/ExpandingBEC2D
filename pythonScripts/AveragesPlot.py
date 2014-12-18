@@ -13,7 +13,7 @@ def main():
 	hbar = 1.054e-22;	
 	OmegaG = hbar / ( m * Ag * Ag);
 
-	datafile = 'stuff9.dat'
+	datafile = 'stuff11_5V.dat'
 
 	cols = ["Timestep","Time","X_max","Y_max","D_max","D_min","Rx","Ry","D_max/D_min","D_maxAngle","D_minAngle","Ratio","RatioAngle","N","V","N/V","E_kin","N_0"]
 
