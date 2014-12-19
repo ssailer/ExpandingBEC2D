@@ -30,7 +30,7 @@ typedef struct {
 
 class RTE
 {
-  public:
+public:
     RTE(MatrixData* &d,const Options &opt);  
 
     void setOptions(const Options &externaloptions);
@@ -40,20 +40,28 @@ class RTE
 
     void rteToTime(string runName);
     void splitToTime(string runName);
-    // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction
     MatrixData* pData;
 
     // Storage Variable for the runs
-    // MatrixXcd wavefct;
+
     vector<MatrixXcd> &wavefctVec;
     MatrixData::MetaData &meta;
 
-    // void CopyComplexGridToEigen();
-    // void CopyEigenToComplexGrid();
+
     
-    // Coordinates
+
+    
+
+    // internal RunOptions, use setOptions(Options) to update from the outside
+    Options opt;
+    
+
+    virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
+
+    vector<int> snapshot_times;
+        // Coordinates
     vector<double> x_axis,y_axis;
     VectorXcd X,Y;
     MatrixXcd Xmatrix,Ymatrix;
@@ -67,24 +75,11 @@ class RTE
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(const string name);
     void noise();
-    inline void rescale(MatrixXcd &wavefct);
-    
 
-    // internal RunOptions, use setOptions(Options) to update from the outside
-    Options opt;
-    vector<int> snapshot_times;
-
-  private:
-
-    //
-    void RTE_compute_k_ex(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    void RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t);
-    void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     inline double rotatingPotential(int &i, int &j, int &t);
 
     void ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,complex<double> delta_T);
-    void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
+    
     void MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut);
    
 
@@ -135,6 +130,20 @@ class RTE
     return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t));
    }
   
+};
+
+class Expansion : public RTE {
+public:
+    Expansion(MatrixData* &d,const Options &opt) : RTE(d,opt) {}
+private:
+    virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
+};
+
+class Trap : public RTE {
+public:
+    Trap(MatrixData* &d,const Options &opt) : RTE(d,opt) {}
+private:
+    virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
 };
 
 

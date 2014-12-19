@@ -81,7 +81,35 @@ try{
 			delete startGrid;
 			
 			string runName = startUp.getRunName();
-			RTE* runExpanding = new RTE(data,startUp.getOptions());
+			RTE* runExpanding = new Expansion(data,startUp.getOptions());
+			cout << "rteToTime()" << endl;
+			runExpanding->rteToTime(runName);
+
+			delete runExpanding;
+			delete data;
+
+		}
+		if(mC == TRAP){
+
+			MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+	
+			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+			
+			string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+			
+			MatrixData* data = new MatrixData(startUp.getMeta());
+			
+			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+			delete dataFile;
+
+			for(int i = 0; i < data->meta.samplesize; i++){
+				data->wavefunction[i] = startGrid->wavefunction[0];
+			}
+			delete startGrid;
+			
+			string runName = startUp.getRunName();
+			RTE* runExpanding = new Trap(data,startUp.getOptions());
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
 
@@ -140,7 +168,7 @@ try{
 			tmpOpt.t_abs = complex<double>(0.0,0.0);
 
 	
-			RTE* runExpanding = new RTE(data,tmpOpt);
+			RTE* runExpanding = new Expansion(data,tmpOpt);
 
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
