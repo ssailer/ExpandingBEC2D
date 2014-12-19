@@ -1,8 +1,11 @@
-CMakeLists.txt
+CMake*
+cmake*
+Makefile
 .directory
 build/
 *~
 *.dat
+*.png
 *.gch
 /.project
 /results

@@ -17,10 +17,10 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi;
+        double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi, Rx, Ry;
         ArrayXd number;
-        ArrayXd k;
-        ArrayXd angularDensity;
+        ArrayXd k,r;
+        ArrayXd angularDensity,radialDensity;
         ArrayXd fixedAspectRatio;
         
         Observables();
@@ -54,17 +54,23 @@ typedef struct {
 
 struct PathResults {
     list<VortexData> vlist;
+    vector<double> histogram;
+    vector<double> distance;
 };
 
 inline Observables::Observables() :
         number(),
         k(),
+        r(),
+        radialDensity(),
         angularDensity(360),
         fixedAspectRatio(90)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
     number.setZero();
     k.setZero();
+    r.setZero();
+    radialDensity.setZero();
     angularDensity.setZero();
     fixedAspectRatio.setZero();
 }
@@ -74,12 +80,16 @@ inline Observables::Observables() :
 inline Observables::Observables(int avgrid) :
         number(avgrid),
         k(avgrid),
+        r(avgrid),
+        radialDensity(avgrid),
         angularDensity(360),
         fixedAspectRatio(90)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
     number.setZero();
     k.setZero();
+     r.setZero();
+    radialDensity.setZero();
     angularDensity.setZero();
     fixedAspectRatio.setZero();
 }
@@ -98,13 +108,17 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.r_min = r_min + a.r_min;
     ret.r_max_phi = r_max_phi + a.r_max_phi;    
     ret.r_min_phi = r_min_phi + a.r_min_phi;
+    ret.Rx = Rx + a.Rx;
+    ret.Ry = Ry + a.Ry;
     ret.density = density + a.density;
     ret.volume = volume + a.volume;
     ret.angularDensity = angularDensity + a.angularDensity;
+    ret.radialDensity = radialDensity + a.radialDensity;
 
 
     ret.number = number + a.number; 
     ret.k = k + a.k;
+    ret.r = r + a.r;
     
     return ret;
 }
@@ -123,12 +137,16 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.r_min = r_min - a.r_min;
     ret.r_max_phi = r_max_phi - a.r_max_phi; 
     ret.r_min_phi = r_min_phi - a.r_min_phi;
+    ret.Rx = Rx - a.Rx;
+    ret.Ry = Ry - a.Ry;
     ret.density = density - a.density;
     ret.volume = volume - a.volume;
     ret.angularDensity = angularDensity - a.angularDensity;
+    ret.radialDensity = radialDensity - a.radialDensity;
 
     ret.number = number - a.number; 
     ret.k = k - a.k;
+    ret.r = r - a.r;
     
     return ret;
 }
@@ -147,12 +165,16 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.r_min = r_min * a.r_min;
     ret.r_max_phi = r_max_phi * a.r_max_phi; 
     ret.r_min_phi = r_min_phi * a.r_min_phi;
+    ret.Rx = Rx * a.Rx;
+    ret.Ry = Ry * a.Ry;
     ret.density = density * a.density;
     ret.volume = volume * a.volume;
     ret.angularDensity = angularDensity * a.angularDensity;
+    ret.radialDensity = radialDensity * a.radialDensity;
 
     ret.number = number * a.number; 
     ret.k = k * a.k;
+    ret.r = r * a.r;
     
     return ret;
 }
@@ -171,12 +193,16 @@ inline Observables Observables::operator* (double d) const
     ret.r_min = r_min * d;
     ret.r_max_phi = r_max_phi * d; 
     ret.r_min_phi = r_min_phi * d;
+    ret.Rx = Rx * d;
+    ret.Ry = Ry * d;
     ret.density = density * d;
     ret.volume = volume * d;
     ret.angularDensity = angularDensity * d;
+    ret.radialDensity = radialDensity * d;
 
     ret.number = number * d;    
     ret.k = k * d;
+    ret.r = r * d;
 
     return ret;
 }
@@ -195,12 +221,16 @@ inline Observables Observables::operator/ (double d) const
     ret.r_min = r_min / d;
     ret.r_max_phi = r_max_phi / d; 
     ret.r_min_phi = r_min_phi / d;
+    ret.Rx = Rx / d;
+    ret.Ry = Ry / d;
     ret.density = density / d;
     ret.volume = volume / d;
     ret.angularDensity = angularDensity / d;
+    ret.radialDensity = radialDensity / d;
 
     ret.number = number / d;    
     ret.k = k / d;
+    ret.r = r / d;
     
     return ret;
 }

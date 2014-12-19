@@ -25,6 +25,7 @@ Last Update: 22/07/13
 #include <main.h>
 #include <EXP2D_tools.h>
 #include <EXP2D_itp.hpp>
+#include <EXP2D_binaryfile.h>
 #include <EXP2D_rte.hpp>
 #include <EXP2D_evaluation.h>
 #include <plot_with_mgl.h>
@@ -40,10 +41,10 @@ Last Update: 22/07/13
 
 using namespace std;
 
-int main( int argc, char** argv) 
-{	
+int main( int argc, char** argv){	
+
 try{
-	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+
 	StartUp startUp(argc,argv);	
 
 	#if DEBUG_LOG
@@ -54,59 +55,135 @@ try{
  	#endif
 
  	startUp.printInitVar();
-	
-	MatrixData* startGrid = new MatrixData(startUp.getMeta());
-		
-	setGridToGaussian(startGrid,startUp.getOptions());
 
-	// cout << "value " << startGrid->wavefunction[0](1024,1024) << endl;
+	Options tmpOpt = startUp.getOptions();
+	MainControl mC = startUp.getControl();
 
-	ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-	string itpname = "ITP-Groundstate";
-	groundStateITP->propagateToGroundState(itpname);
-	startGrid->wavefunction[0] = groundStateITP->result();
-	delete groundStateITP;
+	if(!startUp.restart()){
+		// runExpanding->noise();
+		if(mC == RK4){
 
-	string tmpRunMode = startUp.getRunMode();
-	if(tmpRunMode.compare(3,1,"1") == 0){
-		int vnumber = 0;
-		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
-		
-		startUp.setVortexnumber(vnumber);
-		cout << endl << "Set Vortices #: " << vnumber << endl;
+			MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 	
-		itpname = "ITP-Vortices";
-		ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
-		vorticesITP->formVortices(itpname);
+			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+			
+			string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+			
+			MatrixData* data = new MatrixData(startUp.getMeta());
+			
+			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+			delete dataFile;
+
+			for(int i = 0; i < data->meta.samplesize; i++){
+				data->wavefunction[i] = startGrid->wavefunction[0];
+			}
+			delete startGrid;
+			
+			string runName = startUp.getRunName();
+			RTE* runExpanding = new RTE(data,startUp.getOptions());
+			cout << "rteToTime()" << endl;
+			runExpanding->rteToTime(runName);
+
+			delete runExpanding;
+			delete data;
+
+		}
+		if(mC == SPLIT){
+
+			MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 		
-		startGrid->wavefunction[0] = vorticesITP->result();
+			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+			
+			string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+		
+			MatrixData* data = new MatrixData(startUp.getMeta());
+		
+			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+			delete dataFile;
 	
-		delete vorticesITP;
+			for(int i = 0; i < data->meta.samplesize; i++){
+				data->wavefunction[i] = startGrid->wavefunction[0];
+			}
+			delete startGrid;
+		
+			string runName = startUp.getRunName();
+			RTE* runExpanding = new RTE(data,startUp.getOptions());
+			cout << "splitToTime()" << endl;
+			runExpanding->splitToTime(runName);
+
+			delete runExpanding;
+			delete data;
+
+		}
+		if(mC == RK4_RESTART){
+
+			MatrixData* data = new MatrixData(startUp.getMeta());
+
+			string runName = startUp.getRunName();
+			string filename = runName + "-LastGrid.h5";
+			binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
+
+			vector<int> timeList = dataFile->getTimeList();
+			dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
+			delete dataFile;
+
+			tmpOpt = startUp.getOptions();
+
+			tmpOpt.initialRun = true;
+			tmpOpt.n_it_RTE = startUp.getRunTime();
+			tmpOpt.snapshots = startUp.getSnapShots();
+	
+			data->meta.steps = 0;
+			data->meta.time = 0.0;
+			tmpOpt.t_abs = complex<double>(0.0,0.0);
+
+	
+			RTE* runExpanding = new RTE(data,tmpOpt);
+
+			cout << "rteToTime()" << endl;
+			runExpanding->rteToTime(runName);
+
+			delete runExpanding;
+			delete data;
+		}
+
+
+
 	}
-
-	// FIXME: To run RTE multiple times, go into RTE::RunSetup() and fix the expanding coordinates starting procedure. It has to be loaded from metaData, instead of calculating directly, not only the time.
-
-	for( int k = 1; k <= 4; k++){
+	
+	if(startUp.restart()){
+		string runName = startUp.getRunName();
+		string filename = runName + "-LastGrid.h5";
 		MatrixData* data = new MatrixData(startUp.getMeta());
-		for(int i = 0; i < data->meta.samplesize; i++){
-			data->wavefunction[i] = startGrid->wavefunction[0];
-		}	
-		string runName = "Expanding-Set-"+to_string(k);
-		RTE* runExpanding = new RTE(data,startUp.getOptions());
-		runExpanding->noise();
-		runExpanding->rteToTime(runName);
+		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
+	
+		vector<int> timeList = dataFile->getTimeList();
+		dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
+		delete dataFile;
+		tmpOpt.initialRun = false;
+		tmpOpt.n_it_RTE = startUp.getRunTime();
+		tmpOpt.snapshots = startUp.getSnapShots();
+
+		RTE* runExpanding = new RTE(data,tmpOpt);
+
+		if(mC == RK4){
+			cout << "rteToTime()" << endl;
+			runExpanding->rteToTime(runName);
+		}
+		if(mC == SPLIT){
+			cout << "splitToTime()" << endl;
+			runExpanding->splitToTime(runName);
+		}
+
 		delete runExpanding;
 		delete data;
 	}
-	// }
-	
-	delete startGrid;	
-
-}  // exceptions catcher
+}
 
 
-catch(const std::exception& e) 
-{ 
+catch(const std::exception& e){ 
   	std::cerr << "Unhandled Exception reached the top of main: " 
     	      << e.what() << ", application will now exit" << std::endl; 
 	return ERROR_UNHANDLED_EXCEPTION; 
@@ -116,14 +193,12 @@ catch(expException& e){
 	std::cerr << " Terminating now." << endl;
 	return ERROR_UNHANDLED_EXCEPTION;
 }
-catch (const std::string& errorMessage) 
-{ 
+catch (const std::string& errorMessage){ 
 	std::cerr << errorMessage.c_str(); 
 	std::cerr << " Terminating now." << endl; 
 	return SUCCESS; 
-// the code could be different depending on the exception message 
 }
-cerr << "Run complete. Terminating successfully." << endl; 
+cerr << "[END]" << endl; 
 return SUCCESS; 	
 }
 

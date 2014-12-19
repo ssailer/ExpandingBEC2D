@@ -23,8 +23,9 @@ Last Update: 22/07/13
 #include <EXP2D_MatrixData.h>
 #include <main.h>
 #include <EXP2D_tools.h>
-#include <EXP2D_itp.hpp>
-#include <EXP2D_rte.hpp>
+// #include <EXP2D_itp.hpp>
+// #include <EXP2D_rte.hpp>
+#include <EXP2D_binaryfile.h>
 #include <EXP2D_evaluation.h>
 #include <plot_with_mgl.h>
 
@@ -45,19 +46,19 @@ try{
  		std::ofstream logstream("evaluator.log");
  		redirecter redirect(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
  	}
-	
+	int files = 1;
 	vector<vector<Observables>> obs;	
-	obs.resize(4);
+	obs.resize(files);
 	vector<Options> opt;
 	MatrixData::MetaData meta;
 	vector<vector<Eval>> results;
-	results.resize(4);
+	results.resize(files);
 
 	vector<int> timeList;
 
-	for(int k = 0; k < 4; k++){
+	for(int k = 0; k < files; k++){
 
-		string runName = "Expanding-Set-"+to_string(k+1);
+		string runName = "Expanding-Set-1";
 		string evalname = runName + "-Eval.h5";
 
 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::in);
@@ -80,17 +81,19 @@ try{
 	}
 
 
-	string finalRunName = "Expanding";
+	string finalRunName = "Expanding-Set-1";
 	Eval finalResult;
 	for(int i = 0; i < timeList.size(); i++){
-		cout << "Processing Time: " << timeList[i] << " .." << endl;
-		vector<Eval> tmpResults(4);
-		for(int f = 0; f < 4; f++){
+		cout << "Processing Time: " << timeList[i] << " .. " ;
+		vector<Eval> tmpResults(files);
+		for(int f = 0; f < files; f++){
 			tmpResults[f] = results[f][i];
 		}
 		finalResult.saveDataFromEval(opt[i],timeList[i],finalRunName,tmpResults);
+		cout << "\r" << flush;
 
 	}
+	cout << endl;
 	cout << "Evaluation finished" << endl;
 
 }  // exceptions catcher

@@ -32,6 +32,7 @@ public:
 
     void propagateToGroundState(string runname);
     void formVortices(string runname);
+    void findVortices(string runname);
 
     // StoragePointer for the wavefunction
     ComplexGrid* pPsi;
@@ -57,19 +58,25 @@ private:
     void plot(const string name);
 
     inline void ITP_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp);
+    void ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp);
 
-    inline void rescale(MatrixXcd &wavefct); 
+    void ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp);
+    void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby);
+
+    inline double rotatingPotential(int i, int j, int angle);
+
+    inline double rescale(MatrixXcd &wavefct); 
 
     // Variables
     complex<double> h_x, h_y;
     complex<double> itp_laplacian_x;
     complex<double> itp_laplacian_y;
 
-     Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
+    Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
-    MatrixXcd PotentialGrid;
+    MatrixXcd PotentialGrid,wavefctcp,k0,k1,k2,k3;
 
-    double pi, scaleFactor;
+    double pi, scaleFactor, old_scaleFactor, particleNumber;
     complex<double>  zero,half,one,two,four,six,i_unit;
     complex<double> t_ITP;
 

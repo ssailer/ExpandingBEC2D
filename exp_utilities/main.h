@@ -15,7 +15,7 @@
 
 using namespace libconfig;
 
-class redirecter // copied from 
+class redirecter 
 {
 public:
     redirecter(std::ostream & dst, std::ostream & src)
@@ -26,21 +26,32 @@ private:
     std::streambuf * const sbuf;
 };
 
+enum MainControl {
+	SPLIT,
+	RK4,
+	RK4_RESTART,
+	TRAP
+};
+
+
+
 class StartUp {
 public:
-	StartUp(int argcTmp, char** argvTmp) {
+	StartUp(int argcTmp, char** argvTmp) : restartValue(false) {
 		argc = argcTmp;
 		argv = argvTmp;
 		readCli();
 		readConfig();
-		setDirectory();
+		setDirectory();		
 	}
 	inline void printInitVar();
 	inline void setDirectory();
 	inline int readCli();
 	inline int readConfig();
+	inline void writeConfig();
 
 	inline Options getOptions();
+	inline void setOptions(Options &ext_opt);
 	inline void setInitialRun(bool initialRun);
 	inline void setVortexnumber(int number);
 	inline void setRunMode(string runmode);
@@ -48,16 +59,51 @@ public:
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
 	inline string getRunMode();
-	bool newRun;
+	inline bool restart();
+	inline string getStartingGridName();
+	inline int getRunTime(){ return opt.n_it_RTE;};
+	inline int getSnapShots(){ return opt.snapshots;};
+	inline MainControl getControl(){return toMainControl(MainControlString);};
+	inline string getRunName(){return runName;};
+
+
+	inline void convertToDimensionless();
+	inline void convertFromDimensionless();
 private:
+	MainControl toMainControl(const std::string& s);
+	bool restartValue;
+	string startingGridName;
 	MatrixData::MetaData meta;
 	Options opt;
 	int argc;
 	char** argv;
+	string MainControlString = "Empty String";
+	string runName = "Expanding-Set-1";
 };
+
+MainControl StartUp::toMainControl(const std::string& s)
+{
+    if (s == "SPLIT") return SPLIT;
+    if (s == "RK4") return RK4;
+    if (s == "RK4_RESTART") return RK4_RESTART;
+    if (s == "TRAP") return TRAP;
+    throw std::runtime_error("Invalid conversion from string to MainControl.");
+}
+
+inline bool StartUp::restart(){
+	return restartValue;
+}
+
+inline string StartUp::getStartingGridName(){
+	return startingGridName;
+}
 
 inline Options StartUp::getOptions(){
 	return opt;
+}
+
+inline void StartUp::setOptions(Options &ext_opt){
+	opt = ext_opt;
 }
 
 inline void StartUp::setInitialRun(bool initialRun){
@@ -100,10 +146,13 @@ inline void StartUp::printInitVar()
 {
 	std::cout.setf(std::ios::boolalpha);
 	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
-				<< "Gridsize in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
-				<< "Gridsize in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
+				<< "Gridpoints in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
+				<< "Gridpoints in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
+				<< "Coordinates in x-direction: " << opt.min_x << endl
+				<< "Coordinates in y-direction: " << opt.min_y << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << "Vortices will be added: " << opt.runmode[3] << endl
+				<< "ITP Step: " << opt.ITP_step << "\t" << "RTE Step: " << opt.RTE_step << endl
+				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << endl
 				<< "RTE potential on: " << opt.runmode[2] << endl
 				<< "Runmode: " << opt.runmode << endl
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
@@ -117,7 +166,6 @@ inline void StartUp::setDirectory()
 		if(chdir(opt.workingdirectory.c_str()) == 0){
 			cerr << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
 			cerr << "Check \"run.log\" for output of this run." << endl;
-			newRun = false;
 		}
 	}else
 	{
@@ -126,7 +174,6 @@ inline void StartUp::setDirectory()
 
 		if(chdir(opt.workingdirectory.c_str()) == 0){
 			cerr << "Switching to " << "\"" << opt.workingdirectory << "\"" << endl;
-			newRun = true;
 		}
 		cerr << endl;
 		cerr << "Check \"run.log\" for information about this run." << endl;			
@@ -138,14 +185,18 @@ inline int StartUp::readCli()
 {
 	// Beginning of the options block
 
-    // Define and parse the program options 
+    // Define and parse the program options
 
     namespace po = boost::program_options; 
     po::options_description desc("Options"); 
     desc.add_options() 
       ("help,h", "Print help messages.") 
-      ("config,c",po::value<string>(&opt.config), "Name of the configfile")
-      ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data");
+      ("config,c",po::value<string>(&opt.config), "Name of the configfile.")      
+      ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data.")
+      ("restart,r","Use if you want to restart the run from LastGrid.")
+      ("mode,m",po::value<string>(&MainControlString), "Runmode given: Choose between SPLIT and RK4.")
+      ("name,n",po::value<string>(&runName), "Name of the run.");
+
       // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
       // ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
       // ("gauss",po::value<bool>(&opt.startgrid[0]),"Initial Grid has gaussian form.")
@@ -156,10 +207,16 @@ inline int StartUp::readCli()
       // ("expansion,e",po::value<double>(&exp_factor),"Expansion Factor")
       // ("interaction,g",po::value<double> (&opt.g),"Interaction Constant");
 
+    
+
+
+
 
 	po::positional_options_description positionalOptions; 
-	positionalOptions.add("config", 1);
-	positionalOptions.add("directory",1);
+	positionalOptions.add("config", 1);	
+	positionalOptions.add("directory",1);	
+	positionalOptions.add("mode", 1);
+	// positionalOptions.add("name",1);
 
     po::variables_map vm; 
 
@@ -172,18 +229,23 @@ inline int StartUp::readCli()
  
       /** --help option 
        */ 
-      if ( vm.count("help")  ) 
-      { 
+      if ( vm.count("help")  ){ 
         std::cout << "This is a program to simulate the expansion of a BEC with Vortices in 2D" << endl
         		  << "after a harmonic trap has been turned off. The expansion is simulated by" << endl
         		  << "an expanding coordinate system. The implemented algorithm to solve the GPE" << endl
         		  << "is a 4-th order Runge-Kutta Integration." << endl << endl
-                  << desc << endl; 
-        return SUCCESS; 
+                  << desc << endl;
+        string e = "End of Help.";
+        throw e;
       } 
  
       po::notify(vm); // throws on error, so do after help in case 
                       // there are any problems 
+
+    	if(vm.count("restart")){
+    		restartValue = true;
+
+		}
     } 
     catch(po::error& e) 
     { 
@@ -227,6 +289,7 @@ inline int StartUp::readConfig()
 	opt.N                    = root["RunOptions"]["N"];
 	opt.min_x                = root["RunOptions"]["min_x"]; 					
 	opt.min_y                = root["RunOptions"]["min_y"];
+	opt.min_z				 = root["RunOptions"]["min_z"];
 	opt.klength[0] 			 = root["RunOptions"]["klength0"];
 	opt.klength[1] 			 = root["RunOptions"]["klength1"];
 	opt.klength[2] 			 = root["RunOptions"]["klength2"];
@@ -242,11 +305,14 @@ inline int StartUp::readConfig()
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
 	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
+	// opt.runmode 			 = root["RunOptions"]["runmode"];
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
+	cfg.lookupValue("RunOptions.startingGridName",startingGridName);
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
+	double omega_z_realValue = root["RunOptions"]["omega_z"];
 	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
 	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
 
@@ -254,8 +320,11 @@ inline int StartUp::readConfig()
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
 	opt.omega_y              = complex<double>(omega_y_realValue,0);
+	opt.omega_z 			 = complex<double>(omega_y_realValue,0);
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
+
+	convertToDimensionless();
 
 	meta.grid[0] = opt.grid[1];
 	meta.grid[1] = opt.grid[2];
@@ -294,6 +363,61 @@ inline int StartUp::readConfig()
 
      return SUCCESS;
 	
+}
+
+inline void StartUp::writeConfig(){
+	string filename = "run.cfg";
+	ofstream datafile;
+  		datafile.open(filename.c_str(), ios::out);
+  		datafile << "RunOptions =\n" << "{\n"
+  				 << "N = " << opt.N << "\n"
+				 << "g = " << opt.g << "\n"
+				 << "min_x = " << opt.min_x << "\n"
+				 << "min_y = " << opt.min_y << "\n"
+				 << "klength0 = " << opt.klength[0] << "\n"
+				 << "klength1 = " << opt.klength[1] << "\n"
+				 << "klength2 = " << opt.klength[2] << "\n"
+				 << "grid0 = " << opt.grid[0] << "\n"
+				 << "grid1 = " << opt.grid[1] << "\n"
+				 << "grid2 = " << opt.grid[2] << "\n"
+				 << "grid3 = " << opt.grid[3] << "\n"
+				 << "numberOfIterations = " << opt.n_it_RTE << "\n"
+				 << "numberOfSnapshots = " << opt.snapshots << "\n"
+				 << "ITP_step = " << opt.ITP_step << "\n"
+				 << "RTE_step = " << opt.RTE_step << "\n"
+				 << "exp_factor = " << opt.exp_factor.real() << "\n"
+				 << "potentialFactor = " << opt.potFactor << "\n"
+				 << "vortexspacing = " << opt.vortexspacing << "\n"
+				 << "omega_x = " << opt.omega_x.real() << "\n"
+				 << "omega_y = " << opt.omega_y.real() << "\n"
+				 << "dispersion_x = " << opt.dispersion_x.real() << "\n"
+				 << "dispersion_y = " << opt.dispersion_y.real() << "\n"
+				 << "runmode = \"" << opt.runmode << "\"\n"
+				 << "startingGridName = \"" << startingGridName << "\"\n"
+				 << "samplesize = " << opt.samplesize << "\n"
+				 << "}";
+	datafile.close();
+}
+
+inline void StartUp::convertToDimensionless(){
+
+	double m = 87 * 1.66 * 1.0e-27;
+	double hbar = 1.054 * 1.0e-22;	
+	opt.Ag = 2 * opt.min_x / opt.grid[1];
+	opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
+
+	opt.min_x /= opt.Ag;
+	opt.min_y /= opt.Ag;
+	opt.ITP_step *= opt.OmegaG;
+	opt.RTE_step *= opt.OmegaG;
+	opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
+	opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
+	opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
+	opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
+}
+
+inline void StartUp::convertFromDimensionless(){
+	cout << "WATCH OUT: StartUp::convertFromDimensionless() is not yet implemented" << endl;
 }
 
 

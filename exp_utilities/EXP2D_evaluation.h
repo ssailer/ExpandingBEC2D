@@ -35,11 +35,14 @@ public:
 	// wrapperfunctions 
 	void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)
 	void saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
+	void saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber); // if data comes as a vector of ComplexGrids, just eval a sclice of the 3D data.
 	void saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval);
 	void evaluateData(); // calculate the observables
 	void evaluateDataITP();
 	void plotData(); // plot Results
+	bool checkResizeCondition();
 	int getVortexNumber();
+	void convertFromDimensionless();
 
 
 	// Observables.h
@@ -66,7 +69,7 @@ private:
 
 	// data savefiles
 
-	RealGrid *phase, *zeros;
+	RealGrid phase, zeros;
 	string runname;
 	vector<ComplexGrid> PsiVec;
 	
@@ -88,8 +91,12 @@ private:
 	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	
 
-	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid *phase);
+	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid &phase);
 	void findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
+
+	inline double norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y);
+	inline void pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance);
+	void getVortexDistance(PathResults &pres);
 	void calc_fields(ComplexGrid &data, Options &opt);
 	void checkEdges();
 

@@ -39,6 +39,7 @@ class RTE
     // Propagatoren
 
     void rteToTime(string runName);
+    void splitToTime(string runName);
     // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
    
     // StoragePointer for the wavefunction
@@ -49,12 +50,13 @@ class RTE
     vector<MatrixXcd> &wavefctVec;
     MatrixData::MetaData &meta;
 
-    void CopyComplexGridToEigen();
-    void CopyEigenToComplexGrid();
+    // void CopyComplexGridToEigen();
+    // void CopyEigenToComplexGrid();
     
     // Coordinates
     vector<double> x_axis,y_axis;
     VectorXcd X,Y;
+    MatrixXcd Xmatrix,Ymatrix;
     VectorXd Xexpanding, Yexpanding;
 
     int samplesize;
@@ -65,6 +67,7 @@ class RTE
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(const string name);
     void noise();
+    inline void rescale(MatrixXcd &wavefct);
     
 
     // internal RunOptions, use setOptions(Options) to update from the outside
@@ -74,8 +77,15 @@ class RTE
   private:
 
     //
-    inline void RTE_compute_k(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
+    void RTE_compute_k_ex(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
+    void RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t);
+    void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
     // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
+    inline double rotatingPotential(int &i, int &j, int &t);
+
+    void ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,complex<double> delta_T);
+    void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
+    void MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut);
    
 
     // Variables
@@ -83,9 +93,11 @@ class RTE
     complex<double> pot_laplacian_x;
     complex<double> pot_laplacian_y;
     vector<double> ranges;
+    VectorXcd t_RTE;
     Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
-    MatrixXcd PotentialGrid;
+    MatrixXcd PotentialGrid,AbsorbingPotentialGrid;
+    MatrixXcd wavefctcp, k0, k1, k2, k3;
     VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
 
     stepCounter keeperOfTime;
@@ -95,7 +107,7 @@ class RTE
     
     double pi;
     complex<double>  zero,half,one,two,four,six,i_unit;
-    complex<double> t_RTE;
+    
 
     // little helper functions for stuff
 
@@ -124,5 +136,6 @@ class RTE
    }
   
 };
+
 
 #endif // EXP2D_RTE_H__

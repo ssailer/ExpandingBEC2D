@@ -20,14 +20,14 @@ using namespace Eigen;
 
 typedef struct Options {
 
-    Options () : N(100), stateInformation(2), vortexnumber(20), vortexspacing(50), snapshots(100), t_abs(0,0), potFactor(1), initialRun(false) {}
+    
 
     double N; // Number of particles    
     double klength[3];
     vector<double> stateInformation; // passing information about the state at the absolut time to the observable, lambda(time) FIXME : this is bad, but I don't know how to do it better atm
-    complex<double> omega_x,omega_y; // Frequency of the harmonic trap
+    complex<double> omega_x,omega_y,omega_z; // Frequency of the harmonic trap
     complex<double> dispersion_x, dispersion_y; // dispersion relation for the expandion frame
-    double min_x,min_y; // Coordinate boundaries    
+    double min_x,min_y,min_z; // Coordinate boundaries    
     complex<double> t_abs; //Absolute time // remove from opt! put into the function, don't need it here
     complex<double> exp_factor; //Expansion factor
     double g; // coupling constant
@@ -40,6 +40,8 @@ typedef struct Options {
     int vortexnumber;
     int vortexspacing;
     double potFactor;
+    double Ag;
+    double OmegaG;
     
     string runmode; // Use this to control the program flow: first char determines if the program is loading from a dataset or using ITP to generate the necessary datafile
                      // second char determines if expanding coordinates are used or not
@@ -47,6 +49,8 @@ typedef struct Options {
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
     bool initialRun;
+
+    Options () : N(100000), stateInformation(2), t_abs(0,0), snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true) {}
     
 } Options;
 
@@ -57,7 +61,7 @@ public:
     expException(std::string const& info);
     void setString(std::string const& info);
     void addString(std::string const& info);
-    string printString();
+    void printString();
 private:
     std::string stringException;
 };
@@ -69,7 +73,7 @@ inline void expException::setString(std::string const& info){
 inline void expException::addString(std::string const& info){
     stringException += info;
 };
-inline std::string expException::printString(){
+inline void expException::printString(){
     cerr << stringException.c_str() << endl;
 };
 

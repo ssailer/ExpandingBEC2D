@@ -30,8 +30,8 @@
 #include <cuda_runtime.h>
 #include <time.h>
 
-#include<thrust/host_vector.h>
-#include<thrust/device_vector.h>
+#include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/functional.h>
 
