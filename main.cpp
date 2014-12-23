@@ -81,7 +81,7 @@ try{
 			delete startGrid;
 			
 			string runName = startUp.getRunName();
-			RTE* runExpanding = new Expansion(data,startUp.getOptions());
+			RTE* runExpanding = new RTE(data,startUp.getOptions());
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
 

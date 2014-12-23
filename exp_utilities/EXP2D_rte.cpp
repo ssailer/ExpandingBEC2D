@@ -132,10 +132,10 @@ void RTE::RunSetup(){
    			l++;
    		}
    		
-   		laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * l_x * l_x );
-   		laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * l_y * l_y );
-   		gradient_coefficient_x(t) = lambda_x_dot(absTime) / (two * h_x * l_x);
-   		gradient_coefficient_y(t) = lambda_y_dot(absTime) / (two * h_y * l_y);
+   		laplacian_coefficient_x(t) = i_unit / ( complex<double>(12.0,0.0) * h_x * h_x * l_x * l_x );
+   		laplacian_coefficient_y(t) = i_unit / ( complex<double>(12.0,0.0) * h_y * h_y * l_y * l_y );
+   		gradient_coefficient_x(t) = lambda_x_dot(absTime) / (complex<double>(12.0,0.0) * h_x * l_x);
+   		gradient_coefficient_y(t) = lambda_y_dot(absTime) / (complex<double>(12.0,0.0) * h_y * l_y);
    		absTime += ( half * complex<double>(adaptiveStep,0.0) );	   		
    	}
 
@@ -380,16 +380,16 @@ void RTE::rteToTime(string runName)
 void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,complex<double> delta_T){
 
 	int32_t threads = 16;
-	int32_t subx = opt.grid[1]-2;
-	int32_t suby = opt.grid[2]-2;
+	int32_t subx = opt.grid[1]-4;
+	int32_t suby = opt.grid[2]-4;
 	vector<int32_t> frontx(threads);
 	vector<int32_t> endx(threads);
 	int32_t partx = opt.grid[1] / threads;
 
 	for(int i = 0; i < threads; i++){
-		if(i == 0){ frontx[i] = (i * partx) + 1;}
+		if(i == 0){ frontx[i] = 2;}
 		else{ frontx[i] = (i *partx);}
-		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
+		if((i == threads-1) || (i == 0)){ endx[i] = partx-2;}
 		else{endx[i] = partx;}
 	}
 
@@ -464,14 +464,16 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,compl
 
 }
 
+
+
 void RTE::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t){
-	k.block(front,1,end,suby).noalias() =  (wavefctcp.block(front-1,1,end,suby)	- two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front+1,1,end,suby)) * laplacian_coefficient_x(t)
-										 + (wavefctcp.block(front  ,0,end,suby) - two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front  ,2,end,suby)) * laplacian_coefficient_y(t);
+	k.block(front,2,end,suby).noalias() =  (-wavefctcp.block(front-2,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front-1,2,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front+1,2,end,suby) - wavefctcp.block(front+2,2,end,suby)) * laplacian_coefficient_x(t)
+										 + (-wavefctcp.block(front  ,0,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,1,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,3,end,suby) - wavefctcp.block(front  ,4,end,suby)) * laplacian_coefficient_y(t);
 
-	k.block(front,1,end,suby).array() += (wavefctcp.block(front+1,1,end,suby).array() - wavefctcp.block(front-1,1,end,suby).array()) * Xmatrix.block(front,1,end,suby).array() * gradient_coefficient_x(t)
-									   + (wavefctcp.block(front  ,2,end,suby).array() - wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,1,end,suby).array() * gradient_coefficient_y(t);
+	k.block(front,2,end,suby).array() += (-wavefctcp.block(front+2,2,end,suby).array() + complex<double>(8.0,0) * wavefctcp.block(front+1,2,end,suby).array() - complex<double>(8.0,0) * wavefctcp.block(front-1,2,end,suby).array() + wavefctcp.block(front-2,2,end,suby).array()) * Xmatrix.block(front,2,end,suby).array() * gradient_coefficient_x(t)
+									   + (-wavefctcp.block(front  ,4,end,suby).array() + complex<double>(8.0,0) * wavefctcp.block(front  ,3,end,suby).array() - complex<double>(8.0,0) * wavefctcp.block(front  ,1,end,suby).array() + wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,2,end,suby).array() * gradient_coefficient_y(t);
 
-	k.block(front,1,end,suby).array() -= i_unit * ( /*PotentialGrid.block(front,1,end,suby).array() + */(complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() ))) * wavefctcp.block(front,1,end,suby).array();
+	k.block(front,2,end,suby).array() -= i_unit * ( /*PotentialGrid.block(front,1,end,suby).array() + */(complex<double>(opt.g,0.0) * ( wavefctcp.block(front,2,end,suby).conjugate().array() * wavefctcp.block(front,2,end,suby).array() ))) * wavefctcp.block(front,2,end,suby).array();
 }
 
 void Expansion::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t){
