@@ -195,7 +195,7 @@ def main():
 	
 	cN = N * Ag * Ag
 	omega_x = 20 * 2 * math.pi
-	omega_y = 30 * 2 * math.pi
+	omega_y = 25 * 2 * math.pi
 	
 	comega_x = omega_x / OmegaG
 	comega_y = omega_y / OmegaG
@@ -222,6 +222,7 @@ def main():
 	print "cg2D = ", cg2D
 	print "g2D", (math.sqrt(8 * math.pi) * 5.8 / 200 )
 	print "test", 8.0 / (math.pi), 15.0 / (4 * math.pi)
+	print 2 * N * (0.145 / math.pi)
 
 
 
