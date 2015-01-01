@@ -51,7 +51,7 @@ ITP::ITP(MatrixXcd &wavedata,const Options &externaloptions)
 	cout << "Max Number of Threads: " << omp_get_max_threads() << endl;	
 	cout << "Eigenthreads: " << Eigen::nbThreads() << endl;
 
-	// Using the setter function to initialize the stuff.
+	// Using RunSetup to initialize the remaining variables.
 	RunSetup();
 
 }

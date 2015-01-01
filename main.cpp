@@ -80,7 +80,7 @@ try{
 			}
 			delete startGrid;
 			
-			string runName = startUp.getRunName();
+			string runName = "ex";
 			RTE* runExpanding = new RTE(data,startUp.getOptions());
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
@@ -108,10 +108,15 @@ try{
 			}
 			delete startGrid;
 			
-			string runName = startUp.getRunName();
+			string runName = "trap";
 			RTE* runExpanding = new Trap(data,startUp.getOptions());
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
+
+			string startGridName = "StartGrid_2048_2048.h5";
+			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
+			dataFile->appendSnapshot("StartGrid",0,data,tmpOpt);
+			delete dataFile;
 
 			delete runExpanding;
 			delete data;
@@ -136,7 +141,7 @@ try{
 			}
 			delete startGrid;
 		
-			string runName = startUp.getRunName();
+			string runName = "split";
 			RTE* runExpanding = new RTE(data,startUp.getOptions());
 			cout << "splitToTime()" << endl;
 			runExpanding->splitToTime(runName);

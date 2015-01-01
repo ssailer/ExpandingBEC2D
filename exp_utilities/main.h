@@ -78,7 +78,7 @@ private:
 	int argc;
 	char** argv;
 	string MainControlString = "Empty String";
-	string runName = "Expanding-Set-1";
+	string runName = "expansion";
 };
 
 MainControl StartUp::toMainControl(const std::string& s)
