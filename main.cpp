@@ -95,7 +95,7 @@ try{
 	
 			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 			
-			string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+			string startGridName = "StartGrid_2048_2048.h5"; // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 			
 			MatrixData* data = new MatrixData(startUp.getMeta());
 			
@@ -113,10 +113,9 @@ try{
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
 
-			string startGridName = "StartGrid_2048_2048.h5";
-			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::out);
-			dataFile->appendSnapshot("StartGrid",0,data,tmpOpt);
-			delete dataFile;
+			binaryFile* trapFile = new binaryFile(startGridName,binaryFile::out);
+			trapFile->appendSnapshot("StartGrid",0,data,tmpOpt);
+			delete trapFile;
 
 			delete runExpanding;
 			delete data;
