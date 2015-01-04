@@ -132,7 +132,7 @@ double LOWER_THRESHOLD = maximum * 0.35; // opt.N / (4. * opt.min_x  * opt.min_y
 
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
 int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
-int windingnumber = 40;
+int windingnumber = 1;
 
 ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
