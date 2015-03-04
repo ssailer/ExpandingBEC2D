@@ -2,8 +2,9 @@
 #define PLOT_WITH_MGL_H__
 
 #include <iostream>
-#include <mgl2/mgl.h>
 #include <complex>
+#include <eigen3/Eigen/Dense>
+#include <mgl2/mgl.h>
 #include <math.h>
 #include <complexgrid.h>
 #include <realgrid.h>
@@ -15,7 +16,7 @@
 #include <cstring>
 #include <EXP2D_tools.h>
 #include <EXP2D_observables.h>
-#include <eigen3/Eigen/Dense>
+
 
 
 
