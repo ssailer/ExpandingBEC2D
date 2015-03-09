@@ -3,7 +3,7 @@
 #include <EXP2D_itp.hpp>
 #include <omp.h>
 
-#define VORTICES_BUILD_TIME 2000
+#define VORTICES_BUILD_TIME 10000
 
 #define EIGEN_VECTORIZE
 #define EIGEN_PARALLELIZE
@@ -51,7 +51,7 @@ ITP::ITP(MatrixXcd &wavedata,const Options &externaloptions)
 	cout << "Max Number of Threads: " << omp_get_max_threads() << endl;	
 	cout << "Eigenthreads: " << Eigen::nbThreads() << endl;
 
-	// Using the setter function to initialize the stuff.
+	// Using RunSetup to initialize the remaining variables.
 	RunSetup();
 
 }
@@ -111,8 +111,8 @@ void ITP::RunSetup(){
 
    	double factor =  1.0;// / (2);
 
-	itp_laplacian_x = complex<double>(factor * 1.0,0.0) / (two * h_x * h_x);
-	itp_laplacian_y = complex<double>(factor * 1.0,0.0) / (two * h_y * h_y);
+	itp_laplacian_x = complex<double>(factor * 1.0,0.0) / (complex<double>(12.0,0.0) * h_x * h_x);
+	itp_laplacian_y = complex<double>(factor * 1.0,0.0) / (complex<double>(12.0,0.0) * h_y * h_y);
 
 	opt.stateInformation.resize(2);
 	opt.stateInformation[0] = 1.0;
@@ -526,16 +526,16 @@ void ITP::ITP_compute_k_parallel(MatrixXcd &k, MatrixXcd &wavefctcp){
 void ITP::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp){
 
 	int32_t threads = 16;
-	int32_t subx = opt.grid[1]-2;
-	int32_t suby = opt.grid[2]-2;
+	int32_t subx = opt.grid[1]-4;
+	int32_t suby = opt.grid[2]-4;
 	vector<int32_t> frontx(threads);
 	vector<int32_t> endx(threads);
 	int32_t partx = opt.grid[1] / threads;
 
 	for(int i = 0; i < threads; i++){
-		if(i == 0){ frontx[i] = (i * partx) + 1;}
+		if(i == 0){ frontx[i] = 2;}
 		else{ frontx[i] = (i *partx);}
-		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
+		if((i == threads-1) || (i == 0)){ endx[i] = partx-2;}
 		else{endx[i] = partx;}
 	}
 
@@ -592,6 +592,11 @@ void ITP::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp){
 			wavefctcp.row(opt.grid[1]-1) = - (PotentialGrid.row(opt.grid[1]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(opt.grid[1]-1).conjugate().array() * wavefctcp.row(opt.grid[1]-1).array() )) * wavefctcp.row(opt.grid[1]-1).array();
 			wavefctcp.col(0) = - (PotentialGrid.col(0).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(0).conjugate().array() * wavefctcp.col(0).array() )) * wavefctcp.col(0).array();
 			wavefctcp.col(opt.grid[2]-1) = - (PotentialGrid.col(opt.grid[2]-1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(opt.grid[2]-1).conjugate().array() * wavefctcp.col(opt.grid[2]-1).array() )) * wavefctcp.col(opt.grid[2]-1).array();
+
+			wavefctcp.row(1) = - (PotentialGrid.row(1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(1).conjugate().array() * wavefctcp.row(1).array() )) * wavefctcp.row(1).array();
+			wavefctcp.row(opt.grid[1]-2) = - (PotentialGrid.row(opt.grid[1]-2).array() + complex<double>(opt.g,0.0) * ( wavefctcp.row(opt.grid[1]-2).conjugate().array() * wavefctcp.row(opt.grid[1]-2).array() )) * wavefctcp.row(opt.grid[1]-2).array();
+			wavefctcp.col(1) = - (PotentialGrid.col(1).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(1).conjugate().array() * wavefctcp.col(1).array() )) * wavefctcp.col(1).array();
+			wavefctcp.col(opt.grid[2]-2) = - (PotentialGrid.col(opt.grid[2]-2).array() + complex<double>(opt.g,0.0) * ( wavefctcp.col(opt.grid[2]-2).conjugate().array() * wavefctcp.col(opt.grid[2]-2).array() )) * wavefctcp.col(opt.grid[2]-2).array();
 			// END CONDITIONS
 		}
 
@@ -604,10 +609,16 @@ void ITP::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp){
 }
 
 void ITP::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby){
-	k.block(front,1,end,suby).noalias() =  (wavefctcp.block(front-1,1,end,suby)	- two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front+1,1,end,suby)) * itp_laplacian_x
-										 + (wavefctcp.block(front  ,0,end,suby) - two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front  ,2,end,suby)) * itp_laplacian_y;
+	// k.block(front,1,end,suby).noalias() =  (wavefctcp.block(front-1,1,end,suby)	- two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front+1,1,end,suby)) * itp_laplacian_x
+	// 									 + (wavefctcp.block(front  ,0,end,suby) - two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front  ,2,end,suby)) * itp_laplacian_y;
 
-	k.block(front,1,end,suby).array() -= ( PotentialGrid.block(front,1,end,suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() )) * wavefctcp.block(front,1,end,suby).array();
+	// k.block(front,1,end,suby).array() -= ( PotentialGrid.block(front,1,end,suby).array() + complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() )) * wavefctcp.block(front,1,end,suby).array();
+
+	k.block(front,2,end,suby).noalias() =  (-wavefctcp.block(front-2,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front-1,2,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front+1,2,end,suby) - wavefctcp.block(front+2,2,end,suby)) * itp_laplacian_x
+										 + (-wavefctcp.block(front  ,0,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,1,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,3,end,suby) - wavefctcp.block(front  ,4,end,suby)) * itp_laplacian_y;
+
+	k.block(front,2,end,suby).array() -= ( PotentialGrid.block(front,2,end,suby).array() + (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,2,end,suby).conjugate().array() * wavefctcp.block(front,2,end,suby).array() ))) * wavefctcp.block(front,2,end,suby).array();
+
 }
 
 inline double ITP::rotatingPotential(int i, int j, int angle){

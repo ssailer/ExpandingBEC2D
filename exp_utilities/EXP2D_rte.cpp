@@ -132,10 +132,10 @@ void RTE::RunSetup(){
    			l++;
    		}
    		
-   		laplacian_coefficient_x(t) = i_unit / ( two * h_x * h_x * l_x * l_x );
-   		laplacian_coefficient_y(t) = i_unit / ( two * h_y * h_y * l_y * l_y );
-   		gradient_coefficient_x(t) = lambda_x_dot(absTime) / (two * h_x * l_x);
-   		gradient_coefficient_y(t) = lambda_y_dot(absTime) / (two * h_y * l_y);
+   		laplacian_coefficient_x(t) = i_unit / ( complex<double>(12.0,0.0) * h_x * h_x * l_x * l_x );
+   		laplacian_coefficient_y(t) = i_unit / ( complex<double>(12.0,0.0) * h_y * h_y * l_y * l_y );
+   		gradient_coefficient_x(t) = lambda_x_dot(absTime) / (complex<double>(12.0,0.0) * h_x * l_x);
+   		gradient_coefficient_y(t) = lambda_y_dot(absTime) / (complex<double>(12.0,0.0) * h_y * l_y);
    		absTime += ( half * complex<double>(adaptiveStep,0.0) );	   		
    	}
 
@@ -256,16 +256,6 @@ void RTE::plot(const string name){
 		plotDataToPngEigen(name, wavefctVec[0],opt);
 	}
 }
-
-
-// void RTE::CopyComplexGridToEigen(){
-// 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ wavefct(i,j) = pPsi->at(0,i,j,0);}}
-// }
-
-// void RTE::CopyEigenToComplexGrid(){
-// 	for(int i = 0; i < opt.grid[1]; i++){for(int j = 0; j < opt.grid[2]; j++){ pPsi->at(0,i,j,0) = wavefct(i,j);}}
-// }
-
 void RTE::noise(){
 	for(int k = 0; k < wavefctVec.size(); k++){
 		GaussRandom r (get_seed());
@@ -277,23 +267,6 @@ void RTE::noise(){
 			}
 		}
 	}
-}
-
-inline void RTE::rescale(MatrixXcd &wavefct){	
-
-	// cout << "Rescale " << h_x << " " << h_y << endl;
-	double Integral = 0.;  
-	for(int i=0;i<opt.grid[1]-1;i++){
-    	for(int j=0;j<opt.grid[2]-1;j++){
-    		Integral += real(h_x)*real(h_y)*(abs2(wavefct(i,j))+abs2(wavefct(i+1,j))+abs2(wavefct(i,j+1))+abs2(wavefct(i+1,j+1)))/real(four);
-      		// Integral += abs2(wavefct(i,j));      
-    	}
-    }
-    // cout << "Integral" << Integral << endl;
-    
-	double scaleFactor = opt.N/Integral;	
-	// cout << "Integral : " << Integral << " scalefactor: " << scaleFactor << " " << sqrt(scaleFactor) << endl;
-	wavefct.array() *= sqrt(scaleFactor);
 }
 
 void RTE::rteToTime(string runName)
@@ -407,16 +380,16 @@ void RTE::rteToTime(string runName)
 void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,complex<double> delta_T){
 
 	int32_t threads = 16;
-	int32_t subx = opt.grid[1]-2;
-	int32_t suby = opt.grid[2]-2;
+	int32_t subx = opt.grid[1]-4;
+	int32_t suby = opt.grid[2]-4;
 	vector<int32_t> frontx(threads);
 	vector<int32_t> endx(threads);
 	int32_t partx = opt.grid[1] / threads;
 
 	for(int i = 0; i < threads; i++){
-		if(i == 0){ frontx[i] = (i * partx) + 1;}
+		if(i == 0){ frontx[i] = 2;}
 		else{ frontx[i] = (i *partx);}
-		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
+		if((i == threads-1) || (i == 0)){ endx[i] = partx-2;}
 		else{endx[i] = partx;}
 	}
 
@@ -491,14 +464,47 @@ void RTE::ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,compl
 
 }
 
+
+
 void RTE::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t){
-	k.block(front,1,end,suby).noalias() =  (wavefctcp.block(front-1,1,end,suby)	- two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front+1,1,end,suby)) * laplacian_coefficient_x(t)
-										 + (wavefctcp.block(front  ,0,end,suby) - two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front  ,2,end,suby)) * laplacian_coefficient_y(t);
+	k.block(front,2,end,suby).noalias() =  (-wavefctcp.block(front-2,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front-1,2,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front+1,2,end,suby) - wavefctcp.block(front+2,2,end,suby)) * laplacian_coefficient_x(t)
+										 + (-wavefctcp.block(front  ,0,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,1,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,3,end,suby) - wavefctcp.block(front  ,4,end,suby)) * laplacian_coefficient_y(t);
 
-	k.block(front,1,end,suby).array() += (wavefctcp.block(front+1,1,end,suby).array() - wavefctcp.block(front-1,1,end,suby).array()) * Xmatrix.block(front,1,end,suby).array() * gradient_coefficient_x(t)
-									   + (wavefctcp.block(front  ,2,end,suby).array() - wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,1,end,suby).array() * gradient_coefficient_y(t);
+	k.block(front,2,end,suby).array() += (-wavefctcp.block(front+2,2,end,suby).array() + complex<double>(8.0,0) * wavefctcp.block(front+1,2,end,suby).array() - complex<double>(8.0,0) * wavefctcp.block(front-1,2,end,suby).array() + wavefctcp.block(front-2,2,end,suby).array()) * Xmatrix.block(front,2,end,suby).array() * gradient_coefficient_x(t)
+									   + (-wavefctcp.block(front  ,4,end,suby).array() + complex<double>(8.0,0) * wavefctcp.block(front  ,3,end,suby).array() - complex<double>(8.0,0) * wavefctcp.block(front  ,1,end,suby).array() + wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,2,end,suby).array() * gradient_coefficient_y(t);
 
-	k.block(front,1,end,suby).array() -= i_unit * ( /*PotentialGrid.block(front,1,end,suby).array() + */(complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() ))) * wavefctcp.block(front,1,end,suby).array();
+	k.block(front,2,end,suby).array() -= i_unit * ( /*PotentialGrid.block(front,2,end,suby).array() +*/ (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,2,end,suby).conjugate().array() * wavefctcp.block(front,2,end,suby).array() ))) * wavefctcp.block(front,2,end,suby).array();
+}
+
+// lower order O(h^2) for reference.
+// void RTE::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t){
+// 	k.block(front,1,end,suby).noalias() =  (wavefctcp.block(front-1,1,end,suby)	- two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front+1,1,end,suby)) * laplacian_coefficient_x(t)
+// 										 + (wavefctcp.block(front  ,0,end,suby) - two * wavefctcp.block(front  ,1,end,suby) + wavefctcp.block(front  ,2,end,suby)) * laplacian_coefficient_y(t);
+
+// 	k.block(front,1,end,suby).array() += (wavefctcp.block(front+1,1,end,suby).array() - wavefctcp.block(front-1,1,end,suby).array()) * Xmatrix.block(front,1,end,suby).array() * gradient_coefficient_x(t)
+// 									   + (wavefctcp.block(front  ,2,end,suby).array() - wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,1,end,suby).array() * gradient_coefficient_y(t);
+
+// 	k.block(front,1,end,suby).array() -= i_unit * ( PotentialGrid.block(front,1,end,suby).array() + (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,1,end,suby).conjugate().array() * wavefctcp.block(front,1,end,suby).array() ))) * wavefctcp.block(front,1,end,suby).array();
+// }
+
+void Expansion::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t){
+	k.block(front,2,end,suby).noalias() =  (-wavefctcp.block(front-2,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front-1,2,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front+1,2,end,suby) - wavefctcp.block(front+2,2,end,suby)) * laplacian_coefficient_x(t)
+										 + (-wavefctcp.block(front  ,0,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,1,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,3,end,suby) - wavefctcp.block(front  ,4,end,suby)) * laplacian_coefficient_y(t);
+
+	k.block(front,2,end,suby).array() += (-wavefctcp.block(front+2,2,end,suby).array() + complex<double>(8.0,0) * wavefctcp.block(front+1,2,end,suby).array() - complex<double>(8.0,0) * wavefctcp.block(front-1,2,end,suby).array() + wavefctcp.block(front-2,2,end,suby).array()) * Xmatrix.block(front,2,end,suby).array() * gradient_coefficient_x(t)
+									   + (-wavefctcp.block(front  ,4,end,suby).array() + complex<double>(8.0,0) * wavefctcp.block(front  ,3,end,suby).array() - complex<double>(8.0,0) * wavefctcp.block(front  ,1,end,suby).array() + wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,2,end,suby).array() * gradient_coefficient_y(t);
+
+	k.block(front,2,end,suby).array() -= i_unit * ( /*PotentialGrid.block(front,2,end,suby).array() +*/ (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,2,end,suby).conjugate().array() * wavefctcp.block(front,2,end,suby).array() ))) * wavefctcp.block(front,2,end,suby).array();
+}
+
+void Trap::singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t){
+	k.block(front,2,end,suby).noalias() =  (-wavefctcp.block(front-2,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front-1,2,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front+1,2,end,suby) - wavefctcp.block(front+2,2,end,suby)) * laplacian_coefficient_x(t)
+										 + (-wavefctcp.block(front  ,0,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,1,end,suby) - complex<double>(30.0,0.0) * wavefctcp.block(front  ,2,end,suby) + complex<double>(16.0,0) * wavefctcp.block(front  ,3,end,suby) - wavefctcp.block(front  ,4,end,suby)) * laplacian_coefficient_y(t);
+
+	k.block(front,2,end,suby).array() += (-wavefctcp.block(front+2,2,end,suby).array() + complex<double>(8.0,0) * wavefctcp.block(front+1,2,end,suby).array() - complex<double>(8.0,0) * wavefctcp.block(front-1,2,end,suby).array() + wavefctcp.block(front-2,2,end,suby).array()) * Xmatrix.block(front,2,end,suby).array() * gradient_coefficient_x(t)
+									   + (-wavefctcp.block(front  ,4,end,suby).array() + complex<double>(8.0,0) * wavefctcp.block(front  ,3,end,suby).array() - complex<double>(8.0,0) * wavefctcp.block(front  ,1,end,suby).array() + wavefctcp.block(front  ,0,end,suby).array()) * Ymatrix.block(front,2,end,suby).array() * gradient_coefficient_y(t);
+
+	k.block(front,2,end,suby).array() -= i_unit * ( PotentialGrid.block(front,2,end,suby).array() + (complex<double>(opt.g,0.0) * ( wavefctcp.block(front,2,end,suby).conjugate().array() * wavefctcp.block(front,2,end,suby).array() ))) * wavefctcp.block(front,2,end,suby).array();
 }
 
 void RTE::MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut){
@@ -534,169 +540,6 @@ void RTE::MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut){
 	Ut(opt.grid[1]-1,opt.grid[2]-1) = (Ut(opt.grid[1]-2,opt.grid[2]-1) + Ut(opt.grid[1]-1,opt.grid[2]-2)) / two;
 
 }
-
-void RTE::RTE_compute_k_ex_parallel(MatrixXcd &k, MatrixXcd &wavefctcp,int &t){
-	int32_t threads = 16;
-	int subx = opt.grid[1]-2;
-	int suby = opt.grid[2]-2;
-	vector<int32_t> frontx(threads);
-	vector<int32_t> endx(threads);
-	int32_t partx = opt.grid[1] / threads;
-
-	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-
-	for(int i = 0; i < threads; i++){
-		if(i == 0){ frontx[i] = (i * partx) + 1;}
-		else{ frontx[i] = (i *partx);}
-		if((i == threads-1) || (i == 0)){ endx[i] = partx-1;}
-		else{endx[i] = partx;}
-	}
-
-	#pragma omp parallel for
-	for (int i = 0; i < threads; ++i){
-		k.block(frontx[i],1,endx[i],suby).noalias() +=          (wavefctcp.block(frontx[i]-1,1,endx[i],suby)
-														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
-														       + wavefctcp.block(frontx[i]+1,1,endx[i],suby)) * laplacian_coefficient_x(t)
-														      + (wavefctcp.block(frontx[i]  ,0,endx[i],suby)
-														 - two * wavefctcp.block(frontx[i]  ,1,endx[i],suby)
-														       + wavefctcp.block(frontx[i]  ,2,endx[i],suby)) * laplacian_coefficient_y(t);
-
-		k.block(frontx[i],1,endx[i],suby).array() += (wavefctcp.block(frontx[i]+1,1,endx[i],suby).array() - wavefctcp.block(frontx[i]-1,1,endx[i],suby).array()) * Xmatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_x(t)
-									               + (wavefctcp.block(frontx[i]  ,2,endx[i],suby).array() - wavefctcp.block(frontx[i]  ,0,endx[i],suby).array()) * Ymatrix.block(frontx[i],1,endx[i],suby).array() * gradient_coefficient_y(t);
-
-		k.block(frontx[i],1,endx[i],suby).array() -= i_unit * (opt.potFactor * PotentialGrid.block(frontx[i],1,endx[i],suby).array()+ 
-															complex<double>(opt.g,0.0) * ( wavefctcp.block(frontx[i],1,endx[i],suby).conjugate().array() * wavefctcp.block(frontx[i],1,endx[i],suby).array() ))
-															 // + i_unit * AbsorbingPotentialGrid.block(frontx[i],1,endx[i],suby).array())
-														 * wavefctcp.block(frontx[i],1,endx[i],suby).array();
-	}
-}
-
-void RTE::RTE_compute_k_ex(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
-
-	// Eigen::initParallel();
-	// Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
-	// Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
-	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	int subx = meta.grid[0]-2;
-	int suby = meta.grid[1]-2;
-	MatrixXcd wavefctcpX(subx,suby);
-	MatrixXcd wavefctcpY(subx,suby);
-	
-	k.block(1,1,subx,suby).noalias() += (wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby)) * laplacian_coefficient_x(t)
-									  + (wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby)) * laplacian_coefficient_y(t);
-
-	k.block(1,1,subx,suby).array() += (wavefctcp.block(2,1,subx,suby).array() - wavefctcp.block(0,1,subx,suby).array()) * Xmatrix.array() * gradient_coefficient_x(t)
-									         + (wavefctcp.block(1,2,subx,suby).array() - wavefctcp.block(1,0,subx,suby).array()) * Ymatrix.array() * gradient_coefficient_y(t);
-
-	//interaction
-	k.array() -= complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() ) * wavefctcp.array();
-}
-
-void RTE::RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
-
-	Eigen::initParallel();
-
-	// Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
-	// Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
-	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-	int subx = meta.grid[0]-2;
-	int suby = meta.grid[1]-2;
-	MatrixXcd wavefctcpX(subx,suby);
-	MatrixXcd wavefctcpY(subx,suby);
-
-	k.block(1,1,subx,suby).noalias() += (wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby)) * laplacian_coefficient_x(t)
-									  + (wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby)) * laplacian_coefficient_y(t);
-
-
-	k.array() -= ( i_unit * PotentialGrid.array() + complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() )) * wavefctcp.array();
-}
-
-// void RTE::RTE_compute_k_ex(MatrixXcd &k,MatrixXcd &wavefctcp,int &t){
-
-// 	Eigen::initParallel();
-// 	// Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX = Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor>::Zero(opt.grid[1],opt.grid[2]);
-// 	// Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY = Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor>::Zero(opt.grid[1],opt.grid[2]);
-// 	k = MatrixXcd::Zero(opt.grid[1],opt.grid[2]);
-// 	int subx = meta.grid[0]-2;
-// 	int suby = meta.grid[1]-2;
-// 	MatrixXcd wavefctcpX(subx,suby);
-// 	MatrixXcd wavefctcpY(subx,suby);
-
-
-
-// 	if(opt.runmode.compare(1,1,"1") == 0){
-// 		//laplacian
-// 		// #pragma omp parallel for
-// 		// for(int j = 1;j<opt.grid[2]-1;j++){
-// 		// 	for(int i = 1;i<opt.grid[1]-1;i++){
-// 		// 		wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
-// 		// 		wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
-// 		// 	}
-// 		// }
-
-// 		// k.noalias() += wavefctcpX * laplacian_coefficient_x(t) + wavefctcpY * laplacian_coefficient_y(t);
-
-
-
-// 			// wavefctcpX.block(1,1,subx,suby).noalias() = wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby);
-// 			// wavefctcpY.block(1,1,subx,suby).noalias() = wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby);
-	
-// 			k.block(1,1,subx,suby).noalias() += (wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby)) * laplacian_coefficient_x(t)
-// 											  + (wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby)) * laplacian_coefficient_y(t);
-	
-// 		// // gradient
-// 		// #pragma omp parallel for
-// 		// for(int j = 1;j<opt.grid[2]-1;j++){
-// 		// 	for(int i = 1;i<opt.grid[1]-1;i++){
-// 		// 		wavefctcpX(i,j) = wavefctcp(i+1,j) - wavefctcp(i-1,j);
-// 		// 		wavefctcpY(i,j) = wavefctcp(i,j+1) - wavefctcp(i,j-1);
-// 		// 	}
-// 		// }
-
-// 		// #pragma omp parallel for
-// 		// for(int i = 0;i<opt.grid[1];i++){ wavefctcpY.row(i).array() *= Y.array(); }
-// 		// #pragma omp parallel for
-// 		// for(int j = 0;j<opt.grid[2];j++){ wavefctcpX.col(j).array() *= X.array(); }
-
-// 		// k.noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
-
-// 			wavefctcpX.noalias() = (wavefctcp.block(2,1,subx,suby) - wavefctcp.block(0,1,subx,suby));
-// 			wavefctcpY.noalias() = (wavefctcp.block(1,2,subx,suby) - wavefctcp.block(1,0,subx,suby));
-			
-// 			wavefctcpX.array() *= Xmatrix.array();
-// 			wavefctcpY.array() *= Ymatrix.array();
-	
-// 			k.block(1,1,subx,suby).noalias() += wavefctcpX * gradient_coefficient_x(t) + wavefctcpY * gradient_coefficient_y(t);
-// 	}
-
-// 	if(opt.runmode.compare(1,1,"0") == 0){
-// 		//laplacian
-// 		// #pragma omp parallel for
-// 		// for(int j = 1;j<opt.grid[2]-1;j++){
-// 		// 	for(int i = 1;i<opt.grid[1]-1;i++){
-// 		// 		wavefctcpX(i,j) = wavefctcp(i-1,j) - two * wavefctcp(i,j) + wavefctcp(i+1,j);
-// 		// 		wavefctcpY(i,j) = wavefctcp(i,j-1) - two * wavefctcp(i,j) + wavefctcp(i,j+1);
-// 		// 	}
-// 		// }
-// 		// k.noalias() +=   wavefctcpX * pot_laplacian_x * i_unit + wavefctcpY * pot_laplacian_x * i_unit;
-
-// 		k.block(1,1,subx,suby).noalias() += (wavefctcp.block(0,1,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(2,1,subx,suby)) * laplacian_coefficient_x(t)
-// 										  + (wavefctcp.block(1,0,subx,suby) - two * wavefctcp.block(1,1,subx,suby) + wavefctcp.block(1,2,subx,suby)) * laplacian_coefficient_y(t);
-// 	}
-
-// 	if(opt.runmode.compare(2,1,"0") == 0){
-// 		//interaction
-// 		k.array() -= complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() ) * wavefctcp.array();
-// 	}
-
-// 	if(opt.runmode.compare(2,1,"1") == 0){
-// 			//Potential + Interaction
-// 		k.array() -= ( i_unit * PotentialGrid.array() + complex<double>(0.0,opt.g) * ( wavefctcp.conjugate().array() * wavefctcp.array() )) * wavefctcp.array();
-// 	}
-
-// }
-
-
 
 void RTE::splitToTime(string runName){
 

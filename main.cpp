@@ -48,8 +48,9 @@ try{
 	StartUp startUp(argc,argv);	
 
 	#if DEBUG_LOG
- 		std::ofstream logstream("run.log");
- 		redirecter redirectcout(logstream,std::cout); // redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
+ 		std::ofstream logstream("simulation.log");
+ 		redirecter redirectcout(logstream,std::cout);
+ 		// redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
  		// std::ofstream errorstream("error.log");
  		// redirecter redirectcerr(errorstream,std::cerr);
  	#endif
@@ -80,10 +81,42 @@ try{
 			}
 			delete startGrid;
 			
-			string runName = startUp.getRunName();
+			string runName = "ex";
 			RTE* runExpanding = new RTE(data,startUp.getOptions());
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
+
+			delete runExpanding;
+			delete data;
+
+		}
+		if(mC == TRAP){
+
+			MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+	
+			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+			
+			string startGridName = "StartGrid_2048_2048.h5"; // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+			
+			MatrixData* data = new MatrixData(startUp.getMeta());
+			
+			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+			delete dataFile;
+
+			for(int i = 0; i < data->meta.samplesize; i++){
+				data->wavefunction[i] = startGrid->wavefunction[0];
+			}
+			delete startGrid;
+			
+			string runName = "trap";
+			RTE* runExpanding = new Trap(data,startUp.getOptions());
+			cout << "rteToTime()" << endl;
+			runExpanding->rteToTime(runName);
+
+			binaryFile* trapFile = new binaryFile(startGridName,binaryFile::out);
+			trapFile->appendSnapshot("StartGrid",0,data,tmpOpt);
+			delete trapFile;
 
 			delete runExpanding;
 			delete data;
@@ -108,7 +141,7 @@ try{
 			}
 			delete startGrid;
 		
-			string runName = startUp.getRunName();
+			string runName = "split";
 			RTE* runExpanding = new RTE(data,startUp.getOptions());
 			cout << "splitToTime()" << endl;
 			runExpanding->splitToTime(runName);
@@ -140,7 +173,7 @@ try{
 			tmpOpt.t_abs = complex<double>(0.0,0.0);
 
 	
-			RTE* runExpanding = new RTE(data,tmpOpt);
+			RTE* runExpanding = new Expansion(data,tmpOpt);
 
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);

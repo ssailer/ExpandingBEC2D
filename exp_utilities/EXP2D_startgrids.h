@@ -128,7 +128,7 @@ for(int i = 0; i < opt.grid[1]; ++i){
     }
 }
 
-double LOWER_THRESHOLD = maximum * 0.8; // opt.N / (4. * opt.min_x  * opt.min_y );
+double LOWER_THRESHOLD = maximum * 0.35; // opt.N / (4. * opt.min_x  * opt.min_y );
 
 int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
 int y_jump = opt.vortexspacing; // opt.grid[2] / 5;

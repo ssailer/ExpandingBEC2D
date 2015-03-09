@@ -56,14 +56,14 @@ typedef struct Options {
 
 
 class expException {
-public:
-    expException() : stringException("expException, nothing happened, yet.") {}
-    expException(std::string const& info);
-    void setString(std::string const& info);
-    void addString(std::string const& info);
-    void printString();
-private:
-    std::string stringException;
+    public:
+        expException() : stringException("expException, nothing happened, yet.") {}
+        expException(std::string const& info);
+        void setString(std::string const& info);
+        void addString(std::string const& info);
+        void printString();
+    private:
+        std::string stringException;
 };
 
 inline expException::expException(std::string const& info) : stringException(info) {}    

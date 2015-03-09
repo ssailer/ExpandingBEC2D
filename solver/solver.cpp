@@ -50,7 +50,7 @@ double* PchangingValue;
 const double hbar = 1.054e-22;
 const double m = 87 * 1.66e-27;
 const double N = 2.0e5;
-const double g = (hbar * hbar / (m * m)) * 0.145 * (4.0) * 1.0 * N / M_PI;
+double g; 
 
 int main( int argc, char** argv)
 {   
@@ -63,9 +63,11 @@ int main( int argc, char** argv)
       Nv = atof(argv[3]);
       r[0] = atof(argv[1]);
       r[1] = atof(argv[2]);
+      double factor = atof(argv[4]);
       cout << "Got input: Nv =" << Nv << endl;
       cout << "Got input: Rx =" << r[0] << endl;
       cout << "Got input: Ry =" << r[1] << endl;
+      g = (hbar * hbar / (m * m)) * 0.145 * (4.0) * factor * N / M_PI;
     }else{
       cout << "Got no input, using default Nv = " << Nv << endl;
     }
@@ -85,7 +87,11 @@ int main( int argc, char** argv)
 
 /* output: file and formats */
     ofstream file;
-    string name = "ode_Rx_Ry.dat";
+    std::ostringstream out;
+    double ratio = r[0] / r[1];
+    out << std::setprecision(2) << ratio;
+    string name = out.str();
+    name += " with " + to_string(Nv) + " Vortices";
     file.open (name);
     file.precision(20);
     file.setf(ios::fixed | ios::showpoint);
@@ -100,7 +106,7 @@ int main( int argc, char** argv)
     cout << "beta " << beta << endl;
             // initial
     dt = 5.0e-8;             // step size for integration
-    tmax = 40.0e-3;          // integrate from ti till tmax
+    tmax = 50.0e-3;          // integrate from ti till tmax
 
     cout << "xi = " << xi << endl;
     X.push_back(r[0]);
