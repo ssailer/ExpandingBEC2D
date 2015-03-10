@@ -45,7 +45,7 @@ int main( int argc, char** argv){
 
 try{
 
-	StartUp startUp(argc,argv);	
+	InitMain initMain(argc,argv);	
 
 	#if DEBUG_LOG
  		std::ofstream logstream("simulation.log");
@@ -55,12 +55,12 @@ try{
  		// redirecter redirectcerr(errorstream,std::cerr);
  	#endif
 
- 	startUp.printInitVar();
+ 	initMain.printInitVar();
 
-	Options tmpOpt = startUp.getOptions();
-	MainControl mC = startUp.getControl();
+	Options tmpOpt = initMain.getOptions();
+	MainControl mC = initMain.getControl();
 
-	if(!startUp.restart()){
+	if(!initMain.restart()){
 		// runExpanding->noise();
 		if(mC == RK4){
 
@@ -68,9 +68,9 @@ try{
 	
 			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 			
-			string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+			string startGridName = initMain.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 			
-			MatrixData* data = new MatrixData(startUp.getMeta());
+			MatrixData* data = new MatrixData(initMain.getMeta());
 			
 			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
 			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
@@ -82,7 +82,7 @@ try{
 			delete startGrid;
 			
 			string runName = "ex";
-			RTE* runExpanding = new RTE(data,startUp.getOptions());
+			RTE* runExpanding = new RTE(data,initMain.getOptions());
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
 
@@ -98,7 +98,7 @@ try{
 			
 			string startGridName = "StartGrid_2048_2048.h5"; // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 			
-			MatrixData* data = new MatrixData(startUp.getMeta());
+			MatrixData* data = new MatrixData(initMain.getMeta());
 			
 			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
 			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
@@ -110,7 +110,7 @@ try{
 			delete startGrid;
 			
 			string runName = "trap";
-			RTE* runExpanding = new Trap(data,startUp.getOptions());
+			RTE* runExpanding = new RTE(data,initMain.getOptions());
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
 
@@ -128,9 +128,9 @@ try{
 		
 			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 			
-			string startGridName = startUp.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+			string startGridName = initMain.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 		
-			MatrixData* data = new MatrixData(startUp.getMeta());
+			MatrixData* data = new MatrixData(initMain.getMeta());
 		
 			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
 			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
@@ -142,7 +142,7 @@ try{
 			delete startGrid;
 		
 			string runName = "split";
-			RTE* runExpanding = new RTE(data,startUp.getOptions());
+			RTE* runExpanding = new RTE(data,initMain.getOptions());
 			cout << "splitToTime()" << endl;
 			runExpanding->splitToTime(runName);
 
@@ -152,9 +152,9 @@ try{
 		}
 		if(mC == RK4_RESTART){
 
-			MatrixData* data = new MatrixData(startUp.getMeta());
+			MatrixData* data = new MatrixData(initMain.getMeta());
 
-			string runName = startUp.getRunName();
+			string runName = initMain.getRunName();
 			string filename = runName + "-LastGrid.h5";
 			binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 
@@ -162,18 +162,18 @@ try{
 			dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
 			delete dataFile;
 
-			tmpOpt = startUp.getOptions();
+			tmpOpt = initMain.getOptions();
 
 			tmpOpt.initialRun = true;
-			tmpOpt.n_it_RTE = startUp.getRunTime();
-			tmpOpt.snapshots = startUp.getSnapShots();
+			tmpOpt.n_it_RTE = initMain.getRunTime();
+			tmpOpt.snapshots = initMain.getSnapShots();
 	
 			data->meta.steps = 0;
 			data->meta.time = 0.0;
 			tmpOpt.t_abs = complex<double>(0.0,0.0);
 
 	
-			RTE* runExpanding = new Expansion(data,tmpOpt);
+			RTE* runExpanding = new RTE(data,tmpOpt);
 
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
@@ -186,18 +186,18 @@ try{
 
 	}
 	
-	if(startUp.restart()){
-		string runName = startUp.getRunName();
+	if(initMain.restart()){
+		string runName = initMain.getRunName();
 		string filename = runName + "-LastGrid.h5";
-		MatrixData* data = new MatrixData(startUp.getMeta());
+		MatrixData* data = new MatrixData(initMain.getMeta());
 		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 	
 		vector<int> timeList = dataFile->getTimeList();
 		dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
 		delete dataFile;
 		tmpOpt.initialRun = false;
-		tmpOpt.n_it_RTE = startUp.getRunTime();
-		tmpOpt.snapshots = startUp.getSnapShots();
+		tmpOpt.n_it_RTE = initMain.getRunTime();
+		tmpOpt.snapshots = initMain.getSnapShots();
 
 		RTE* runExpanding = new RTE(data,tmpOpt);
 

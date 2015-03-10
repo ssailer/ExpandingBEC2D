@@ -412,13 +412,13 @@ void Eval::plotData(){
 	// 	plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
 	// }
 
-	plotname = runname + "-Spectrum-" + snapShotString;
-	title = "Spectrum " + snapShotString; 
-	plotSpectrum(plotname,title,totalResult);
+	// plotname = runname + "-Spectrum-" + snapShotString;
+	// title = "Spectrum " + snapShotString; 
+	// plotSpectrum(plotname,title,totalResult);
 
-	plotname = runname + "-Radial-Density-" + snapShotString;
-	title = "Radial-Density " + snapShotString; 
-	plotRadialDensity(plotname,title,totalResult);
+	// plotname = runname + "-Radial-Density-" + snapShotString;
+	// title = "Radial-Density " + snapShotString; 
+	// plotRadialDensity(plotname,title,totalResult);
 
 	// if(pres[0].vlist.size() >= 0){
 	// 	plotname = runname + "-PairDistance" + snapShotString;
@@ -426,9 +426,9 @@ void Eval::plotData(){
 	// 	plotPairDistance(plotname,title,pres[0]);
 	// }
 
-	plotname = runname + "-Vortices-" + snapShotString;
-	title = "Vortices " + snapShotString;
-	plotVortexList(plotname,title,phase,pres[0],opt);	
+	// plotname = runname + "-Vortices-" + snapShotString;
+	// title = "Vortices " + snapShotString;
+	// plotVortexList(plotname,title,phase,pres[0],opt);	
 
 	// plotname = runname + "-Density-" + snapShotString;
 	// title = "Density " + snapShotString;
@@ -438,13 +438,13 @@ void Eval::plotData(){
 	// title = "Density " + snapShotString;
 	// plotVector(plotname,title,x_dist_grad,y_dist_grad,opt);
 
-	plotname = runname + "-Angular-Dens-" + snapShotString;
-	title = "Angular Density " + snapShotString;
-	plotVector(plotname,title,totalResult.angularDensity,opt);	
+	// plotname = runname + "-Angular-Dens-" + snapShotString;
+	// title = "Angular Density " + snapShotString;
+	// plotVector(plotname,title,totalResult.angularDensity,opt);	
 
-	plotname = runname + "-Contour-" + snapShotString;
-	title = "Contour " + snapShotString + " " + to_string(opt.t_abs.real());
-	plotContour(plotname,title,PsiVec[0],contour[0],opt);
+	// plotname = runname + "-Contour-" + snapShotString;
+	// title = "Contour " + snapShotString + " " + to_string(opt.t_abs.real());
+	// plotContour(plotname,title,PsiVec[0],contour[0],opt);
 
 
 }

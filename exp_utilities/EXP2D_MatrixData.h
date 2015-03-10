@@ -14,7 +14,7 @@ class MatrixData {
 
     class MetaData {
         public:
-        MetaData() : steps(0), time(0), coord(2), grid(2), spacing(2), samplesize(0) { for(int i = 0; i < 9; i++){array[i] = 0;}}
+        MetaData() : steps(0), time(0), coord(2), grid(2), spacing(2), initCoord(2), initSpacing(2), samplesize(0) { for(int i = 0; i < 9; i++){array[i] = 0;}}
         // MetaData( const MetaData &m) : coord(2), grid(2), spacing(2) {
         //     steps = m.steps;
         //     time = m.time;
@@ -33,8 +33,13 @@ class MatrixData {
     
         double time;
         int steps, samplesize;
-        vector<double> coord;
+               
         vector<int> grid;
+
+        vector<double> coord;
+        vector<double> initCoord;
+
+        vector<double> initSpacing;
         vector<double> spacing;
     
         double array[9];    
@@ -54,6 +59,7 @@ class MatrixData {
 
     inline void setMatrix(const vector<MatrixXcd> &extWavefct);
     inline void setTime(const double &extTime);
+    inline void increment(const double extTime,const double factorX,const double factorY);
     inline void setStep(const int &extStep);
     inline void setCoord(const vector<double> &extCoord);
     inline void setMeta(const MetaData &extMeta);
@@ -102,6 +108,16 @@ inline void MatrixData::update(const double &extTime,const int &extSteps,const v
     meta.steps = extSteps;
     meta.coord[0] = coord[0];
     meta.coord[1] = coord[1];
+    meta.spacing[0] = meta.coord[0] * 2 / meta.grid[0];
+    meta.spacing[1] = meta.coord[1] * 2 / meta.grid[1];
+    meta.dataToArray();
+}
+
+inline void MatrixData::increment(const double extTime,const double factorX,const double factorY){
+    meta.time += extTime;
+    meta.steps++;
+    meta.coord[0] = factorX * meta.initCoord[0];
+    meta.coord[1] = factorY * meta.initCoord[1];
     meta.spacing[0] = meta.coord[0] * 2 / meta.grid[0];
     meta.spacing[1] = meta.coord[1] * 2 / meta.grid[1];
     meta.dataToArray();

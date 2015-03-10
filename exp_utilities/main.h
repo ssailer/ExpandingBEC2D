@@ -35,9 +35,9 @@ enum MainControl {
 
 
 
-class StartUp {
+class InitMain {
 public:
-	StartUp(int argcTmp, char** argvTmp) : restartValue(false) {
+	InitMain(int argcTmp, char** argvTmp) : restartValue(false) {
 		argc = argcTmp;
 		argv = argvTmp;
 		readCli();
@@ -81,7 +81,7 @@ private:
 	string runName = "expansion";
 };
 
-MainControl StartUp::toMainControl(const std::string& s)
+MainControl InitMain::toMainControl(const std::string& s)
 {
     if (s == "SPLIT") return SPLIT;
     if (s == "RK4") return RK4;
@@ -90,49 +90,49 @@ MainControl StartUp::toMainControl(const std::string& s)
     throw std::runtime_error("Invalid conversion from string to MainControl.");
 }
 
-inline bool StartUp::restart(){
+inline bool InitMain::restart(){
 	return restartValue;
 }
 
-inline string StartUp::getStartingGridName(){
+inline string InitMain::getStartingGridName(){
 	return startingGridName;
 }
 
-inline Options StartUp::getOptions(){
+inline Options InitMain::getOptions(){
 	return opt;
 }
 
-inline void StartUp::setOptions(Options &ext_opt){
+inline void InitMain::setOptions(Options &ext_opt){
 	opt = ext_opt;
 }
 
-inline void StartUp::setInitialRun(bool initialRun){
+inline void InitMain::setInitialRun(bool initialRun){
 	opt.initialRun = initialRun;
 }
 
-inline void StartUp::setRunMode(string runmode){
+inline void InitMain::setRunMode(string runmode){
 	// FIXME: Here should be checks for the sanity of runmode!
 	opt.runmode = runmode;
 }
 
-inline string StartUp::getRunMode(){
+inline string InitMain::getRunMode(){
 	// FIXME: Here should be checks for the sanity of runmode!
 	return opt.runmode;
 }
 
-inline void StartUp::setRunTime(int runtime){
+inline void InitMain::setRunTime(int runtime){
 	opt.n_it_RTE = runtime;
 }
 
-inline void StartUp::setVortexnumber(int number){
+inline void InitMain::setVortexnumber(int number){
 	opt.vortexnumber = number;
 }
 
-inline MatrixData::MetaData StartUp::getMeta(){
+inline MatrixData::MetaData InitMain::getMeta(){
 	return meta;
 }
 
-inline void StartUp::rotatePotential(){
+inline void InitMain::rotatePotential(){
 	complex<double> tmp = opt.omega_x;
 	opt.omega_x = opt.omega_y;
 	opt.omega_y = tmp;
@@ -142,14 +142,14 @@ inline void StartUp::rotatePotential(){
 }
 
 
-inline void StartUp::printInitVar()
+inline void InitMain::printInitVar()
 {
 	std::cout.setf(std::ios::boolalpha);
 	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
-				<< "Gridpoints in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
-				<< "Gridpoints in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
-				<< "Coordinates in x-direction: " << opt.min_x << endl
-				<< "Coordinates in y-direction: " << opt.min_y << endl
+				<< "Gridpoints in x-direction: " << meta.grid[0] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
+				<< "Gridpoints in y-direction: " << meta.grid[1] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
+				<< "Coordinates in x-direction: " << meta.initCoord[0] << endl
+				<< "Coordinates in y-direction: " << meta.initCoord[1] << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
 				<< "ITP Step: " << opt.ITP_step << "\t" << "RTE Step: " << opt.RTE_step << endl
 				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << endl
@@ -158,7 +158,7 @@ inline void StartUp::printInitVar()
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
 }
 
-inline void StartUp::setDirectory()
+inline void InitMain::setDirectory()
 {	
 	// cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
 	struct stat wd_stat;
@@ -181,7 +181,7 @@ inline void StartUp::setDirectory()
 }
 
 
-inline int StartUp::readCli()
+inline int InitMain::readCli()
 {
 	// Beginning of the options block
 
@@ -259,7 +259,7 @@ inline int StartUp::readCli()
 }
 
 
-inline int StartUp::readConfig()
+inline int InitMain::readConfig()
 {
 	libconfig::Config cfg;
 
@@ -328,10 +328,10 @@ inline int StartUp::readConfig()
 
 	meta.grid[0] = opt.grid[1];
 	meta.grid[1] = opt.grid[2];
-	meta.coord[0] = opt.min_x;
-	meta.coord[1] = opt.min_y;
-	meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
-	meta.spacing[0] = opt.min_y * 2 / opt.grid[2];
+	meta.initCoord[0] = meta.coord[0] = opt.min_x;
+	meta.initCoord[1] = meta.coord[1] = opt.min_y;
+	meta.initSpacing[0] = meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
+	meta.initSpacing[1] = meta.spacing[0] = opt.min_y * 2 / opt.grid[2];
 	meta.samplesize = opt.samplesize;
 	meta.time = 0;
 	meta.steps = 0;
@@ -365,7 +365,7 @@ inline int StartUp::readConfig()
 	
 }
 
-inline void StartUp::writeConfig(){
+inline void InitMain::writeConfig(){
 	string filename = "run.cfg";
 	ofstream datafile;
   		datafile.open(filename.c_str(), ios::out);
@@ -399,10 +399,10 @@ inline void StartUp::writeConfig(){
 	datafile.close();
 }
 
-inline void StartUp::convertToDimensionless(){
+inline void InitMain::convertToDimensionless(){
 
-	double m = 87 * 1.66 * 1.0e-27;
-	double hbar = 1.054 * 1.0e-22;	
+	const double m = 87 * 1.66 * 1.0e-27;
+	const double hbar = 1.054 * 1.0e-22;	
 	opt.Ag = 2 * opt.min_x / opt.grid[1];
 	opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
 
@@ -416,8 +416,8 @@ inline void StartUp::convertToDimensionless(){
 	opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
 }
 
-inline void StartUp::convertFromDimensionless(){
-	cout << "WATCH OUT: StartUp::convertFromDimensionless() is not yet implemented" << endl;
+inline void InitMain::convertFromDimensionless(){
+	cout << "WATCH OUT: InitMain::convertFromDimensionless() is not yet implemented" << endl;
 }
 
 

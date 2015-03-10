@@ -15,6 +15,8 @@
 #include <EXP2D_tools.h>
 #include <EXP2D_evaluation.h>
 #include <EXP2D_binaryfile.h>
+#include <EXP2D_rk4.hpp>
+#include <EXP2D_constants.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_MatrixData.h>
 #include <eigen3/Eigen/Dense>
@@ -58,7 +60,7 @@ public:
     Options opt;
     
 
-    virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
+    // virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
 
     vector<int> snapshot_times;
         // Coordinates
@@ -72,7 +74,7 @@ public:
     // Plotting and progress functions 
     
     // void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
-    void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
+    void cli(string name, int index, double start);
     void plot(const string name);
     void noise();
 
@@ -92,19 +94,12 @@ public:
     Matrix<std::complex<double>,Dynamic,Dynamic,ColMajor> wavefctcpX;
     Matrix<std::complex<double>,Dynamic,Dynamic,RowMajor> wavefctcpY;
     MatrixXcd PotentialGrid,AbsorbingPotentialGrid;
-    MatrixXcd wavefctcp, k0, k1, k2, k3;
+    
     VectorXcd laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
 
-    stepCounter keeperOfTime;
+    stepCounter keeperOfTime;    
     
-    
-    // some used constants
-    
-    double pi;
-    complex<double>  zero,half,one,two,four,six,i_unit;
-    
-
-    // little helper functions for stuff
+   // little helper functions for stuff
 
    inline VectorXd x_expand(complex<double> &t){
     return X.real() * real(lambda_x(t));
@@ -115,6 +110,10 @@ public:
    }
 
    inline complex<double> lambda_x(complex<double> &t){
+    return sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t);
+   }
+
+   inline complex<double> lambda_x(const complex<double> &t){
     return sqrt(one+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*t*t);
    }
 
@@ -132,19 +131,19 @@ public:
   
 };
 
-class Expansion : public RTE {
-public:
-    Expansion(MatrixData* &d,const Options &opt) : RTE(d,opt) {}
-private:
-    virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
-};
+// class Expansion : public RTE {
+// public:
+//     Expansion(MatrixData* &d,const Options &opt) : RTE(d,opt) {}
+// private:
+//     virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
+// };
 
-class Trap : public RTE {
-public:
-    Trap(MatrixData* &d,const Options &opt) : RTE(d,opt) {}
-private:
-    virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
-};
+// class Trap : public RTE {
+// public:
+//     Trap(MatrixData* &d,const Options &opt) : RTE(d,opt) {}
+// private:
+//     virtual void singleK(MatrixXcd &k, MatrixXcd &wavefctcp, int32_t &front, int32_t &end,int32_t &subx,int32_t & suby, int &t);
+// };
 
 
 #endif // EXP2D_RTE_H__

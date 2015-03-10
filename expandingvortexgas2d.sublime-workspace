@@ -528,10 +528,36 @@
 			}
 		},
 		{
-			"file": "CMakeLists.txt",
+			"file": "exp_utilities/EXP2D_tools.h",
 			"settings":
 			{
-				"buffer_size": 3236,
+				"buffer_size": 3980,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 24 files for \"workingdirectory\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_binaryfile.h:\n  109    		  (p1.runmode == p2.runmode) &&\n  110    		  (p1.config == p2.config) &&\n  111:   		  (p1.workingdirectory == p2.workingdirectory));\n  112  }\n  113  \n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_tools.h:\n   48                       // third char determines if potential is switch on for the differential equation\n   49      string config; // name of the config file \n   50:     string workingdirectory;   // remove it from here, only needed in the program itself\n   51      bool initialRun;\n   52  \n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h:\n  161  inline void InitMain::setDirectory()\n  162  {	\n  163: 	// cout << \"Workingdirectory: \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  164  	struct stat wd_stat;\n  165: 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){\n  166: 		if(chdir(opt.workingdirectory.c_str()) == 0){\n  167: 			cerr << \"Using existing directory: \" << \"\\\"\" << opt.workingdirectory << \"\\\".\" << endl;\n  168  			cerr << \"Check \\\"run.log\\\" for output of this run.\" << endl;\n  169  		}\n  170  	}else\n  171  	{\n  172: 		mkdir(opt.workingdirectory.c_str(),0755);\n  173: 		cerr << \"Creating directory: \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  174  \n  175: 		if(chdir(opt.workingdirectory.c_str()) == 0){\n  176: 			cerr << \"Switching to \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  177  		}\n  178  		cerr << endl;\n  ...\n  193        (\"help,h\", \"Print help messages.\") \n  194        (\"config,c\",po::value<string>(&opt.config), \"Name of the configfile.\")      \n  195:       (\"directory,d\",po::value<string>(&opt.workingdirectory), \"Name of the directory this run saves its data.\")\n  196        (\"restart,r\",\"Use if you want to restart the run from LastGrid.\")\n  197        (\"mode,m\",po::value<string>(&MainControlString), \"Runmode given: Choose between SPLIT and RK4.\")\n\n12 matches across 3 files\n\n\nSearching 24 files for \"opt.workingdirectory\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h:\n  161  inline void InitMain::setDirectory()\n  162  {	\n  163: 	// cout << \"Workingdirectory: \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  164  	struct stat wd_stat;\n  165: 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){\n  166: 		if(chdir(opt.workingdirectory.c_str()) == 0){\n  167: 			cerr << \"Using existing directory: \" << \"\\\"\" << opt.workingdirectory << \"\\\".\" << endl;\n  168  			cerr << \"Check \\\"run.log\\\" for output of this run.\" << endl;\n  169  		}\n  170  	}else\n  171  	{\n  172: 		mkdir(opt.workingdirectory.c_str(),0755);\n  173: 		cerr << \"Creating directory: \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  174  \n  175: 		if(chdir(opt.workingdirectory.c_str()) == 0){\n  176: 			cerr << \"Switching to \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  177  		}\n  178  		cerr << endl;\n  ...\n  193        (\"help,h\", \"Print help messages.\") \n  194        (\"config,c\",po::value<string>(&opt.config), \"Name of the configfile.\")      \n  195:       (\"directory,d\",po::value<string>(&opt.workingdirectory), \"Name of the directory this run saves its data.\")\n  196        (\"restart,r\",\"Use if you want to restart the run from LastGrid.\")\n  197        (\"mode,m\",po::value<string>(&MainControlString), \"Runmode given: Choose between SPLIT and RK4.\")\n\n9 matches in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 3439,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "main.cpp",
+			"settings":
+			{
+				"buffer_size": 6541,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "itp.cpp",
+			"settings":
+			{
+				"buffer_size": 4151,
 				"line_ending": "Unix"
 			}
 		},
@@ -542,9 +568,42 @@
 				"buffer_size": 5170,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "exp_utilities/main.h",
+			"settings":
+			{
+				"buffer_size": 13563,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_rte.cpp",
+			"settings":
+			{
+				"buffer_size": 31513,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 3245,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/nhrjr/.config/sublime-text-3/Packages/User/expandingvortexgas2d.sublime-build",
+			"settings":
+			{
+				"buffer_size": 36,
+				"line_ending": "Unix",
+				"name": "untitled.sublime-build"
+			}
 		}
 	],
-	"build_system": "Packages/User/cmake.sublime-build",
+	"build_system": "Packages/User/expandingvortexgas2d.sublime-build",
 	"command_palette":
 	{
 		"height": 369.0,
@@ -725,7 +784,8 @@
 	"expanded_folders":
 	[
 		"/home/nhrjr/projects/expandingvortexgas2d",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities"
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities",
+		"/home/nhrjr/projects/expandingvortexgas2d/solver"
 	],
 	"file_history":
 	[
@@ -860,13 +920,14 @@
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 34.0
 	},
 	"find_in_files":
 	{
 		"height": 93.0,
 		"where_history":
 		[
+			"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities",
 			"",
 			"/usr/include/eigen3/Eigen/src",
 			"/home/nhrjr/projects/expandingvortexgas2d"
@@ -877,6 +938,17 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"workingdirectory",
+			"opt.workingdirectory",
+			"workingdirectory",
+			"startUp",
+			"InitializeMain",
+			"startUp",
+			"StartUp",
+			"wavefctVec",
+			"progressBar",
+			"currentTime()",
+			"currentTime",
 			"\\alpha",
 			"bao",
 			"@",
@@ -993,18 +1065,7 @@
 			"Compute",
 			"t_RTE",
 			"tmp",
-			"lambda_y(tmp)",
-			"lambda_x(tmp)",
-			"lambda_x(tmp) ",
-			"lambda_x(tmp)",
-			"100",
-			"40",
-			"150",
-			"200",
-			"150",
-			"5",
-			"50",
-			"startGridName"
+			"lambda_y(tmp)"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1022,7 +1083,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 7,
 			"sheets":
 			[
 				{
@@ -1111,44 +1172,230 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 299.0,
+						"translation.y": 2774.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "CMakeLists.txt",
+					"file": "exp_utilities/EXP2D_tools.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3236,
+						"buffer_size": 3980,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2693,
-								2693
+								1605,
+								1605
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 135.0,
+						"translation.y": 262.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3439,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										237,
+										253
+									],
+									[
+										260,
+										276
+									],
+									[
+										550,
+										566
+									],
+									[
+										838,
+										854
+									],
+									[
+										921,
+										937
+									],
+									[
+										985,
+										1001
+									],
+									[
+										1080,
+										1096
+									],
+									[
+										1240,
+										1256
+									],
+									[
+										1327,
+										1343
+									],
+									[
+										1391,
+										1407
+									],
+									[
+										1473,
+										1489
+									],
+									[
+										1737,
+										1753
+									],
+									[
+										2257,
+										2277
+									],
+									[
+										2340,
+										2360
+									],
+									[
+										2404,
+										2424
+									],
+									[
+										2499,
+										2519
+									],
+									[
+										2659,
+										2679
+									],
+									[
+										2746,
+										2766
+									],
+									[
+										2810,
+										2830
+									],
+									[
+										2892,
+										2912
+									],
+									[
+										3156,
+										3176
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								2024,
+								2024
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 2,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "main.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6541,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1204,
+								1204
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 525.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "itp.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4151,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1262,
+								1262
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"file": "exp_utilities/EXP2D_MatrixData.h",
-					"semi_transient": true,
+					"semi_transient": false,
 					"settings":
 					{
 						"buffer_size": 5170,
@@ -1158,8 +1405,38 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								847,
+								847
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 45.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "exp_utilities/main.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13563,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4485,
+								4485
 							]
 						],
 						"settings":
@@ -1167,10 +1444,94 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 4181.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "exp_utilities/EXP2D_rte.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 31513,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10057,
+								10057
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 3645.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3245,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1664,
+								1664
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 225.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/home/nhrjr/.config/sublime-text-3/Packages/User/expandingvortexgas2d.sublime-build",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 36,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								36,
+								36
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -1178,7 +1539,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 21.0
+		"height": 23.0
 	},
 	"input":
 	{
@@ -1209,7 +1570,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 282.0
+		"height": 318.0
 	},
 	"output.find_results":
 	{
@@ -1218,7 +1579,7 @@
 	"project": "expandingvortexgas2d.sublime-project",
 	"replace":
 	{
-		"height": 40.0
+		"height": 42.0
 	},
 	"save_all_on_build": true,
 	"select_file":

@@ -14,6 +14,7 @@
 #include <EXP2D_tools.h>
 #include <EXP2D_evaluation.h>
 #include <plot_with_mgl.h>
+#include <EXP2D_constants.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
