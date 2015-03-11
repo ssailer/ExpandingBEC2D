@@ -1,6 +1,8 @@
 #ifndef EXP2D_EVALUATION_H__
 #define EXP2D_EVALUATION_H__
 
+#define EIGEN_FFTW_DEFAULT
+
 #include <iostream>
 #include <sys/stat.h>
 #include <complex>
@@ -19,6 +21,7 @@
 #include <EXP2D_Contour.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_tools.h>
+#include <EXP2D_MatrixData.h>
 #include <EXP2D_observables.h>
 #include <eigen3/Eigen/Dense>
 
@@ -29,6 +32,7 @@ using namespace Eigen;
 
 class Eval{
 public:
+	Eval(MatrixData &d,Options &o);
 	Eval();
 	~Eval();
 
@@ -67,15 +71,19 @@ private:
 		double r;
 	} contourData;
 
+	MatrixData data;
+	Options opt;
 	// data savefiles
 
-	RealGrid phase, zeros;
+	// RealGrid phase, zeros;
 	string runname;
-	vector<ComplexGrid> PsiVec;
+	// vector<ComplexGrid> PsiVec;
 	
-	Options opt;
 	int snapshot_time;
-	vector<RealGrid> densityLocationMap;
+
+	// vector<RealGrid> densityLocationMap;
+	vector<MatrixXi> densityLocationMap;
+
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
 	vector<double> x_dist,y_dist,x_dist_grad,y_dist_grad;
 	vector<int> densityCounter;
@@ -88,7 +96,8 @@ private:
 	Observables calculatorITP(ComplexGrid data,int sampleindex);
 	void aspectRatio(Observables &obs, int &sampleindex);
 	void getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres);
-	void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
+	// void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
+	void getDensity();
 	
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid &phase);

@@ -10,28 +10,32 @@ using namespace std;
 using namespace Eigen;
 
 
+Eval::Eval(MatrixData &d,Options &o) : data(d), opt(o) {
+	data.meta.convertFromDimensionless();
+};
+
 Eval::Eval() {};
 
 Eval::~Eval() {};
 
-void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname){
-	runname = external_runname;
-	opt = external_opt;
-	snapshot_time = external_snapshot_time;
-	PsiVec.resize(wavefctVec.size());
+// void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname){
+// 	runname = external_runname;
+// 	opt = external_opt;
+// 	snapshot_time = external_snapshot_time;
+// 	PsiVec.resize(wavefctVec.size());
 
-	#pragma omp parallel for
-	for(int k = 0; k < wavefctVec.size(); k++){
-		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-		for(int i = 0; i < opt.grid[1]; i++){
-			for(int j = 0; j < opt.grid[2]; j++){		
-				PsiVec[k](0,i,j,0) = wavefctVec[k](i,j) / complex<double>(opt.Ag,0.0);
-			}
-		}
-	}
-	convertFromDimensionless();
+// 	#pragma omp parallel for
+// 	for(int k = 0; k < wavefctVec.size(); k++){
+// 		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 		for(int i = 0; i < opt.grid[1]; i++){
+// 			for(int j = 0; j < opt.grid[2]; j++){		
+// 				PsiVec[k](0,i,j,0) = wavefctVec[k](i,j) / complex<double>(opt.Ag,0.0);
+// 			}
+// 		}
+// 	}
+// 	convertFromDimensionless();
 
-}
+// }
 
 void Eval::convertFromDimensionless(){
 	opt.min_x *= opt.Ag;
@@ -44,226 +48,233 @@ void Eval::convertFromDimensionless(){
 	opt.dispersion_y /= 2.0 * M_PI / opt.OmegaG;
 }
 
-void Eval::saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber){
-	runname = external_runname;
-	opt = external_opt;
-	snapshot_time = external_snapshot_time;
-	PsiVec.resize(wavefctVec.size());
-	#pragma omp parallel for
-	for(int k = 0; k < wavefctVec.size(); k++){
-		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-		for(int i = 0; i < opt.grid[1]; i++){
-			for(int j = 0; j < opt.grid[2]; j++){
-				PsiVec[k](0,i,j,0) = wavefctVec[k](0,i,j,sliceNumber) / complex<double>(opt.Ag,0.0);
-			}
-		}
-	}
-	convertFromDimensionless();
-}
+// void Eval::saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber){
+// 	runname = external_runname;
+// 	opt = external_opt;
+// 	snapshot_time = external_snapshot_time;
+// 	PsiVec.resize(wavefctVec.size());
+// 	#pragma omp parallel for
+// 	for(int k = 0; k < wavefctVec.size(); k++){
+// 		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 		for(int i = 0; i < opt.grid[1]; i++){
+// 			for(int j = 0; j < opt.grid[2]; j++){
+// 				PsiVec[k](0,i,j,0) = wavefctVec[k](0,i,j,sliceNumber) / complex<double>(opt.Ag,0.0);
+// 			}
+// 		}
+// 	}
+// 	convertFromDimensionless();
+// }
 
-void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname){
-	runname = external_runname;
-	opt = external_opt;
-	snapshot_time = external_snapshot_time;
-	PsiVec.resize(1);
+// void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname){
+// 	runname = external_runname;
+// 	opt = external_opt;
+// 	snapshot_time = external_snapshot_time;
+// 	PsiVec.resize(1);
 
-	PsiVec[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 	PsiVec[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	
-	for(int i = 0; i < opt.grid[1]; i++){
-		for(int j = 0; j < opt.grid[2]; j++){		
-			PsiVec[0](0,i,j,0) = wavefct(i,j) / complex<double>(opt.Ag,0.0);
-		}
-	}
-	convertFromDimensionless();		
-}
+// 	for(int i = 0; i < opt.grid[1]; i++){
+// 		for(int j = 0; j < opt.grid[2]; j++){		
+// 			PsiVec[0](0,i,j,0) = wavefct(i,j) / complex<double>(opt.Ag,0.0);
+// 		}
+// 	}
+// 	convertFromDimensionless();		
+// }
 
-void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval){
-	runname = external_runname;
-	opt = external_opt;
-	snapshot_time = external_snapshot_time;
+// void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval){
+// 	runname = external_runname;
+// 	opt = external_opt;
+// 	snapshot_time = external_snapshot_time;
 
-	int numberOfSamples = extEval.size();
+// 	int numberOfSamples = extEval.size();
 
 
-	totalResult = Observables(extEval[0].totalResult.number.size());
-	contour.resize(numberOfSamples*opt.samplesize);
-	pres.resize(numberOfSamples*opt.samplesize);
+// 	totalResult = Observables(extEval[0].totalResult.number.size());
+// 	contour.resize(numberOfSamples*opt.samplesize);
+// 	pres.resize(numberOfSamples*opt.samplesize);
 	
-	for(int k = 0; k < numberOfSamples; k++){
-		if(k == 0){
-			totalResult = extEval[k].totalResult;
-		}else{
-			totalResult += extEval[k].totalResult;
-		}
-		for(int i = 0; i < opt.samplesize;i++){
-			contour[i+k*opt.samplesize] = extEval[k].contour[i];
-			pres[i+k*opt.samplesize].vlist = extEval[k].pres[i].vlist;
-		}
-	}
-	totalResult /= numberOfSamples;
-	CombinedEval();
-	CombinedSpectrum();
-}
+// 	for(int k = 0; k < numberOfSamples; k++){
+// 		if(k == 0){
+// 			totalResult = extEval[k].totalResult;
+// 		}else{
+// 			totalResult += extEval[k].totalResult;
+// 		}
+// 		for(int i = 0; i < opt.samplesize;i++){
+// 			contour[i+k*opt.samplesize] = extEval[k].contour[i];
+// 			pres[i+k*opt.samplesize].vlist = extEval[k].pres[i].vlist;
+// 		}
+// 	}
+// 	totalResult /= numberOfSamples;
+// 	CombinedEval();
+// 	CombinedSpectrum();
+// }
 
-void Eval::CombinedEval(){
+// void Eval::CombinedEval(){
 
-	string dirname = "CombinedRunObservables";
-    struct stat st;
-    	if(stat(dirname.c_str(),&st) != 0){
-        mkdir(dirname.c_str(),0755);
-    }
+// 	string dirname = "CombinedRunObservables";
+//     struct stat st;
+//     	if(stat(dirname.c_str(),&st) != 0){
+//         mkdir(dirname.c_str(),0755);
+//     }
 
-	string filename = dirname + "/" + runname + "_Observables.dat";	
+// 	string filename = dirname + "/" + runname + "_Observables.dat";	
 	
-	struct stat buffer;
-  	if(stat (filename.c_str(), &buffer) != 0){
-  		ofstream datafile;
-  		datafile.open(filename.c_str(), ios::out | ios::app);
-  		datafile << std::left << std::setw(15) << "Timestep"
-  						 << std::setw(15) << "X_max"
-  						 << std::setw(15) << "Y_max"
-  						 << std::setw(15) << "D_max"
-  						 << std::setw(15) << "D_min"
-  						 << std::setw(15) << "Rx"
-						 << std::setw(15) << "Ry"
-  						 << std::setw(15) << "D_max/D_min"
-  						 << std::setw(15) << "D_max Angle"
-  						 << std::setw(15) << "D_min Angle"
-  						 << std::setw(15) << "Ratio"
-  						 << std::setw(15) << "RatioAngle"
-  						 << std::setw(15) << "N"
-  						 << std::setw(15) << "V"
-  						 << std::setw(15) << "N/V"
-  						 << std::setw(15) << "E_kin"
-  				 << endl;
-  		datafile.close();
-  	} 
+// 	struct stat buffer;
+//   	if(stat (filename.c_str(), &buffer) != 0){
+//   		ofstream datafile;
+//   		datafile.open(filename.c_str(), ios::out | ios::app);
+//   		datafile << std::left << std::setw(15) << "Timestep"
+//   						 << std::setw(15) << "X_max"
+//   						 << std::setw(15) << "Y_max"
+//   						 << std::setw(15) << "D_max"
+//   						 << std::setw(15) << "D_min"
+//   						 << std::setw(15) << "Rx"
+// 						 << std::setw(15) << "Ry"
+//   						 << std::setw(15) << "D_max/D_min"
+//   						 << std::setw(15) << "D_max Angle"
+//   						 << std::setw(15) << "D_min Angle"
+//   						 << std::setw(15) << "Ratio"
+//   						 << std::setw(15) << "RatioAngle"
+//   						 << std::setw(15) << "N"
+//   						 << std::setw(15) << "V"
+//   						 << std::setw(15) << "N/V"
+//   						 << std::setw(15) << "E_kin"
+//   				 << endl;
+//   		datafile.close();
+//   	} 
 
-  	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
-	// datafile.open;
-	datafile << std::left << std::setw(15) << snapshot_time
-					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
-					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
- 					 << std::setw(15) << totalResult.r_max
- 					 << std::setw(15) << totalResult.r_min
- 					 << std::setw(15) << totalResult.Rx
- 					 << std::setw(15) << totalResult.Ry
- 					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
- 					 << std::setw(15) << totalResult.r_max_phi
- 					 << std::setw(15) << totalResult.r_min_phi
- 					 << std::setw(15) << totalResult.aspectRatio 
- 					 << std::setw(15) << totalResult.aspectRatioAngle 
-					 << std::setw(15) << totalResult.particle_count
-					 << std::setw(15) << totalResult.volume
-					 << std::setw(15) << totalResult.density
-					 << std::setw(15) << totalResult.Ekin
-			 << endl;
-	datafile.close();
+//   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
+// 	// datafile.open;
+// 	datafile << std::left << std::setw(15) << snapshot_time
+// 					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
+// 					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
+//  					 << std::setw(15) << totalResult.r_max
+//  					 << std::setw(15) << totalResult.r_min
+//  					 << std::setw(15) << totalResult.Rx
+//  					 << std::setw(15) << totalResult.Ry
+//  					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
+//  					 << std::setw(15) << totalResult.r_max_phi
+//  					 << std::setw(15) << totalResult.r_min_phi
+//  					 << std::setw(15) << totalResult.aspectRatio 
+//  					 << std::setw(15) << totalResult.aspectRatioAngle 
+// 					 << std::setw(15) << totalResult.particle_count
+// 					 << std::setw(15) << totalResult.volume
+// 					 << std::setw(15) << totalResult.density
+// 					 << std::setw(15) << totalResult.Ekin
+// 			 << endl;
+// 	datafile.close();
 
 
-	filename = dirname + "/" + runname + "_Observables.csv";	
+// 	filename = dirname + "/" + runname + "_Observables.csv";	
 	
-  	if(stat (filename.c_str(), &buffer) != 0){
-  		ofstream datafile1;
-  		datafile1.open(filename.c_str(), ios::out | ios::app);
-  		datafile1 << std::left << "," << "Timestep"
-  						 << "," << "X_max"
-  						 << "," << "Y_max"
-  						 << "," << "D_max"
-  						 << "," << "D_min"
-  						 << "," << "Rx"
-						 << "," << "Ry"
-  						 << "," << "D_max/D_min"
-  						 << "," << "D_max Angle"
-  						 << "," << "D_min Angle"
-  						 << "," << "Ratio"
-  						 << "," << "RatioAngle"
-  						 << "," << "N"
-  						 << "," << "V"
-  						 << "," << "N/V"
-  						 << "," << "E_kin"
-  				 << endl;
-  		datafile1.close();
-  	} 
+//   	if(stat (filename.c_str(), &buffer) != 0){
+//   		ofstream datafile1;
+//   		datafile1.open(filename.c_str(), ios::out | ios::app);
+//   		datafile1 << std::left << "," << "Timestep"
+//   						 << "," << "X_max"
+//   						 << "," << "Y_max"
+//   						 << "," << "D_max"
+//   						 << "," << "D_min"
+//   						 << "," << "Rx"
+// 						 << "," << "Ry"
+//   						 << "," << "D_max/D_min"
+//   						 << "," << "D_max Angle"
+//   						 << "," << "D_min Angle"
+//   						 << "," << "Ratio"
+//   						 << "," << "RatioAngle"
+//   						 << "," << "N"
+//   						 << "," << "V"
+//   						 << "," << "N/V"
+//   						 << "," << "E_kin"
+//   				 << endl;
+//   		datafile1.close();
+//   	} 
 
-  	ofstream datafile1(filename.c_str(), std::ios_base::out | std::ios_base::app);
-	// datafile.open;
-	datafile1 << std::left << "," << snapshot_time
-					 << "," << opt.min_x * opt.stateInformation[0]
-					 << "," << opt.min_y * opt.stateInformation[1]
- 					 << "," << totalResult.r_max
- 					 << "," << totalResult.r_min
- 					 << "," << totalResult.Rx
-					 << "," << totalResult.Ry
- 					 << "," << totalResult.r_max / totalResult.r_min  
- 					 << "," << totalResult.r_max_phi
- 					 << "," << totalResult.r_min_phi
- 					 << "," << totalResult.aspectRatio 
- 					 << "," << totalResult.aspectRatioAngle 
-					 << "," << totalResult.particle_count
-					 << "," << totalResult.volume
-					 << "," << totalResult.density
-					 << "," << totalResult.Ekin
-			 << endl;
-	datafile1.close();
+//   	ofstream datafile1(filename.c_str(), std::ios_base::out | std::ios_base::app);
+// 	// datafile.open;
+// 	datafile1 << std::left << "," << snapshot_time
+// 					 << "," << opt.min_x * opt.stateInformation[0]
+// 					 << "," << opt.min_y * opt.stateInformation[1]
+//  					 << "," << totalResult.r_max
+//  					 << "," << totalResult.r_min
+//  					 << "," << totalResult.Rx
+// 					 << "," << totalResult.Ry
+//  					 << "," << totalResult.r_max / totalResult.r_min  
+//  					 << "," << totalResult.r_max_phi
+//  					 << "," << totalResult.r_min_phi
+//  					 << "," << totalResult.aspectRatio 
+//  					 << "," << totalResult.aspectRatioAngle 
+// 					 << "," << totalResult.particle_count
+// 					 << "," << totalResult.volume
+// 					 << "," << totalResult.density
+// 					 << "," << totalResult.Ekin
+// 			 << endl;
+// 	datafile1.close();
 
-	filename = dirname + "/" + runname + "_Ratios.csv";	
+// 	filename = dirname + "/" + runname + "_Ratios.csv";	
 	
-  	if(stat (filename.c_str(), &buffer) != 0){
-  		ofstream datafile2;
-  		datafile2.open(filename.c_str(), ios::out | ios::app);
-  		datafile2 << std::left << "," << "Timestep";
-  		for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
-  			datafile2 << "," << std::left << i;
-  		}
-  		datafile2 << endl;
-  		datafile2.close();
-  	} 
+//   	if(stat (filename.c_str(), &buffer) != 0){
+//   		ofstream datafile2;
+//   		datafile2.open(filename.c_str(), ios::out | ios::app);
+//   		datafile2 << std::left << "," << "Timestep";
+//   		for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
+//   			datafile2 << "," << std::left << i;
+//   		}
+//   		datafile2 << endl;
+//   		datafile2.close();
+//   	} 
 
-  	ofstream datafile2(filename.c_str(), std::ios_base::out | std::ios_base::app);
-	// datafile2.open;
-	datafile2 << std::left << "," << snapshot_time;
-  	for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
-  		datafile2 << "," << totalResult.fixedAspectRatio(i);
-  	}
-  	datafile2 << endl;
-	datafile2.close();
-}
+//   	ofstream datafile2(filename.c_str(), std::ios_base::out | std::ios_base::app);
+// 	// datafile2.open;
+// 	datafile2 << std::left << "," << snapshot_time;
+//   	for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
+//   		datafile2 << "," << totalResult.fixedAspectRatio(i);
+//   	}
+//   	datafile2 << endl;
+// 	datafile2.close();
+// }
 
 void Eval::evaluateData(){
 	// cout << "evaluateData" << endl;	
 	// cout << "checkEdges call: " << endl;
 	// checkEdges();
 
-	pres.resize(PsiVec.size());
-	densityCoordinates.clear();
-	contour.resize(PsiVec.size());
-	densityCounter.resize(PsiVec.size());
+	pres.resize(data.wavefunction.size());
 
-	densityLocationMap.resize(PsiVec.size());
-	densityCoordinates.resize(PsiVec.size());
-	phase.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	zeros.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	densityCoordinates.clear();
+
+	contour.resize(data.wavefunction.size());
+
+	densityCounter.resize(data.wavefunction.size());
+
+	densityLocationMap.resize(data.wavefunction.size());
+	densityCoordinates.resize(data.wavefunction.size());
+
+	// phase.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	// zeros.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
 	Contour tracker(opt);
 
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 	
+
+	getDensity();
 	cout << endl << "Evaluating sample #: ";
-	for(int k = 0; k < PsiVec.size(); k++){
+	for(int k = 0; k < data.wavefunction.size(); k++){
 		cout << k << " " ;
-		getDensity(PsiVec[k],densityLocationMap[k],densityCoordinates[k],densityCounter[k]);
+		
 		cout << "-getDensity" << endl;
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
 		cout << "-trackContour" << endl;
-		totalResult += calculator(PsiVec[k],k);
+		totalResult += calculator(data.wavefunction[k],k);
 		cout << "-calculator" << endl;
-		getVortices(PsiVec[k],densityCoordinates[k],pres[k]);
+		getVortices(data.wavefunction[k],densityCoordinates[k],pres[k]);
 		cout << "-getVortices" << endl;
 		// getVortexDistance(pres[k]);
 		// cout << "-getVortexDistance" << endl;
 	}	
-	totalResult /= PsiVec.size();
+	totalResult /= data.wavefunction.size();
 
 	cout << endl;
 
@@ -714,40 +725,45 @@ void Eval::calc_fields(ComplexGrid &data, Options &opt){
 
 
 
-void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
+// void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
+// void Eval::getDensity(MatrixXcd &d, MatrixXi &densMap,vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
+void Eval::getDensity(){
 	 //  / 
 	// double upper_threshold = 20.;
 	// cout << "Threshold " << threshold << endl;
 
-	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	// double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+	// double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 
-	double maximum = 0;
-	for(int i = 0; i < opt.grid[1]; ++i){
-		for(int j = 0; j < opt.grid[2]; ++j){
-			double value = abs2(data(0,i,j,0));
-			maximum = ( value > maximum) ? value : maximum;
-		}
-	}
+	// double maximum = 0;
+	// for(int i = 0; i < data.meta.grid[1]; ++i){
+	// 	for(int j = 0; j < data.meta.grid[2]; ++j){
+	// 		double value = abs2(data.wavefunction[k](i,j));
+	// 		maximum = ( value > maximum) ? value : maximum;
+	// 	}
+	// }
 
-	double threshold = maximum * 0.05 ;  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
+	  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
 
-	// RealGrid densityLocationMap = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-
-
-	densityCounter = 0;
-	densityCoordinates_local.clear();
-	for(int i = VORTEX_SURROUND_DENSITY_RADIUS; i < opt.grid[1] - VORTEX_SURROUND_DENSITY_RADIUS; i++){
-	    for(int j = VORTEX_SURROUND_DENSITY_RADIUS; j < opt.grid[2] - VORTEX_SURROUND_DENSITY_RADIUS; j++){
-	    	if((abs2(data(0,i,j,0)) > threshold)){
-   				densityLocationMap_local(0,i,j,0) = 1.;
-				densityCoordinates_local.push_back(data.make_coord(i,j,0));
-				densityCounter++;
-			}else{
-				densityLocationMap_local(0,i,j,0) = 0.;
-			}
+	// RealGrid densMap = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	// densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	for(int k = 0; k < data.wavefunction.size(); ++k){
+		double threshold = data.wavefunction[k].maxCoeff() * 0.05;
+		densityLocationMap[k] = MatrixXi(data.meta.grid[0],data.meta.grid[1])
+	
+			densityCounter[k] = 0;
+			densityCoordinates[k].clear();
+			for(int i = VORTEX_SURROUND_DENSITY_RADIUS; i < data.meta.grid[0] - VORTEX_SURROUND_DENSITY_RADIUS; i++){
+			    for(int j = VORTEX_SURROUND_DENSITY_RADIUS; j < data.meta.grid[1] - VORTEX_SURROUND_DENSITY_RADIUS; j++){
+			    	if((abs2(data.wavefunction[k](i,j)) > threshold)){
+	   					densityLocationMap[k](i,j) = 1;
+	   					Coordinate tmpCoord(i,j,0,data.meta.grid[0],data.meta.grid[1])
+						densityCoordinates_local.push_back(tmpCoord);
+						densityCounter++;
+					}else{
+						densityLocationMap[k](i,j) = 0;
+					}
+				}
 		}
 	}
 
@@ -764,30 +780,34 @@ void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vec
 	// if(angularDensity.size() != phi.size())
 	// 	cout << "ERROR: Angular Density index problems." << endl;
 
-	x_dist.resize(opt.grid[1]);
-	y_dist.resize(opt.grid[2]);
-
-	for(int i = 0; i < opt.grid[1]; i++){
-		for(int j = 0; j < opt.grid[2]; j++){
-			x_dist[i] += densityLocationMap_local(0,i,j,0);
-			y_dist[j] += densityLocationMap_local(0,i,j,0);			
-		}
-	}
 
 
-	x_dist_grad.resize(opt.grid[1]);
-	y_dist_grad.resize(opt.grid[2]);
-	for(int x = 1; x < x_dist.size() - 1; x++){
-		x_dist_grad[x] = (x_dist[x+1] - x_dist[x-1] ) / (2.0 * h_x );
-	}
-	for(int y = 1; y < y_dist.size() - 1; y++){
-		y_dist_grad[y] = (y_dist[y+1] - y_dist[y-1] ) / (2.0 * h_y );
-	}
-	x_dist_grad[0] = x_dist_grad[opt.grid[1]-1] = y_dist_grad[0] = y_dist_grad[opt.grid[2]-1] = 0.0;
+	// x_dist.resize(data.meta.grid[0]);
+	// y_dist.resize(data.meta.grid[1]);
+
+	// for(int i = 0; i < data.meta.grid[0]; i++){
+	// 	for(int j = 0; j < data.meta.grid[1]; j++){
+	// 		x_dist[i] += densMap(i,j);
+	// 		y_dist[j] += densMap(i,j);			
+	// 	}
+	// }
+
+
+	// x_dist_grad.resize(data.meta.grid[0]);
+	// y_dist_grad.resize(data.meta.grid[1]);
+	// for(int x = 1; x < x_dist.size() - 1; x++){
+	// 	x_dist_grad[x] = (x_dist[x+1] - x_dist[x-1] ) / (2.0 * data.meta.spacing[0] );
+	// }
+	// for(int y = 1; y < y_dist.size() - 1; y++){
+	// 	y_dist_grad[y] = (y_dist[y+1] - y_dist[y-1] ) / (2.0 * data.meta.spacing[1] );
+	// }
+	// x_dist_grad[0] = x_dist_grad[data.meta.grid[0]-1] = y_dist_grad[0] = y_dist_grad[data.meta.grid[1]-1] = 0.0;
+
+
 
 	// double sum = 0;
 	// for(int k = 0; k < 10; k++){
-	// 	for(int x = 1; x < opt.grid[1]-1; x+=1){
+	// 	for(int x = 1; x < opt.grid[0]-1; x+=1){
 	// 		for(int y = 1; y < opt.grid[2]-1; y+=1){				
 	// 			for(int i = x-1; i <= x+1; i++){
 	// 				for(int j = y-1; j <= y+1; j++){
@@ -902,34 +922,34 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	// FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
 }
 
-Observables Eval::calculator(ComplexGrid data,int sampleindex){
+Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	
 	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 	// R-Space
-	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+	double h_x = 2. * opt.stateInformation[0] * opt.min_x / meta.grid[0];
+	double h_y = 2. * opt.stateInformation[1] * opt.min_y / meta.grid[1];
 	double h[2];
 	double x_max = opt.stateInformation[0] * opt.min_x;
 	double y_max = opt.stateInformation[1] * opt.min_y;
 	vector<double> rmax(2);
-	rmax[0] = x_max;
-	rmax[1] = y_max;
-	h[0] = h_x;
-	h[1] = h_y; 
+	rmax[0] = data.meta.coord[0];
+	rmax[1] = data.meta.coord[1];
+	h[0] = data.meta.spacing[0];
+	h[1] = data.meta.spacing[1]; 
 	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
 	
-	// double threshold = abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
+	// double threshold = abs2(DATA(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
 	// cout << "DensityCounter " << sampleindex << " : " << densityCounter[sampleindex] << endl;
 
-	obs.volume = h_x * h_y * densityCounter[sampleindex];
-	for(int i = 0; i < opt.grid[1]; i++){
-	    for(int j = 0; j < opt.grid[2]; j++){	    	    		
-	      	obs.particle_count += abs2(data(0,i,j,0));
+	obs.volume = data.meta.spacing[0] * data.meta.spacing[1] * densityCounter[sampleindex];
+	for(int i = 0; i < meta.grid[0]; i++){
+	    for(int j = 0; j < meta.grid[1]; j++){	    	    		
+	      	obs.particle_count += abs2(DATA(i,j));
 
 	    }
 	}
-	obs.particle_count *= h_x * h_y;
+	obs.particle_count *= data.meta.spacing[0] * data.meta.spacing[1];
 	obs.density = obs.particle_count / obs.volume;
 
 	aspectRatio(obs,sampleindex);
@@ -1021,17 +1041,17 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	vector<Coordinate<int32_t>> cartesianCoordinates;
 
 	ArrayXd divisor2(obs.number.size());
-	double r_index_factor = (obs.radialDensity.size() -1) / sqrt(x_max * x_max + y_max * y_max);
-	for(int i = 0; i < opt.grid[1]; i++){
-	    for(int j = 0; j < opt.grid[2]; j++){
-				int x_shift = i - opt.grid[1]/2;
-				int y_shift = j - opt.grid[2]/2;
-				phi.push_back( atan2(x_shift * h_x ,y_shift * h_y) * 180 / M_PI + 180);
-				double r_tmp = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
+	double r_index_factor = (obs.radialDensity.size() -1) / sqrt(data.meta.coord[0] * data.meta.coord[0] + data.meta.coord[1] * data.meta.coord[1]);
+	for(int i = 0; i < meta.grid[0]; i++){
+	    for(int j = 0; j < meta.grid[1]; j++){
+				int x_shift = i - meta.grid[0]/2;
+				int y_shift = j - meta.grid[1]/2;
+				phi.push_back( atan2(x_shift * data.meta.spacing[0] ,y_shift * data.meta.spacing[1]) * 180 / M_PI + 180);
+				double r_tmp = sqrt(x_shift*x_shift * data.meta.spacing[0]*data.meta.spacing[0] + y_shift*y_shift *data.meta.spacing[1]*data.meta.spacing[1]);
 				radius.push_back(r_tmp);
-				double dens_tmp = abs2(data(0,i,j,0));
+				double dens_tmp = abs2(DATA(i,j));
 				polarDensity.push_back(dens_tmp);
-				cartesianCoordinates.push_back(data.make_coord(i,j,0));
+				cartesianCoordinates.push_back(Coordinate(i,j,0,meta.grid[0],meta.grid[1],1));
 
 				int index = r_index_factor * r_tmp;
 				divisor2(index)++;
@@ -1068,7 +1088,7 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 
 
 	// K-Space
-	ComplexGrid::fft(data, data);
+	ComplexGrid::fft(DATA, DATA);
 	
 	ArrayXd divisor(obs.number.size());
 	divisor.setZero();
@@ -1078,9 +1098,9 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	kspace.resize(2);
 	for(int d = 0; d < 2; d++){
 		// set k-space
-		kspace[d].resize(opt.grid[d+1]);
+		kspace[d].resize(data.meta.grid[d]);
 		// for (int i=0; i<opt.grid[d+1]/2; i++){
-		for(int i = 0; i <= opt.grid[d+1]/2; i++){
+		for(int i = 0; i <= data.meta.grid[d]/2; i++){
 		// for (int32_t i = 0; i < kspace[d].size()/2; i++){
 			// kspace[d][i] = opt.klength[d]/**opt.stateInformation[0]*/*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
@@ -1088,12 +1108,12 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 			kspace[d][i] = (M_PI / rmax[d]) * (double)i;
 		}
 		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
-		for(int i = (opt.grid[d+1]/2)+1; i < opt.grid[d+1]; i++){
+		for(int i = (data.meta.grid[d]/2)+1; i < data.meta.grid[d]; i++){
 		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
 			// kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
 			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
 			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
-			kspace[d][i] = -(M_PI / rmax[d]) * (double)(opt.grid[d+1] - i);
+			kspace[d][i] = -(M_PI / rmax[d]) * (double)(data.meta.grid[d] - i);
 		}
 	}
 
@@ -1108,24 +1128,22 @@ Observables Eval::calculator(ComplexGrid data,int sampleindex){
 	double kwidth2[2];
 
 	for(int i = 0; i < 2; i++)
-		kwidth2[i] = (opt.grid[i+1] == 1) ? 0 : kspace[i][opt.grid[i+1]/2] * kspace[i][opt.grid[i+1]/2];
+		kwidth2[i] = (data.meta.grid[i] == 1) ? 0 : kspace[i][data.meta.grid[i]/2] * kspace[i][data.meta.grid[i]/2];
 	
 	double index_factor = (obs.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
 
-	for(int x = 0; x < data.width(); x++){
-		for (int y = 0; y < data.height(); y++){
-			for (int z = 0; z < data.depth(); z++){
+	for(int x = 0; x < data.meta.grid[0]; x++){
+		for (int y = 0; y < data.meta.grid[1]; y++){
 				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
-				// Coordinate<int32_t> c = data.make_coord(x,y,z);
+				// Coordinate<int32_t> c = DATA.make_coord(x,y,z);
 				int index = index_factor * k;
 				// cout << k << "*" << index_factor << "=" << index << "/" << OBSERVABLES_DATA_POINTS_SIZE << endl;
 				obs.k(index) += k;
 				divisor(index)++;
-				double number = abs2(data(0,x,y,z));
+				double number = abs2(DATA(x,y));
 				obs.number(index) += number;
 				// obs.particle_count += number;
 				obs.Ekin += number * k * k;
-			}
 		}
 	}
 	

@@ -30,9 +30,13 @@ class MatrixData {
         inline double* data();
         inline void dataToArray();
         inline void arrayToData();
+        inline void convertToDimensionless();
+        inline void convertFromDimensionless();
     
         double time;
         int steps, samplesize;
+
+        double Ag, OmegaG;
                
         vector<int> grid;
 
@@ -121,6 +125,31 @@ inline void MatrixData::increment(const double extTime,const double factorX,cons
     meta.spacing[0] = meta.coord[0] * 2 / meta.grid[0];
     meta.spacing[1] = meta.coord[1] * 2 / meta.grid[1];
     meta.dataToArray();
+}
+
+inline void MatrixData::MetaData::convertToDimensionless(){
+
+    const double m = 87 * 1.66 * 1.0e-27;
+    const double hbar = 1.054 * 1.0e-22;    
+    Ag = 2 * initCoord[0] / grid[0];
+    OmegaG = hbar / ( m * Ag * Ag);
+
+    initCoord[0] /= Ag;
+    initCoord[1] /= Ag;
+    dataToArray();
+    // opt.ITP_step *= opt.OmegaG;
+    // opt.RTE_step *= opt.OmegaG;
+    // opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
+    // opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
+    // opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
+    // opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
+}
+
+inline void MatrixData::MetaData::convertFromDimensionless(){
+    initCoord[0] *= Ag;
+    initCoord[1] *= Ag;
+    time /= OmegaG;
+    time *= 1000.0; // conversion to ms
 }
 
 inline void MatrixData::setMatrix(const vector<MatrixXcd> &extWavefct){

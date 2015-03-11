@@ -2,12 +2,12 @@
 
 using namespace std;
 
-Contour::Contour(Options &external_opt){
-	opt = external_opt;
-	v_down = Vector<int32_t>(0,-1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-	v_right = Vector<int32_t>(1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-	v_up = Vector<int32_t>(0,1,0,opt.grid[1],opt.grid[2],opt.grid[3]);
-	v_left = Vector<int32_t>(-1,0,0,opt.grid[1],opt.grid[2],opt.grid[3]);
+Contour::Contour(MatrixData::MetaData &external_meta){
+	meta = external_meta;
+	v_down = Vector<int32_t>(0,-1,0,meta.grid[0],meta.grid[1],1);
+	v_right = Vector<int32_t>(1,0,0,meta.grid[0],meta.grid[1],1);
+	v_up = Vector<int32_t>(0,1,0,meta.grid[0],meta.grid[1],1);
+	v_left = Vector<int32_t>(-1,0,0,meta.grid[0],meta.grid[1],1);
 }
 
 inline void Contour::setDirection(int32_t &direction){
@@ -76,16 +76,16 @@ inline Coordinate<int32_t> Contour::nextClockwise(Coordinate<int32_t> &s, int32_
 	return c; 
 }
 
-inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s){
+inline void Contour::findInitialP(MatrixXi &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s){
 
 	Coordinate<int32_t> tmp = p;
 
 
-	for(int x = tmp.x(); x < data.width(); x++){
+	for(int x = tmp.x(); x < meta.grid[0]; x++){
 
-		if(data(0,x,tmp.y(),0) > 0){
+		if(data(x,tmp.y()) > 0){
 
-			p = data.make_coord(x,tmp.y(),0);
+			p = Coordinate(x,tmp.y(),0,meta.grid[0],meta.grid[1],1);
 			s = p + v_left;
 			// cout <<  p << " | " << s << endl;
 			// initial[0] = p;
@@ -96,16 +96,16 @@ inline void Contour::findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordina
 	// cout << "findInitialP Size:" << " Coordinates: " << p << endl;
 }
 
-inline void Contour::findSecondP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s){
+inline void Contour::findSecondP(MatrixXi &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s){
 
 	Coordinate<int32_t> tmp = p;
 	bool found = false;
 
-	for(int x = tmp.x(); x < data.width()-1; x++){
+	for(int x = tmp.x(); x < meta.grid[0]-1; x++){
 
-		if(data(0,x,tmp.y(),0) > 0){
+		if(data(x,tmp.y()) > 0){
 
-			p = data.make_coord(x,tmp.y(),0);
+			p = Coordinate(x,tmp.y(),0,meta.grid[0],meta.grid[1],1);
 			s = p + v_left;
 			found = true;
 			// cout <<  p << " | " << s << endl;
@@ -117,7 +117,7 @@ inline void Contour::findSecondP(RealGrid &data,Coordinate<int32_t> &p,Coordinat
 	}
 	if(found == false){
 		// cout << "found end" << endl;
-		p = data.make_coord(data.width()-1,tmp.y(),0);
+		p = Coordinate(meta.grid[0]-1,tmp.y(),0,meta.grid[0],meta.grid[1],1);
 	}
 	// cout << "findSecondP Size:" << " Coordinates: " << p << " density " << data(0,p.x(),p.y(),0) << endl;
 }
@@ -132,20 +132,20 @@ inline void Contour::findMostRightP(c_set &contour, Coordinate<int32_t> &p){
 	// cout << "findMostRightP Size:" << " Coordinates: " << p << endl;
 }
 
-c_set Contour::trackContour(RealGrid &data){
+c_set Contour::trackContour(MatrixXi &data){
 
 	c_set contour;
 	c_set wholeContour;
 	// c_set::iterator it;
 	// std::pair<c_set::iterator,bool> ret;
 
-	double scalingFromRatio = (opt.omega_x.real() > opt.omega_y.real()) ? opt.omega_y.real()/opt.omega_x.real() : opt.omega_x.real()/opt.omega_y.real();
+	// double scalingFromRatio = (opt.omega_x.real() > opt.omega_y.real()) ? opt.omega_y.real()/opt.omega_x.real() : opt.omega_x.real()/opt.omega_y.real();
 
 	Coordinate<int32_t> s;
-	Coordinate<int32_t> p = data.make_coord(0,data.height()/2,0);
+	Coordinate<int32_t> p = Coordinate(0,meta.grid[1]/2,0,meta.grid[0],meta.grid[1],1);
 	Coordinate<int32_t> initial[2];
-	initial[0] = data.make_coord(0,0,0);
-	initial[1] = data.make_coord(0,0,0);
+	initial[0] = Coordinate(0,0,0,meta.grid[0],meta.grid[1],1);
+	initial[1] = Coordinate(0,0,0,meta.grid[0],meta.grid[1],1);
 
 	findInitialP(data,p,s/*,initial*/);
 	contour.insert(p);
@@ -195,7 +195,7 @@ c_set Contour::trackContour(RealGrid &data){
 			p = p+v_right;
 
 			findSecondP(data,p,s);
-			if(p.x() == opt.grid[1]-1){
+			if(p.x() == meta.grid[0]-1){
 				stop = true;
 			} else {
 				contour.clear();
@@ -228,7 +228,7 @@ c_set Contour::trackContour(RealGrid &data){
 					s = p;
 					p = p+v_right;
 					findSecondP(data,p,s);
-					if(p.x() == opt.grid[1]-1){
+					if(p.x() == meta.grid[0]-1){
 						stop = true;
 					} else {
 						contour.clear();
@@ -272,7 +272,7 @@ c_set Contour::trackContour(RealGrid &data){
 			p = p+v_right;
 
 			findSecondP(data,p,s);
-			if(p.x() == opt.grid[1]-1){
+			if(p.x() == meta.grid[0]-1){
 				stop = true;
 			} else {
 				// wholeContour.insert(contour.begin(),contour.end());
@@ -300,7 +300,7 @@ c_set Contour::trackContour(RealGrid &data){
 			// contour.insert(p);
 			// insert_counter = 1;			
 		}
-	if(insert_counter >= opt.grid[1] * opt.grid[2]){
+	if(insert_counter >= meta.grid[0] * meta.grid[1]){
 		stop = true;
 	}
 

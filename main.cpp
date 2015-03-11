@@ -3,6 +3,7 @@ Title: Simulating the Expansion of Turbulent Bose-Einstein Condensates (2D)
 Author: Simon Sailer (This work is based on the work of Bartholomew Andrews who made this as his master thesis.)
 Last Update: 22/07/13
 **************************************************************************/
+#define EIGEN_FFTW_DEFAULT
 
 #include <boost/program_options.hpp>
 #include <iostream>

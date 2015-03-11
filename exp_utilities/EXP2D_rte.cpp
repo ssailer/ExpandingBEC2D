@@ -140,6 +140,7 @@ void RTE::rteToTime(string runName)
 
 	RK4 *rk4 = new RK4(pData, opt);
 
+
 	if(opt.initialRun == true){
 		Eval* initialEval = new Eval;
 		initialEval->saveData(wavefctVec,opt,meta.steps,runName);
@@ -154,8 +155,6 @@ void RTE::rteToTime(string runName)
 		delete initialEval;
 		delete evalFile;
 	}
-	cout << "TEST" << zero << " " << one << " " << eight << endl;
-	cout << "TEST" << lambda_x(zero) << " " << lambda_x(one) << " " << lambda_x(eight) << endl;
 	
 	start = omp_get_wtime();
 
@@ -169,6 +168,10 @@ void RTE::rteToTime(string runName)
 
 			opt.t_abs += opt.RTE_step;
 
+
+		}			
+
+		// REMOVE
 			if(opt.runmode.compare(1,1,"1") == 0){
 				opt.stateInformation[0] = real(lambda_x(opt.t_abs)); // needed for expansion and the computing of the gradient etc.
 				opt.stateInformation[1] = real(lambda_y(opt.t_abs));
@@ -179,30 +182,41 @@ void RTE::rteToTime(string runName)
 				opt.stateInformation[0] = 1.0;
 				opt.stateInformation[1] = 1.0;
 			}
-		}			
-
-
+		// END REMOVE
 
 
 		try{
 
 			
 
+			// One Result file
+			// results
+			// Eval results;
+			// results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
+			// results.evaluateData();
+			// results.plotData();
 
-			Eval results;	
-			results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
-			results.evaluateData();
-			results.plotData();
+			// // one save file
+			// // save snapshot
+			// // save eval
+			// string dataname = runName + "-LastGrid.h5";
+			// binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
+			// dataFile->appendSnapshot(runName,snapshot_times[j],pData,opt);
+			// delete dataFile;
 
-			string dataname = runName + "-LastGrid.h5";
-			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
-			dataFile->appendSnapshot(runName,snapshot_times[j],pData,opt);
-			delete dataFile;
+			// string evalname = runName + "-Eval.h5";
+			// binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
+			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
+			// delete evalFile;
 
-			string evalname = runName + "-Eval.h5";
-			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
-			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
-			delete evalFile;
+			// BinaryFile* bin = new BinaryFile(BinaryFile::append);
+			// Evaluation* eval = new Evaluation(*pData,opt);
+			// eval->process();
+			// bin->appendSnapshot(*pData,*eval);
+			// // bin->appendWavefunction(pData);
+			// // bin->appendEvaluation(eval);
+			// delete bin, eval;
+
 
 		}
 		catch(const std::exception& e) { 
