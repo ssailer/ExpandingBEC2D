@@ -180,7 +180,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
 	 tmpOpt1[6] = options.stateInformation[2];
 	 tmpOpt1[7] = options.omega_x.real();
 	 tmpOpt1[8] = options.omega_y.real();
-	 tmpOpt1[9] = options.omega_z.real();
+	 tmpOpt1[9] = options.omega_w.real();
 	 tmpOpt1[10] = options.dispersion_x.real();
 	 tmpOpt1[11] = options.dispersion_y.real();
 	 tmpOpt1[12] = options.min_x;
@@ -284,7 +284,7 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, vector<Com
 	 tmpOpt1[6] = options.stateInformation[2];
 	 tmpOpt1[7] = options.omega_x.real();
 	 tmpOpt1[8] = options.omega_y.real();
-	 tmpOpt1[9] = options.omega_z.real();
+	 tmpOpt1[9] = options.omega_w.real();
 	 tmpOpt1[10] = options.dispersion_x.real();
 	 tmpOpt1[11] = options.dispersion_y.real();
 	 tmpOpt1[12] = options.min_x;
@@ -357,7 +357,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 	 tmpOpt1[6] = options.stateInformation[2];
 	 tmpOpt1[7] = options.omega_x.real();
 	 tmpOpt1[8] = options.omega_y.real();
-	 tmpOpt1[9] = options.omega_z.real();
+	 tmpOpt1[9] = options.omega_w.real();
 	 tmpOpt1[10] = options.dispersion_x.real();
 	 tmpOpt1[11] = options.dispersion_y.real();
 	 tmpOpt1[12] = options.min_x;
@@ -714,7 +714,7 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 	options.stateInformation[2] = tmpOpt1[6];
 	options.omega_x = complex<double>(tmpOpt1[7],0.0);
 	options.omega_y = complex<double>(tmpOpt1[8],0.0);
-	options.omega_z = complex<double>(tmpOpt1[9],0.0);
+	options.omega_w = complex<double>(tmpOpt1[9],0.0);
 	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
 	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
 	options.min_x = tmpOpt1[12];
@@ -1067,7 +1067,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 	options.stateInformation[2] = tmpOpt1[6];
 	options.omega_x = complex<double>(tmpOpt1[7],0.0);
 	options.omega_y = complex<double>(tmpOpt1[8],0.0);
-	options.omega_z = complex<double>(tmpOpt1[9],0.0);
+	options.omega_w = complex<double>(tmpOpt1[9],0.0);
 	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
 	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
 	options.min_x = tmpOpt1[12];
@@ -1178,7 +1178,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<Comple
 	options.stateInformation[2] = tmpOpt1[6];
 	options.omega_x = complex<double>(tmpOpt1[7],0.0);
 	options.omega_y = complex<double>(tmpOpt1[8],0.0);
-	options.omega_z = complex<double>(tmpOpt1[9],0.0);
+	options.omega_w = complex<double>(tmpOpt1[9],0.0);
 	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
 	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
 	options.min_x = tmpOpt1[12];

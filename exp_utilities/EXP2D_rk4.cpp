@@ -29,6 +29,13 @@ RK4::RK4(MatrixData* &d, Options &extOpt) : w(d), opt(extOpt),
 	for( int i = 0; i < w->meta.grid[0]; i++){ Ymatrix.row(i) = Y;	}
 	// END FIXME
 
+	PotentialGrid = MatrixXcd::Zero(w->meta.grid[0],w->meta.grid[1]);
+   	for(int i = 0; i< w->meta.grid[0]; i++){
+   		for(int j = 0; j < w->meta.grid[1]; j++){
+			PotentialGrid(i,j) = ( half * opt.omega_x * opt.omega_x * X(i) * X(i) +  half * opt.omega_y * opt.omega_y * Y(j) * Y(j) );
+		}
+	}
+
 }
 
 
@@ -199,8 +206,8 @@ void RK4::computeCoefficients(double &delta_T){
 	for(int32_t t = 0; t < 3; ++t){
 		laplacian_coefficient_x[t] = i_unit / ( twelve * w->meta.initSpacing[0] * w->meta.initSpacing[0] * lambda_x(absTime) * lambda_x(absTime) );
    		laplacian_coefficient_y[t] = i_unit / ( twelve * w->meta.initSpacing[1] * w->meta.initSpacing[1] * lambda_y(absTime) * lambda_y(absTime) );
-   		gradient_coefficient_x[t] = complex<double>(opt.omegaw,0) * i_unit * lambda_x_dot(absTime) / (twelve * w->meta.initSpacing[0] * lambda_x(absTime));
-   		gradient_coefficient_y[t] = complex<double>(opt.omegaw,0) * i_unit * lambda_y_dot(absTime) / (twelve * w->meta.initSpacing[1] * lambda_y(absTime));
+   		gradient_coefficient_x[t] = opt.omega_w * i_unit * lambda_x_dot(absTime) / (twelve * w->meta.initSpacing[0] * lambda_x(absTime));
+   		gradient_coefficient_y[t] = opt.omega_w * i_unit * lambda_y_dot(absTime) / (twelve * w->meta.initSpacing[1] * lambda_y(absTime));
    		absTime += ( half * complex<double>(delta_T,0.0) );
    	}
 

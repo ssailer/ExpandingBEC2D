@@ -24,7 +24,7 @@ private:
 	// FIXME REMOVE EVENTUALLY
 	vector<double> x_axis,y_axis;
     VectorXcd X,Y;
-    MatrixXcd Xmatrix,Ymatrix;
+    MatrixXcd Xmatrix,Ymatrix,PotentialGrid;
     // END FIXME
 
 	vector<complex<double>> laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;

@@ -155,19 +155,23 @@ void RTE::rteToTime(string runName)
 	// 	delete initialEval;
 	// 	delete evalFile;
 	// }
+
+	Eval* initEval = new Eval(*pData,opt);
+	initEval->process();
+	initEval->plot();
+	delete initEval;
 	
 	start = omp_get_wtime();
 
 	for(int j = 0; j < snapshot_times.size(); j++){
 
-		while(pData->meta.steps < snapshot_times[j]){
-
-			cli(runName,j,start);
+		while(pData->meta.steps < snapshot_times[j]){			
 				
 			rk4->timeStep(opt.RTE_step);
 
 			opt.t_abs += opt.RTE_step;
 
+			cli(runName,j,start);
 
 		}			
 

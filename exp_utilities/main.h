@@ -305,14 +305,13 @@ inline int InitMain::readConfig()
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
 	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
-	// opt.runmode 			 = root["RunOptions"]["runmode"];
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
 	cfg.lookupValue("RunOptions.startingGridName",startingGridName);
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
-	double omega_z_realValue = root["RunOptions"]["omega_z"];
+	double omega_w_realValue = root["RunOptions"]["omega_w"];
 	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
 	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
 
@@ -320,7 +319,7 @@ inline int InitMain::readConfig()
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
 	opt.omega_y              = complex<double>(omega_y_realValue,0);
-	opt.omega_z 			 = complex<double>(omega_y_realValue,0);
+	opt.omega_w 			 = complex<double>(omega_y_realValue,0);
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 

@@ -66,10 +66,17 @@ try{
 		if(mC == RK4){
 
 			MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+
+			setGridToTF(startGrid,initMain.getOptions());
+
+			cout << "SAVING" << endl;
+
+			string startGridName = startGridName = initMain.getStartingGridName();
+			binaryFile* startFile = new binaryFile(startGridName,binaryFile::out);
+			startFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
+			delete startFile;
 	
 			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
-			
-			string startGridName = initMain.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 			
 			MatrixData* data = new MatrixData(initMain.getMeta());
 			
