@@ -412,6 +412,7 @@ inline void InitMain::convertToDimensionless(){
 	opt.RTE_step *= opt.OmegaG;
 	opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
 	opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
+	opt.omega_w *= 2.0 * M_PI / opt.OmegaG;
 	opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
 	opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
 }

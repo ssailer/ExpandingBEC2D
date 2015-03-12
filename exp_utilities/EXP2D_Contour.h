@@ -19,10 +19,11 @@ typedef std::unordered_set<Coordinate<int32_t>,Hash> c_set;
 
 class Contour{
 public:
-	Contour(Options &opt);
+	Contour(MatrixData::MetaData &external_meta);
 	c_set trackContour(MatrixXi &data);
 private:
-	Options opt;
+	// Options opt;
+	MatrixData::MetaData meta;
 	Vector<int32_t> v_left,v_right, v_up, v_down;
 	inline void findMostRightP(c_set &contour, Coordinate<int32_t> &p);
 	inline void findInitialP(MatrixXi &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s);

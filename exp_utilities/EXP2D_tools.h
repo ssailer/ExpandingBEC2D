@@ -25,7 +25,7 @@ typedef struct Options {
     double N; // Number of particles    
     double klength[3];
     vector<double> stateInformation; // passing information about the state at the absolut time to the observable, lambda(time) FIXME : this is bad, but I don't know how to do it better atm
-    complex<double> omega_x,omega_y,omega_z; // Frequency of the harmonic trap
+    complex<double> omega_x,omega_y,omega_w; // Frequency of the harmonic trap
     complex<double> dispersion_x, dispersion_y; // dispersion relation for the expandion frame
     double min_x,min_y,min_z; // Coordinate boundaries    
     complex<double> t_abs; //Absolute time // remove from opt! put into the function, don't need it here

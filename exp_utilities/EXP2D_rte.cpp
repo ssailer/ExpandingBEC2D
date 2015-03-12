@@ -141,20 +141,20 @@ void RTE::rteToTime(string runName)
 	RK4 *rk4 = new RK4(pData, opt);
 
 
-	if(opt.initialRun == true){
-		Eval* initialEval = new Eval;
-		initialEval->saveData(wavefctVec,opt,meta.steps,runName);
-		initialEval->evaluateData();
-		initialEval->plotData();
-		opt.vortexnumber = initialEval->getVortexNumber();
-		opt.initialRun = false;
+	// if(opt.initialRun == true){
+	// 	Eval* initialEval = new Eval;
+	// 	initialEval->saveData(wavefctVec,opt,meta.steps,runName);
+	// 	initialEval->evaluateData();
+	// 	initialEval->plotData();
+	// 	opt.vortexnumber = initialEval->getVortexNumber();
+	// 	opt.initialRun = false;
 
-		string evalname = runName + "-Eval.h5";
-		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
-		evalFile->appendEval(meta.steps,opt,meta,*initialEval);
-		delete initialEval;
-		delete evalFile;
-	}
+	// 	string evalname = runName + "-Eval.h5";
+	// 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
+	// 	evalFile->appendEval(meta.steps,opt,meta,*initialEval);
+	// 	delete initialEval;
+	// 	delete evalFile;
+	// }
 	
 	start = omp_get_wtime();
 
@@ -210,8 +210,10 @@ void RTE::rteToTime(string runName)
 			// delete evalFile;
 
 			// BinaryFile* bin = new BinaryFile(BinaryFile::append);
-			// Evaluation* eval = new Evaluation(*pData,opt);
-			// eval->process();
+			Eval* eval = new Eval(*pData,opt);
+			eval->process();
+			eval->plot();
+			delete eval;
 			// bin->appendSnapshot(*pData,*eval);
 			// // bin->appendWavefunction(pData);
 			// // bin->appendEvaluation(eval);
@@ -266,202 +268,202 @@ void RTE::rteToTime(string runName)
 
 
 
-void RTE::splitToTime(string runName){
+// void RTE::splitToTime(string runName){
 
-	cout << "Starting SSFT run!" << endl;
-
-
-	double start;  // starttime of the run
-	int samplesize = wavefctVec.size();
-	keeperOfTime.absoluteSteps = 0;
-	keeperOfTime.lambdaSteps = 0;
-	keeperOfTime.initialSteps = meta.steps;
-
-	double timestepsize = opt.RTE_step;
-	ComplexGrid kprop(opt.grid[0], meta.grid[0], meta.grid[1],opt.grid[3]);
-	ComplexGrid rgrid(opt.grid[0], meta.grid[0], meta.grid[1],opt.grid[3]);
-	ComplexGrid kgrid(opt.grid[0], meta.grid[0], meta.grid[1],opt.grid[3]);
-	ComplexGrid potPlotGrid(opt.grid[0], meta.grid[0], meta.grid[1],opt.grid[3]);
+// 	cout << "Starting SSFT run!" << endl;
 
 
-	vector<vector<double>> kspace(2);
-	for(int d = 0; d < 2; d++){
-		kspace[d].resize(opt.grid[d+1]);
-		for(int i = 0; i <= opt.grid[d+1]/2; i++){
-			kspace[d][i] = (M_PI / opt.min_x) * (double)i;
-		}
+// 	double start;  // starttime of the run
+// 	int samplesize = wavefctVec.size();
+// 	keeperOfTime.absoluteSteps = 0;
+// 	keeperOfTime.lambdaSteps = 0;
+// 	keeperOfTime.initialSteps = meta.steps;
 
-		for(int i = (opt.grid[d+1]/2)+1; i < opt.grid[d+1]; i++){
-			kspace[d][i] = -(M_PI / opt.min_x) * (double)(opt.grid[d+1] - i);
-		}
-	}
+// 	double timestepsize = opt.RTE_step;
+// 	ComplexGrid kprop(opt.grid[0], meta.grid[0], meta.grid[1],opt.grid[3]);
+// 	ComplexGrid rgrid(opt.grid[0], meta.grid[0], meta.grid[1],opt.grid[3]);
+// 	ComplexGrid kgrid(opt.grid[0], meta.grid[0], meta.grid[1],opt.grid[3]);
+// 	ComplexGrid potPlotGrid(opt.grid[0], meta.grid[0], meta.grid[1],opt.grid[3]);
 
-	#pragma omp parallel for
-	for(int x = 0; x < meta.grid[0]; x++){
-	    for(int y = 0; y < meta.grid[1]; y++){		
-		    double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize; // / beta;	      
+
+// 	vector<vector<double>> kspace(2);
+// 	for(int d = 0; d < 2; d++){
+// 		kspace[d].resize(opt.grid[d+1]);
+// 		for(int i = 0; i <= opt.grid[d+1]/2; i++){
+// 			kspace[d][i] = (M_PI / opt.min_x) * (double)i;
+// 		}
+
+// 		for(int i = (opt.grid[d+1]/2)+1; i < opt.grid[d+1]; i++){
+// 			kspace[d][i] = -(M_PI / opt.min_x) * (double)(opt.grid[d+1] - i);
+// 		}
+// 	}
+
+// 	#pragma omp parallel for
+// 	for(int x = 0; x < meta.grid[0]; x++){
+// 	    for(int y = 0; y < meta.grid[1]; y++){		
+// 		    double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * timestepsize; // / beta;	      
 		      		
-	      	kprop(0,x,y,0) = complex<double>(cos(T),sin(T)) / complex<double>((double)(meta.grid[0]*meta.grid[1]),0.0);	    	      	
-	    }
-	}
-	// plotDataToPng("RTE_Kprop","Control",kprop,opt);
+// 	      	kprop(0,x,y,0) = complex<double>(cos(T),sin(T)) / complex<double>((double)(meta.grid[0]*meta.grid[1]),0.0);	    	      	
+// 	    }
+// 	}
+// 	// plotDataToPng("RTE_Kprop","Control",kprop,opt);
 
-	if(opt.initialRun == true){
-		Eval* initialEval = new Eval;
-		initialEval->saveData(wavefctVec,opt,meta.steps,runName);
-		initialEval->evaluateData();
-		initialEval->plotData();
-		// Commenting out both lines below, to switch on behavior in evaluation
-		// This basically counts every Vortex in each step, instead of capping at the initial value
-		opt.vortexnumber = initialEval->getVortexNumber();
-		opt.initialRun = false;
+// 	if(opt.initialRun == true){
+// 		Eval* initialEval = new Eval;
+// 		initialEval->saveData(wavefctVec,opt,meta.steps,runName);
+// 		initialEval->evaluateData();
+// 		initialEval->plotData();
+// 		// Commenting out both lines below, to switch on behavior in evaluation
+// 		// This basically counts every Vortex in each step, instead of capping at the initial value
+// 		opt.vortexnumber = initialEval->getVortexNumber();
+// 		opt.initialRun = false;
 
-		string evalname = runName + "-Eval.h5";
-		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
-		evalFile->appendEval(meta.steps,opt,meta,*initialEval);
-		delete initialEval;
-		delete evalFile;
-	}
+// 		string evalname = runName + "-Eval.h5";
+// 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
+// 		evalFile->appendEval(meta.steps,opt,meta,*initialEval);
+// 		delete initialEval;
+// 		delete evalFile;
+// 	}
 	
-	start = omp_get_wtime();
-	omp_set_num_threads(16);
-	int previousTimes = meta.steps;
-	for(int j = 0; j < snapshot_times.size(); j++){
-		// some information about the computation status and stuff
-		string stepname = runName + "-" + to_string(snapshot_times[j]);
-		vector<int> stateOfLoops(samplesize);
-		vector<int> threadinfo(samplesize);
-		int slowestthread = 0;
+// 	start = omp_get_wtime();
+// 	omp_set_num_threads(16);
+// 	int previousTimes = meta.steps;
+// 	for(int j = 0; j < snapshot_times.size(); j++){
+// 		// some information about the computation status and stuff
+// 		string stepname = runName + "-" + to_string(snapshot_times[j]);
+// 		vector<int> stateOfLoops(samplesize);
+// 		vector<int> threadinfo(samplesize);
+// 		int slowestthread = 0;
 
-		for(int i = 0; i < samplesize; i++){
+// 		for(int i = 0; i < samplesize; i++){
 
-			#pragma omp parallel for
-			for(int x = 0; x < meta.grid[0];x++){
-				for(int y = 0; y < meta.grid[1]; y++){
-					rgrid(0,x,y,0) = wavefctVec[i](x,y);
-				}
-			}
+// 			#pragma omp parallel for
+// 			for(int x = 0; x < meta.grid[0];x++){
+// 				for(int y = 0; y < meta.grid[1]; y++){
+// 					rgrid(0,x,y,0) = wavefctVec[i](x,y);
+// 				}
+// 			}
 
-			// list of which thread is working which iteration
-			int lambdaSteps = keeperOfTime.lambdaSteps;
-			threadinfo[i] = omp_get_thread_num();
-			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
+// 			// list of which thread is working which iteration
+// 			int lambdaSteps = keeperOfTime.lambdaSteps;
+// 			threadinfo[i] = omp_get_thread_num();
+// 			for(int m = previousTimes + 1; m <= snapshot_times[j]; m++){
 		
-				ComplexGrid::fft_unnormalized(rgrid, kgrid, true);
+// 				ComplexGrid::fft_unnormalized(rgrid, kgrid, true);
     
-				#pragma omp parallel for
-				for(int x = 0; x < kgrid.width(); x++){
-					for(int y = 0; y < kgrid.height(); y++){
-				   		kgrid(0,x,y,0) = kprop(0,x,y,0) * kgrid(0,x,y,0);
-					}
-				}
+// 				#pragma omp parallel for
+// 				for(int x = 0; x < kgrid.width(); x++){
+// 					for(int y = 0; y < kgrid.height(); y++){
+// 				   		kgrid(0,x,y,0) = kprop(0,x,y,0) * kgrid(0,x,y,0);
+// 					}
+// 				}
 
-				// plotDataToPng("RTE_KGrid_"+to_string(m),"RTE_KGrid_"+to_string(m),kgrid,opt);
+// 				// plotDataToPng("RTE_KGrid_"+to_string(m),"RTE_KGrid_"+to_string(m),kgrid,opt);
 				
-				ComplexGrid::fft_unnormalized(kgrid, rgrid, false);
+// 				ComplexGrid::fft_unnormalized(kgrid, rgrid, false);
 
-				// plotDataToPng("RTE_RGrid_"+to_string(m),"RTE_RGrid_"+to_string(m),rgrid,opt); 
+// 				// plotDataToPng("RTE_RGrid_"+to_string(m),"RTE_RGrid_"+to_string(m),rgrid,opt); 
 
-				// ComplexGrid potGrid(opt.grid[0],meta.grid[0],meta.grid[1],opt.grid[3]);
+// 				// ComplexGrid potGrid(opt.grid[0],meta.grid[0],meta.grid[1],opt.grid[3]);
 
 				
 
-				#pragma omp parallel for
-				for(int x = 0; x < rgrid.width(); x++){
-					for(int y = 0; y < rgrid.height(); y++){
-				    	complex<double> value = rgrid(0,x,y,0);
-				    	double V = - ( PotentialGrid(x,y).real() /*rotatingPotential(x,y,m)*/ + opt.g * abs2(value) ) * timestepsize;
-				    	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
-				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
-				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
-					}
-				}
+// 				#pragma omp parallel for
+// 				for(int x = 0; x < rgrid.width(); x++){
+// 					for(int y = 0; y < rgrid.height(); y++){
+// 				    	complex<double> value = rgrid(0,x,y,0);
+// 				    	double V = - ( PotentialGrid(x,y).real() /*rotatingPotential(x,y,m)*/ + opt.g * abs2(value) ) * timestepsize;
+// 				    	// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
+// 				    	// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
+// 				    	rgrid(0,x,y,0) = complex<double>(cos(V),sin(V)) * value;
+// 					}
+// 				}
 				
-				// plotDataToPng("RTE_PotGrid_"+to_string(m),"RTE_PotGrid_"+to_string(m),potPlotGrid,opt);
+// 				// plotDataToPng("RTE_PotGrid_"+to_string(m),"RTE_PotGrid_"+to_string(m),potPlotGrid,opt);
 
-				// ComplexGrid::fft_unnormalized(rgrid, kgrid, true);
+// 				// ComplexGrid::fft_unnormalized(rgrid, kgrid, true);
     
-				// #pragma omp parallel for
-				// for(int x = 0; x < kgrid.width(); x++){
-				// 	for(int y = 0; y < kgrid.height(); y++){
-				//    		kgrid(0,x,y,0) = kprop(0,x,y,0) * kgrid(0,x,y,0);
-				// 	}
-				// }
+// 				// #pragma omp parallel for
+// 				// for(int x = 0; x < kgrid.width(); x++){
+// 				// 	for(int y = 0; y < kgrid.height(); y++){
+// 				//    		kgrid(0,x,y,0) = kprop(0,x,y,0) * kgrid(0,x,y,0);
+// 				// 	}
+// 				// }
 
-				// ComplexGrid::fft_unnormalized(kgrid, rgrid, false);					
+// 				// ComplexGrid::fft_unnormalized(kgrid, rgrid, false);					
 		
-				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
-   				stateOfLoops[i]= m - previousTimes;
-   				if(omp_get_thread_num() == slowestthread){
-   					int counter_max = snapshot_times[j] - previousTimes;
-   					// cli(stepname,slowestthread,threadinfo,stateOfLoops,counter_max,start);
-   				}
+// 				// progress to the cli from the slowest thread to always have an update. (otherwise progressbar would freeze until next snapshot computation starts)
+//    				stateOfLoops[i]= m - previousTimes;
+//    				if(omp_get_thread_num() == slowestthread){
+//    					int counter_max = snapshot_times[j] - previousTimes;
+//    					// cli(stepname,slowestthread,threadinfo,stateOfLoops,counter_max,start);
+//    				}
 	
-			}
+// 			}
 
-			#pragma omp parallel for
-			for(int x = 0; x < meta.grid[0];x++){
-				for(int y = 0; y < meta.grid[1]; y++){
-					wavefctVec[i](x,y) = rgrid(0,x,y,0);
-				}
-			}
+// 			#pragma omp parallel for
+// 			for(int x = 0; x < meta.grid[0];x++){
+// 				for(int y = 0; y < meta.grid[1]; y++){
+// 					wavefctVec[i](x,y) = rgrid(0,x,y,0);
+// 				}
+// 			}
 	
-		}
-		keeperOfTime.lambdaSteps += 2 * (snapshot_times[j] - previousTimes);
-		keeperOfTime.absoluteSteps = snapshot_times[j] - keeperOfTime.initialSteps;	
-		previousTimes = snapshot_times[j];
+// 		}
+// 		keeperOfTime.lambdaSteps += 2 * (snapshot_times[j] - previousTimes);
+// 		keeperOfTime.absoluteSteps = snapshot_times[j] - keeperOfTime.initialSteps;	
+// 		previousTimes = snapshot_times[j];
 
-		complex<double> tmp = complex<double>(snapshot_times[j] * opt.RTE_step,0.0);
-		opt.t_abs = tmp;  
+// 		complex<double> tmp = complex<double>(snapshot_times[j] * opt.RTE_step,0.0);
+// 		opt.t_abs = tmp;  
 
-		opt.stateInformation.resize(2);
-		if(opt.runmode.compare(1,1,"1") == 0){
-			opt.stateInformation[0] = real(lambda_x(tmp)); // needed for expansion and the computing of the gradient etc.
-			opt.stateInformation[1] = real(lambda_y(tmp));
-			cout << opt.stateInformation[0] << "  " << opt.stateInformation[1] << endl;
-		}
-		if(opt.runmode.compare(1,1,"0") == 0){
-			opt.stateInformation[0] = 1.0;
-			opt.stateInformation[1] = 1.0;
-		}
+// 		opt.stateInformation.resize(2);
+// 		if(opt.runmode.compare(1,1,"1") == 0){
+// 			opt.stateInformation[0] = real(lambda_x(tmp)); // needed for expansion and the computing of the gradient etc.
+// 			opt.stateInformation[1] = real(lambda_y(tmp));
+// 			cout << opt.stateInformation[0] << "  " << opt.stateInformation[1] << endl;
+// 		}
+// 		if(opt.runmode.compare(1,1,"0") == 0){
+// 			opt.stateInformation[0] = 1.0;
+// 			opt.stateInformation[1] = 1.0;
+// 		}
 
-		vector<double> coord(2);
-		coord[0] = opt.min_x * opt.stateInformation[0];
-		coord[1] = opt.min_y * opt.stateInformation[1];
-		pData->update(real(tmp),snapshot_times[j],coord);
+// 		vector<double> coord(2);
+// 		coord[0] = opt.min_x * opt.stateInformation[0];
+// 		coord[1] = opt.min_y * opt.stateInformation[1];
+// 		pData->update(real(tmp),snapshot_times[j],coord);
 
-		// plot("3-"+to_string(snapshot_times[j]));
+// 		// plot("3-"+to_string(snapshot_times[j]));
 		
-		try{
-			// plotDataToPng("RTE_RGrid"+to_string(snapshot_times[j]),"Control"+to_string(snapshot_times[j]),rgrid,opt);
-			Eval results;
+// 		try{
+// 			// plotDataToPng("RTE_RGrid"+to_string(snapshot_times[j]),"Control"+to_string(snapshot_times[j]),rgrid,opt);
+// 			Eval results;
 	
-			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << " ";
-			results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
-			results.evaluateData();
-			results.plotData();
+// 			cout << " >> Evaluating Datafiles "<< snapshot_times[j] << " ";
+// 			results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
+// 			results.evaluateData();
+// 			results.plotData();
 
-			string dataname = runName + "-LastGrid.h5";
-			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
-			dataFile->appendSnapshot(runName,snapshot_times[j],pData,opt);
-			delete dataFile;
+// 			string dataname = runName + "-LastGrid.h5";
+// 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
+// 			dataFile->appendSnapshot(runName,snapshot_times[j],pData,opt);
+// 			delete dataFile;
 
-			string evalname = runName + "-Eval.h5";
-			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
-			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
-			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
-			delete evalFile;
+// 			string evalname = runName + "-Eval.h5";
+// 			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
+// 			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),vec1Name,vec1Rank,vec1);
+// 			evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
+// 			delete evalFile;
 
-			cout << " ..Snapshot saved to runData/ ";
+// 			cout << " ..Snapshot saved to runData/ ";
 
-		}
-		catch(const std::exception& e) { 
-			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 
-			throw e; 
-		}
+// 		}
+// 		catch(const std::exception& e) { 
+// 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 
+// 			throw e; 
+// 		}
 
-	}
-}
+// 	}
+// }
 
 inline double RTE::rotatingPotential(int &i, int &j, int &t){
 	double potential;

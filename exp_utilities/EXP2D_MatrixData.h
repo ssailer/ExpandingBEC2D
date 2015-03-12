@@ -1,10 +1,13 @@
 #ifndef EXP2D_MATRIXDATA_H__
 #define EXP2D_MATRIXDATA_H__
 
+#define EIGEN_FFTW_DEFAULT
+
 #include <iostream>
 #include <complex>
 #include <EXP2D_tools.h>
 #include <eigen3/Eigen/Dense>
+#include <eigen3/unsupported/Eigen/FFT>
 
 using namespace std;
 using namespace Eigen;
@@ -67,6 +70,9 @@ class MatrixData {
     inline void setStep(const int &extStep);
     inline void setCoord(const vector<double> &extCoord);
     inline void setMeta(const MetaData &extMeta);
+
+    inline void fftForward();
+    inline void fftForward(MatrixXcd &DATA);
 
     inline double hX();
     inline double hY();
@@ -227,6 +233,51 @@ inline void MatrixData::MetaData::arrayToData(){
     coord[1] = array[6];
     spacing[0] = array[7];
     spacing[1] = array[8];
+}
+
+inline void MatrixData::fftForward(){
+
+    for(int j = 0; j < wavefunction.size(); ++j){
+        FFT<double> fft;
+        MatrixXcd in = wavefunction[j];
+        MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
+        
+        for (int k = 0; k < in.rows(); k++) {
+            RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
+            fft.fwd(tmpOut, in.row(k));
+            out.row(k) = tmpOut;
+        }
+        
+        for (int k = 0; k < in.cols(); k++) {
+            VectorXcd tmpOut = VectorXcd(meta.grid[1]);
+            fft.fwd(tmpOut, out.col(k));
+            out.col(k) = tmpOut;
+        }
+        wavefunction[j] = out;
+    }
+}
+
+inline void MatrixData::fftForward(MatrixXcd &DATA){
+
+    // for(int j = 0; j < wavefunction.size(); ++j){
+        FFT<double> fft;
+        // MatrixXcd in = wavefunction[j];
+        MatrixXcd out_temp = MatrixXcd(DATA.cols(),DATA.rows());
+        
+        for (int k = 0; k < DATA.rows(); k++) {
+            RowVectorXcd tmpOut = RowVectorXcd(DATA.cols());
+            fft.fwd(tmpOut, DATA.row(k));
+            out_temp.row(k) = tmpOut;
+        }
+        
+        for (int k = 0; k < DATA.cols(); k++) {
+            VectorXcd tmpOut = VectorXcd(DATA.rows());
+            fft.fwd(tmpOut, out_temp.col(k));
+            out_temp.col(k) = tmpOut;
+        }
+        // wavefunction[j] = out;
+        DATA = out_temp;
+    // }
 }
 
 

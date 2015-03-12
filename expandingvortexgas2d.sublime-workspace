@@ -4,6 +4,26 @@
 		"selected_items":
 		[
 			[
+				"Matrix",
+				"MatrixXcd"
+			],
+			[
+				"densi",
+				"densityLocationMap"
+			],
+			[
+				"data",
+				"dataToArray"
+			],
+			[
+				"snap",
+				"snapshot_times"
+			],
+			[
+				"n_",
+				"n_it_RTE"
+			],
+			[
 				"sin",
 				"singleK"
 			],
@@ -464,14 +484,6 @@
 				"Expanding-Set-1-LastGrid"
 			],
 			[
-				"data",
-				"dataFile"
-			],
-			[
-				"snap",
-				"snapshotssize"
-			],
-			[
 				"vortex",
 				"vortexspacing"
 			],
@@ -502,18 +514,6 @@
 			[
 				"MAti",
 				"MatrixXcd"
-			],
-			[
-				"Mait",
-				"MatrixXcd"
-			],
-			[
-				"laplaiocn",
-				"laplacian_coefficient_y"
-			],
-			[
-				"lapla",
-				"laplacian_coefficient_x"
 			]
 		]
 	},
@@ -536,20 +536,10 @@
 			}
 		},
 		{
-			"contents": "Searching 24 files for \"workingdirectory\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_binaryfile.h:\n  109    		  (p1.runmode == p2.runmode) &&\n  110    		  (p1.config == p2.config) &&\n  111:   		  (p1.workingdirectory == p2.workingdirectory));\n  112  }\n  113  \n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_tools.h:\n   48                       // third char determines if potential is switch on for the differential equation\n   49      string config; // name of the config file \n   50:     string workingdirectory;   // remove it from here, only needed in the program itself\n   51      bool initialRun;\n   52  \n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h:\n  161  inline void InitMain::setDirectory()\n  162  {	\n  163: 	// cout << \"Workingdirectory: \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  164  	struct stat wd_stat;\n  165: 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){\n  166: 		if(chdir(opt.workingdirectory.c_str()) == 0){\n  167: 			cerr << \"Using existing directory: \" << \"\\\"\" << opt.workingdirectory << \"\\\".\" << endl;\n  168  			cerr << \"Check \\\"run.log\\\" for output of this run.\" << endl;\n  169  		}\n  170  	}else\n  171  	{\n  172: 		mkdir(opt.workingdirectory.c_str(),0755);\n  173: 		cerr << \"Creating directory: \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  174  \n  175: 		if(chdir(opt.workingdirectory.c_str()) == 0){\n  176: 			cerr << \"Switching to \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  177  		}\n  178  		cerr << endl;\n  ...\n  193        (\"help,h\", \"Print help messages.\") \n  194        (\"config,c\",po::value<string>(&opt.config), \"Name of the configfile.\")      \n  195:       (\"directory,d\",po::value<string>(&opt.workingdirectory), \"Name of the directory this run saves its data.\")\n  196        (\"restart,r\",\"Use if you want to restart the run from LastGrid.\")\n  197        (\"mode,m\",po::value<string>(&MainControlString), \"Runmode given: Choose between SPLIT and RK4.\")\n\n12 matches across 3 files\n\n\nSearching 24 files for \"opt.workingdirectory\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h:\n  161  inline void InitMain::setDirectory()\n  162  {	\n  163: 	// cout << \"Workingdirectory: \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  164  	struct stat wd_stat;\n  165: 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){\n  166: 		if(chdir(opt.workingdirectory.c_str()) == 0){\n  167: 			cerr << \"Using existing directory: \" << \"\\\"\" << opt.workingdirectory << \"\\\".\" << endl;\n  168  			cerr << \"Check \\\"run.log\\\" for output of this run.\" << endl;\n  169  		}\n  170  	}else\n  171  	{\n  172: 		mkdir(opt.workingdirectory.c_str(),0755);\n  173: 		cerr << \"Creating directory: \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  174  \n  175: 		if(chdir(opt.workingdirectory.c_str()) == 0){\n  176: 			cerr << \"Switching to \" << \"\\\"\" << opt.workingdirectory << \"\\\"\" << endl;\n  177  		}\n  178  		cerr << endl;\n  ...\n  193        (\"help,h\", \"Print help messages.\") \n  194        (\"config,c\",po::value<string>(&opt.config), \"Name of the configfile.\")      \n  195:       (\"directory,d\",po::value<string>(&opt.workingdirectory), \"Name of the directory this run saves its data.\")\n  196        (\"restart,r\",\"Use if you want to restart the run from LastGrid.\")\n  197        (\"mode,m\",po::value<string>(&MainControlString), \"Runmode given: Choose between SPLIT and RK4.\")\n\n9 matches in 1 file\n",
-			"settings":
-			{
-				"buffer_size": 3439,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
 			"file": "main.cpp",
 			"settings":
 			{
-				"buffer_size": 6541,
+				"buffer_size": 6561,
 				"line_ending": "Unix"
 			}
 		},
@@ -562,10 +552,84 @@
 			}
 		},
 		{
+			"file": "exp_utilities/EXP2D_rk4.cpp",
+			"settings":
+			{
+				"buffer_size": 7836,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_evaluation.cpp",
+			"settings":
+			{
+				"buffer_size": 44938,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/nhrjr/projects/loudia/src/FFTComplex.cpp",
+			"settings":
+			{
+				"buffer_size": 5133,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/nhrjr/projects/loudia/src/IFFTComplex.h",
+			"settings":
+			{
+				"buffer_size": 3819,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "utilities/complexgrid.cpp",
+			"settings":
+			{
+				"buffer_size": 8523,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 27 files for \"EIGEN_FFTW_DEFAULT\" (case sensitive)\n\n0 matches across 0 files\n",
+			"settings":
+			{
+				"buffer_size": 87,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_Contour.cpp",
+			"settings":
+			{
+				"buffer_size": 7945,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_Contour.h",
+			"settings":
+			{
+				"buffer_size": 931,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_evaluation.h",
+			"settings":
+			{
+				"buffer_size": 3730,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "exp_utilities/EXP2D_MatrixData.h",
 			"settings":
 			{
-				"buffer_size": 5170,
+				"buffer_size": 6614,
 				"line_ending": "Unix"
 			}
 		},
@@ -573,15 +637,15 @@
 			"file": "exp_utilities/main.h",
 			"settings":
 			{
-				"buffer_size": 13563,
+				"buffer_size": 13665,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "exp_utilities/EXP2D_rte.cpp",
+			"file": "tests/run.cfg",
 			"settings":
 			{
-				"buffer_size": 31513,
+				"buffer_size": 1253,
 				"line_ending": "Unix"
 			}
 		},
@@ -589,17 +653,56 @@
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 3245,
+				"buffer_size": 3299,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/nhrjr/.config/sublime-text-3/Packages/User/expandingvortexgas2d.sublime-build",
+			"file": "exp_utilities/EXP2D_rte.hpp",
 			"settings":
 			{
-				"buffer_size": 36,
-				"line_ending": "Unix",
-				"name": "untitled.sublime-build"
+				"buffer_size": 4098,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_itp.hpp",
+			"settings":
+			{
+				"buffer_size": 2302,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_itp.cpp",
+			"settings":
+			{
+				"buffer_size": 23049,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_constants.h",
+			"settings":
+			{
+				"buffer_size": 735,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "split3d.cpp",
+			"settings":
+			{
+				"buffer_size": 4108,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tester.cpp",
+			"settings":
+			{
+				"buffer_size": 682,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -785,10 +888,18 @@
 	[
 		"/home/nhrjr/projects/expandingvortexgas2d",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities",
-		"/home/nhrjr/projects/expandingvortexgas2d/solver"
+		"/home/nhrjr/projects/expandingvortexgas2d/solver",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests",
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities"
 	],
 	"file_history":
 	[
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/test1/runObservables/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/run.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_MatrixData.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/CMakeLists.txt",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/expandingvortexgas2d.sublime-build",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.h",
 		"/home/nhrjr/projects/malin_test_tex/150226.tex",
 		"/home/nhrjr/projects/expandingvortexgas2d/CMakeCache.txt",
@@ -844,7 +955,6 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/evaluator.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/run.cfg",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rte.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/unitConverter.py",
 		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/test.py",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rte.hpp",
@@ -885,7 +995,6 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_09/ode_Rx_Ry.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_05/AveragesPlot.py",
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_05/Expanding-Set-1_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/CMakeLists.txt",
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_07/CombinedRunObservables/ex_Observables.dat",
 		"/home/nhrjr/results/remoteResults/run8.sh",
 		"/home/nhrjr/results/remoteResults/run9.sh",
@@ -912,11 +1021,7 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff9.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/effect05/runObservables/Expanding-Set-1_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/effect01/runObservables/Expanding-Set-1_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/utilities/coordinate.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/results/remoteResults/Reference_ExpVortex13/runObservables/Expanding-Set-1_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff4.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff2.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff3.dat"
+		"/home/nhrjr/projects/expandingvortexgas2d/utilities/coordinate.h"
 	],
 	"find":
 	{
@@ -938,6 +1043,51 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"EIGEN_FFTW_DEFAULT",
+			"ComplexGrid::fft",
+			"fft",
+			"meta.grid",
+			"opt",
+			"opt.grid",
+			"y_max",
+			"x_max",
+			"h_y",
+			"h_x",
+			"opt.grid[2]",
+			"opt.grid[1]",
+			"data",
+			"RealGrid",
+			"opt",
+			"data.make_coord",
+			"meta.grid[3]",
+			"[2]",
+			"[1]",
+			"opt",
+			"densMap",
+			"[2]",
+			"[1]",
+			"opt",
+			"densityLocationMap_local",
+			"densCord",
+			"opt",
+			"densityLocationMap",
+			"opt",
+			"PsiVec",
+			"one",
+			"cout",
+			"1024",
+			"total",
+			"h_x",
+			"Xexpanding",
+			"opt.grid[2]",
+			"opt.grid[1]",
+			"complex<double>(1.0,0.0)",
+			"complex<double>(12.0,0.0)",
+			"complex<double>(8.0,0)",
+			"complex<double>(30.0,0.0)",
+			"complex<double>(16.0,0)",
+			"=",
+			"RTE",
 			"workingdirectory",
 			"opt.workingdirectory",
 			"workingdirectory",
@@ -1020,52 +1170,7 @@
 			"getDensity",
 			"getDenst",
 			" ",
-			"tmp",
-			" ",
-			"plotDataToPng",
-			"plotDataToPngEigen",
-			"2048",
-			"Squared",
-			"4096",
-			"200",
-			"8192",
-			"HBAR",
-			"timeline",
-			"Vortices",
-			"30",
-			" ",
-			"Test Zeros",
-			"deltapsi",
-			"deltaPsi",
-			"getDensity",
-			"i",
-			"sampleindex",
-			"abs2",
-			"abs",
-			"abs2",
-			" ",
-			"timeline",
-			" ",
-			"dataset1",
-			"'ro'",
-			"ro",
-			"'ro'",
-			"2",
-			"data",
-			" ",
-			"  ",
-			"         ",
-			"        ",
-			"*=",
-			"Ag",
-			"OmegaG",
-			"meta.time",
-			"options.t_abs",
-			"cli",
-			"Compute",
-			"t_RTE",
-			"tmp",
-			"lambda_y(tmp)"
+			"tmp"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1083,7 +1188,7 @@
 	"groups":
 	[
 		{
-			"selected": 7,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -1172,10 +1277,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2774.0,
+						"translation.y": 2590.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
@@ -1191,8 +1296,8 @@
 						"selection":
 						[
 							[
-								1605,
-								1605
+								3955,
+								3955
 							]
 						],
 						"settings":
@@ -1202,153 +1307,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 262.0,
+						"translation.y": 1134.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3439,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										237,
-										253
-									],
-									[
-										260,
-										276
-									],
-									[
-										550,
-										566
-									],
-									[
-										838,
-										854
-									],
-									[
-										921,
-										937
-									],
-									[
-										985,
-										1001
-									],
-									[
-										1080,
-										1096
-									],
-									[
-										1240,
-										1256
-									],
-									[
-										1327,
-										1343
-									],
-									[
-										1391,
-										1407
-									],
-									[
-										1473,
-										1489
-									],
-									[
-										1737,
-										1753
-									],
-									[
-										2257,
-										2277
-									],
-									[
-										2340,
-										2360
-									],
-									[
-										2404,
-										2424
-									],
-									[
-										2499,
-										2519
-									],
-									[
-										2659,
-										2679
-									],
-									[
-										2746,
-										2766
-									],
-									[
-										2810,
-										2830
-									],
-									[
-										2892,
-										2912
-									],
-									[
-										3156,
-										3176
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								2024,
-								2024
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 2,
-							"result_base_dir": "",
-							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
 					"file": "main.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6541,
+						"buffer_size": 6561,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1204,
-								1204
+								580,
+								580
 							]
 						],
 						"settings":
@@ -1357,14 +1336,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 525.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 3,
 					"file": "itp.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1376,8 +1355,8 @@
 						"selection":
 						[
 							[
-								1262,
-								1262
+								1110,
+								1110
 							]
 						],
 						"settings":
@@ -1386,27 +1365,294 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 270.0,
+						"translation.y": 252.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "exp_utilities/EXP2D_MatrixData.h",
+					"buffer": 4,
+					"file": "exp_utilities/EXP2D_rk4.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5170,
+						"buffer_size": 7836,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								847,
-								847
+								1753,
+								1753
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 462.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "exp_utilities/EXP2D_evaluation.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 44938,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								38263,
+								38263
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 15020.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/nhrjr/projects/loudia/src/FFTComplex.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5133,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3149,
+								3149
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1092.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/home/nhrjr/projects/loudia/src/IFFTComplex.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3819,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 672.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "utilities/complexgrid.cpp",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 8523,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5109,
+								5109
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2520.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 87,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "exp_utilities/EXP2D_Contour.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7945,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2921,
+								2921
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1596.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "exp_utilities/EXP2D_Contour.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 931,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								116,
+								116
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "exp_utilities/EXP2D_evaluation.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3730,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								183,
+								183
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "exp_utilities/EXP2D_MatrixData.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6614,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1338,
+								1338
 							]
 						],
 						"settings":
@@ -1416,27 +1662,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 45.0,
+						"translation.y": 336.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 14,
 					"file": "exp_utilities/main.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13563,
+						"buffer_size": 13665,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4485,
-								4485
+								13216,
+								13216
 							]
 						],
 						"settings":
@@ -1444,94 +1690,244 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 4181.0,
+						"translation.y": 5091.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "exp_utilities/EXP2D_rte.cpp",
+					"buffer": 15,
+					"file": "tests/run.cfg",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 31513,
+						"buffer_size": 1253,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10057,
-								10057
+								640,
+								640
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage"
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3645.0,
+						"translation.y": 168.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 16,
 					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3245,
+						"buffer_size": 3299,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1664,
-								1664
+								1509,
+								1509
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 225.0,
+						"translation.y": 437.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "/home/nhrjr/.config/sublime-text-3/Packages/User/expandingvortexgas2d.sublime-build",
+					"buffer": 17,
+					"file": "exp_utilities/EXP2D_rte.hpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 36,
+						"buffer_size": 4098,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								36,
-								36
+								2552,
+								2552
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1050.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "exp_utilities/EXP2D_itp.hpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2302,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								362,
+								362
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 378.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "exp_utilities/EXP2D_itp.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 23049,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								282,
+								282
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "exp_utilities/EXP2D_constants.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 735,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								203,
+								203
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "split3d.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4108,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 252.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "tester.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 682,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								664,
+								664
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
 					"type": "text"
 				}
 			]
@@ -1539,7 +1935,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 22.0
 	},
 	"input":
 	{
@@ -1570,7 +1966,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 318.0
+		"height": 174.0
 	},
 	"output.find_results":
 	{
@@ -1579,7 +1975,7 @@
 	"project": "expandingvortexgas2d.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 40.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1618,7 +2014,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 355.0,
+	"side_bar_width": 294.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

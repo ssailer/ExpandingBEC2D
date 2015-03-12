@@ -37,13 +37,13 @@ public:
 	~Eval();
 
 	// wrapperfunctions 
-	void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)
-	void saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
-	void saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber); // if data comes as a vector of ComplexGrids, just eval a sclice of the 3D data.
-	void saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval);
-	void evaluateData(); // calculate the observables
-	void evaluateDataITP();
-	void plotData(); // plot Results
+	// void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)
+	// void saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
+	// void saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber); // if data comes as a vector of ComplexGrids, just eval a sclice of the 3D data.
+	// void saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval);
+	void process(); // calculate the observables
+	// void evaluateDataITP();
+	void plot(); // plot Results
 	bool checkResizeCondition();
 	int getVortexNumber();
 	void convertFromDimensionless();
@@ -76,6 +76,7 @@ private:
 	// data savefiles
 
 	// RealGrid phase, zeros;
+	MatrixXd phase;
 	string runname;
 	// vector<ComplexGrid> PsiVec;
 	
@@ -92,22 +93,22 @@ private:
 	void CombinedSpectrum();
 
 	// doing functinos
-	Observables calculator(ComplexGrid data,int sampleindex);
-	Observables calculatorITP(ComplexGrid data,int sampleindex);
+	Observables calculator(MatrixXcd DATA,int sampleindex);
+	// Observables calculatorITP(ComplexGrid data,int sampleindex);
 	void aspectRatio(Observables &obs, int &sampleindex);
-	void getVortices(ComplexGrid &data, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres);
+	void getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres);
 	// void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	void getDensity();
 	
 
-	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const RealGrid &phase);
+	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const MatrixXd &phase);
 	void findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
 
 	inline double norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y);
 	inline void pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance);
 	void getVortexDistance(PathResults &pres);
-	void calc_fields(ComplexGrid &data, Options &opt);
-	void checkEdges();
+	void calc_fields(MatrixXcd &DATA, Options &opt);
+	// void checkEdges();
 
 	// Contour Tracking Algorithm
 

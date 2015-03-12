@@ -85,7 +85,7 @@ inline void Contour::findInitialP(MatrixXi &data,Coordinate<int32_t> &p,Coordina
 
 		if(data(x,tmp.y()) > 0){
 
-			p = Coordinate(x,tmp.y(),0,meta.grid[0],meta.grid[1],1);
+			p = Coordinate<int32_t>(x,tmp.y(),0,meta.grid[0],meta.grid[1],1);
 			s = p + v_left;
 			// cout <<  p << " | " << s << endl;
 			// initial[0] = p;
@@ -105,7 +105,7 @@ inline void Contour::findSecondP(MatrixXi &data,Coordinate<int32_t> &p,Coordinat
 
 		if(data(x,tmp.y()) > 0){
 
-			p = Coordinate(x,tmp.y(),0,meta.grid[0],meta.grid[1],1);
+			p = Coordinate<int32_t>(x,tmp.y(),0,meta.grid[0],meta.grid[1],1);
 			s = p + v_left;
 			found = true;
 			// cout <<  p << " | " << s << endl;
@@ -117,7 +117,7 @@ inline void Contour::findSecondP(MatrixXi &data,Coordinate<int32_t> &p,Coordinat
 	}
 	if(found == false){
 		// cout << "found end" << endl;
-		p = Coordinate(meta.grid[0]-1,tmp.y(),0,meta.grid[0],meta.grid[1],1);
+		p = Coordinate<int32_t>(meta.grid[0]-1,tmp.y(),0,meta.grid[0],meta.grid[1],1);
 	}
 	// cout << "findSecondP Size:" << " Coordinates: " << p << " density " << data(0,p.x(),p.y(),0) << endl;
 }
@@ -142,10 +142,10 @@ c_set Contour::trackContour(MatrixXi &data){
 	// double scalingFromRatio = (opt.omega_x.real() > opt.omega_y.real()) ? opt.omega_y.real()/opt.omega_x.real() : opt.omega_x.real()/opt.omega_y.real();
 
 	Coordinate<int32_t> s;
-	Coordinate<int32_t> p = Coordinate(0,meta.grid[1]/2,0,meta.grid[0],meta.grid[1],1);
+	Coordinate<int32_t> p = Coordinate<int32_t>(0,meta.grid[1]/2,0,meta.grid[0],meta.grid[1],1);
 	Coordinate<int32_t> initial[2];
-	initial[0] = Coordinate(0,0,0,meta.grid[0],meta.grid[1],1);
-	initial[1] = Coordinate(0,0,0,meta.grid[0],meta.grid[1],1);
+	initial[0] = Coordinate<int32_t>(0,0,0,meta.grid[0],meta.grid[1],1);
+	initial[1] = Coordinate<int32_t>(0,0,0,meta.grid[0],meta.grid[1],1);
 
 	findInitialP(data,p,s/*,initial*/);
 	contour.insert(p);
@@ -167,7 +167,7 @@ c_set Contour::trackContour(MatrixXi &data){
 		counter = 0;
 		while(counter < 8){
 			Coordinate<int32_t> c = nextClockwise(s,direction);
-			if(data(0,c) > 0){
+			if(data(c.x(),c.y()) > 0){
 				p = c;
 				setDirection(direction);
 				contour.insert(p);

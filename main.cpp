@@ -123,34 +123,34 @@ try{
 			delete data;
 
 		}
-		if(mC == SPLIT){
+		// if(mC == SPLIT){
 
-			MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+		// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 		
-			cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+		// 	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
 			
-			string startGridName = initMain.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+		// 	string startGridName = initMain.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
 		
-			MatrixData* data = new MatrixData(initMain.getMeta());
+		// 	MatrixData* data = new MatrixData(initMain.getMeta());
 		
-			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
-			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-			delete dataFile;
+		// 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+		// 	dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+		// 	delete dataFile;
 	
-			for(int i = 0; i < data->meta.samplesize; i++){
-				data->wavefunction[i] = startGrid->wavefunction[0];
-			}
-			delete startGrid;
+		// 	for(int i = 0; i < data->meta.samplesize; i++){
+		// 		data->wavefunction[i] = startGrid->wavefunction[0];
+		// 	}
+		// 	delete startGrid;
 		
-			string runName = "split";
-			RTE* runExpanding = new RTE(data,initMain.getOptions());
-			cout << "splitToTime()" << endl;
-			runExpanding->splitToTime(runName);
+		// 	string runName = "split";
+		// 	RTE* runExpanding = new RTE(data,initMain.getOptions());
+		// 	cout << "splitToTime()" << endl;
+		// 	runExpanding->splitToTime(runName);
 
-			delete runExpanding;
-			delete data;
+		// 	delete runExpanding;
+		// 	delete data;
 
-		}
+		// }
 		if(mC == RK4_RESTART){
 
 			MatrixData* data = new MatrixData(initMain.getMeta());
@@ -206,10 +206,10 @@ try{
 			cout << "rteToTime()" << endl;
 			runExpanding->rteToTime(runName);
 		}
-		if(mC == SPLIT){
-			cout << "splitToTime()" << endl;
-			runExpanding->splitToTime(runName);
-		}
+		// if(mC == SPLIT){
+		// 	cout << "splitToTime()" << endl;
+		// 	runExpanding->splitToTime(runName);
+		// }
 
 		delete runExpanding;
 		delete data;
