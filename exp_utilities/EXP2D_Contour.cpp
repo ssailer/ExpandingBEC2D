@@ -215,7 +215,7 @@ c_set Contour::trackContour(MatrixXi &data){
 			// singlepoint = false;
 		}
 		
-		if(contour.size() >= 500){
+		if(contour.size() >= 100){
 			
 			// int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.5; // Circumference of a circle going through p, 90%
 			if((initial[0] == p) && (initial[1] == s)){

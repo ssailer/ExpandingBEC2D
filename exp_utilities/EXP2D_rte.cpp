@@ -141,26 +141,25 @@ void RTE::rteToTime(string runName)
 	RK4 *rk4 = new RK4(pData, opt);
 
 
-	// if(opt.initialRun == true){
-	// 	Eval* initialEval = new Eval;
-	// 	initialEval->saveData(wavefctVec,opt,meta.steps,runName);
-	// 	initialEval->evaluateData();
-	// 	initialEval->plotData();
-	// 	opt.vortexnumber = initialEval->getVortexNumber();
-	// 	opt.initialRun = false;
+	if(opt.initialRun == true){
 
-	// 	string evalname = runName + "-Eval.h5";
-	// 	binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
-	// 	evalFile->appendEval(meta.steps,opt,meta,*initialEval);
-	// 	delete initialEval;
-	// 	delete evalFile;
-	// }
+		Eval* initEval = new Eval(*pData,opt);
+		initEval->process();
 
-	Eval* initEval = new Eval(*pData,opt);
-	initEval->process();
-	initEval->plot();
-	delete initEval;
-	
+		Plotter* initPlot = new Plotter(*initEval,opt);
+		initPlot->plotEval();
+		delete initPlot;
+
+		opt.vortexnumber = initEval->getVortexNumber();
+		opt.initialRun = false;
+
+		string evalname = "Evaluation.h5";
+		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
+		evalFile->appendEval(meta.steps,opt,meta,*initEval);
+		delete initEval;
+		delete evalFile;
+	}
+
 	start = omp_get_wtime();
 
 	for(int j = 0; j < snapshot_times.size(); j++){
@@ -171,7 +170,7 @@ void RTE::rteToTime(string runName)
 
 			opt.t_abs += opt.RTE_step;
 
-			cli(runName,j,start);
+			cli(runName,pData->meta.steps,start);
 
 		}			
 
@@ -203,21 +202,29 @@ void RTE::rteToTime(string runName)
 			// // one save file
 			// // save snapshot
 			// // save eval
-			// string dataname = runName + "-LastGrid.h5";
-			// binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
-			// dataFile->appendSnapshot(runName,snapshot_times[j],pData,opt);
-			// delete dataFile;
 
-			// string evalname = runName + "-Eval.h5";
-			// binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
-			// evalFile->appendEval(snapshot_times[j],opt,pData->getMeta(),results);
-			// delete evalFile;
-
-			// BinaryFile* bin = new BinaryFile(BinaryFile::append);
 			Eval* eval = new Eval(*pData,opt);
 			eval->process();
-			eval->plot();
+			// eval->plot();
+
+			Plotter* plotter = new Plotter(*eval,opt);
+			plotter->plotEval();
+			delete plotter;
+			
+
+			string dataname = "LastGrid.h5";
+			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
+			dataFile->appendSnapshot(runName,pData->meta.steps,pData,opt);
+			delete dataFile;
+
+			string evalname = "Evaluation.h5";
+			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
+			evalFile->appendEval(pData->meta.steps,opt,pData->getMeta(),*eval);
+			delete evalFile;
+
 			delete eval;
+			// BinaryFile* bin = new BinaryFile(BinaryFile::append);
+
 			// bin->appendSnapshot(*pData,*eval);
 			// // bin->appendWavefunction(pData);
 			// // bin->appendEvaluation(eval);

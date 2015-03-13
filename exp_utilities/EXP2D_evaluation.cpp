@@ -1,6 +1,6 @@
 #include <EXP2D_evaluation.h>
 
-#define OBSERVABLES_DATA_POINTS_SIZE opt.grid[1]*opt.grid[2]*opt.grid[3]
+#define OBSERVABLES_DATA_POINTS_SIZE data.meta.grid[0]*data.meta.grid[1]
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
 #define VORTEX_SURROUND_DENSITY_RADIUS 5
@@ -13,7 +13,20 @@ using namespace Eigen;
 Eval::Eval(MatrixData &d,Options &o){
 	data = d;
 	opt = o;
+
+	// cout << " EVAL_BEFORE_CONVERT " << endl;
+	// cout << data.meta.coord[0] << endl;
+	// cout << data.meta.initCoord[0] << endl;
+	// cout << data.meta.spacing[0] << endl;
+	// cout << " EVAL_BEFORE_CONVERT " << endl;
+	convertFromDimensionless();
 	data.meta.convertFromDimensionless();
+
+	// cout << " EVAL_AFTER_CONVERT " << endl;
+	// cout << data.meta.coord[0] << endl;
+	// cout << data.meta.initCoord[0] << endl;
+	// cout << data.meta.spacing[0] << endl;
+	// cout << " EVAL_AFTER_CONVERT " << endl;
 };
 
 Eval::Eval() {};
@@ -48,6 +61,15 @@ void Eval::convertFromDimensionless(){
 	opt.omega_y /= 2.0 * M_PI / opt.OmegaG;
 	opt.dispersion_x /= 2.0 * M_PI / opt.OmegaG;
 	opt.dispersion_y /= 2.0 * M_PI / opt.OmegaG;
+
+	#pragma omp parallel for
+	for(int k = 0; k < data.wavefunction.size(); k++){
+		for(int i = 0; i < data.meta.grid[0]; i++){
+			for(int j = 0; j < data.meta.grid[1]; j++){		
+				data.wavefunction[k](i,j) = data.wavefunction[k](i,j) / complex<double>(opt.Ag,0.0);
+			}
+		}
+	}
 }
 
 // void Eval::saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber){
@@ -263,17 +285,17 @@ void Eval::process(){
 	
 
 	getDensity();
-	cout << endl << "Evaluating sample #: ";
+	// cout << endl << "Evaluating sample #: ";
 	for(int k = 0; k < data.wavefunction.size(); k++){
-		cout << k << " " ;
+		// cout << k << " " ;
 		
-		cout << "-getDensity" << endl;
-		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		cout << "-trackContour" << endl;
+		// cout << "-getDensity" << endl;
+		// contour[k] = tracker.trackContour(densityLocationMap[k]);
+		// cout << "-trackContour" << endl;
 		totalResult += calculator(data.wavefunction[k],k);
-		cout << "-calculator" << endl;
-		getVortices(data.wavefunction[k],densityCoordinates[k],pres[k]);
-		cout << "-getVortices" << endl;
+		// cout << "-calculator" << endl;
+		// getVortices(data.wavefunction[k],densityCoordinates[k],pres[k]);
+		// cout << "-getVortices" << endl;
 		// getVortexDistance(pres[k]);
 		// cout << "-getVortexDistance" << endl;
 	}	
@@ -384,7 +406,7 @@ void Eval::process(){
 // }
 
 void Eval::plot(){
-	string dirname = "runPlots_" + runname;
+	string dirname = "runPlots";
     struct stat st;
     	if(stat(dirname.c_str(),&st) != 0){
         mkdir(dirname.c_str(),0755);
@@ -416,47 +438,47 @@ void Eval::plot(){
 	ranges[1] = opt.min_y * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*tmp3*tmp3));
 	
 
-	string plotname = runname + "-Control-Plot-" + snapShotString;
+	string plotname = "Control-Plot-" + snapShotString;
 	string title = "Density " + snapShotString + " " + to_string(data.meta.time);
 	plotDataToPngEigen(plotname,data.wavefunction[0],opt);
 
 	// if(opt.runmode.compare(1,1,"1") == 0){
 	// 	title = "Density " + snapShotString;
-	// 	plotname = runname + "-ExpandingFrame-" + snapShotString;
+	// 	plotname = "ExpandingFrame-" + snapShotString;
 	// 	plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
 	// }
 
-	plotname = runname + "-Spectrum-" + snapShotString;
+	plotname = "Spectrum-" + snapShotString;
 	title = "Spectrum " + snapShotString; 
 	plotSpectrum(plotname,title,totalResult);
 
-	// plotname = runname + "-Radial-Density-" + snapShotString;
+	// plotname = "Radial-Density-" + snapShotString;
 	// title = "Radial-Density " + snapShotString; 
 	// plotRadialDensity(plotname,title,totalResult);
 
 	// if(pres[0].vlist.size() >= 0){
-	// 	plotname = runname + "-PairDistance" + snapShotString;
-	// 	title = "PairDistance" + snapShotString;
+	// 	plotname = "PairDistance" + snapShotString;
+	// 	title = "PairDistance " + snapShotString;
 	// 	plotPairDistance(plotname,title,pres[0]);
 	// }
 
-	// plotname = runname + "-Vortices-" + snapShotString;
+	// plotname = "Vortices-" + snapShotString;
 	// title = "Vortices " + snapShotString;
 	// plotVortexList(plotname,title,phase,pres[0],opt);	
 
-	// plotname = runname + "-Density-" + snapShotString;
+	// plotname = "Density-" + snapShotString;
 	// title = "Density " + snapShotString;
 	// plotDataToPng(plotname,title,densityLocationMap[0],opt);
 
-	// plotname = runname + "-Density-Axial-Distribution-Gradient-" + snapShotString;
+	// plotname = "Density-Axial-Distribution-Gradient-" + snapShotString;
 	// title = "Density " + snapShotString;
 	// plotVector(plotname,title,x_dist_grad,y_dist_grad,opt);
 
-	// plotname = runname + "-Angular-Dens-" + snapShotString;
+	// plotname = "Angular-Dens-" + snapShotString;
 	// title = "Angular Density " + snapShotString;
 	// plotVector(plotname,title,totalResult.angularDensity,opt);	
 
-	// plotname = runname + "-Contour-" + snapShotString;
+	// plotname = "Contour-" + snapShotString;
 	// title = "Contour " + snapShotString + " " + to_string(opt.t_abs.real());
 	// plotContour(plotname,title,PsiVec[0],contour[0],opt);
 
@@ -1053,13 +1075,18 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	vector<Coordinate<int32_t>> cartesianCoordinates;
 
 	ArrayXd divisor2(obs.number.size());
+
 	double r_index_factor = (obs.radialDensity.size() -1) / sqrt(data.meta.coord[0] * data.meta.coord[0] + data.meta.coord[1] * data.meta.coord[1]);
+	// cout << "INDEX_FACTOR " << r_index_factor << endl;
 	for(int i = 0; i < data.meta.grid[0]; i++){
 	    for(int j = 0; j < data.meta.grid[1]; j++){
 				int x_shift = i - data.meta.grid[0]/2;
 				int y_shift = j - data.meta.grid[1]/2;
 				phi.push_back( atan2(x_shift * data.meta.spacing[0] ,y_shift * data.meta.spacing[1]) * 180 / M_PI + 180);
 				double r_tmp = sqrt(x_shift*x_shift * data.meta.spacing[0]*data.meta.spacing[0] + y_shift*y_shift *data.meta.spacing[1]*data.meta.spacing[1]);
+
+				
+
 				radius.push_back(r_tmp);
 				double dens_tmp = abs2(DATA(i,j));
 				polarDensity.push_back(dens_tmp);
@@ -1067,7 +1094,11 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 				cartesianCoordinates.push_back(tmpCoord);
 
 				int index = r_index_factor * r_tmp;
-				divisor2(index)++;
+				// cout << " radius " << r_tmp << " / " << data.meta.coord[0] << " index " << index << " / " << obs.radialDensity.size() << endl;
+				// if(index >= obs.number.size()){
+				// 	cout << "index " << index << " r_tmp " << r_tmp << " " << data.meta.spacing[0] << " " << endl;
+				// }
+				divisor2(index) += 1.0;
 				obs.r(index) += r_tmp;
 				obs.radialDensity(index) += dens_tmp;
 		}

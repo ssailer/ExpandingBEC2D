@@ -325,6 +325,8 @@ inline int InitMain::readConfig()
 
 	convertToDimensionless();
 
+	meta.Ag = opt.Ag;
+	meta.OmegaG = opt.OmegaG;
 	meta.grid[0] = opt.grid[1];
 	meta.grid[1] = opt.grid[2];
 	meta.initCoord[0] = meta.coord[0] = opt.min_x;

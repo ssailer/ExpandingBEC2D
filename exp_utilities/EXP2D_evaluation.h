@@ -54,7 +54,8 @@ public:
 	vector<PathResults> pres;
 	vector<c_set> contour;
 
-	
+	MatrixData data;
+	Options opt;
 
 
 private:
@@ -71,8 +72,7 @@ private:
 		double r;
 	} contourData;
 
-	MatrixData data;
-	Options opt;
+	
 	// data savefiles
 
 	// RealGrid phase, zeros;

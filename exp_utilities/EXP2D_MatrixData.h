@@ -135,13 +135,18 @@ inline void MatrixData::increment(const double extTime,const double factorX,cons
 
 inline void MatrixData::MetaData::convertToDimensionless(){
 
-    const double m = 87 * 1.66 * 1.0e-27;
-    const double hbar = 1.054 * 1.0e-22;    
-    Ag = 2 * initCoord[0] / grid[0];
-    OmegaG = hbar / ( m * Ag * Ag);
+    // const double m = 87 * 1.66 * 1.0e-27;
+    // const double hbar = 1.054 * 1.0e-22;    
+    // Ag = 2 * initCoord[0] / grid[0];
+    // OmegaG = hbar / ( m * Ag * Ag);
 
     initCoord[0] /= Ag;
     initCoord[1] /= Ag;
+    coord[0] /= Ag;
+    coord[1] /= Ag;
+    spacing[0] /= Ag;
+    spacing[1] /= Ag;
+    time *= OmegaG / 1000.0;
     dataToArray();
     // opt.ITP_step *= opt.OmegaG;
     // opt.RTE_step *= opt.OmegaG;
@@ -154,8 +159,13 @@ inline void MatrixData::MetaData::convertToDimensionless(){
 inline void MatrixData::MetaData::convertFromDimensionless(){
     initCoord[0] *= Ag;
     initCoord[1] *= Ag;
+    coord[0] *= Ag;
+    coord[1] *= Ag;
+    spacing[0] *= Ag;
+    spacing[1] *= Ag;
     time /= OmegaG;
     time *= 1000.0; // conversion to ms
+    dataToArray();
 }
 
 inline void MatrixData::setMatrix(const vector<MatrixXcd> &extWavefct){

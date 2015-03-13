@@ -69,9 +69,7 @@ try{
 
 			setGridToTF(startGrid,initMain.getOptions());
 
-			cout << "SAVING" << endl;
-
-			string startGridName = startGridName = initMain.getStartingGridName();
+			string startGridName = initMain.getStartingGridName();
 			binaryFile* startFile = new binaryFile(startGridName,binaryFile::out);
 			startFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
 			delete startFile;
@@ -162,8 +160,9 @@ try{
 
 			MatrixData* data = new MatrixData(initMain.getMeta());
 
-			string runName = initMain.getRunName();
-			string filename = runName + "-LastGrid.h5";
+			string runName = "ex";
+			string filename = "LastGrid.h5";
+
 			binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 
 			vector<int> timeList = dataFile->getTimeList();
@@ -195,8 +194,8 @@ try{
 	}
 	
 	if(initMain.restart()){
-		string runName = initMain.getRunName();
-		string filename = runName + "-LastGrid.h5";
+		string runName = "ex";
+		string filename = "LastGrid.h5";
 		MatrixData* data = new MatrixData(initMain.getMeta());
 		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 	

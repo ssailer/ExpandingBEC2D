@@ -19,6 +19,7 @@
 #include <EXP2D_constants.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_MatrixData.h>
+#include <EXP2D_plotter.hpp>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;

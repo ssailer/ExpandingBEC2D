@@ -19,6 +19,7 @@ binaryFile::binaryFile(const string &file, mode nm)
   // options = opt;
   m = nm;
 
+  
   if(m == in || m == append)
 	{
 	  struct stat buf;
