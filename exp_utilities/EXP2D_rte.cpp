@@ -11,11 +11,14 @@
 using namespace std;
 using namespace Eigen;
 
-RTE::RTE(MatrixData* &d,const Options &externaloptions) : wavefctVec(d->wavefunction), meta(d->meta), pData(d)
+RTE::RTE(MatrixData* &d,RungeKutta* r,Options &externaloptions) : wavefctVec(d->wavefunction), meta(d->meta), pData(d), rungekutta(r)
 {	
-	opt = externaloptions;
+	rungekutta->assignMatrixData(pData);
+	setOptions(externaloptions);
 	RunSetup();
 }
+
+// void RTE::setAlgorithm()
 
 void RTE::setOptions(const Options &externaloptions)
 {
@@ -138,7 +141,9 @@ void RTE::rteToTime(string runName)
 
 	double start;  // starttime of the run
 
-	RK4 *rk4 = new RK4(pData, opt);
+	// RK4 *rungekutta = new RK4(pData, opt);
+
+	// noise();
 
 
 	if(opt.initialRun == true){
@@ -166,7 +171,7 @@ void RTE::rteToTime(string runName)
 
 		while(pData->meta.steps < snapshot_times[j]){			
 				
-			rk4->timeStep(opt.RTE_step);
+			rungekutta->timeStep(opt.RTE_step);
 
 			opt.t_abs += opt.RTE_step;
 
@@ -237,7 +242,7 @@ void RTE::rteToTime(string runName)
 			throw e; 
 		}
 	}
-	delete rk4;
+	delete rungekutta;
 }
 
 
@@ -476,18 +481,18 @@ void RTE::rteToTime(string runName)
 // 	}
 // }
 
-inline double RTE::rotatingPotential(int &i, int &j, int &t){
-	double potential;
-	if(t <= 3000){
-		double alpha = 2 * M_PI / 500;
-		double x = X(i).real() * cos(alpha * t) + Y(j).real() * sin(alpha * t);
-		double y = - X(i).real() * sin(alpha * t) + Y(j).real() * cos(alpha * t);
-		potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * x * x + 0.5 * opt.omega_y.real() * opt.omega_y.real() * y * y;
-	} else {
-		potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * X(i).real() * X(i).real() + 0.5 * opt.omega_x.real() * opt.omega_x.real() * Y(j).real() * Y(j).real();
-	}
-	return potential;
-}
+// inline double RTE::rotatingPotential(int &i, int &j, int &t){
+// 	double potential;
+// 	if(t <= 3000){
+// 		double alpha = 2 * M_PI / 500;
+// 		double x = X(i).real() * cos(alpha * t) + Y(j).real() * sin(alpha * t);
+// 		double y = - X(i).real() * sin(alpha * t) + Y(j).real() * cos(alpha * t);
+// 		potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * x * x + 0.5 * opt.omega_y.real() * opt.omega_y.real() * y * y;
+// 	} else {
+// 		potential = 0.5 * opt.omega_x.real() * opt.omega_x.real() * X(i).real() * X(i).real() + 0.5 * opt.omega_x.real() * opt.omega_x.real() * Y(j).real() * Y(j).real();
+// 	}
+// 	return potential;
+// }
 
 
 

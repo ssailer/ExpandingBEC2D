@@ -34,7 +34,7 @@ typedef struct {
 class RTE
 {
 public:
-    RTE(MatrixData* &d,const Options &opt);  
+    RTE(MatrixData* &d,RungeKutta* r,Options &opt);  
 
     void setOptions(const Options &externaloptions);
     void RunSetup();
@@ -51,6 +51,7 @@ public:
 
     vector<MatrixXcd> &wavefctVec;
     MatrixData::MetaData &meta;
+    RungeKutta* rungekutta;
 
 
     
@@ -79,7 +80,7 @@ public:
     void plot(const string name);
     void noise();
 
-    inline double rotatingPotential(int &i, int &j, int &t);
+    // inline double rotatingPotential(int &i, int &j, int &t);
 
     void ComputeDeltaPsi(MatrixXcd &wavefct, MatrixXcd &wavefctcp, int &t,complex<double> delta_T);
     

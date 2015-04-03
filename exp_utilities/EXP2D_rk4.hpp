@@ -10,12 +10,14 @@
 using namespace std;
 using namespace Eigen;
 
-class RK4
+class RungeKutta
 {
 public:
-	RK4(MatrixData* &d, Options &extOpt);
+	RungeKutta(/*MatrixData* &d,*/ Options &extOpt);
+    void assignMatrixData(MatrixData* &d);
+    void setVariables();
 	void timeStep(double delta_T);
-private:
+// private:
 	MatrixData* w;
 	MatrixXcd wavefctcp, k0, k1, k2, k3;
 	Options opt;
@@ -29,8 +31,9 @@ private:
 
 	vector<complex<double>> laplacian_coefficient_x,laplacian_coefficient_y,gradient_coefficient_x,gradient_coefficient_y;
 
-	void computeCoefficients(double &delta_T);
-	void singleK(MatrixXcd &k,int32_t &front, int32_t &end,int32_t &subx,int32_t &suby, int &t);
+	virtual void computeCoefficients(double &delta_T) = 0;
+	virtual void singleK(MatrixXcd &k,int32_t &front, int32_t &end,int32_t &subx,int32_t &suby, int &t) = 0;
+
 	void MSDBoundaries(MatrixXcd &U,MatrixXcd &Ut);
 
     inline complex<double> lambda_x(complex<double> absTime){
@@ -49,6 +52,22 @@ private:
     	return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*absTime/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*absTime*absTime));
     }
 
+};
+
+class Expansion : public RungeKutta {
+public:
+    Expansion(/*MatrixData* &d,*/ Options &opt) : RungeKutta(opt) {}
+private:
+    virtual void singleK(MatrixXcd &k, int32_t &front, int32_t &end,int32_t &subx,int32_t &suby, int &t);
+    virtual void computeCoefficients(double &delta_T);
+};
+
+class RotatingTrap : public RungeKutta {
+public:
+    RotatingTrap(/*MatrixData* &d,*/ Options &opt) : RungeKutta(opt) {}
+private:
+    virtual void singleK(MatrixXcd &k, int32_t &front, int32_t &end,int32_t &subx,int32_t &suby, int &t);
+    virtual void computeCoefficients(double &delta_T);
 };
 
 #endif // EXP2D_RK4_H__
