@@ -87,13 +87,13 @@ try{
 		delete startFile;
 	}
 
-	if(runMode == RK4){
+	if(mC == RK4){
 		// Object determining the integration method
 		RungeKutta* dgl_algorithm;
 		// Consequently choosing the DGL
-		if(mC == ROT) dgl_algorithm = new RotatingTrap(tmpOpt);
-		if(mC == EXP) dgl_algorithm = new Expansion(tmpOpt);
-		// if(mC == TRAP)
+		if(runMode == ROT) dgl_algorithm = new RotatingTrap(tmpOpt);
+		if(runMode == EXP) dgl_algorithm = new Expansion(tmpOpt);
+		// if(runMode == TRAP)
 		// 	dgl_algorithm = new Trap(tmpOpt);
 		
 		// create simulation object with all accumulated settings

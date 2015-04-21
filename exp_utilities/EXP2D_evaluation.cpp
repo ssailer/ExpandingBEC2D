@@ -14,19 +14,9 @@ Eval::Eval(MatrixData &d,Options &o){
 	data = d;
 	opt = o;
 
-	// cout << " EVAL_BEFORE_CONVERT " << endl;
-	// cout << data.meta.coord[0] << endl;
-	// cout << data.meta.initCoord[0] << endl;
-	// cout << data.meta.spacing[0] << endl;
-	// cout << " EVAL_BEFORE_CONVERT " << endl;
 	convertFromDimensionless();
 	data.meta.convertFromDimensionless();
 
-	// cout << " EVAL_AFTER_CONVERT " << endl;
-	// cout << data.meta.coord[0] << endl;
-	// cout << data.meta.initCoord[0] << endl;
-	// cout << data.meta.spacing[0] << endl;
-	// cout << " EVAL_AFTER_CONVERT " << endl;
 };
 
 Eval::Eval() {};

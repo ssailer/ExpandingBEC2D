@@ -35,27 +35,6 @@ void RTE::RunSetup()
 		snapshot_times[k] = (k + 1) * snapShotSize + meta.steps;
 	}
 
- //   	ranges.resize(2);
-	// // complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
-	// ranges[0] = opt.min_x * real(lambda_x(absTime));
-	// ranges[1] = opt.min_y * real(lambda_y(absTime));
-	// double arr = real(absTime) * 1000.0 / opt.OmegaG;
-	// cout << "Max ExpFactor: " << real(lambda_x(absTime)) << "  " << real(lambda_y(absTime)) << " with a time of " << std::setprecision(15) << arr << " ms" << " " << t_RTE(0) / opt.OmegaG << " " <<  t_RTE(l-1) / opt.OmegaG<< endl;
-
-	// if(ranges[0] > ranges[1])
-	// 	ranges[1] = ranges[0];
-	// else if(ranges[1] > ranges[0])
-	// 	ranges[0] = ranges[1];
-	// cout << "Max Ranges: " << ranges[0] << "  " << ranges[1] << endl;
-
-
- //   	double x0 = meta.grid[0] * 0.20 / 2;
- //   	double y0 = meta.grid[1] * 0.20 / 2;
- //   	double rx = opt.min_x - x0;
-	// double ry = opt.min_y - y0;
-	// double strength = 5;
-
-
 	double mu = sqrt(3.0  * opt.g * real(opt.omega_x) * real(opt.omega_y) * opt.N / 8.0);
     double Ry = sqrt(2.0 * mu / ( real(opt.omega_y)*real(opt.omega_y))) * opt.Ag;
     double Rx = sqrt(2.0 * mu / ( real(opt.omega_x)*real(opt.omega_x))) * opt.Ag;
@@ -112,16 +91,17 @@ void RTE::cli(string name, int index, double start)
 
 void RTE::plot(const string name){
 
-	if(opt.runmode.compare(1,1,"1") == 0){
+	if(opt.runmode == "EXP"){
 		// complex<double> tmp = complex<double>(keeperOfTime.absoluteSteps,0.0) * t_RTE;
 		Xexpanding = x_expand(opt.t_abs);
 		Yexpanding = y_expand(opt.t_abs);
 		plotDataToPngEigenExpanding(name, wavefctVec[0],ranges,Xexpanding,Yexpanding,opt);
 	}
-	if(opt.runmode.compare(1,1,"0") == 0){
+	else {
 		plotDataToPngEigen(name, wavefctVec[0],opt);
 	}
 }
+
 void RTE::noise(){
 	for(int k = 0; k < wavefctVec.size(); k++){
 		GaussRandom r (get_seed());
@@ -140,11 +120,6 @@ void RTE::rteToTime(string runName)
 	omp_set_num_threads(16);
 
 	double start;  // starttime of the run
-
-	// RK4 *rungekutta = new RK4(pData, opt);
-
-	// noise();
-
 
 	if(opt.initialRun == true){
 
@@ -180,42 +155,25 @@ void RTE::rteToTime(string runName)
 		}			
 
 		// REMOVE
-			if(opt.runmode.compare(1,1,"1") == 0){
+			if(opt.runmode == "EXP"){
 				opt.stateInformation[0] = real(lambda_x(opt.t_abs)); // needed for expansion and the computing of the gradient etc.
 				opt.stateInformation[1] = real(lambda_y(opt.t_abs));
 				cout << opt.stateInformation[0] << "  " << opt.t_abs << " ";
 				cout << pData->meta.initCoord[0] << " " << pData->meta.coord[0] << " " << pData->meta.time;
 			}
-			if(opt.runmode.compare(1,1,"0") == 0){
+			else {
 				opt.stateInformation[0] = 1.0;
 				opt.stateInformation[1] = 1.0;
 			}
 		// END REMOVE
 
-
 		try{
-
-			
-
-			// One Result file
-			// results
-			// Eval results;
-			// results.saveData(pData->wavefunction,opt,snapshot_times[j],runName);
-			// results.evaluateData();
-			// results.plotData();
-
-			// // one save file
-			// // save snapshot
-			// // save eval
-
 			Eval* eval = new Eval(*pData,opt);
 			eval->process();
-			// eval->plot();
 
 			Plotter* plotter = new Plotter(*eval,opt);
 			plotter->plotEval();
 			delete plotter;
-			
 
 			string dataname = "LastGrid.h5";
 			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
@@ -228,14 +186,6 @@ void RTE::rteToTime(string runName)
 			delete evalFile;
 
 			delete eval;
-			// BinaryFile* bin = new BinaryFile(BinaryFile::append);
-
-			// bin->appendSnapshot(*pData,*eval);
-			// // bin->appendWavefunction(pData);
-			// // bin->appendEvaluation(eval);
-			// delete bin, eval;
-
-
 		}
 		catch(const std::exception& e) { 
 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 
