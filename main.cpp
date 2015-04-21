@@ -60,176 +60,75 @@ try{
  	initMain.printInitVar();
 
 	Options tmpOpt = initMain.getOptions();
-	MainControl mC = initMain.getControl();
+	MainControl mC = initMain.getControl(); // controls the choise between expansion and trapped simulations, e.g. the lab setup, has to be set in console
+	MainControl runMode = initMain.getRunMode(); // controls the chosen integration algorithm, has to be set in the cfg
 
-	if(!initMain.restart()){
-		// runExpanding->noise();
-		if(mC == RK4){
+	MatrixData* data = new MatrixData(initMain.getMeta());
 
-			MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
-
-			setGridToTF(startGrid,initMain.getOptions());
-
-			// int vnumber = 0;
-			// addVorticesAlternating(startGrid,tmpOpt,vnumber);
-
-			string startGridName = initMain.getStartingGridName();
-			binaryFile* startFile = new binaryFile(startGridName,binaryFile::out);
-			startFile->appendSnapshot("StartGrid",0,startGrid,tmpOpt);
-			delete startFile;
-	
-			// cout << "EigenThreads: " << Eigen::nbThreads() << endl;
-			
-			MatrixData* data = new MatrixData(initMain.getMeta());
-			
-			binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
-			dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-			delete dataFile;
-
-			for(int i = 0; i < data->meta.samplesize; i++){
-				data->wavefunction[i] = startGrid->wavefunction[0];
-			}
-			delete startGrid;
-
-			RotatingTrap* rt = new RotatingTrap(/*data,*/tmpOpt);
-			
-			string runName = "ex";
-			RTE* runExpanding = new RTE(data,rt,tmpOpt);
-			cout << "rteToTime()" << endl;
-			runExpanding->rteToTime(runName);
-
-			delete runExpanding;
-			delete rt;
-			delete data;
-
-		}
-		// if(mC == TRAP){
-
-		// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
-	
-		// 	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
-			
-		// 	string startGridName = "StartGrid_2048_2048.h5"; // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
-			
-		// 	MatrixData* data = new MatrixData(initMain.getMeta());
-			
-		// 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
-		// 	dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-		// 	delete dataFile;
-
-		// 	for(int i = 0; i < data->meta.samplesize; i++){
-		// 		data->wavefunction[i] = startGrid->wavefunction[0];
-		// 	}
-		// 	delete startGrid;
-			
-		// 	string runName = "trap";
-		// 	RTE* runExpanding = new RTE(data,initMain.getOptions());
-		// 	cout << "rteToTime()" << endl;
-		// 	runExpanding->rteToTime(runName);
-
-		// 	binaryFile* trapFile = new binaryFile(startGridName,binaryFile::out);
-		// 	trapFile->appendSnapshot("StartGrid",0,data,tmpOpt);
-		// 	delete trapFile;
-
-		// 	delete runExpanding;
-		// 	delete data;
-
-		// }
-		// if(mC == SPLIT){
-
-		// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
-		
-		// 	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
-			
-		// 	string startGridName = initMain.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
-		
-		// 	MatrixData* data = new MatrixData(initMain.getMeta());
-		
-		// 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
-		// 	dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
-		// 	delete dataFile;
-	
-		// 	for(int i = 0; i < data->meta.samplesize; i++){
-		// 		data->wavefunction[i] = startGrid->wavefunction[0];
-		// 	}
-		// 	delete startGrid;
-		
-		// 	string runName = "split";
-		// 	RTE* runExpanding = new RTE(data,initMain.getOptions());
-		// 	cout << "splitToTime()" << endl;
-		// 	runExpanding->splitToTime(runName);
-
-		// 	delete runExpanding;
-		// 	delete data;
-
-		// }
-		// if(mC == RK4_RESTART){
-
-		// 	MatrixData* data = new MatrixData(initMain.getMeta());
-
-		// 	string runName = "ex";
-		// 	string filename = "LastGrid.h5";
-
-		// 	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
-
-		// 	vector<int> timeList = dataFile->getTimeList();
-		// 	dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
-		// 	delete dataFile;
-
-		// 	tmpOpt = initMain.getOptions();
-
-		// 	tmpOpt.initialRun = true;
-		// 	tmpOpt.n_it_RTE = initMain.getRunTime();
-		// 	tmpOpt.snapshots = initMain.getSnapShots();
-	
-		// 	data->meta.steps = 0;
-		// 	data->meta.time = 0.0;
-		// 	tmpOpt.t_abs = complex<double>(0.0,0.0);
-
-	
-		// 	RTE* runExpanding = new RTE(data,tmpOpt);
-
-		// 	cout << "rteToTime()" << endl;
-		// 	runExpanding->rteToTime(runName);
-
-		// 	delete runExpanding;
-		// 	delete data;
-		// }
-
-
-
-	}
-	
 	if(initMain.restart()){
 		string runName = "ex";
 		string filename = "LastGrid.h5";
-		MatrixData* data = new MatrixData(initMain.getMeta());
-		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
-	
+		// Loading from existing HDF5
+		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
 		vector<int> timeList = dataFile->getTimeList();
 		dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
 		delete dataFile;
+		// temp fix to change behaviour of sim object;
 		tmpOpt.initialRun = false;
 		tmpOpt.n_it_RTE = initMain.getRunTime();
 		tmpOpt.snapshots = initMain.getSnapShots();
-
-		RotatingTrap* rt = new RotatingTrap(/*data,*/tmpOpt);
-
-		RTE* runExpanding = new RTE(data,rt,tmpOpt);
-
-		if(mC == RK4){
-			cout << "rteToTime()" << endl;
-			runExpanding->rteToTime(runName);
-		}
-		// if(mC == SPLIT){
-		// 	cout << "splitToTime()" << endl;
-		// 	runExpanding->splitToTime(runName);
-		// }
-
-		delete runExpanding;
-		delete rt;
-		delete data;
+	} else {
+		// set MatrixData to specified initial conditions
+		setGridToTF(data,initMain.getOptions());
+		// save initial Grid
+		string startGridName = initMain.getStartingGridName();
+		binaryFile* startFile = new binaryFile(startGridName,binaryFile::out);
+		startFile->appendSnapshot("StartGrid",0,data,initMain.getOptions());
+		delete startFile;
 	}
+
+	if(runMode == RK4){
+		// Object determining the integration method
+		RungeKutta* dgl_algorithm;
+		// Consequently choosing the DGL
+		if(mC == ROT) dgl_algorithm = new RotatingTrap(tmpOpt);
+		if(mC == EXP) dgl_algorithm = new Expansion(tmpOpt);
+		// if(mC == TRAP)
+		// 	dgl_algorithm = new Trap(tmpOpt);
+		
+		// create simulation object with all accumulated settings
+		// and start the run
+		RTE* sim = new RTE(data,dgl_algorithm,tmpOpt);
+		sim->rteToTime("ex");
+
+		delete sim, dgl_algorithm;
+	}
+	// if(runMode == SPLIT){
+	// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
+	
+	// 	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
+		
+	// 	string startGridName = initMain.getStartingGridName(); // "StartGrid_2048x2048_N1000_alternatingVortices.h5";
+	
+	// 	MatrixData* data = new MatrixData(initMain.getMeta());
+	
+	// 	binaryFile* dataFile = new binaryFile(startGridName,binaryFile::in);
+	// 	dataFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
+	// 	delete dataFile;
+
+	// 	for(int i = 0; i < data->meta.samplesize; i++){
+	// 		data->wavefunction[i] = startGrid->wavefunction[0];
+	// 	}
+	// 	delete startGrid;
+	
+	// 	string runName = "split";
+	// 	RTE* runExpanding = new RTE(data,initMain.getOptions());
+	// 	cout << "splitToTime()" << endl;
+	// 	runExpanding->splitToTime(runName);
+	// 	delete runExpanding;
+	// 	delete data;
+	// }
+	delete data;
 }
 
 
@@ -246,7 +145,7 @@ catch(expException& e){
 catch (const std::string& errorMessage){ 
 	std::cerr << errorMessage.c_str(); 
 	std::cerr << " Terminating now." << endl; 
-	return SUCCESS; 
+	return ERROR_UNHANDLED_EXCEPTION; 
 }
 cerr << "[END]" << endl; 
 return SUCCESS; 	

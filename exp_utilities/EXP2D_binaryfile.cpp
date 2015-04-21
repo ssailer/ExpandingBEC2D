@@ -125,7 +125,7 @@ bool binaryFile::checkTime(int snapShotTime){
 }
 
 
-bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData* const &pData, Options &options){
+bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData* const &pData, Options options){
 
   if(m == in){
 	cout << "file "<< filename.c_str() << "is not in write mode" << endl;

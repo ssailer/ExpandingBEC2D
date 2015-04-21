@@ -44,7 +44,7 @@ public:
     void rteToTime(string runName);
     void splitToTime(string runName);
    
-    // StoragePointer for the wavefunction
+    // StoragePointer to the wavefunction (MatrixData Object)
     MatrixData* pData;
 
     // Storage Variable for the runs

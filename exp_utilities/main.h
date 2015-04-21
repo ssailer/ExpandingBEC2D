@@ -30,7 +30,9 @@ enum MainControl {
 	SPLIT,
 	RK4,
 	RK4_RESTART,
-	TRAP
+	TRAP,
+	EXP,
+	ROT
 };
 
 
@@ -58,7 +60,7 @@ public:
 	inline void setRunTime(int runtime);
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
-	inline string getRunMode();
+	inline MainControl getRunMode();
 	inline bool restart();
 	inline string getStartingGridName();
 	inline int getRunTime(){ return opt.n_it_RTE;};
@@ -87,6 +89,8 @@ MainControl InitMain::toMainControl(const std::string& s)
     if (s == "RK4") return RK4;
     if (s == "RK4_RESTART") return RK4_RESTART;
     if (s == "TRAP") return TRAP;
+    if (s == "EXP") return EXP;
+    if (s == "ROT") return ROT;
     throw std::runtime_error("Invalid conversion from string to MainControl.");
 }
 
@@ -115,9 +119,10 @@ inline void InitMain::setRunMode(string runmode){
 	opt.runmode = runmode;
 }
 
-inline string InitMain::getRunMode(){
+inline MainControl InitMain::getRunMode(){
 	// FIXME: Here should be checks for the sanity of runmode!
-	return opt.runmode;
+	return toMainControl(opt.runmode);
+	// return opt.runmode;
 }
 
 inline void InitMain::setRunTime(int runtime){
@@ -152,9 +157,6 @@ inline void InitMain::printInitVar()
 				<< "Coordinates in y-direction: " << meta.initCoord[1] << endl
 				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
 				<< "ITP Step: " << opt.ITP_step << "\t" << "RTE Step: " << opt.RTE_step << endl
-				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << endl
-				<< "RTE potential on: " << opt.runmode[2] << endl
-				<< "Runmode: " << opt.runmode << endl
 				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
 }
 

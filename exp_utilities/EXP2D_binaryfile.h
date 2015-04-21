@@ -37,7 +37,7 @@ public:
 
   void close();
 
-  bool appendSnapshot(const string &name, int time, MatrixData* const &pData, Options &options);
+  bool appendSnapshot(const string &name, int time, MatrixData* const &pData, Options options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
   bool appendSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data, MatrixData::MetaData &meta, Options &options);
 
