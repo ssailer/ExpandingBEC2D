@@ -18,6 +18,12 @@ RTE::RTE(MatrixData* &d,RungeKutta* r,Options &externaloptions) : wavefctVec(d->
 	RunSetup();
 }
 
+RTE::RTE(MatrixData* &d, SplitStep* s, Options &externaloptions) : wavefctVec(d->wavefunction), meta(d->meta), pData(d), splitsetp(s)
+{
+	splitsetp->assignMatrixData(pData);
+	setOptions(externaloptions);
+	RunSetup();
+}
 // void RTE::setAlgorithm()
 
 void RTE::setOptions(const Options &externaloptions)
