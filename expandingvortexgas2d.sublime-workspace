@@ -4,6 +4,34 @@
 		"selected_items":
 		[
 			[
+				"set",
+				"setOptions"
+			],
+			[
+				"i_unit",
+				"i_unit_diss"
+			],
+			[
+				"Matrix",
+				"MatrixXcd"
+			],
+			[
+				"densi",
+				"densityLocationMap"
+			],
+			[
+				"data",
+				"dataToArray"
+			],
+			[
+				"snap",
+				"snapshot_times"
+			],
+			[
+				"n_",
+				"n_it_RTE"
+			],
+			[
 				"sin",
 				"singleK"
 			],
@@ -42,10 +70,6 @@
 			[
 				"datafe",
 				"datafile2"
-			],
-			[
-				"set",
-				"setw"
 			],
 			[
 				"opt",
@@ -464,14 +488,6 @@
 				"Expanding-Set-1-LastGrid"
 			],
 			[
-				"data",
-				"dataFile"
-			],
-			[
-				"snap",
-				"snapshotssize"
-			],
-			[
 				"vortex",
 				"vortexspacing"
 			],
@@ -498,208 +514,16 @@
 			[
 				"wa",
 				"wavefctcpX"
-			],
-			[
-				"MAti",
-				"MatrixXcd"
-			],
-			[
-				"Mait",
-				"MatrixXcd"
-			],
-			[
-				"laplaiocn",
-				"laplacian_coefficient_y"
-			],
-			[
-				"lapla",
-				"laplacian_coefficient_x"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "main.cpp",
-			"settings":
-			{
-				"buffer_size": 7094,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "split3d.cpp",
-			"settings":
-			{
-				"buffer_size": 4108,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "evaluator.cpp",
-			"settings":
-			{
-				"buffer_size": 3155,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/main.h",
-			"settings":
-			{
-				"buffer_size": 13699,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pythonScripts/unitConverter.py",
-			"settings":
-			{
-				"buffer_size": 6376,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_startgrids.h",
-			"settings":
-			{
-				"buffer_size": 7273,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_rk4.cpp",
-			"settings":
-			{
-				"buffer_size": 10371,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_rk4.hpp",
-			"settings":
-			{
-				"buffer_size": 2334,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_itp.cpp",
-			"settings":
-			{
-				"buffer_size": 23049,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_rte.cpp",
-			"settings":
-			{
-				"buffer_size": 19406,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_rte.hpp",
-			"settings":
-			{
-				"buffer_size": 4166,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_itp.hpp",
-			"settings":
-			{
-				"buffer_size": 2302,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_splitstep.cpp",
-			"settings":
-			{
-				"buffer_size": 13513,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_evaluation.cpp",
-			"settings":
-			{
-				"buffer_size": 47004,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_evaluation.h",
-			"settings":
-			{
-				"buffer_size": 3753,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/plot_with_mgl.cpp",
-			"settings":
-			{
-				"buffer_size": 21820,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/plot_with_mgl.h",
-			"settings":
-			{
-				"buffer_size": 4051,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_observables.h",
-			"settings":
-			{
-				"buffer_size": 7507,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_Contour.cpp",
-			"settings":
-			{
-				"buffer_size": 8007,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_splitstep.hpp",
-			"settings":
-			{
-				"buffer_size": 2210,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pythonScripts/AveragesPlot.py",
-			"settings":
-			{
-				"buffer_size": 3688,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "solver/solver.cpp",
 			"settings":
 			{
 				"buffer_size": 6209,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/EXP2D_binaryfile.cpp",
-			"settings":
-			{
-				"buffer_size": 37601,
 				"line_ending": "Unix"
 			}
 		},
@@ -712,14 +536,255 @@
 			}
 		},
 		{
-			"file": "exp_utilities/EXP2D_binaryfile.h",
+			"file": "main.cpp",
 			"settings":
 			{
-				"buffer_size": 8027,
+				"buffer_size": 7094,
+				"line_ending": "Unix"
+			}
+		},
+		{
+<<<<<<< Updated upstream
+			"file": "split3d.cpp",
+=======
+			"file": "/home/nhrjr/projects/cuda_learn/NVIDIA_CUDA-7.0_Samples/0_Simple/matrixMulCUBLAS/matrixMulCUBLAS.cpp",
+			"settings":
+			{
+				"buffer_size": 13149,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/nhrjr/projects/cuda_learn/NVIDIA_CUDA-7.0_Samples/0_Simple/cppIntegration/main.cpp",
+>>>>>>> Stashed changes
+			"settings":
+			{
+				"buffer_size": 2570,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "itp.cpp",
+			"settings":
+			{
+				"buffer_size": 4151,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "andre_results/hydro/different_ratios/hydroplots.py",
+			"settings":
+			{
+				"buffer_size": 2413,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "andre_results/hydro/general/hydroplots.py",
+			"settings":
+			{
+				"buffer_size": 2215,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "andre_results/hydro/gpe comparison/hydroplots.py",
+			"settings":
+			{
+				"buffer_size": 2212,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "andre_results/AveragesPlot.py",
+			"settings":
+			{
+<<<<<<< Updated upstream
+				"buffer_size": 10371,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_rk4.hpp",
+			"settings":
+			{
+				"buffer_size": 2334,
+=======
+				"buffer_size": 6175,
+>>>>>>> Stashed changes
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "andre_results/1V/AveragesPlot.py",
+			"settings":
+			{
+				"buffer_size": 2747,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "andre_results/andre_08_18V/ode_Rx_Ry_2.dat",
+			"settings":
+			{
+				"buffer_size": 49901002,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_evaluation.cpp",
+			"settings":
+			{
+				"buffer_size": 47004,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/nhrjr/projects/loudia/src/FFTComplex.cpp",
+			"settings":
+			{
+				"buffer_size": 5133,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/nhrjr/projects/loudia/src/IFFTComplex.h",
+			"settings":
+			{
+				"buffer_size": 3819,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_Contour.cpp",
+			"settings":
+			{
+				"buffer_size": 8007,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_Contour.h",
+			"settings":
+			{
+				"buffer_size": 985,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_evaluation.h",
+			"settings":
+			{
+				"buffer_size": 3753,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_MatrixData.h",
+			"settings":
+			{
+				"buffer_size": 8362,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/main.h",
+			"settings":
+			{
+				"buffer_size": 13699,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 3399,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_rte.hpp",
+			"settings":
+			{
+				"buffer_size": 4166,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_rk4.cpp",
+			"settings":
+			{
+				"buffer_size": 10404,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_plotter.cpp",
+			"settings":
+			{
+				"buffer_size": 2908,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_rk4.hpp",
+			"settings":
+			{
+				"buffer_size": 2334,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_rte.cpp",
+			"settings":
+			{
+				"buffer_size": 19406,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_itp.hpp",
+			"settings":
+			{
+				"buffer_size": 2302,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_itp.cpp",
+			"settings":
+			{
+				"buffer_size": 23049,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_constants.h",
+			"settings":
+			{
+				"buffer_size": 735,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "split3d.cpp",
+			"settings":
+			{
+				"buffer_size": 4108,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tester.cpp",
+			"settings":
+			{
+				"buffer_size": 682,
 				"line_ending": "Unix"
 			}
 		}
 	],
+<<<<<<< Updated upstream
 	"build_system": "Packages/User/exp2dbuild.sublime-build",
 	"build_system_choices":
 	[
@@ -761,12 +826,18 @@
 		]
 	],
 	"build_varint": "",
+=======
+	"build_system": "Packages/User/expandingvortexgas2d.sublime-build",
+>>>>>>> Stashed changes
 	"command_palette":
 	{
-		"height": 392.0,
-		"last_filter": "",
+		"height": 369.0,
 		"selected_items":
 		[
+			[
+				"Packa Co",
+				"Package Control: Install Package"
+			],
 			[
 				"package",
 				"Package Control: Install Package"
@@ -938,10 +1009,13 @@
 	"expanded_folders":
 	[
 		"/home/nhrjr/projects/expandingvortexgas2d",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities"
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities",
+		"/home/nhrjr/projects/expandingvortexgas2d/solver",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests"
 	],
 	"file_history":
 	[
+<<<<<<< Updated upstream
 		"/home/nhrjr/projects/expandingvortexgas2d/itp.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/CMakeLists.txt",
 		"/home/nhrjr/,local/shalre/Steam/steam.sh",
@@ -997,31 +1071,97 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/results/testUnits4/run.cfg",
 		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/ode02.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/.gitignore",
+=======
+		"/home/nhrjr/projects/cuda_learn/NVIDIA_CUDA-7.0_Samples/0_Simple/cppIntegration/cppIntegration_gold.cpp",
+		"/home/nhrjr/projects/cuda_learn/NVIDIA_CUDA-7.0_Samples/0_Simple/cppIntegration/cppIntegration_gold.",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/sim.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/test20/runObservables/_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/different_ratios/1.2 with 0 Vortices.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_08_18V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/interAveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/run.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/test1/runObservables/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/run.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_MatrixData.h",
+>>>>>>> Stashed changes
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h",
-		"/home/nhrjr/.local/share/applications/mimeinfo.cache",
+		"/home/nhrjr/projects/expandingvortexgas2d/CMakeLists.txt",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/expandingvortexgas2d.sublime-build",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.h",
+		"/home/nhrjr/projects/malin_test_tex/150226.tex",
+		"/home/nhrjr/projects/expandingvortexgas2d/CMakeCache.txt",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/24_ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/densityPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/sAveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/different_ratios/hydroplots.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_itp.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_startgrids.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_13_63V/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_18_98/ex_Observables.dat",
+		"/home/nhrjr/results/andre_itp/run18.cfg",
+		"/home/nhrjr/Dropbox/Diplomarbeit/Template/references.bib",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/comp/hydroplots.py",
+		"/home/nhrjr/Dropbox/Diplomarbeit/Template/checkcites.lua",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/SyntaxMgr.sublime-settings",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_12_50V/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_14_15V_s/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_18_98/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/83_ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/1_2_ratio/hydroplots.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_17_40V_s/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_16_70V_s/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_14_15V_s/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_17_40V_s/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_16_70V_s/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_15_83V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_14_15V/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_14_15V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_15_83V/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_13_63V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_06/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/andre_13_itp/run14.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/andre_13_itp/run13.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_06/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_03/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_04/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_03/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_07_24V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_04/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_12_50V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_11_34V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_07_24V/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_11_34V/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/andre_13_itp/run12.cfg",
 		"/home/nhrjr/projects/expandingvortexgas2d/main.cpp",
+<<<<<<< Updated upstream
 		"/home/nhrjr/.config/sublime-text-3/Packages/User/cmake.sublime-build",
 		"/home/nhrjr/projects/expandingvortexgas2d/tester.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_MatrixData.h",
+=======
+		"/home/nhrjr/projects/expandingvortexgas2d/itp.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/split3d.cpp",
+		"/home/nhrjr/.local/share/applications/defaults.list",
+>>>>>>> Stashed changes
 		"/home/nhrjr/projects/expandingvortexgas2d/evaluator.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_Contour.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_Contour.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_observables.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_binaryfile.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_binaryfile.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rte.hpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/run.cfg",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rte.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/utilities/realgrid.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/TODO",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_tools.h",
-		"/home/nhrjr/test.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_itp.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/unitConverter.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/test.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rte.hpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_itp.hpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_startgrids.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_splitstep.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_binaryfile.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_tools.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_binaryfile.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/solver/solver.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/hydroplots.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_splitstep.hpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_Contour.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_observables.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.cpp",
+<<<<<<< Updated upstream
 		"/home/nhrjr/projects/expandingvortexgas2d/results/usbstick/ratiosPlot_EX.py",
 		"/home/nhrjr/projects/gpue/src/split_op.cu",
 		"/home/nhrjr/projects/gpue/bin/run.sh",
@@ -1070,6 +1210,54 @@
 		"/var/log/Xorg.0.log",
 		"/home/nhrjr/.config/monitors.xml",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_observables.cpp"
+=======
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff18_12V.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_10/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_10/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_09/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/1V/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/5V/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/5V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/1V/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/12_ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/general/hydroplots.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/hydroplots.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_07/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_08/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_08/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_07/ex_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/5V/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/remoteResults/Reference_ExpVortex10/runObservables_e-6/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/ratiosPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/remoteResults/run11.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_09/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_09/ode_Rx_Ry.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_05/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_05/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_07/CombinedRunObservables/ex_Observables.dat",
+		"/home/nhrjr/results/remoteResults/run8.sh",
+		"/home/nhrjr/results/remoteResults/run9.sh",
+		"/home/nhrjr/results/remoteResults/run10.sh",
+		"/home/nhrjr/results/remoteResults/run7.sh",
+		"/home/nhrjr/results/remoteResults/Reference_ExpVortex24/runObservables/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/usbstick/EX_run05_4samples_sV_WN1_spacing30-90/ratiosPlot_EX.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/results/usbstick/EX_run05_4samples_sV_WN1_spacing30-90/DmaxPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff11_5V.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff7.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff8.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff10.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff15_27V.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff12_5V.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff14_42V.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff16_12V.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff17_17V.dat",
+		"/home/nhrjr/results/remoteResults/Reference_ExpVortex18/runObservables/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/Expanding-Set-1_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff5.dat"
+>>>>>>> Stashed changes
 	],
 	"find":
 	{
@@ -1080,6 +1268,7 @@
 		"height": 93.0,
 		"where_history":
 		[
+			"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities",
 			"",
 			"/usr/include/eigen3/Eigen/src",
 			"/home/nhrjr/projects/expandingvortexgas2d"
@@ -1090,6 +1279,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+<<<<<<< Updated upstream
 			"absTime",
 			"kill",
 			"singleK",
@@ -1146,78 +1336,145 @@
 			"ro",
 			"'ro'",
 			"2",
+=======
+			"i_unit_diss",
+			"rk4",
+			"RotatingTrap",
+			"i_unit",
+			"gamma",
+			"i_unit",
+			"initMain.getOptions()",
+			"Expansion",
+			"RungeKutta",
+			"RK4",
+			"opt",
+			"wavefctVec",
+			"Trap",
+			"RK4",
+			"RTE",
+			"r",
+			"$",
+			"xlabel",
+			"ylabel",
+			"left",
+			"color='b',",
+			"EIGEN_FFTW_DEFAULT",
+			"ComplexGrid::fft",
+			"fft",
+			"meta.grid",
+			"opt",
+			"opt.grid",
+			"y_max",
+			"x_max",
+			"h_y",
+			"h_x",
+			"opt.grid[2]",
+			"opt.grid[1]",
+>>>>>>> Stashed changes
 			"data",
-			" ",
-			"  ",
-			"         ",
-			"        ",
-			"*=",
+			"RealGrid",
+			"opt",
+			"data.make_coord",
+			"meta.grid[3]",
+			"[2]",
+			"[1]",
+			"opt",
+			"densMap",
+			"[2]",
+			"[1]",
+			"opt",
+			"densityLocationMap_local",
+			"densCord",
+			"opt",
+			"densityLocationMap",
+			"opt",
+			"PsiVec",
+			"one",
+			"cout",
+			"1024",
+			"total",
+			"h_x",
+			"Xexpanding",
+			"opt.grid[2]",
+			"opt.grid[1]",
+			"complex<double>(1.0,0.0)",
+			"complex<double>(12.0,0.0)",
+			"complex<double>(8.0,0)",
+			"complex<double>(30.0,0.0)",
+			"complex<double>(16.0,0)",
+			"=",
+			"RTE",
+			"workingdirectory",
+			"opt.workingdirectory",
+			"workingdirectory",
+			"startUp",
+			"InitializeMain",
+			"startUp",
+			"StartUp",
+			"wavefctVec",
+			"progressBar",
+			"currentTime()",
+			"currentTime",
+			"\\alpha",
+			"bao",
+			"@",
+			"getDensity",
+			"density",
+			"* Ag * Ag",
+			" * Ag * Ag",
+			"* Ag * Ag",
 			"Ag",
-			"OmegaG",
-			"meta.time",
-			"options.t_abs",
-			"cli",
-			"Compute",
-			"t_RTE",
-			"tmp",
-			"lambda_y(tmp)",
-			"lambda_x(tmp)",
-			"lambda_x(tmp) ",
-			"lambda_x(tmp)",
-			"100",
-			"40",
-			"150",
-			"200",
-			"150",
-			"5",
-			"50",
-			"startGridName",
-			"dataFile",
-			";",
-			"omega",
-			"Ag_x",
-			"_y",
-			"_x",
-			"math.pi",
-			"20",
-			"0.0,",
+			" * Ag * Ag",
+			"* Ag * Ag",
+			".volume",
+			"totalResult.volume",
+			"V",
+			"Rx",
+			"Ry",
+			"ratio",
+			"Ratio",
+			"Vortices",
+			"34",
+			"24",
+			"83",
+			"18",
+			"24",
+			"83",
+			"darksage",
 			"15",
-			"x0",
-			"/2)",
-			"M_PI",
-			"100",
-			"min_x",
-			"X",
-			"t_RTE",
-			"t",
-			"laplacian_coefficient_x",
-			"cRomage_y",
-			"cRomage_x",
-			"Y(j).real()",
-			"X(i).real()",
-			"t",
-			"parallel",
-			"omp",
-			"parallel",
-			"ComputeK",
-			"wavefctcp",
-			"wavefct",
-			"k1",
-			"endx[i]",
-			"frontx[i]",
-			"wavefctcp",
-			"2.0",
-			"omp_set",
-			"index",
-			"delta",
+			"63",
+			"50",
+			"34",
+			"18",
+			"R_y",
+			"GPE",
+			"12",
+			"10",
+			"12",
+			"67",
+			"dataFile",
+			"Expanding-Set-1",
+			"getRunName",
+			"runExpanding",
+			"27",
+			"two",
+			"42",
+			"5",
 			"1024",
 			"2048",
+<<<<<<< Updated upstream
 			"10",
 			"->",
 			"tmpOpt",
 			"${EXP2",
 			"double vortex",
 			"inline double vortex"
+=======
+			"11",
+			"singleK",
+			"opt.runmode",
+			"80"
+>>>>>>> Stashed changes
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1235,12 +1492,151 @@
 	"groups":
 	[
 		{
+<<<<<<< Updated upstream
 			"selected": 6,
+=======
+			"selected": 4,
+>>>>>>> Stashed changes
 			"sheets":
 			[
 				{
 					"buffer": 0,
+					"file": "solver/solver.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6209,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+<<<<<<< Updated upstream
+								1223,
+								1223
+=======
+								1119,
+								1119
+>>>>>>> Stashed changes
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"WordCountShouldRun": true,
+							"WordCountSyntax": "c++",
+							"bh_regions":
+							[
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content"
+							],
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"syntax_mgr_loaded": true,
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 378.0,
+=======
+						"translation.y": 2988.0,
+>>>>>>> Stashed changes
+						"zoom_level": 1.0
+					},
+					"stack_index": 30,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+<<<<<<< Updated upstream
+					"file": "split3d.cpp",
+=======
+					"file": "exp_utilities/EXP2D_tools.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3973,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1308.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 29,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "main.cpp",
+>>>>>>> Stashed changes
 					"semi_transient": false,
 					"settings":
 					{
@@ -1251,165 +1647,17 @@
 						"selection":
 						[
 							[
-								1223,
-								1223
+								2708,
+								2708
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 378.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "split3d.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4108,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2606,
-								2606
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 716.0,
 						"zoom_level": 1.0
 					},
@@ -1419,86 +1667,39 @@
 				{
 					"buffer": 2,
 					"file": "evaluator.cpp",
+=======
+						"translation.y": 1050.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/home/nhrjr/projects/cuda_learn/NVIDIA_CUDA-7.0_Samples/0_Simple/matrixMulCUBLAS/matrixMulCUBLAS.cpp",
+>>>>>>> Stashed changes
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3155,
+						"buffer_size": 13149,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								603,
+								603
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 392.0,
 						"zoom_level": 1.0
 					},
@@ -1508,10 +1709,21 @@
 				{
 					"buffer": 3,
 					"file": "exp_utilities/main.h",
+=======
+						"translation.y": 4455.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/nhrjr/projects/cuda_learn/NVIDIA_CUDA-7.0_Samples/0_Simple/cppIntegration/main.cpp",
+>>>>>>> Stashed changes
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13699,
+						"buffer_size": 2570,
 						"regions":
 						{
 						},
@@ -1524,69 +1736,41 @@
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 315.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "itp.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4151,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2745,
+								2745
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 360.0,
 						"zoom_level": 1.0
 					},
@@ -1596,176 +1780,102 @@
 				{
 					"buffer": 4,
 					"file": "pythonScripts/unitConverter.py",
+=======
+						"translation.y": 726.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "andre_results/hydro/different_ratios/hydroplots.py",
+>>>>>>> Stashed changes
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6376,
+						"buffer_size": 2413,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								555,
+								555
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content"
-							],
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Python/Python.tmLanguage"
 						},
 						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 1681.0,
+=======
+						"translation.y": 0.0,
+>>>>>>> Stashed changes
 						"zoom_level": 1.0
 					},
 					"stack_index": 17,
 					"type": "text"
 				},
 				{
+<<<<<<< Updated upstream
 					"buffer": 5,
 					"file": "exp_utilities/EXP2D_startgrids.h",
+=======
+					"buffer": 7,
+					"file": "andre_results/hydro/general/hydroplots.py",
+>>>>>>> Stashed changes
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7273,
+						"buffer_size": 2215,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								423,
+								423
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/Python/Python.tmLanguage"
 						},
 						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "andre_results/hydro/gpe comparison/hydroplots.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2212,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								646,
+								646
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 1825.0,
 						"zoom_level": 1.0
 					},
@@ -1779,29 +1889,54 @@
 					"settings":
 					{
 						"buffer_size": 10371,
+=======
+						"translation.y": 144.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "andre_results/AveragesPlot.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6175,
+>>>>>>> Stashed changes
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
+<<<<<<< Updated upstream
 								9728,
 								9735
+=======
+								3805,
+								3805
+>>>>>>> Stashed changes
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage",
+							"syntax": "Packages/Python/Python.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 2446.0,
+=======
+						"translation.y": 1986.0,
+>>>>>>> Stashed changes
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
+<<<<<<< Updated upstream
 					"buffer": 7,
 					"file": "exp_utilities/EXP2D_rk4.hpp",
 					"semi_transient": true,
@@ -1834,452 +1969,73 @@
 				{
 					"buffer": 8,
 					"file": "exp_utilities/EXP2D_itp.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 23049,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 200.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "exp_utilities/EXP2D_rte.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 19406,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								15660,
-								15660
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1460.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
+=======
 					"buffer": 10,
-					"file": "exp_utilities/EXP2D_rte.hpp",
+					"file": "andre_results/1V/AveragesPlot.py",
+>>>>>>> Stashed changes
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4166,
+						"buffer_size": 2747,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3616,
-								3616
+								459,
+								459
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1260.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "exp_utilities/EXP2D_itp.hpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2302,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
-					"file": "exp_utilities/EXP2D_splitstep.cpp",
+					"buffer": 11,
+					"file": "andre_results/andre_08_18V/ode_Rx_Ry_2.dat",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13513,
+						"buffer_size": 49901002,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6774,
-								6774
+								49828761,
+								49828761
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1554.0,
+<<<<<<< Updated upstream
+						"translation.y": 200.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 4,
+=======
+						"translation.y": 9703508.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+>>>>>>> Stashed changes
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 12,
 					"file": "exp_utilities/EXP2D_evaluation.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2297,78 +2053,168 @@
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3571.0,
+<<<<<<< Updated upstream
+						"translation.y": 1460.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 5,
+=======
+						"translation.y": 17330.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "/home/nhrjr/projects/loudia/src/FFTComplex.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5133,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2997,
+								2997
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 1260.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+=======
+						"translation.y": 968.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+>>>>>>> Stashed changes
 					"type": "text"
 				},
 				{
 					"buffer": 14,
+					"file": "/home/nhrjr/projects/loudia/src/IFFTComplex.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3819,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 774.0,
+						"zoom_level": 1.0
+					},
+<<<<<<< Updated upstream
+					"stack_index": 14,
+=======
+					"stack_index": 10,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "exp_utilities/EXP2D_Contour.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8007,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 1554.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+=======
+						"translation.y": 1840.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "exp_utilities/EXP2D_Contour.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 985,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 3571.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+=======
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 17,
 					"file": "exp_utilities/EXP2D_evaluation.h",
 					"semi_transient": false,
 					"settings":
@@ -2386,172 +2232,30 @@
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 749.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 16,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "exp_utilities/plot_with_mgl.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 21820,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5739,
-								5739
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 3049.0,
+=======
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 20,
+>>>>>>> Stashed changes
 					"type": "text"
 				},
 				{
-					"buffer": 16,
-					"file": "exp_utilities/plot_with_mgl.h",
+					"buffer": 18,
+					"file": "exp_utilities/EXP2D_MatrixData.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4051,
+						"buffer_size": 8362,
 						"regions":
 						{
 						},
@@ -2564,353 +2268,24 @@
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 203.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 20,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "exp_utilities/EXP2D_observables.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7507,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7023,
-								7023
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1913.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 22,
-					"type": "text"
-				},
-				{
-					"buffer": 18,
-					"file": "exp_utilities/EXP2D_Contour.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8007,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4528,
-								4528
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2493.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 19,
-					"file": "exp_utilities/EXP2D_splitstep.hpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2210,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								694,
-								694
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 170.0,
+						"translation.y": 386.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
-					"file": "pythonScripts/AveragesPlot.py",
+					"buffer": 19,
+					"file": "exp_utilities/main.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3688,
+						"buffer_size": 13699,
 						"regions":
 						{
 						},
@@ -2923,434 +2298,407 @@
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 3049.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+=======
+						"translation.y": 5873.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "CMakeLists.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3399,
+						"regions":
+						{
+						},
+						"selection":
+						[
 							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
-							"spell_check": false,
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"syntax_mgr_loaded": true,
+								1606,
+								1606
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 203.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+=======
+						"translation.y": 446.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "exp_utilities/EXP2D_rte.hpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4166,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1867,
+								1867
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 1913.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+=======
+						"translation.y": 1210.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "exp_utilities/EXP2D_rk4.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10404,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+<<<<<<< Updated upstream
+								4528,
+								4528
+=======
+								9112,
+								9112
+>>>>>>> Stashed changes
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 2493.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+=======
+						"translation.y": 2568.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "exp_utilities/EXP2D_plotter.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2908,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2492,
+								2492
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 170.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+=======
+						"translation.y": 1861.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "exp_utilities/EXP2D_rk4.hpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2334,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								245,
+								245
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< Updated upstream
 					"stack_index": 11,
+=======
+					"stack_index": 6,
+>>>>>>> Stashed changes
 					"type": "text"
 				},
 				{
-					"buffer": 21,
-					"file": "solver/solver.cpp",
+					"buffer": 25,
+					"file": "exp_utilities/EXP2D_rte.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6209,
+						"buffer_size": 19406,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								18766,
+								18766
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 174.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 22,
-					"file": "exp_utilities/EXP2D_binaryfile.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 37601,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content"
-							],
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2521.0,
+=======
+						"translation.y": 48.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 7,
+>>>>>>> Stashed changes
 					"type": "text"
 				},
 				{
-					"buffer": 23,
-					"file": "exp_utilities/EXP2D_tools.h",
+					"buffer": 26,
+					"file": "exp_utilities/EXP2D_itp.hpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3973,
+						"buffer_size": 2302,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								362,
+								362
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 145.0,
+						"translation.y": 436.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
-					"file": "exp_utilities/EXP2D_binaryfile.h",
+					"buffer": 27,
+					"file": "exp_utilities/EXP2D_itp.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8027,
+						"buffer_size": 23049,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								857,
-								857
+								282,
+								282
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content"
-							],
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"syntax_mgr_loaded": true,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 2521.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+=======
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "exp_utilities/EXP2D_constants.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 735,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								735,
+								735
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "split3d.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4108,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+<<<<<<< Updated upstream
+						"translation.y": 145.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+=======
+						"translation.y": 290.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 28,
+>>>>>>> Stashed changes
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"file": "tester.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 682,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								664,
+								664
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
+<<<<<<< Updated upstream
 						"translation.y": 290.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 24,
+=======
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+>>>>>>> Stashed changes
 					"type": "text"
 				}
 			]
@@ -3358,7 +2706,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 22.0
 	},
 	"input":
 	{
@@ -3389,23 +2737,25 @@
 	"menu_visible": true,
 	"output.exec":
 	{
+<<<<<<< Updated upstream
 		"height": 287.0
+=======
+		"height": 345.0
+>>>>>>> Stashed changes
 	},
 	"output.find_results":
 	{
 		"height": 0.0
 	},
-	"pinned_build_system": "",
 	"project": "expandingvortexgas2d.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 40.0
 	},
 	"save_all_on_build": true,
 	"select_file":
 	{
 		"height": 0.0,
-		"last_filter": "",
 		"selected_items":
 		[
 		],
@@ -3413,8 +2763,7 @@
 	},
 	"select_project":
 	{
-		"height": 500.0,
-		"last_filter": "",
+		"height": 501.0,
 		"selected_items":
 		[
 			[
@@ -3422,12 +2771,11 @@
 				"~/projects/initAwesome/initAwesome.sublime-project"
 			]
 		],
-		"width": 380.0
+		"width": 381.0
 	},
 	"select_symbol":
 	{
 		"height": 392.0,
-		"last_filter": "",
 		"selected_items":
 		[
 		],
