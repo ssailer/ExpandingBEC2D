@@ -72,6 +72,7 @@ class MatrixData {
     inline void setMeta(const MetaData &extMeta);
 
     inline void fftForward();
+    inline void fftBackward();
     inline void fftForward(MatrixXcd &DATA);
 
     inline double hX();
@@ -247,8 +248,11 @@ inline void MatrixData::MetaData::arrayToData(){
 
 inline void MatrixData::fftForward(){
 
+    // Eigen::FFT<double>::Flag unscaled = Eigen::FFT<double>::Flag::Unscaled;
+
     for(int j = 0; j < wavefunction.size(); ++j){
         FFT<double> fft;
+        fft.SetFlag(Eigen::FFT<double>::Unscaled);
         MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
@@ -261,6 +265,29 @@ inline void MatrixData::fftForward(){
         for (int k = 0; k < in.cols(); k++) {
             VectorXcd tmpOut = VectorXcd(meta.grid[1]);
             fft.fwd(tmpOut, out.col(k));
+            out.col(k) = tmpOut;
+        }
+        wavefunction[j] = out;
+    }
+}
+
+inline void MatrixData::fftBackward(){
+
+    for(int j = 0; j < wavefunction.size(); ++j){
+        FFT<double> fft;
+        fft.SetFlag(Eigen::FFT<double>::Unscaled);
+        MatrixXcd in = wavefunction[j];
+        MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
+        
+        for (int k = 0; k < in.rows(); k++) {
+            RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
+            fft.inv(tmpOut, in.row(k));
+            out.row(k) = tmpOut;
+        }
+        
+        for (int k = 0; k < in.cols(); k++) {
+            VectorXcd tmpOut = VectorXcd(meta.grid[1]);
+            fft.inv(tmpOut, out.col(k));
             out.col(k) = tmpOut;
         }
         wavefunction[j] = out;

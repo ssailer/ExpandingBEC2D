@@ -18,9 +18,9 @@ RTE::RTE(MatrixData* &d,RungeKutta* r,Options &externaloptions) : wavefctVec(d->
 	RunSetup();
 }
 
-RTE::RTE(MatrixData* &d, SplitStep* s, Options &externaloptions) : wavefctVec(d->wavefunction), meta(d->meta), pData(d), splitsetp(s)
+RTE::RTE(MatrixData* &d,SplitStep* s, Options &externaloptions) : wavefctVec(d->wavefunction), meta(d->meta), pData(d), splitstep(s)
 {
-	splitsetp->assignMatrixData(pData);
+	splitstep->assignMatrixData(pData);
 	setOptions(externaloptions);
 	RunSetup();
 }

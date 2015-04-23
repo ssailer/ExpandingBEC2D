@@ -22,15 +22,14 @@
 using namespace std;
 using namespace Eigen;
 
-typedef struct {
-        int absoluteSteps;
-        int lambdaSteps;
-        int initialSteps;
-    } stepCounter;
-
 class SplitStep
 {
   public:
+    void assignMatrixData(MatrixData* &d);
+    void setVariables();
+    void timeStep(double delta_t);
+
+
     SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
 
     void setOptions(const Options &externaloptions);
@@ -59,12 +58,17 @@ class SplitStep
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(const string name);
     
+    MatrixData* w;
 
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
     vector<int> snapshot_times;
 
   private:
+
+    vector<vector<double>> kspace;
+    MatrixXcd kprop;
+    MatrixXcd Vgrid;  
 
     MatrixData::MetaData meta;
 
@@ -75,8 +79,6 @@ class SplitStep
     // Variables
     complex<double> h_x, h_y,h_z;
     ComplexGrid PotentialGrid;
-
-    stepCounter keeperOfTime;
 
     int SLICE_NUMBER;
     

@@ -16,6 +16,7 @@
 #include <EXP2D_evaluation.h>
 #include <EXP2D_binaryfile.h>
 #include <EXP2D_rk4.hpp>
+#include <EXP2D_splitstep.hpp>
 #include <EXP2D_constants.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_MatrixData.h>
@@ -35,6 +36,7 @@ class RTE
 {
 public:
     RTE(MatrixData* &d,RungeKutta* r,Options &opt);  
+    RTE(MatrixData* &d, SplitStep* s, Options &externaloptions);
 
     void setOptions(const Options &externaloptions);
     void RunSetup();
@@ -52,11 +54,7 @@ public:
     vector<MatrixXcd> &wavefctVec;
     MatrixData::MetaData &meta;
     RungeKutta* rungekutta;
-
-
-    
-
-    
+    SplitStep* splitstep;
 
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
