@@ -28,7 +28,8 @@ Last Update: 22/07/13
 #include <EXP2D_itp.hpp>
 #include <EXP2D_binaryfile.h>
 #include <EXP2D_rk4.hpp>
-#include <EXP2D_rte.hpp>
+// #include <EXP2D_rte.hpp>
+#include <EXP2D_runner.hpp>
 #include <EXP2D_evaluation.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_startgrids.h>
@@ -89,19 +90,22 @@ try{
 
 	if(mC == RK4){
 		// Object determining the integration method
-		RungeKutta* dgl_algorithm;
+		// Runner* runner;
+		// RungeKutta* dgl_algorithm;
 		// Consequently choosing the DGL
-		if(runMode == ROT) dgl_algorithm = new RotatingTrap(tmpOpt);
-		if(runMode == EXP) dgl_algorithm = new Expansion(tmpOpt);
+		// if(runMode == EXP)
+		// if(runMode == ROT) dgl_algorithm = new RotatingTrap(tmpOpt);
+		// if(runMode == EXP) dgl_algorithm = new Expansion(tmpOpt);
 		// if(runMode == TRAP)
 		// 	dgl_algorithm = new Trap(tmpOpt);
 		
 		// create simulation object with all accumulated settings
 		// and start the run
-		RTE* sim = new RTE(data,dgl_algorithm,tmpOpt);
-		sim->rteToTime("ex");
+		Runner<RotatingTrap>* run = new Runner<RotatingTrap>(data,tmpOpt);
+		run->runToTime("ex");
 
-		delete sim, dgl_algorithm;
+		delete run;
+		 // dgl_algorithm;
 	}  
 	// if(runMode == SPLIT){
 	// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);

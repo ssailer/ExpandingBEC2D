@@ -193,7 +193,6 @@ void RotatingTrap::singleK(MatrixXcd &k, int32_t &front, int32_t &end,int32_t &s
 }
 
 void Expansion::computeCoefficients(double &delta_T){
-
 	complex<double> absTime(w->meta.time,0.0);
 	for(int32_t t = 0; t < 3; ++t){
 		laplacian_coefficient_x[t] = i_unit / ( twelve * w->meta.initSpacing[0] * w->meta.initSpacing[0] * lambda_x(absTime) * lambda_x(absTime) );
@@ -202,11 +201,9 @@ void Expansion::computeCoefficients(double &delta_T){
    		gradient_coefficient_y[t] = lambda_y_dot(absTime) / (twelve * w->meta.initSpacing[1] * lambda_y(absTime));
    		absTime += ( half * complex<double>(delta_T,0.0) );
    	}
-
 }
 
 void RotatingTrap::computeCoefficients(double &delta_T){
-
 	complex<double> absTime(w->meta.time,0.0);
 	for(int32_t t = 0; t < 3; ++t){
 		laplacian_coefficient_x[t] = i_unit / ( twelve * w->meta.initSpacing[0] * w->meta.initSpacing[0] );
@@ -215,7 +212,6 @@ void RotatingTrap::computeCoefficients(double &delta_T){
    		gradient_coefficient_y[t] = opt.omega_w / (twelve * w->meta.initSpacing[1] );
    		absTime += ( half * complex<double>(delta_T,0.0) );
    	}
-
 }   		
 
 
