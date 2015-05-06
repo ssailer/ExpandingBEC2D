@@ -15,6 +15,7 @@
 #include <EXP2D_tools.h>
 #include <EXP2D_evaluation.h>
 #include <EXP2D_binaryfile.h>
+#include <EXP2D_constants.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_MatrixData.h>
 #include <eigen3/Eigen/Dense>
@@ -25,12 +26,14 @@ using namespace Eigen;
 class SplitStep
 {
   public:
+    SplitStep(Options &o);
     void assignMatrixData(MatrixData* &d);
     void setVariables();
     void timeStep(double delta_t);
 
 
-    SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
+    // SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
+
 
     void setOptions(const Options &externaloptions);
     void RunSetup();
@@ -43,12 +46,6 @@ class SplitStep
     // StoragePointer for the wavefunction
     // MatrixData* pData;
     vector<ComplexGrid> wavefctVec;
-
-    
-    // Coordinates
-    vector<double> x_axis,y_axis, z_axis;
-    VectorXcd X,Y,Z;
-
 
     int samplesize;
 
@@ -67,8 +64,8 @@ class SplitStep
   private:
 
     vector<vector<double>> kspace;
-    MatrixXcd kprop;
-    MatrixXcd Vgrid;  
+    vector<double> x_axis,y_axis;
+    MatrixXcd kprop, kprop_x, kprop_y, Vgrid, PotentialGrid;
 
     MatrixData::MetaData meta;
 
@@ -78,7 +75,6 @@ class SplitStep
 
     // Variables
     complex<double> h_x, h_y,h_z;
-    ComplexGrid PotentialGrid;
 
     int SLICE_NUMBER;
     
@@ -86,7 +82,6 @@ class SplitStep
     // some used constants
     
     double pi;
-    complex<double>  zero,half,one,two,four,six,i_unit;
     complex<double> t_RTE;
 
     // little helper functions for stuff

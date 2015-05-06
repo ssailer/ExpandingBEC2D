@@ -106,6 +106,11 @@ try{
 
 		delete run;
 		 // dgl_algorithm;
+	}
+	if(mC == SPLIT){
+		Runner<SplitStep>* run = new Runner<SplitStep>(data,tmpOpt);
+		run->runToTime("ex");
+		delete run;
 	}  
 	// if(runMode == SPLIT){
 	// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
