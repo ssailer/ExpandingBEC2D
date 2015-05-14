@@ -259,7 +259,7 @@ void SplitStep::timeStep(double delta_t){
 }
 
 
-void SplitPotential::timeStep(double delta_t){
+void SplitTrap::timeStep(double delta_t){
 
 	w->fftForward();
 	w->wavefunction[0].array() *= kprop.array();

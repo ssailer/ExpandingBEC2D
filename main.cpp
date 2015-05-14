@@ -109,26 +109,29 @@ try{
 	}
 	if(mC == SPLIT){
 		switch ( runMode ){
-			case ROT : 
-				Runner<SplitStep>* run = new Runner<SplitStep>(data,tmpOpt);
-				run->runToTime("rot");
-				delete run;
+			case ROT : {
+					Runner<SplitStep>* run = new Runner<SplitStep>(data,tmpOpt);
+					run->runToTime("rot");
+					delete run;
+				}
 				break;
 
-			case EXP :
-				Runner<SplitFree>* run = new Runner<SplitFree>(data,tmpOpt);
-				run->runToTime("ex");
-				delete run;
+			case EXP : {
+					Runner<SplitFree>* run = new Runner<SplitFree>(data,tmpOpt);
+					run->runToTime("ex");
+					delete run;
+				}
 				break;
 
-			case TRAP :
-				Runner<SplitTrap>* run = new Runner<SplitTrap>(data,tmpOpt);
-				run->runToTime("trap");
-				delete run;
+			case TRAP : {
+					Runner<SplitTrap>* run = new Runner<SplitTrap>(data,tmpOpt);
+					run->runToTime("trap");
+					delete run;
+			}
 				break;
 
 			default :
-				cout << "No known runmode was recognized in cfg. Please revise."
+				cout << "No known runmode was recognized in cfg. Please revise." << endl;
 				break;
 		}
 
