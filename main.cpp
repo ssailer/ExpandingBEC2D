@@ -81,6 +81,7 @@ try{
 	} else {
 		// set MatrixData to specified initial conditions
 		setGridToTF(data,initMain.getOptions());
+		// addVorticesAlternating(data, tmpOpt, tmpOpt.vortexnumber);
 		// save initial Grid
 		string startGridName = initMain.getStartingGridName();
 		binaryFile* startFile = new binaryFile(startGridName,binaryFile::out);
@@ -103,14 +104,38 @@ try{
 		// and start the run
 		Runner<RotatingTrap>* run = new Runner<RotatingTrap>(data,tmpOpt);
 		run->runToTime("ex");
-
 		delete run;
 		 // dgl_algorithm;
 	}
 	if(mC == SPLIT){
-		Runner<SplitStep>* run = new Runner<SplitStep>(data,tmpOpt);
-		run->runToTime("ex");
-		delete run;
+		switch ( runMode ){
+			case ROT : 
+				Runner<SplitStep>* run = new Runner<SplitStep>(data,tmpOpt);
+				run->runToTime("rot");
+				delete run;
+				break;
+
+			case EXP :
+				Runner<SplitFree>* run = new Runner<SplitFree>(data,tmpOpt);
+				run->runToTime("ex");
+				delete run;
+				break;
+
+			case TRAP :
+				Runner<SplitTrap>* run = new Runner<SplitTrap>(data,tmpOpt);
+				run->runToTime("trap");
+				delete run;
+				break;
+
+			default :
+				cout << "No known runmode was recognized in cfg. Please revise."
+				break;
+		}
+
+		if(runMode == ROT){
+
+		}
+
 	}  
 	// if(runMode == SPLIT){
 	// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);

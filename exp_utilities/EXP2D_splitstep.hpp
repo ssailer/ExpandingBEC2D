@@ -29,7 +29,7 @@ class SplitStep
     SplitStep(Options &o);
     void assignMatrixData(MatrixData* &d);
     void setVariables();
-    void timeStep(double delta_t);
+    virtual void timeStep(double delta_t);
 
 
     // SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
@@ -61,7 +61,7 @@ class SplitStep
     Options opt;
     vector<int> snapshot_times;
 
-  private:
+  protected:
 
     vector<vector<double>> kspace;
     vector<double> x_axis,y_axis;
@@ -86,6 +86,20 @@ class SplitStep
 
     // little helper functions for stuff
 };
+
+class SplitTrap : public SplitStep {
+public:
+    SplitTrap(Options &o) : SplitStep(o) {}
+    virtual void timeStep(double delta_t);
+};
+
+class SplitFree : public SplitStep {
+public:
+    SplitFree(Options &o) : SplitStep(o) {}
+    virtual void timeStep(double delta_t);
+};
+
+
 
 
 #endif // EXP2D_SPLITSTEP_H__

@@ -68,6 +68,8 @@ void SplitStep::setVariables(){
 		}
 	}
 
+	plotVector("kspace", kspace[0], kspace[1], opt);
+
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
 	    for(int y = 0; y < w->meta.grid[1]; y++){
@@ -76,23 +78,37 @@ void SplitStep::setVariables(){
 	    }
 	}
 
+	vector<double> k_x_space(w->meta.grid[0]);
+	vector<double> k_y_space(w->meta.grid[1]);
+
+	for(int j = 0; j < w->meta.grid[0]; j++){
+		int p = j - meta.grid[0]/2;
+		k_x_space[j] = (double)p * M_PI / (w->meta.coord[0]);
+	}
+
+	for(int j = 0; j < w->meta.grid[1]; j++){
+		int p = j - meta.grid[1]/2;
+		k_y_space[j] = (double)p * M_PI / (w->meta.coord[1]);
+	}
+
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
 	    for(int y = 0; y < w->meta.grid[1]; y++){
-	      	double T = - ( 0.5 * kspace[0][x]*kspace[0][x] + opt.omega_y.real() * y_axis[y] * kspace[0][x]) * opt.RTE_step;
+	      	double T = - ( 0.5 * kspace[0][x]* kspace[0][x] + opt.omega_w.real() * y_axis[y] * kspace[0][x]) * opt.RTE_step;
       		kprop_x(x,y) = complex<double>(cos(T),sin(T))/* / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
 	    }
 	}
+	plotDataToPngEigen("kprop_x", kprop_x, opt);
 
     #pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
 	    for(int y = 0; y < w->meta.grid[1]; y++){
-	      	double T = - ( 0.5 * kspace[1][y]*kspace[1][y] - opt.omega_x.real() * x_axis[x] * kspace[1][y]) * opt.RTE_step;
+	      	double T = - ( 0.5 * kspace[1][y] * kspace[1][y] - opt.omega_w.real() * x_axis[x] * kspace[1][y]) * opt.RTE_step;
       		kprop_y(x,y) = complex<double>(cos(T),sin(T)) /*/ complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
 	    }
 	}
+	plotDataToPngEigen("kprop_y", kprop_y, opt);
 }
-
 
 void SplitStep::timeStep(double delta_t){
 
@@ -100,12 +116,55 @@ void SplitStep::timeStep(double delta_t){
 	// w->wavefunction[0].array() *= kprop.array();
 
 	w->fftForward_X();
+	// plotDataToPngEigen("wfct_x_fft", w->wavefunction[0], opt);	
 	w->wavefunction[0].array() *= kprop_y.array();
 	w->fftBackward_X();
 
 	w->fftForward_Y();
 	w->wavefunction[0].array() *= kprop_x.array();
 	w->fftBackward_Y();
+
+
+	
+
+	// MatrixXcd tmp = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
+	// #pragma omp parallel for
+	// for(int i = 0; i < w->meta.grid[0]; i++){
+	// 	for(int j = 0; j < w->meta.grid[1]; j++){
+	// 		tmp(j,i) = w->wavefunction[0](i,j);			
+	// 	}
+	// }
+	// w->wavefunction[0] = tmp;
+
+	// w->fftForward_Y();
+	// // 	// plotDataToPngEigen("wfct_y_fft", w->wavefunction[0], opt);
+	// w->wavefunction[0].array() *= kprop_y.array();
+	// w->fftBackward_Y();
+
+	// #pragma omp parallel for
+	// for(int i = 0; i < w->meta.grid[0]; i++){
+	// 	for(int j = 0; j < w->meta.grid[1]; j++){
+	// 		tmp(j,i) = w->wavefunction[0](i,j);			
+	// 	}
+	// }
+	// w->wavefunction[0] = tmp;
+
+
+
+	// w->fftForward_X();
+	// w->wavefunction[0].array() *= kprop_y.array();
+	// w->fftBackward_X();
+
+	// w->wavefunction[0].array() = w->wavefunction[0].transpose().array();
+
+	// w->fftForward_X();
+	// w->wavefunction[0].array() *= kprop_x.array();
+	// w->fftBackward_X();
+
+	// w->wavefunction[0].array() = w->wavefunction[0].transpose().array();
+
+
+
 
 	w->wavefunction[0].array() /= complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);
 
@@ -126,21 +185,43 @@ void SplitStep::timeStep(double delta_t){
 		}
 	}
 
+
+	// // // plotDataToPngEigen("wfct_x_fft", w->wavefunction[0], opt);
 	// w->fftForward_Y();
 	// w->wavefunction[0].array() *= kprop_x.array();
+	
 	// w->fftBackward_Y();
 
 	// w->fftForward_X();
 	// w->wavefunction[0].array() *= kprop_y.array();
 	// w->fftBackward_X();
 
-	// w->fftForward();
+	// w->wavefunction[0].array() = w->wavefunction[0].transpose().array();
 
+	// w->fftForward_X();
 	// w->wavefunction[0].array() *= kprop_x.array();
+	// w->fftBackward_X();
+
+	// w->wavefunction[0].array() = w->wavefunction[0].transpose().array();
+
+	// w->fftForward_X();
 	// w->wavefunction[0].array() *= kprop_y.array();
-	// w->wavefunction[0].array() /= complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);
+	// w->fftBackward_X();
+
+	// w->fftForward_Y();
+	// w->wavefunction[0].array() *= kprop_y.array();
+	// w->fftBackward_Y();
+
+
+	// w->fftForward_X();
+	// w->wavefunction[0].array() *= kprop_x.array();
+	// w->fftBackward_X();
+
+
 
 	// w->fftBackward();
+
+	// w->wavefunction[0].array() /= complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);
 
 	w->increment(delta_t, 1.0, 1.0);
 	// cout << "potential applied" << endl;
@@ -175,4 +256,45 @@ void SplitStep::timeStep(double delta_t){
 					
 			
 
+}
+
+
+void SplitPotential::timeStep(double delta_t){
+
+	w->fftForward();
+	w->wavefunction[0].array() *= kprop.array();
+	w->fftBackward(); 
+
+	#pragma omp parallel for
+	for(int x = 0; x < w->meta.grid[0]; x++){
+		for(int y = 0; y < w->meta.grid[1]; y++){
+    		// complex<double> value = wavefctVec[i](0,x,y,z);
+    		double V = - ( PotentialGrid(x,y).real() + opt.g * abs2(w->wavefunction[0](x,y)) ) * delta_t;
+    		// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
+    		// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
+    		w->wavefunction[0](x,y) *= complex<double>(cos(V),sin(V));
+		}
+	}
+
+	w->increment(delta_t, 1.0, 1.0);
+}
+
+void SplitFree::timeStep(double delta_t){
+
+	w->fftForward();
+	w->wavefunction[0].array() *= kprop.array();
+	w->fftBackward(); 
+
+	#pragma omp parallel for
+	for(int x = 0; x < w->meta.grid[0]; x++){
+		for(int y = 0; y < w->meta.grid[1]; y++){
+    		// complex<double> value = wavefctVec[i](0,x,y,z);
+    		double V = - opt.g * abs2(w->wavefunction[0](x,y)) * delta_t;
+    		// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
+    		// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
+    		w->wavefunction[0](x,y) *= complex<double>(cos(V),sin(V));
+		}
+	}
+
+	w->increment(delta_t, 1.0, 1.0);
 }

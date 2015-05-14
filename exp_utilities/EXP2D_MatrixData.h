@@ -281,7 +281,8 @@ inline void MatrixData::fftForward_X(){
         MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
-        for (int k = 0; k < in.rows(); k++) {
+        // #pragma omp parallel for
+        for (int k = 0; k < wavefunction[j].rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
             fft.fwd(tmpOut, in.row(k));
             out.row(k) = tmpOut;
@@ -299,9 +300,10 @@ inline void MatrixData::fftForward_Y(){
         MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
-        for (int k = 0; k < in.cols(); k++) {
+        // #pragma omp parallel for
+        for (int k = 0; k < wavefunction[j].cols(); k++) {
             VectorXcd tmpOut = VectorXcd(meta.grid[1]);
-            fft.fwd(tmpOut, out.col(k));
+            fft.fwd(tmpOut, in.col(k));
             out.col(k) = tmpOut;
         }
         wavefunction[j] = out;
@@ -339,6 +341,7 @@ inline void MatrixData::fftBackward_X(){
         MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
+        // #pragma omp parallel for
         for (int k = 0; k < in.rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
             fft.inv(tmpOut, in.row(k));
@@ -357,9 +360,10 @@ inline void MatrixData::fftBackward_Y(){
         MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
+        // #pragma omp parallel for
         for (int k = 0; k < in.cols(); k++) {
             VectorXcd tmpOut = VectorXcd(meta.grid[1]);
-            fft.inv(tmpOut, out.col(k));
+            fft.inv(tmpOut, in.col(k));
             out.col(k) = tmpOut;
         }
         wavefunction[j] = out;

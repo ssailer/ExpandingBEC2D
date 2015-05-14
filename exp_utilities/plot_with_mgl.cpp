@@ -983,7 +983,7 @@ void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<
 }
 
 
-void plotVector(string filename,string title,vector<double> v,vector<double> w,Options &opt){
+void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
 
 	int x = v.size();
 	int y = w.size();
@@ -1005,7 +1005,7 @@ void plotVector(string filename,string title,vector<double> v,vector<double> w,O
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(title.c_str());
+	// gr.Title(title.c_str());
 	// gr.Alpha(true);
 
 	gr.SubPlot(2,1,0);
