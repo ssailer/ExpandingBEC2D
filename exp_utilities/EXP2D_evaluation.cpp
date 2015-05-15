@@ -10,18 +10,18 @@ using namespace std;
 using namespace Eigen;
 
 
-Eval::Eval(MatrixData &d,Options &o){
-	data = d;
-	opt = o;
+Eval::Eval(MatrixData d,Options o) : data(d),  opt(o) {
+	// data = d;
+	// opt = o;
 
 	convertFromDimensionless();
 	data.meta.convertFromDimensionless();
 
 };
 
-Eval::Eval() {};
+// Eval::Eval() {};
 
-Eval::~Eval() {};
+// Eval::~Eval() {};
 
 // void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname){
 // 	runname = external_runname;
@@ -1123,7 +1123,7 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 
 	// K-Space
 	// ComplexGrid::fft(DATA, DATA);
-	data.fftForward(DATA);
+	data.fft.Forward(DATA);
 	
 	ArrayXd divisor(obs.number.size());
 	divisor.setZero();

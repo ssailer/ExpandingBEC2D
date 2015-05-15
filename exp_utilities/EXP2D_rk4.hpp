@@ -56,7 +56,7 @@ public:
 
 class Expansion : public RungeKutta {
 public:
-    Expansion(/*MatrixData* &d,*/ Options &opt) : RungeKutta(opt) {}
+    Expansion(Options &opt) : RungeKutta(opt) {}
 private:
     virtual void singleK(MatrixXcd &k, int32_t &front, int32_t &end,int32_t &subx,int32_t &suby, int &t);
     virtual void computeCoefficients(double &delta_T);
@@ -64,7 +64,7 @@ private:
 
 class RotatingTrap : public RungeKutta {
 public:
-    RotatingTrap(/*MatrixData* &d,*/ Options &opt) : RungeKutta(opt) {}
+    RotatingTrap(Options &opt) : RungeKutta(opt) {}
 private:
     virtual void singleK(MatrixXcd &k, int32_t &front, int32_t &end,int32_t &subx,int32_t &suby, int &t);
     virtual void computeCoefficients(double &delta_T);

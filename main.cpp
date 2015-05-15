@@ -110,7 +110,7 @@ try{
 	if(mC == SPLIT){
 		switch ( runMode ){
 			case ROT : {
-					Runner<SplitStep>* run = new Runner<SplitStep>(data,tmpOpt);
+					Runner<SplitRot>* run = new Runner<SplitRot>(data,tmpOpt);
 					run->runToTime("rot");
 					delete run;
 				}
@@ -127,7 +127,7 @@ try{
 					Runner<SplitTrap>* run = new Runner<SplitTrap>(data,tmpOpt);
 					run->runToTime("trap");
 					delete run;
-			}
+				}
 				break;
 
 			default :

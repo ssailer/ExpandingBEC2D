@@ -108,71 +108,26 @@ void SplitStep::setVariables(){
 	    }
 	}
 	plotDataToPngEigen("kprop_y", kprop_y, opt);
+
+	// The following is very very unaesthetic, but necessary, because the fftw_plan in the eigenFFT implementation gets set
+    // when the first fwd() or inv() gets called, but creating and destroying a plan is not threadsave, so to use #pragma omp parallel for later
+    // one has to call beforehand to set the plan. only fixable, by implementing the FFT oneself.
+    w->fft.Forward();
+    w->fft.Backward();
+    w->wavefunction[0].array() /= complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);
 }
 
-void SplitStep::timeStep(double delta_t){
+void SplitRot::timeStep(double delta_t){
 
-	// w->fftForward();
-	// w->wavefunction[0].array() *= kprop.array();
-
-	w->fftForward_X();
-	// plotDataToPngEigen("wfct_x_fft", w->wavefunction[0], opt);	
+	w->fft.Forward_X();
 	w->wavefunction[0].array() *= kprop_y.array();
-	w->fftBackward_X();
+	w->fft.Backward_X();
 
-	w->fftForward_Y();
+	w->fft.Forward_Y();
 	w->wavefunction[0].array() *= kprop_x.array();
-	w->fftBackward_Y();
-
-
-	
-
-	// MatrixXcd tmp = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
-	// #pragma omp parallel for
-	// for(int i = 0; i < w->meta.grid[0]; i++){
-	// 	for(int j = 0; j < w->meta.grid[1]; j++){
-	// 		tmp(j,i) = w->wavefunction[0](i,j);			
-	// 	}
-	// }
-	// w->wavefunction[0] = tmp;
-
-	// w->fftForward_Y();
-	// // 	// plotDataToPngEigen("wfct_y_fft", w->wavefunction[0], opt);
-	// w->wavefunction[0].array() *= kprop_y.array();
-	// w->fftBackward_Y();
-
-	// #pragma omp parallel for
-	// for(int i = 0; i < w->meta.grid[0]; i++){
-	// 	for(int j = 0; j < w->meta.grid[1]; j++){
-	// 		tmp(j,i) = w->wavefunction[0](i,j);			
-	// 	}
-	// }
-	// w->wavefunction[0] = tmp;
-
-
-
-	// w->fftForward_X();
-	// w->wavefunction[0].array() *= kprop_y.array();
-	// w->fftBackward_X();
-
-	// w->wavefunction[0].array() = w->wavefunction[0].transpose().array();
-
-	// w->fftForward_X();
-	// w->wavefunction[0].array() *= kprop_x.array();
-	// w->fftBackward_X();
-
-	// w->wavefunction[0].array() = w->wavefunction[0].transpose().array();
-
-
-
+	w->fft.Backward_Y();
 
 	w->wavefunction[0].array() /= complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);
-
-
-	// w->fftBackward(); 
-
-	// Vgrid.array() = exp( - complex<double>(opt.g,0.0) * w->wavefunction[0].conjugate().array() * w->wavefunction[0].array() * delta_t);
-	// w->wavefunction[0].array() *= Vgrid.array();
 
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
@@ -185,85 +140,15 @@ void SplitStep::timeStep(double delta_t){
 		}
 	}
 
-
-	// // // plotDataToPngEigen("wfct_x_fft", w->wavefunction[0], opt);
-	// w->fftForward_Y();
-	// w->wavefunction[0].array() *= kprop_x.array();
-	
-	// w->fftBackward_Y();
-
-	// w->fftForward_X();
-	// w->wavefunction[0].array() *= kprop_y.array();
-	// w->fftBackward_X();
-
-	// w->wavefunction[0].array() = w->wavefunction[0].transpose().array();
-
-	// w->fftForward_X();
-	// w->wavefunction[0].array() *= kprop_x.array();
-	// w->fftBackward_X();
-
-	// w->wavefunction[0].array() = w->wavefunction[0].transpose().array();
-
-	// w->fftForward_X();
-	// w->wavefunction[0].array() *= kprop_y.array();
-	// w->fftBackward_X();
-
-	// w->fftForward_Y();
-	// w->wavefunction[0].array() *= kprop_y.array();
-	// w->fftBackward_Y();
-
-
-	// w->fftForward_X();
-	// w->wavefunction[0].array() *= kprop_x.array();
-	// w->fftBackward_X();
-
-
-
-	// w->fftBackward();
-
-	// w->wavefunction[0].array() /= complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);
-
 	w->increment(delta_t, 1.0, 1.0);
-	// cout << "potential applied" << endl;
-
-	
-		
-				// ComplexGrid::fft_unnormalized(wavefctVec[i], kgrid, true);
-    
-				// #pragma omp parallel for
-				// for(int x = 0; x < opt.grid[1]; x++){
-				// 	for(int y = 0; y < opt.grid[2]; y++){
-				// 		for(int z = 0; z < opt.grid[3]; z++){				
-				//    			kgrid(0,x,y,z) = kprop(0,x,y,z) * kgrid(0,x,y,z);
-				//    		}
-				// 	}
-				// }
-
-				// ComplexGrid::fft_unnormalized(kgrid, wavefctVec[i], false);
-
-				// #pragma omp parallel for
-				// for(int x = 0; x < opt.grid[1]; x++){
-				// 	for(int y = 0; y < opt.grid[2]; y++){
-				// 		for(int z = 0; z < opt.grid[3]; z++){	
-				//     		// complex<double> value = wavefctVec[i](0,x,y,z);
-				//     		double V = - ( /*PotentialGrid(x,y).real()*/ /*rotatingPotential(x,y,m)*//* +*/ opt.g * abs2(wavefctVec[i](0,x,y,z)) ) * timestepsize;
-				//     		// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
-				//     		// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
-				//     		wavefctVec[i](0,x,y,z) = complex<double>(cos(V),sin(V)) * wavefctVec[i](0,x,y,z);
-				//     	}
-				// 	}
-				// }
-					
-			
-
 }
 
 
 void SplitTrap::timeStep(double delta_t){
 
-	w->fftForward();
+	w->fft.Forward();
 	w->wavefunction[0].array() *= kprop.array();
-	w->fftBackward(); 
+	w->fft.Backward(); 
 
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
@@ -281,9 +166,9 @@ void SplitTrap::timeStep(double delta_t){
 
 void SplitFree::timeStep(double delta_t){
 
-	w->fftForward();
+	w->fft.Forward();
 	w->wavefunction[0].array() *= kprop.array();
-	w->fftBackward(); 
+	w->fft.Backward(); 
 
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){

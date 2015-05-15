@@ -2,6 +2,8 @@
 #define EXP2D_MATRIXDATA_H__
 
 #define EIGEN_FFTW_DEFAULT
+#define EIGEN_VECTORIZE
+#define EIGEN_DONT_PARALLELIZE
 
 #include <iostream>
 #include <complex>
@@ -52,10 +54,32 @@ class MatrixData {
         double array[9];    
     };
 
+    class FFT_internal {
+    public:
+        FFT_internal(vector<MatrixXcd>& r_Wavefunction, MetaData& r_meta) : /*eigenFFT(FFT<double>()),*/ wavefunction(r_Wavefunction), meta(r_meta) {
+            eigenFFT.SetFlag(Eigen::FFT<double>::Unscaled);
+        }
+        inline void Forward();
+        inline void Forward_X();
+        inline void Forward_Y();
+        inline void Backward();
+        inline void Backward_X();
+        inline void Backward_Y();
+        inline void Forward(MatrixXcd &DATA);
+
+        FFT<double> eigenFFT;
+        vector<MatrixXcd>& wavefunction;
+        MetaData& meta;
+        
+
+    };
+
     vector<MatrixXcd> wavefunction;
     MetaData meta;
+    FFT_internal fft;
 
-    MatrixData() {}
+    MatrixData() : fft(wavefunction,meta) {}
+    MatrixData(const MatrixData &cData) : wavefunction(cData.wavefunction), meta(cData.meta), fft(wavefunction,meta) {}
     // MatrixData(int size) : wavefunction(size), meta() {}
     // MatrixData(int x, int y) {for(int i = 0; wavefunction.size(); i++){ wavefunction[i] = MatrixXcd::Zero(x,y);}}
     // MatrixData(int size, int x, int y) : MatrixData(size), MatrixData(x,y) {}
@@ -71,13 +95,7 @@ class MatrixData {
     inline void setCoord(const vector<double> &extCoord);
     inline void setMeta(const MetaData &extMeta);
 
-    inline void fftForward();
-    inline void fftForward_X();
-    inline void fftForward_Y();
-    inline void fftBackward();
-    inline void fftBackward_X();
-    inline void fftBackward_Y();
-    inline void fftForward(MatrixXcd &DATA);
+
 
     inline double hX();
     inline double hY();
@@ -86,14 +104,14 @@ class MatrixData {
     inline MetaData getMeta();
 };
 
-inline MatrixData::MatrixData(const MetaData &m) : meta(m), wavefunction(m.samplesize) {    
+inline MatrixData::MatrixData(const MetaData &m) : meta(m), wavefunction(m.samplesize), fft(wavefunction,meta) {    
         for(int i = 0; i < wavefunction.size(); i++){
             wavefunction[i] = MatrixXcd::Zero(meta.grid[0],meta.grid[1]);
         }
     }   
 
 
-inline MatrixData::MatrixData(const int &samplesize,const int &gridx, const int &gridy,const double &extTime, const int &extStep, const double &xsize, const double &ysize) {
+inline MatrixData::MatrixData(const int &samplesize,const int &gridx, const int &gridy,const double &extTime, const int &extStep, const double &xsize, const double &ysize) : fft(wavefunction,meta) {
         
     wavefunction.resize(samplesize);
     for(int i = 0; i < wavefunction.size(); i++)
@@ -250,144 +268,143 @@ inline void MatrixData::MetaData::arrayToData(){
     spacing[1] = array[8];
 }
 
-inline void MatrixData::fftForward(){
+inline void MatrixData::FFT_internal::Forward(){
 
     for(int j = 0; j < wavefunction.size(); ++j){
-        FFT<double> fft;
-        fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        MatrixXcd in = wavefunction[j];
+        // FFT<double> fft;
+        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
+        // MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
-        for (int k = 0; k < in.rows(); k++) {
-            RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
-            fft.fwd(tmpOut, in.row(k));
-            out.row(k) = tmpOut;
-        }
-        
-        for (int k = 0; k < in.cols(); k++) {
-            VectorXcd tmpOut = VectorXcd(meta.grid[1]);
-            fft.fwd(tmpOut, out.col(k));
-            out.col(k) = tmpOut;
-        }
-        wavefunction[j] = out;
-    }
-}
-
-inline void MatrixData::fftForward_X(){
-
-    for(int j = 0; j < wavefunction.size(); ++j){
-        FFT<double> fft;
-        fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        MatrixXcd in = wavefunction[j];
-        MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
-        
-        // #pragma omp parallel for
         for (int k = 0; k < wavefunction[j].rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
-            fft.fwd(tmpOut, in.row(k));
+            eigenFFT.fwd(tmpOut, wavefunction[j].row(k));
             out.row(k) = tmpOut;
         }
         
-        wavefunction[j] = out;
-    }
-}
-
-inline void MatrixData::fftForward_Y(){
-
-    for(int j = 0; j < wavefunction.size(); ++j){
-        FFT<double> fft;
-        fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        MatrixXcd in = wavefunction[j];
-        MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
-        
-        // #pragma omp parallel for
         for (int k = 0; k < wavefunction[j].cols(); k++) {
             VectorXcd tmpOut = VectorXcd(meta.grid[1]);
-            fft.fwd(tmpOut, in.col(k));
-            out.col(k) = tmpOut;
+            eigenFFT.fwd(tmpOut, out.col(k));
+            wavefunction[j].col(k) = tmpOut;
         }
-        wavefunction[j] = out;
+        // wavefunction[j] = out;
     }
 }
 
-inline void MatrixData::fftBackward(){
+inline void MatrixData::FFT_internal::Forward_X(){
 
     for(int j = 0; j < wavefunction.size(); ++j){
-        FFT<double> fft;
-        fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        MatrixXcd in = wavefunction[j];
+
+        // MatrixXcd in = wavefunction[j];
+        // MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
+        
+        #pragma omp parallel for
+        for (int k = 0; k < wavefunction[j].rows(); k++) {
+            RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
+            eigenFFT.fwd(tmpOut, wavefunction[j].row(k));
+            wavefunction[j].row(k) = tmpOut;
+        }
+        
+        // wavefunction[j] = out;
+    }
+}
+
+inline void MatrixData::FFT_internal::Forward_Y(){
+
+    for(int j = 0; j < wavefunction.size(); ++j){
+        // FFT<double> fft;
+        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
+        // MatrixXcd in = wavefunction[j];
+        // MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
+        
+        #pragma omp parallel for
+        for (int k = 0; k < wavefunction[j].cols(); k++) {
+            VectorXcd tmpOut = VectorXcd(meta.grid[1]);
+            eigenFFT.fwd(tmpOut, wavefunction[j].col(k));
+            wavefunction[j].col(k) = tmpOut;
+        }
+        // wavefunction[j] = out;
+    }
+}
+
+inline void MatrixData::FFT_internal::Backward(){
+
+    for(int j = 0; j < wavefunction.size(); ++j){
+        // FFT<double> fft;
+        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
+        // MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
-        for (int k = 0; k < in.rows(); k++) {
+        for (int k = 0; k < wavefunction[j].rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
-            fft.inv(tmpOut, in.row(k));
+            eigenFFT.inv(tmpOut, wavefunction[j].row(k));
             out.row(k) = tmpOut;
         }
         
-        for (int k = 0; k < in.cols(); k++) {
+        for (int k = 0; k < wavefunction[j].cols(); k++) {
             VectorXcd tmpOut = VectorXcd(meta.grid[1]);
-            fft.inv(tmpOut, out.col(k));
-            out.col(k) = tmpOut;
+            eigenFFT.inv(tmpOut, out.col(k));
+            wavefunction[j].col(k) = tmpOut;
         }
-        wavefunction[j] = out;
+        // wavefunction[j] = out;
     }
 }
 
-inline void MatrixData::fftBackward_X(){
+inline void MatrixData::FFT_internal::Backward_X(){
 
     for(int j = 0; j < wavefunction.size(); ++j){
-        FFT<double> fft;
-        fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        MatrixXcd in = wavefunction[j];
-        MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
+        // FFT<double> fft;
+        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
+        // MatrixXcd in = wavefunction[j];
+        // MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
-        // #pragma omp parallel for
-        for (int k = 0; k < in.rows(); k++) {
+        #pragma omp parallel for
+        for (int k = 0; k < wavefunction[j].rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(meta.grid[0]);
-            fft.inv(tmpOut, in.row(k));
-            out.row(k) = tmpOut;
+            eigenFFT.inv(tmpOut, wavefunction[j].row(k));
+            wavefunction[j].row(k) = tmpOut;
         }
 
-        wavefunction[j] = out;
+        // wavefunction[j] = out;
     }
 }
 
-inline void MatrixData::fftBackward_Y(){
+inline void MatrixData::FFT_internal::Backward_Y(){
 
     for(int j = 0; j < wavefunction.size(); ++j){
-        FFT<double> fft;
-        fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        MatrixXcd in = wavefunction[j];
-        MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
+        // FFT<double> fft;
+        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
+        // MatrixXcd in = wavefunction[j];
+        // MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
         
-        // #pragma omp parallel for
-        for (int k = 0; k < in.cols(); k++) {
+        #pragma omp parallel for
+        for (int k = 0; k < wavefunction[j].cols(); k++) {
             VectorXcd tmpOut = VectorXcd(meta.grid[1]);
-            fft.inv(tmpOut, in.col(k));
-            out.col(k) = tmpOut;
+            eigenFFT.inv(tmpOut, wavefunction[j].col(k));
+            wavefunction[j].col(k) = tmpOut;
         }
-        wavefunction[j] = out;
+        // wavefunction[j] = out;
     }
 }
 
 
 
-inline void MatrixData::fftForward(MatrixXcd &DATA){
+inline void MatrixData::FFT_internal::Forward(MatrixXcd &DATA){
 
     // for(int j = 0; j < wavefunction.size(); ++j){
-        FFT<double> fft;
+        // FFT<double> fft;
         // MatrixXcd in = wavefunction[j];
         MatrixXcd out_temp = MatrixXcd(DATA.cols(),DATA.rows());
         
         for (int k = 0; k < DATA.rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(DATA.cols());
-            fft.fwd(tmpOut, DATA.row(k));
+            eigenFFT.fwd(tmpOut, DATA.row(k));
             out_temp.row(k) = tmpOut;
         }
         
         for (int k = 0; k < DATA.cols(); k++) {
             VectorXcd tmpOut = VectorXcd(DATA.rows());
-            fft.fwd(tmpOut, out_temp.col(k));
+            eigenFFT.fwd(tmpOut, out_temp.col(k));
             out_temp.col(k) = tmpOut;
         }
         // wavefunction[j] = out;

@@ -3,9 +3,9 @@
 #define COLOURBAR_MAX_VALUE 10000
 #define IMAGE_SIZE 2500
 
-Plotter::Plotter(Eval &e, Options &o){
-	eval = e;
-	opt = o;
+Plotter::Plotter(Eval &e, Options &o) : eval(e), opt(o){
+	// eval = e;
+	// opt = o;
 	const int n = eval.data.meta.grid[0];
 	const int m = eval.data.meta.grid[1];
 	int k;

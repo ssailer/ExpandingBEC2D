@@ -5,7 +5,7 @@
 #include <omp.h>
 
 #define EIGEN_VECTORIZE
-#define EIGEN_PARALLELIZE
+#define EIGEN_DONT_PARALLELIZE
 #define EIGEN_NO_DEBUG
 
 using namespace std;
@@ -123,7 +123,7 @@ void RTE::noise(){
 
 void RTE::rteToTime(string runName)
 {	
-	omp_set_num_threads(16);
+	// omp_set_num_threads(16);
 
 	double start;  // starttime of the run
 

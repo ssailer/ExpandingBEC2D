@@ -32,9 +32,9 @@ using namespace Eigen;
 
 class Eval{
 public:
-	Eval(MatrixData &d,Options &o);
-	Eval();
-	~Eval();
+	Eval(MatrixData d,Options o);
+	// Eval();
+	// ~Eval();
 
 	// wrapperfunctions 
 	// void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)

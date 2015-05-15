@@ -2,7 +2,7 @@
 #define EXP2D_RUNNER_H__
 
 #define EIGEN_VECTORIZE
-#define EIGEN_PARALLELIZE
+#define EIGEN_DONT_PARALLELIZE
 #define EIGEN_NO_DEBUG
 
 
@@ -253,7 +253,7 @@ void Runner<T>::noise(){
 template<class T>
 void Runner<T>::runToTime(string runName)
 {	
-	omp_set_num_threads(16);
+	// omp_set_num_threads(16);
 
 	double start;  // starttime of the run
 
@@ -278,6 +278,8 @@ void Runner<T>::runToTime(string runName)
 
 	start = omp_get_wtime();
 
+	cli(runName,pData->meta.steps,start);
+
 	for(int j = 0; j < snapshot_times.size(); j++){
 
 		while(pData->meta.steps < snapshot_times[j]){			
@@ -285,10 +287,9 @@ void Runner<T>::runToTime(string runName)
 			algorithm->timeStep(opt.RTE_step);
 
 			opt.t_abs += opt.RTE_step;
+		}
 
-			cli(runName,pData->meta.steps,start);
-
-		}			
+		cli(runName,pData->meta.steps,start);
 
 		// REMOVE
 			if(opt.runmode == "EXP"){

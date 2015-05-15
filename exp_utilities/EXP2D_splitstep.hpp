@@ -29,7 +29,7 @@ class SplitStep
     SplitStep(Options &o);
     void assignMatrixData(MatrixData* &d);
     void setVariables();
-    virtual void timeStep(double delta_t);
+    virtual void timeStep(double delta_t) = 0;
 
 
     // SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
@@ -85,6 +85,12 @@ class SplitStep
     complex<double> t_RTE;
 
     // little helper functions for stuff
+};
+
+class SplitRot : public SplitStep {
+public:
+    SplitRot(Options &o) : SplitStep(o) {}
+    virtual void timeStep(double delta_t);
 };
 
 class SplitTrap : public SplitStep {
