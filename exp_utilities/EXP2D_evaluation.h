@@ -53,6 +53,7 @@ public:
 	Observables totalResult;
 	vector<PathResults> pres;
 	vector<c_set> contour;
+	vector<MatrixXi> densityLocationMap;
 
 	MatrixData data;
 	Options opt;
@@ -83,7 +84,7 @@ private:
 	int snapshot_time;
 
 	// vector<RealGrid> densityLocationMap;
-	vector<MatrixXi> densityLocationMap;
+	
 
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
 	vector<double> x_dist,y_dist,x_dist_grad,y_dist_grad;

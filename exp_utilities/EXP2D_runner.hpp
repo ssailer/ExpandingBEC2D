@@ -289,8 +289,6 @@ void Runner<T>::runToTime(string runName)
 			opt.t_abs += opt.RTE_step;
 		}
 
-		cli(runName,pData->meta.steps,start);
-
 		// REMOVE
 			if(opt.runmode == "EXP"){
 				opt.stateInformation[0] = real(lambda_x(opt.t_abs)); // needed for expansion and the computing of the gradient etc.
@@ -302,9 +300,11 @@ void Runner<T>::runToTime(string runName)
 				opt.stateInformation[0] = 1.0;
 				opt.stateInformation[1] = 1.0;
 			}
+		
 		// END REMOVE
 
 		try{
+
 			Eval* eval = new Eval(*pData,opt);
 			eval->process();
 
@@ -328,6 +328,10 @@ void Runner<T>::runToTime(string runName)
 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 
 			throw e; 
 		}
+
+		cli(runName,pData->meta.steps,start);
+
+
 	}
 }
 

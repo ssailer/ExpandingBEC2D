@@ -30,6 +30,9 @@ public:
 private:
 	void control();
 	void spectrum();
+	void contour();
+	void densityMap();
+	void vortices();
 
 	Eval eval;
 	Options opt;

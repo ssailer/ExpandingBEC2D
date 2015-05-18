@@ -79,6 +79,7 @@ void plotContour(string name,string title, ComplexGrid &Psi, std::unordered_set<
 void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt);
 void plotDataToPng(string filename,string title,ComplexGrid &g,Options &opt);
 void plotDataToPng(string filename,string title,RealGrid g,Options &opt);
+void plotDataToPng(string filename,MatrixXi &g,Options &opt);
 void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options &opt);
 void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vector<double> &ranges,vector<double> &Xexpanding,vector<double> &Yexpanding,Options &opt);
 void plotVector(string filename,string title,vector<double> v,Options &opt);

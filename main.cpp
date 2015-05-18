@@ -90,22 +90,32 @@ try{
 	}
 
 	if(mC == RK4){
-		// Object determining the integration method
-		// Runner* runner;
-		// RungeKutta* dgl_algorithm;
-		// Consequently choosing the DGL
-		// if(runMode == EXP)
-		// if(runMode == ROT) dgl_algorithm = new RotatingTrap(tmpOpt);
-		// if(runMode == EXP) dgl_algorithm = new Expansion(tmpOpt);
-		// if(runMode == TRAP)
-		// 	dgl_algorithm = new Trap(tmpOpt);
-		
-		// create simulation object with all accumulated settings
-		// and start the run
-		Runner<RotatingTrap>* run = new Runner<RotatingTrap>(data,tmpOpt);
-		run->runToTime("ex");
-		delete run;
-		 // dgl_algorithm;
+		switch ( runMode ){
+			case ROT : {
+					Runner<RotatingTrap>* run = new Runner<RotatingTrap>(data,tmpOpt);
+					run->runToTime("rot");
+					delete run;
+				}
+				break;
+
+			case EXP : {
+					Runner<Expansion>* run = new Runner<Expansion>(data,tmpOpt);
+					run->runToTime("ex");
+					delete run;
+				}
+				break;
+
+			// case TRAP : {
+			// 		Runner<Trap>* run = new Runner<Trap>(data,tmpOpt);
+			// 		run->runToTime("trap");
+			// 		delete run;
+			// 	}
+			// 	break;
+
+			default :
+				cout << "No known runmode was recognized in cfg. Please revise." << endl;
+				break;
+		}
 	}
 	if(mC == SPLIT){
 		switch ( runMode ){
@@ -134,11 +144,6 @@ try{
 				cout << "No known runmode was recognized in cfg. Please revise." << endl;
 				break;
 		}
-
-		if(runMode == ROT){
-
-		}
-
 	}  
 	// if(runMode == SPLIT){
 	// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);

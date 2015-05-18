@@ -391,6 +391,68 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 
 }
 
+void plotDataToPng(string filename,MatrixXi &g,Options &opt){
+
+
+	int n = opt.grid[1];
+	int m = opt.grid[2];
+
+	// mglComplex data(n,m);
+	mglData density(n,m);
+
+	int i,j,k;
+
+	// data.Create(n,m);
+
+	// complex<double> data1;
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		k = i+n*j;
+		density.a[k] = g(i,j);
+		// if(density.a[k] > 1){
+		// 	cout << "PLOTTER" << density.a[k] << " " << i << " " << j << endl;
+		// }
+
+		// data.a[k] = abs2(g(0,i,j,0));
+	}
+
+	mglGraph gr;
+
+		
+		// gr.Light(0,true);
+		// gr.Alpha(true);
+
+	filename = filename + ".png";
+
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
+	gr.SetQuality(3);
+	// gr.Title(title.c_str());
+	// gr.Alpha(true);
+
+	gr.SetRange('x',0,opt.grid[1]);
+	gr.SetRange('y',0,opt.grid[2]);
+	gr.SetRange('z',density);
+	gr.SetRange('c',density);
+
+	gr.SubPlot(2,2,1);
+
+	// gr.Light(true);
+	gr.Rotate(40,40);
+	gr.Box();
+	gr.Axis();
+
+	gr.Surf(density);
+
+	gr.SubPlot(2,2,3);
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(density);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+}
+
 void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt)
 {
 	

@@ -280,11 +280,11 @@ void Eval::process(){
 		// cout << k << " " ;
 		
 		// cout << "-getDensity" << endl;
-		// contour[k] = tracker.trackContour(densityLocationMap[k]);
+		contour[k] = tracker.trackContour(densityLocationMap[k]);
 		// cout << "-trackContour" << endl;
 		totalResult += calculator(data.wavefunction[k],k);
 		// cout << "-calculator" << endl;
-		// getVortices(data.wavefunction[k],densityCoordinates[k],pres[k]);
+		getVortices(data.wavefunction[k],densityCoordinates[k],pres[k]);
 		// cout << "-getVortices" << endl;
 		// getVortexDistance(pres[k]);
 		// cout << "-getVortexDistance" << endl;
@@ -570,11 +570,11 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	// Vector<int32_t> up = phase.make_vector(0,2,0);
 	// Vector<int32_t> left = phase.make_vector(-2,0,0);
 
-	Vector<int32_t> down = Vector<int32_t>(0,-2,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> right = Vector<int32_t>(2,0,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> up = Vector<int32_t>(0,2,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> left = Vector<int32_t>(-2,0,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> rightdown = Vector<int32_t>(1, -1, 0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> down = Vector<int32_t>(0,-1,0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> right = Vector<int32_t>(1,0,0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> up = Vector<int32_t>(0,1,0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> left = Vector<int32_t>(-1,0,0,data.meta.grid[0],data.meta.grid[1],1);
+	// Vector<int32_t> rightdown = Vector<int32_t>(1, -1, 0,data.meta.grid[0],data.meta.grid[1],1);
 
 	for(vector<Coordinate<int32_t>>::const_iterator it = densityCoordinates.begin(); it != densityCoordinates.end(); ++it){
 
@@ -585,7 +585,7 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 
 		if(phase_winding != 0){
 			vortex.n = phase_winding;
-			vortex.x = c + rightdown;
+			vortex.x = c /*+ rightdown*/;
 			vortex.points.clear();
 			vortex.points.push_back(c);
 			vortex.num_points = 1;
@@ -593,7 +593,7 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 		}
 	}
 
-	cout << "Vortexnumber before surround dens check: " << vlist.size() << endl;
+	// cout << "Vortexnumber before surround dens check: " << vlist.size() << endl;
 
 	// CHECK DENSITY AROUND VORTEX
 	vector<list<VortexData>::iterator> to_delete;
@@ -637,28 +637,20 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 		it->surroundDens = sum;
 	}
 
-	 // cout << "findVortices before sorting" << endl;
-	// list<VortexData> vlistCopy(vlist);
-	// list<VortexData> vlistCopy1(vlist);
-	vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
-	// vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.zeroDensity < rhs.zeroDensity;});
+	// COMMENTED OUT TO GET INCREASING NUMBERS OF VORTICES
 
-	// for(list<VortexData>::iterator it = vlistCopy.begin(); it != vlistCopy.end(); ++it){
-	// 	for(list<VortexData>::iterator et = vlistCopy1.begin(); et != vlistCopy.end(); ++et){
-	// 		if(it->x == et->x)
-	// 			vlist.push_back(*it);
+	// vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
+	
+	// if(opt.initialRun == true){
+	// 	opt.vortexnumber = vlist.size();
+	// 	cout << "Evaluation found " << opt.vortexnumber << " Vortices." << endl;
+	// } else {
+	// 	if(vlist.size() > opt.vortexnumber){
+	// 		list<VortexData>::iterator it1 = vlist.begin();
+	// 		advance(it1,opt.vortexnumber);
+	// 		vlist.erase(it1,vlist.end());
 	// 	}
 	// }
-	if(opt.initialRun == true){
-		opt.vortexnumber = vlist.size();
-		cout << "Evaluation found " << opt.vortexnumber << " Vortices." << endl;
-	} else {
-		if(vlist.size() > opt.vortexnumber){
-			list<VortexData>::iterator it1 = vlist.begin();
-			advance(it1,opt.vortexnumber);
-			vlist.erase(it1,vlist.end());
-		}
-	}
 }
 
 inline double Eval::norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y){
@@ -745,9 +737,6 @@ void Eval::calc_fields(MatrixXcd &DATA, Options &opt){
 }
 
 
-
-// void Eval::getDensity(ComplexGrid &data, RealGrid &densityLocationMap_local, vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
-// void Eval::getDensity(MatrixXcd &d, MatrixXi &densMap,vector<Coordinate<int32_t>> &densityCoordinates_local, int &densityCounter){
 void Eval::getDensity(){
 	 //  / 
 	// double upper_threshold = 20.;
@@ -766,6 +755,7 @@ void Eval::getDensity(){
 		}
 	}
 	double threshold = maximum * 0.05;
+	// cout << " max " << maximum << " threshold " << threshold << endl;
 
 	  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
 
@@ -773,7 +763,7 @@ void Eval::getDensity(){
 	// densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	for(int k = 0; k < data.wavefunction.size(); k++){
 		
-		densityLocationMap[k] = MatrixXi(data.meta.grid[0],data.meta.grid[1]);
+		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
 	
 			densityCounter[k] = 0;
 			densityCoordinates[k].clear();
@@ -781,20 +771,22 @@ void Eval::getDensity(){
 			    for(int j = VORTEX_SURROUND_DENSITY_RADIUS; j < data.meta.grid[1] - VORTEX_SURROUND_DENSITY_RADIUS; j++){
 			    	if((abs2(data.wavefunction[k](i,j)) > threshold)){
 	   					densityLocationMap[k](i,j) = 1;
+	   					// cout << "abs " << abs2(data.wavefunction[k](i,j)) << " coord " << i << " " << j << endl;
+	   					// cout << "denstest " << densityLocationMap[k](i,j) << endl;
 	   					Coordinate<int32_t> tmpCoord = Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1);
 						densityCoordinates[k].push_back(tmpCoord);
 						densityCounter[k]++;
-					}else{
-						densityLocationMap[k](i,j) = 0;
+					// }else{
+					// 	densityLocationMap[k](i,j) = 0;
 					}
 				}
 		}
 	}
 
 	// string testname = "ERROR_0-getDensity"+to_string(omp_get_wtime());
-	// plotDataToPng(testname,densityLocationMap_local,opt);
+	// plotDataToPng(testname,densityLocationMap[0],opt);
 	// testname = "ERROR_0-data"+to_string(omp_get_wtime());
-	// plotDataToPng(testname,data,opt);
+	// plotDataToPngEigen(testname,data.wavefunction[0],opt);
 
 
 
