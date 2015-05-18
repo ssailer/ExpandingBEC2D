@@ -321,7 +321,7 @@ inline int InitMain::readConfig()
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
 	opt.omega_y              = complex<double>(omega_y_realValue,0);
-	opt.omega_w 			 = complex<double>(omega_y_realValue,0);
+	opt.omega_w 			 = complex<double>(omega_w_realValue,0);
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 

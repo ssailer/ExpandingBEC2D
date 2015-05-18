@@ -47,7 +47,7 @@ void RungeKutta::assignMatrixData(MatrixData* &d) {
 void RungeKutta::timeStep(double delta_T){
 
 	int32_t t = 0;
-	int32_t threads = 16;
+	int32_t threads = 24;
 	int32_t subx = w->meta.grid[0]-4;
 	int32_t suby = w->meta.grid[1]-4;
 	vector<int32_t> frontx(threads);
