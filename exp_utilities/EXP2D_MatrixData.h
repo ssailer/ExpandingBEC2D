@@ -171,6 +171,7 @@ inline void MatrixData::MetaData::convertToDimensionless(){
     spacing[1] /= Ag;
     time *= OmegaG / 1000.0;
     dataToArray();
+
     // opt.ITP_step *= opt.OmegaG;
     // opt.RTE_step *= opt.OmegaG;
     // opt.omega_x *= 2.0 * M_PI / opt.OmegaG;

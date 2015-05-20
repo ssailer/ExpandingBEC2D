@@ -19,7 +19,11 @@ Plotter::Plotter(Eval &e, Options &o) : eval(e), opt(o){
 		for(int j = 0; j < m; j++){
 			k = i + n * j;
 			density.a[k] = abs2(eval.data.wavefunction[0](i,j));
-			phase.a[k] = arg(eval.data.wavefunction[0](i,j));
+			if(density.a[k] != 0.0){
+				phase.a[k] = arg(eval.data.wavefunction[0](i,j));
+			} else {
+				phase.a[k] = 0.0;
+			}
 		}
 	}
 	stepsString = to_string(eval.data.meta.steps);
@@ -143,7 +147,7 @@ void Plotter::spectrum(){
 	gr.SetQuality(3);
 	// gr.Title(title.c_str());
 	gr.SetRange('x',k);
-	gr.SetRange('y',0.5,1.0e10);
+	gr.SetRange('y',0.001,1.0e15);
 	gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);

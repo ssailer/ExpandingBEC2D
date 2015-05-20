@@ -13,6 +13,20 @@ void RungeKutta::setVariables(){
 	k2 = MatrixXcd::Zero(w->meta.grid[0],w->meta.grid[1]);
 	k3 = MatrixXcd::Zero(w->meta.grid[0],w->meta.grid[1]);
 
+	threads = omp_get_max_threads();
+	subx = w->meta.grid[0]-4;
+	suby = w->meta.grid[1]-4;
+	frontx = vector<int32_t>(threads);
+	endx = vector<int32_t>(threads);
+	partx = w->meta.grid[0] / threads;
+
+	for(int i = 0; i < threads; i++){
+		if(i == 0){ frontx[i] = 2;}
+		else{ frontx[i] = (i *partx);}
+		if((i == threads-1) || (i == 0)){ endx[i] = partx-2;}
+		else{endx[i] = partx;}
+	}
+
 	// Coordinate vectors/arrays in different forms etc.
 	// FIXME in dimensionless coordinates, this should be removed, as the grid indices are the coordinates!!
   	x_axis.resize(w->meta.grid[0]);
@@ -47,19 +61,6 @@ void RungeKutta::assignMatrixData(MatrixData* &d) {
 void RungeKutta::timeStep(double delta_T){
 
 	int32_t t = 0;
-	int32_t threads = 24;
-	int32_t subx = w->meta.grid[0]-4;
-	int32_t suby = w->meta.grid[1]-4;
-	vector<int32_t> frontx(threads);
-	vector<int32_t> endx(threads);
-	int32_t partx = w->meta.grid[0] / threads;
-
-	for(int i = 0; i < threads; i++){
-		if(i == 0){ frontx[i] = 2;}
-		else{ frontx[i] = (i *partx);}
-		if((i == threads-1) || (i == 0)){ endx[i] = partx-2;}
-		else{endx[i] = partx;}
-	}
 
 	computeCoefficients(delta_T);
 

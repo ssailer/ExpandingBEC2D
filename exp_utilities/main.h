@@ -334,7 +334,7 @@ inline int InitMain::readConfig()
 	meta.initCoord[0] = meta.coord[0] = opt.min_x;
 	meta.initCoord[1] = meta.coord[1] = opt.min_y;
 	meta.initSpacing[0] = meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
-	meta.initSpacing[1] = meta.spacing[0] = opt.min_y * 2 / opt.grid[2];
+	meta.initSpacing[1] = meta.spacing[1] = opt.min_y * 2 / opt.grid[2];
 	meta.samplesize = opt.samplesize;
 	meta.time = 0;
 	meta.steps = 0;

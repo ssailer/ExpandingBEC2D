@@ -168,13 +168,13 @@ void Runner<T>::RunSetup()
 		snapshot_times[k] = (k + 1) * snapShotSize + meta.steps;
 	}
 
-	double mu = sqrt(3.0  * opt.g * real(opt.omega_x) * real(opt.omega_y) * opt.N / 8.0);
-    double Ry = sqrt(2.0 * mu / ( real(opt.omega_y)*real(opt.omega_y))) * opt.Ag;
-    double Rx = sqrt(2.0 * mu / ( real(opt.omega_x)*real(opt.omega_x))) * opt.Ag;
+	// double mu = sqrt(3.0  * opt.g * real(opt.omega_x) * real(opt.omega_y) * opt.N / 8.0);
+ //    double Ry = sqrt(2.0 * mu / ( real(opt.omega_y)*real(opt.omega_y))) * opt.Ag;
+ //    double Rx = sqrt(2.0 * mu / ( real(opt.omega_x)*real(opt.omega_x))) * opt.Ag;
 
-    cout << "Initial Thomas Fermi Radii set to Rx = " << Rx << " and Ry = " << Ry << endl;
-    double n0 = 2 * (opt.N / M_PI) * (1 / (Rx * Ry));
-    cout << "n_0 = " << n0 << endl;
+ //    cout << "Initial Thomas Fermi Radii set to Rx = " << Rx << " and Ry = " << Ry << endl;
+ //    double n0 = 2 * (opt.N / M_PI) * (1 / (Rx * Ry));
+ //    cout << "n_0 = " << n0 << endl;
 
 
 }
@@ -259,8 +259,9 @@ void Runner<T>::runToTime(string runName)
 
 	if(opt.initialRun == true){
 
-		Eval* initEval = new Eval(*pData,opt);
+		Eval* initEval = new Eval(*pData,opt,runName);
 		initEval->process();
+		initEval->save();
 
 		Plotter* initPlot = new Plotter(*initEval,opt);
 		initPlot->plotEval();
@@ -305,8 +306,9 @@ void Runner<T>::runToTime(string runName)
 
 		try{
 
-			Eval* eval = new Eval(*pData,opt);
+			Eval* eval = new Eval(*pData,opt,runName);
 			eval->process();
+			eval->save();
 
 			Plotter* plotter = new Plotter(*eval,opt);
 			plotter->plotEval();

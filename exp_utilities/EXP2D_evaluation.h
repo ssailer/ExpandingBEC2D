@@ -32,7 +32,7 @@ using namespace Eigen;
 
 class Eval{
 public:
-	Eval(MatrixData d,Options o);
+	Eval(MatrixData d,Options o, string runName);
 	// Eval();
 	// ~Eval();
 
@@ -42,8 +42,9 @@ public:
 	// void saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber); // if data comes as a vector of ComplexGrids, just eval a sclice of the 3D data.
 	// void saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval);
 	void process(); // calculate the observables
+	void save();
 	// void evaluateDataITP();
-	void plot(); // plot Results
+	// void plot(); // plot Results
 	bool checkResizeCondition();
 	int getVortexNumber();
 	void convertFromDimensionless();
@@ -57,7 +58,6 @@ public:
 
 	MatrixData data;
 	Options opt;
-
 
 private:
 
@@ -120,6 +120,10 @@ private:
 	// void findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial);
 	// void findMostRightP(c_set &contour, Coordinate<int32_t> &p);
 
+	// Helpermethods to access radial vectors:
+	void checkNextAngles(vector<double> &r, int &i);
+	void cyclicAssignment(vector<double> &r, int i, double rvalue);
+	double cyclicReadout(vector<double> &r, int i);
 
 };
 
