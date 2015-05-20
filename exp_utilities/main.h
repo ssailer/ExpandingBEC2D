@@ -87,7 +87,6 @@ MainControl InitMain::toMainControl(const std::string& s)
 {
     if (s == "SPLIT") return SPLIT;
     if (s == "RK4") return RK4;
-    if (s == "RK4_RESTART") return RK4_RESTART;
     if (s == "TRAP") return TRAP;
     if (s == "EXP") return EXP;
     if (s == "ROT") return ROT;
@@ -150,14 +149,14 @@ inline void InitMain::rotatePotential(){
 inline void InitMain::printInitVar()
 {
 	std::cout.setf(std::ios::boolalpha);
-	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
+	std::cout 	<< "Configfile: \"" << opt.config << "\"" << endl
 				<< "Gridpoints in x-direction: " << meta.grid[0] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
 				<< "Gridpoints in y-direction: " << meta.grid[1] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
-				<< "Coordinates in x-direction: " << meta.initCoord[0] << endl
-				<< "Coordinates in y-direction: " << meta.initCoord[1] << endl
-				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-				<< "ITP Step: " << opt.ITP_step << "\t" << "RTE Step: " << opt.RTE_step << endl
-				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
+				// << "Coordinates in x-direction: " << meta.initCoord[0] << endl
+				// << "Coordinates in y-direction: " << meta.initCoord[1] << endl
+				<< "Expansionfactor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
+				<< "Stepsize: " << opt.RTE_step
+				<< " Runtime of the RTE: " << opt.n_it_RTE * opt.snapshots << " steps." << endl << endl;
 }
 
 inline void InitMain::setDirectory()
@@ -300,7 +299,7 @@ inline int InitMain::readConfig()
 	opt.grid[2]              = root["RunOptions"]["grid2"];	   			
 	opt.grid[3]              = root["RunOptions"]["grid3"];
 	opt.g                    = root["RunOptions"]["g"]; 						
-	opt.n_it_RTE             = root["RunOptions"]["numberOfIterations"]; 				
+	opt.n_it_RTE             = root["RunOptions"]["sizeOfSnapshots"]; 				
 	opt.snapshots            = root["RunOptions"]["numberOfSnapshots"];
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];

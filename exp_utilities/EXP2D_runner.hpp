@@ -160,12 +160,9 @@ void Runner<T>::setOptions(const Options &o)
 template<class T>
 void Runner<T>::RunSetup()
 {
-	int snapShotSize = opt.n_it_RTE / opt.snapshots;
-	int nbTrueSnapShots =	opt.snapshots - meta.steps / snapShotSize; 
-
-	snapshot_times.resize(nbTrueSnapShots);
-	for(int k = 0; k < nbTrueSnapShots; k++){
-		snapshot_times[k] = (k + 1) * snapShotSize + meta.steps;
+	snapshot_times.resize(opt.snapshots);
+	for(int k = 0; k < opt.snapshots; k++){
+		snapshot_times[k] = (k + 1) * opt.n_it_RTE + meta.steps;
 	}
 
 	// double mu = sqrt(3.0  * opt.g * real(opt.omega_x) * real(opt.omega_y) * opt.N / 8.0);
@@ -212,7 +209,7 @@ void Runner<T>::cli(string name, int index, double start)
 		 	 << std::setw(2) << std::setfill('0') << hour << ":"
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    Steps: "
-			 << std::setw(3) << std::setfill('0') << pData->meta.steps << " / " << opt.n_it_RTE
+			 << std::setw(3) << std::setfill('0') << pData->meta.steps << " / " << *snapshot_times.end()
 			 
 			 // << " remaining runtime: "
 			 // << std::setw(2) << std::setfill('0') << expectedhour << ":"
@@ -253,8 +250,6 @@ void Runner<T>::noise(){
 template<class T>
 void Runner<T>::runToTime(string runName)
 {	
-	// omp_set_num_threads(16);
-
 	double start;  // starttime of the run
 
 	if(opt.initialRun == true){

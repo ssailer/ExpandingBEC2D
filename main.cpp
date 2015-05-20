@@ -66,8 +66,10 @@ try{
 
 	MatrixData* data = new MatrixData(initMain.getMeta());
 
+	string runName = "run";
+
 	if(initMain.restart()){
-		string runName = "ex";
+		
 		string filename = "LastGrid.h5";
 		// Loading from existing HDF5
 		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
@@ -93,14 +95,14 @@ try{
 		switch ( runMode ){
 			case ROT : {
 					Runner<RotatingTrap>* run = new Runner<RotatingTrap>(data,tmpOpt);
-					run->runToTime("rot");
+					run->runToTime(runName);
 					delete run;
 				}
 				break;
 
 			case EXP : {
 					Runner<Expansion>* run = new Runner<Expansion>(data,tmpOpt);
-					run->runToTime("ex");
+					run->runToTime(runName);
 					delete run;
 				}
 				break;
@@ -113,7 +115,7 @@ try{
 			// 	break;
 
 			default :
-				cout << "No known runmode was recognized in cfg. Please revise." << endl;
+				cout << "No known runmode was recognized in main. Please revise." << endl;
 				break;
 		}
 	}
@@ -121,27 +123,27 @@ try{
 		switch ( runMode ){
 			case ROT : {
 					Runner<SplitRot>* run = new Runner<SplitRot>(data,tmpOpt);
-					run->runToTime("rot");
+					run->runToTime(runName);
 					delete run;
 				}
 				break;
 
 			case EXP : {
 					Runner<SplitFree>* run = new Runner<SplitFree>(data,tmpOpt);
-					run->runToTime("ex");
+					run->runToTime(runName);
 					delete run;
 				}
 				break;
 
 			case TRAP : {
 					Runner<SplitTrap>* run = new Runner<SplitTrap>(data,tmpOpt);
-					run->runToTime("trap");
+					run->runToTime(runName);
 					delete run;
 				}
 				break;
 
 			default :
-				cout << "No known runmode was recognized in cfg. Please revise." << endl;
+				cout << "No known runmode was recognized in main. Please revise." << endl;
 				break;
 		}
 	}  
