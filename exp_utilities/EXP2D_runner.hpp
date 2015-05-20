@@ -209,7 +209,7 @@ void Runner<T>::cli(string name, int index, double start)
 		 	 << std::setw(2) << std::setfill('0') << hour << ":"
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    Steps: "
-			 << std::setw(3) << std::setfill('0') << pData->meta.steps << " / " << *snapshot_times.end()
+			 << std::setw(3) << std::setfill('0') << pData->meta.steps << " / " << snapshot_times.back()
 			 
 			 // << " remaining runtime: "
 			 // << std::setw(2) << std::setfill('0') << expectedhour << ":"
