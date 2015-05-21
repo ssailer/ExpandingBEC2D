@@ -395,7 +395,7 @@ inline void MatrixData::FFT_internal::Forward(MatrixXcd &DATA){
     // for(int j = 0; j < wavefunction.size(); ++j){
         // FFT<double> fft;
         // MatrixXcd in = wavefunction[j];
-        MatrixXcd out_temp = MatrixXcd(DATA.cols(),DATA.rows());
+        MatrixXcd out_temp = MatrixXcd(DATA.rows(),DATA.cols());
         
         for (int k = 0; k < DATA.rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(DATA.cols());

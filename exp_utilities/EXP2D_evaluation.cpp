@@ -877,7 +877,7 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	for(c_set::iterator it = contour[sampleindex].begin(); it != contour[sampleindex].end(); ++it){
 		contourData tmp;
 		tmp.c = *it;
-		int x = (tmp.c.x() - data.meta.grid[0]/2) * h_x ;
+		int x = (tmp.c.x() - data.meta.grid[0]/2) * h_x;
 		int y = (tmp.c.y() - data.meta.grid[1]/2) * h_y;
 		tmp.phi = atan2(y,x) * 180 /M_PI + 180;
 		tmp.r = sqrt(x*x  + y*y);
@@ -1130,11 +1130,47 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
 
+	// std::array<int,densityCoordinates[sampleindex].size()> x_tmp;
+	vector<double> x_tmp(densityCoordinates[sampleindex].size());
+	// std::array<int,densityCoordinates[sampleindex].size()> y_tmp;
+	vector<double> y_tmp(densityCoordinates[sampleindex].size());
 
+	for(int i = 0; i < densityCoordinates[sampleindex].size(); i++){
+		x_tmp[i] = densityCoordinates[sampleindex][i].x();
+		y_tmp[i] = densityCoordinates[sampleindex][i].y();
+	}
+	auto x_minmax = std::minmax_element (x_tmp.begin(),x_tmp.end());
+	auto y_minmax = std::minmax_element (y_tmp.begin(),y_tmp.end());
+
+	int diff_x = (int)*x_minmax.second - (int)*x_minmax.first;
+	int diff_y = (int)*y_minmax.second - (int)*y_minmax.first;
+
+	MatrixXcd smallData = DATA.block((int)*x_minmax.first,(int)*y_minmax.first,diff_x,diff_y); // MatrixXcd((int)*x_minmax.second - (int)*x_minmax.first,(int)*y_minmax.second - (int)*y_minmax.first);
+
+	plotDataToPngEigen("smallData",smallData,opt);
 
 	// K-Space
 	// ComplexGrid::fft(DATA, DATA);
+	// data.fft.Forward(smallData);
 	data.fft.Forward(DATA);
+
+	DATA /= sqrt(DATA.cols() * DATA.rows());
+	// smallData /= sqrt(smallData.cols() * smallData.rows());
+
+	plotDataToPngEigen("smallData_kspace",smallData,opt);
+
+	// DATA = MatrixXcd::Zero(data.meta.grid[0],data.meta.grid[1]);
+	// DATA.block((int)*x_minmax.first,(int)*y_minmax.first,diff_x,diff_y) = smallData;
+
+	double sum2 = 0;
+	#pragma omp parallel for reduction(+:sum2)
+	for(int i = 0; i < data.meta.grid[0]; i++){
+	    for(int j = 0; j < data.meta.grid[1]; j++){	    	    		
+	      	sum2 += abs2(DATA(i,j));
+
+	    }
+	}
+	cout << "kSUM : " << sum2 << endl;
 	
 	ArrayXd divisor(obs.number.size());
 	divisor.setZero();

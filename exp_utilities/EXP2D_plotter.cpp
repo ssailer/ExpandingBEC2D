@@ -119,10 +119,18 @@ void Plotter::spectrum(){
     for (int r = 0; r < eval.totalResult.number.size(); r++)             
 	{	
 		if(eval.totalResult.k(r) != 0.0){
+			if(eval.totalResult.number(r) != 0.0){
 				kval.push_back(eval.totalResult.k(r));
 				numberval.push_back(eval.totalResult.number(r));
+			}
         }
 	}
+
+	auto k_minmax = std::minmax_element(kval.begin(),kval.end());
+	auto number_minmax = std::minmax_element(numberval.begin(),numberval.end());
+
+	cout << "k_min: " << *k_minmax.first << " k_max: " << *k_minmax.second << endl;
+	cout << "number_min: " << *number_minmax.first << " number_max: " << *number_minmax.second << endl;
 
 
 
@@ -145,9 +153,10 @@ void Plotter::spectrum(){
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	// gr.Title(title.c_str());
-	gr.SetRange('x',k);
-	gr.SetRange('y',0.001,1.0e15);
+	gr.Title(to_string(eval.data.meta.time).c_str());
+	gr.SetRange('x',*k_minmax.first,*k_minmax.second);
+	// gr.SetRange('x',*number_minmax.first,*number_minmax.second);
+	gr.SetRange('y',*number_minmax.first,*number_minmax.second);
 	gr.SetCoor(11); // log-log-coordinates
 
 	// gr.SubPlot(2,1,0);
@@ -158,12 +167,16 @@ void Plotter::spectrum(){
 	gr.Axis();
 
 	// gr.SetFunc("lg(x)","lg(y)");
-	gr.FPlot("x^(-2)");
-	// gr.FPlot("x^(-4.66)");
-	gr.FPlot("x^(-5)");
+	gr.FPlot("x^(-2)","k");
+	gr.AddLegend("k^(-2)","k");
+	gr.FPlot("x^(-4.66)","r");
+	gr.AddLegend("k^(-4.66)","r");
+	gr.FPlot("x^(-4)","b");
+	gr.AddLegend("k^(-4)","b");
 
 	// gr.Stem(healing_length);
 	gr.Plot(k,number," .");
+	gr.Legend();
 
 	string name = dirname + "/Spectrum_" + stepsString + ".png";
 

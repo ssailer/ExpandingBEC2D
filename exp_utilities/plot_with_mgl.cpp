@@ -781,9 +781,9 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 {
 
-	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
-	int n = opt.grid[1]/factor;
-	int m = opt.grid[2]/factor;
+	int32_t factor = (wavefct.cols() > 2048) ? wavefct.cols()/2048 : 1;
+	int n = wavefct.rows()/factor;
+	int m = wavefct.cols()/factor;
 
 	// mglComplex data(n,m);
 	mglData density(n,m);
@@ -822,8 +822,8 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 	double xrange = opt.min_x*opt.stateInformation[0];
 	double yrange = opt.min_y*opt.stateInformation[1];
 	// data.use_abs=false;
-	gr.SetRange('x',-xrange,xrange);
-	gr.SetRange('y',-yrange,yrange);
+	gr.SetRange('x',0,wavefct.rows());
+	gr.SetRange('y',0,wavefct.cols());
 	gr.SetRange('z',phase);
 	gr.SetRange('c',phase);
 
@@ -842,8 +842,8 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 
 
 	// data.use_abs=true;
-	gr.SetRange('x',-xrange,xrange);
-	gr.SetRange('y',-yrange,yrange);
+	gr.SetRange('x',0,wavefct.rows());
+	gr.SetRange('y',0,wavefct.cols());
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
 

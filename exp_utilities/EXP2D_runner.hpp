@@ -129,6 +129,10 @@ public:
     return sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t);
    }
 
+   inline complex<double> lambda_y(const complex<double> &t){
+    return sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t);
+   }
+
    inline complex<double> lambda_y_dot(complex<double> &t){
     return (opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t/sqrt(one+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*t*t));
    }
@@ -287,9 +291,9 @@ void Runner<T>::runToTime(string runName)
 
 		// REMOVE
 			if(opt.runmode == "EXP"){
-				opt.stateInformation[0] = real(lambda_x(opt.t_abs)); // needed for expansion and the computing of the gradient etc.
-				opt.stateInformation[1] = real(lambda_y(opt.t_abs));
-				cout << opt.stateInformation[0] << "  " << opt.t_abs << " ";
+				opt.stateInformation[0] = real(lambda_x(complex<double>(pData->meta.time,0.0))); // needed for expansion and the computing of the gradient etc.
+				opt.stateInformation[1] = real(lambda_y(complex<double>(pData->meta.time,0.0)));
+				cout << opt.stateInformation[0] << "  " << pData->meta.time << " ";
 				cout << pData->meta.initCoord[0] << " " << pData->meta.coord[0] << " " << pData->meta.time;
 			}
 			else {

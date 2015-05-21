@@ -52,6 +52,8 @@ void SplitStep::setVariables(){
 	kprop = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
 	kprop_x = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
 	kprop_y = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
+	kprop_x_strang = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
+	kprop_y_strang = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
 	kspace.resize(2);
 
 
@@ -105,6 +107,24 @@ void SplitStep::setVariables(){
 	    for(int y = 0; y < w->meta.grid[1]; y++){
 	      	double T = - ( 0.5 * kspace[1][y] * kspace[1][y] - opt.omega_w.real() * x_axis[x] * kspace[1][y]) * opt.RTE_step;
       		kprop_y(x,y) = complex<double>(cos(T),sin(T)) /*/ complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
+	    }
+	}
+	plotDataToPngEigen("kprop_y", kprop_y, opt);
+
+	#pragma omp parallel for
+	for(int x = 0; x < w->meta.grid[0]; x++){
+	    for(int y = 0; y < w->meta.grid[1]; y++){
+	      	double T = - 0.5 * ( 0.5 * kspace[0][x]* kspace[0][x] + opt.omega_w.real() * y_axis[y] * kspace[0][x]) * opt.RTE_step;
+      		kprop_y_strang(x,y) = complex<double>(cos(T),sin(T))/* / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
+	    }
+	}
+	plotDataToPngEigen("kprop_x", kprop_x, opt);
+
+    #pragma omp parallel for
+	for(int x = 0; x < w->meta.grid[0]; x++){
+	    for(int y = 0; y < w->meta.grid[1]; y++){
+	      	double T = - 0.5 * ( 0.5 * kspace[1][y] * kspace[1][y] - opt.omega_w.real() * x_axis[x] * kspace[1][y]) * opt.RTE_step;
+      		kprop_x_strang(x,y) = complex<double>(cos(T),sin(T)) /*/ complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
 	    }
 	}
 	plotDataToPngEigen("kprop_y", kprop_y, opt);
@@ -180,6 +200,42 @@ void SplitFree::timeStep(double delta_t){
     		w->wavefunction[0](x,y) *= complex<double>(cos(V),sin(V));
 		}
 	}
+
+	w->increment(delta_t, 1.0, 1.0);
+}
+
+void SplitRotStrang::timeStep(double delta_t){
+
+	w->fft.Forward_X();
+	w->wavefunction[0].array() *= kprop_x_strang.array();
+	w->fft.Backward_X();
+
+	w->fft.Forward_Y();
+	w->wavefunction[0].array() *= kprop_y_strang.array();
+	w->fft.Backward_Y();
+
+	w->wavefunction[0].array() /= complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);
+
+	#pragma omp parallel for
+	for(int x = 0; x < w->meta.grid[0]; x++){
+		for(int y = 0; y < w->meta.grid[1]; y++){
+    		// complex<double> value = wavefctVec[i](0,x,y,z);
+    		double V = - ( PotentialGrid(x,y).real() + opt.g * abs2(w->wavefunction[0](x,y)) ) * delta_t;
+    		// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
+    		// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
+    		w->wavefunction[0](x,y) *= complex<double>(cos(V),sin(V));
+		}
+	}
+
+	w->fft.Forward_Y();
+	w->wavefunction[0].array() *= kprop_y_strang.array();
+	w->fft.Backward_Y();
+
+	w->fft.Forward_X();
+	w->wavefunction[0].array() *= kprop_x_strang.array();
+	w->fft.Backward_X();
+
+	w->wavefunction[0].array() /= complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);
 
 	w->increment(delta_t, 1.0, 1.0);
 }

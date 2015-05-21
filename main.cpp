@@ -77,9 +77,12 @@ try{
 		dataFile->getSnapshot(runName,timeList[0],data,tmpOpt);
 		delete dataFile;
 		// temp fix to change behaviour of sim object;
+		tmpOpt = initMain.getOptions();
 		tmpOpt.initialRun = false;
-		tmpOpt.n_it_RTE = initMain.getRunTime();
-		tmpOpt.snapshots = initMain.getSnapShots();
+		// tmpOpt.n_it_RTE = initMain.getRunTime();
+		// tmpOpt.snapshots = initMain.getSnapShots();
+		// FIXME WATCH OUT time var reset for restarting, this can be very DANGEROUS!
+		data->meta.time = 0.0;
 	} else {
 		// set MatrixData to specified initial conditions
 		setGridToTF(data,initMain.getOptions());
@@ -146,7 +149,22 @@ try{
 				cout << "No known runmode was recognized in main. Please revise." << endl;
 				break;
 		}
-	}  
+	}
+
+	if(mC == SPLITSTRANG){
+		switch ( runMode ){
+			case ROT : {
+					Runner<SplitRotStrang>* run = new Runner<SplitRotStrang>(data,tmpOpt);
+					run->runToTime(runName);
+					delete run;
+				}
+				break;
+
+			default :
+				cout << "No known runmode was recognized in main. Please revise." << endl;
+				break;
+		}
+	}    
 	// if(runMode == SPLIT){
 	// 	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 	

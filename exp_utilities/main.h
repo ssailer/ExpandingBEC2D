@@ -28,8 +28,8 @@ private:
 
 enum MainControl {
 	SPLIT,
+	SPLITSTRANG,
 	RK4,
-	RK4_RESTART,
 	TRAP,
 	EXP,
 	ROT
@@ -86,6 +86,7 @@ private:
 MainControl InitMain::toMainControl(const std::string& s)
 {
     if (s == "SPLIT") return SPLIT;
+    if (s == "SPLITSTRANG") return SPLITSTRANG;
     if (s == "RK4") return RK4;
     if (s == "TRAP") return TRAP;
     if (s == "EXP") return EXP;
