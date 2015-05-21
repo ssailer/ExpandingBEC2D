@@ -1147,7 +1147,7 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 
 	MatrixXcd smallData = DATA.block((int)*x_minmax.first,(int)*y_minmax.first,diff_x,diff_y); // MatrixXcd((int)*x_minmax.second - (int)*x_minmax.first,(int)*y_minmax.second - (int)*y_minmax.first);
 
-	plotDataToPngEigen("smallData",smallData,opt);
+	// plotDataToPngEigen("smallData",smallData,opt);
 
 	// K-Space
 	// ComplexGrid::fft(DATA, DATA);
@@ -1157,7 +1157,7 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	DATA /= sqrt(DATA.cols() * DATA.rows());
 	// smallData /= sqrt(smallData.cols() * smallData.rows());
 
-	plotDataToPngEigen("smallData_kspace",smallData,opt);
+	// plotDataToPngEigen("smallData_kspace",smallData,opt);
 
 	// DATA = MatrixXcd::Zero(data.meta.grid[0],data.meta.grid[1]);
 	// DATA.block((int)*x_minmax.first,(int)*y_minmax.first,diff_x,diff_y) = smallData;
