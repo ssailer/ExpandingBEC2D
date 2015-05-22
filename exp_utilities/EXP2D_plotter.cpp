@@ -63,6 +63,7 @@ void Plotter::control(){
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
+	gr.Title(to_string(eval.data.meta.time).c_str());
 	// gr.Title(title.c_str());
 	// gr.Alpha(true);
 
@@ -129,8 +130,8 @@ void Plotter::spectrum(){
 	auto k_minmax = std::minmax_element(kval.begin(),kval.end());
 	auto number_minmax = std::minmax_element(numberval.begin(),numberval.end());
 
-	cout << "k_min: " << *k_minmax.first << " k_max: " << *k_minmax.second << endl;
-	cout << "number_min: " << *number_minmax.first << " number_max: " << *number_minmax.second << endl;
+	// cout << "k_min: " << *k_minmax.first << " k_max: " << *k_minmax.second << endl;
+	// cout << "number_min: " << *number_minmax.first << " number_max: " << *number_minmax.second << endl;
 
 
 
@@ -215,6 +216,7 @@ void Plotter::contour(){
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
+	gr.Title(to_string(eval.data.meta.time).c_str());
 	// gr.Title(title.c_str());
 
 	// gr.SetRange('x',-opt.min_x,opt.min_x);
@@ -272,6 +274,7 @@ void Plotter::densityMap(){
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
+	gr.Title(to_string(eval.data.meta.time).c_str());
 	// gr.Title(title.c_str());
 	// gr.Alpha(true);
 
@@ -316,6 +319,7 @@ void Plotter::vortices(){
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
+	gr.Title(to_string(eval.data.meta.time).c_str());
 
 	gr.SetRange('x',0,eval.data.meta.grid[0]);
 	gr.SetRange('y',0,eval.data.meta.grid[1]);

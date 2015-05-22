@@ -4,7 +4,7 @@
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
 #define VORTEX_SURROUND_DENSITY_RADIUS 5
-#define EDGE_RANGE_CHECK 10
+#define EDGE_RANGE_CHECK 0.9
 
 using namespace std;
 using namespace Eigen;
@@ -19,28 +19,7 @@ Eval::Eval(MatrixData d,Options o, string runName) : data(d),  opt(o) , runname(
 
 };
 
-// Eval::Eval() {};
 
-// Eval::~Eval() {};
-
-// void Eval::saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname){
-// 	runname = external_runname;
-// 	opt = external_opt;
-// 	snapshot_time = external_snapshot_time;
-// 	PsiVec.resize(wavefctVec.size());
-
-// 	#pragma omp parallel for
-// 	for(int k = 0; k < wavefctVec.size(); k++){
-// 		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-// 		for(int i = 0; i < opt.grid[1]; i++){
-// 			for(int j = 0; j < opt.grid[2]; j++){		
-// 				PsiVec[k](0,i,j,0) = wavefctVec[k](i,j) / complex<double>(opt.Ag,0.0);
-// 			}
-// 		}
-// 	}
-// 	convertFromDimensionless();
-
-// }
 
 void Eval::convertFromDimensionless(){
 	opt.min_x *= opt.Ag;
@@ -62,196 +41,7 @@ void Eval::convertFromDimensionless(){
 	}
 }
 
-// void Eval::saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber){
-// 	runname = external_runname;
-// 	opt = external_opt;
-// 	snapshot_time = external_snapshot_time;
-// 	PsiVec.resize(wavefctVec.size());
-// 	#pragma omp parallel for
-// 	for(int k = 0; k < wavefctVec.size(); k++){
-// 		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-// 		for(int i = 0; i < opt.grid[1]; i++){
-// 			for(int j = 0; j < opt.grid[2]; j++){
-// 				PsiVec[k](0,i,j,0) = wavefctVec[k](0,i,j,sliceNumber) / complex<double>(opt.Ag,0.0);
-// 			}
-// 		}
-// 	}
-// 	convertFromDimensionless();
-// }
-
-// void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname){
-// 	runname = external_runname;
-// 	opt = external_opt;
-// 	snapshot_time = external_snapshot_time;
-// 	PsiVec.resize(1);
-
-// 	PsiVec[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	
-// 	for(int i = 0; i < opt.grid[1]; i++){
-// 		for(int j = 0; j < opt.grid[2]; j++){		
-// 			PsiVec[0](0,i,j,0) = wavefct(i,j) / complex<double>(opt.Ag,0.0);
-// 		}
-// 	}
-// 	convertFromDimensionless();		
-// }
-
-// void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval){
-// 	runname = external_runname;
-// 	opt = external_opt;
-// 	snapshot_time = external_snapshot_time;
-
-// 	int numberOfSamples = extEval.size();
-
-
-// 	totalResult = Observables(extEval[0].totalResult.number.size());
-// 	contour.resize(numberOfSamples*opt.samplesize);
-// 	pres.resize(numberOfSamples*opt.samplesize);
-	
-// 	for(int k = 0; k < numberOfSamples; k++){
-// 		if(k == 0){
-// 			totalResult = extEval[k].totalResult;
-// 		}else{
-// 			totalResult += extEval[k].totalResult;
-// 		}
-// 		for(int i = 0; i < opt.samplesize;i++){
-// 			contour[i+k*opt.samplesize] = extEval[k].contour[i];
-// 			pres[i+k*opt.samplesize].vlist = extEval[k].pres[i].vlist;
-// 		}
-// 	}
-// 	totalResult /= numberOfSamples;
-// 	CombinedEval();
-// 	CombinedSpectrum();
-// }
-
-// void Eval::CombinedEval(){
-
-// 	string dirname = "CombinedRunObservables";
-//     struct stat st;
-//     	if(stat(dirname.c_str(),&st) != 0){
-//         mkdir(dirname.c_str(),0755);
-//     }
-
-// 	string filename = dirname + "/" + runname + "_Observables.dat";	
-	
-// 	struct stat buffer;
-//   	if(stat (filename.c_str(), &buffer) != 0){
-//   		ofstream datafile;
-//   		datafile.open(filename.c_str(), ios::out | ios::app);
-//   		datafile << std::left << std::setw(15) << "Timestep"
-//   						 << std::setw(15) << "X_max"
-//   						 << std::setw(15) << "Y_max"
-//   						 << std::setw(15) << "D_max"
-//   						 << std::setw(15) << "D_min"
-//   						 << std::setw(15) << "Rx"
-// 						 << std::setw(15) << "Ry"
-//   						 << std::setw(15) << "D_max/D_min"
-//   						 << std::setw(15) << "D_max Angle"
-//   						 << std::setw(15) << "D_min Angle"
-//   						 << std::setw(15) << "Ratio"
-//   						 << std::setw(15) << "RatioAngle"
-//   						 << std::setw(15) << "N"
-//   						 << std::setw(15) << "V"
-//   						 << std::setw(15) << "N/V"
-//   						 << std::setw(15) << "E_kin"
-//   				 << endl;
-//   		datafile.close();
-//   	} 
-
-//   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
-// 	// datafile.open;
-// 	datafile << std::left << std::setw(15) << snapshot_time
-// 					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
-// 					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
-//  					 << std::setw(15) << totalResult.r_max
-//  					 << std::setw(15) << totalResult.r_min
-//  					 << std::setw(15) << totalResult.Rx
-//  					 << std::setw(15) << totalResult.Ry
-//  					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
-//  					 << std::setw(15) << totalResult.r_max_phi
-//  					 << std::setw(15) << totalResult.r_min_phi
-//  					 << std::setw(15) << totalResult.aspectRatio 
-//  					 << std::setw(15) << totalResult.aspectRatioAngle 
-// 					 << std::setw(15) << totalResult.particle_count
-// 					 << std::setw(15) << totalResult.volume
-// 					 << std::setw(15) << totalResult.density
-// 					 << std::setw(15) << totalResult.Ekin
-// 			 << endl;
-// 	datafile.close();
-
-
-// 	filename = dirname + "/" + runname + "_Observables.csv";	
-	
-//   	if(stat (filename.c_str(), &buffer) != 0){
-//   		ofstream datafile1;
-//   		datafile1.open(filename.c_str(), ios::out | ios::app);
-//   		datafile1 << std::left << "," << "Timestep"
-//   						 << "," << "X_max"
-//   						 << "," << "Y_max"
-//   						 << "," << "D_max"
-//   						 << "," << "D_min"
-//   						 << "," << "Rx"
-// 						 << "," << "Ry"
-//   						 << "," << "D_max/D_min"
-//   						 << "," << "D_max Angle"
-//   						 << "," << "D_min Angle"
-//   						 << "," << "Ratio"
-//   						 << "," << "RatioAngle"
-//   						 << "," << "N"
-//   						 << "," << "V"
-//   						 << "," << "N/V"
-//   						 << "," << "E_kin"
-//   				 << endl;
-//   		datafile1.close();
-//   	} 
-
-//   	ofstream datafile1(filename.c_str(), std::ios_base::out | std::ios_base::app);
-// 	// datafile.open;
-// 	datafile1 << std::left << "," << snapshot_time
-// 					 << "," << opt.min_x * opt.stateInformation[0]
-// 					 << "," << opt.min_y * opt.stateInformation[1]
-//  					 << "," << totalResult.r_max
-//  					 << "," << totalResult.r_min
-//  					 << "," << totalResult.Rx
-// 					 << "," << totalResult.Ry
-//  					 << "," << totalResult.r_max / totalResult.r_min  
-//  					 << "," << totalResult.r_max_phi
-//  					 << "," << totalResult.r_min_phi
-//  					 << "," << totalResult.aspectRatio 
-//  					 << "," << totalResult.aspectRatioAngle 
-// 					 << "," << totalResult.particle_count
-// 					 << "," << totalResult.volume
-// 					 << "," << totalResult.density
-// 					 << "," << totalResult.Ekin
-// 			 << endl;
-// 	datafile1.close();
-
-// 	filename = dirname + "/" + runname + "_Ratios.csv";	
-	
-//   	if(stat (filename.c_str(), &buffer) != 0){
-//   		ofstream datafile2;
-//   		datafile2.open(filename.c_str(), ios::out | ios::app);
-//   		datafile2 << std::left << "," << "Timestep";
-//   		for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
-//   			datafile2 << "," << std::left << i;
-//   		}
-//   		datafile2 << endl;
-//   		datafile2.close();
-//   	} 
-
-//   	ofstream datafile2(filename.c_str(), std::ios_base::out | std::ios_base::app);
-// 	// datafile2.open;
-// 	datafile2 << std::left << "," << snapshot_time;
-//   	for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
-//   		datafile2 << "," << totalResult.fixedAspectRatio(i);
-//   	}
-//   	datafile2 << endl;
-// 	datafile2.close();
-// }
-
 void Eval::process(){
-	// cout << "evaluateData" << endl;	
-	// cout << "checkEdges call: " << endl;
-	// checkEdges();
 
 	pres.resize(data.wavefunction.size());
 
@@ -265,27 +55,25 @@ void Eval::process(){
 	densityCoordinates.resize(data.wavefunction.size());
 
 	phase = MatrixXd::Zero(data.meta.grid[0],data.meta.grid[1]);
-	// phase.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	// zeros.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
 	Contour tracker(data.meta);
 
-
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-	
+
+	cout << currentTime() <<  " Step: " << data.meta.steps << endl
+		 <<	"         " << "Time : " << data.meta.time << " ms" << endl;		 
 
 	getDensity();
+	cout << "eval: getDensity" << endl;
 	// cout << endl << "Evaluating sample #: ";
 	for(int k = 0; k < data.wavefunction.size(); k++){
-		// cout << k << " " ;
-		
-		// cout << "-getDensity" << endl;
+
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		// cout << "-trackContour" << endl;
+		cout << "eval: trackContour" << endl;
 		totalResult += calculator(data.wavefunction[k],k);
-		// cout << "-calculator" << endl;
+		cout << "eval: calculator" << endl;
 		getVortices(data.wavefunction[k],densityCoordinates[k],pres[k]);
-		// cout << "-getVortices" << endl;
+		cout << "eval: getVortices" << endl;
 		// getVortexDistance(pres[k]);
 		// cout << "-getVortexDistance" << endl;
 	}	
@@ -355,177 +143,15 @@ void Eval::save(){
 					 << std::setw(15)  << n0
 			 << endl;
 	datafile.close();
-
+	cout << "eval: save" << endl;
 }
 
-// void Eval::evaluateDataITP(){
 
-// 	// pres.vlist.clear();
-// 	densityCoordinates.clear();
-// 	contour.resize(PsiVec.size());
-// 	densityCounter.resize(PsiVec.size());
-
-// 	densityLocationMap.resize(PsiVec.size());
-// 	densityCoordinates.resize(PsiVec.size());
-// 	phase.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-// 	zeros.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-// 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-		
-// 	// for(int k = 0; k < PsiVec.size(); k++){
-// 		getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0],densityCounter[0]);
-// 		totalResult = calculatorITP(PsiVec[0],0);
-// 	// }
-// 	// totalResult /= PsiVec.size();
-// }
-
-// void Eval::CombinedSpectrum(){
-// 	string dirname = "CombinedRunPlots";
-//     struct stat st;
-//     	if(stat(dirname.c_str(),&st) != 0){
-//         mkdir(dirname.c_str(),0755);
-//     }
-    
-// 	std::string snapShotString = to_string(snapshot_time);
-// 	std::stringstream ss;
-// 	ss << std::setfill('0') << std::setw(5) << snapShotString;
-// 	snapShotString = ss.str();
-	
-// 	runname = dirname + "/" + runname;
-
-// 	string plotname = runname + "-Spectrum-" + snapShotString;
-// 	string title = "Spectrum " + snapShotString; 
-// 	plotSpectrum(plotname,title, totalResult);
-
-// }
-
-// void Eval::plot(){
-// 	string dirname = "runPlots";
-//     struct stat st;
-//     	if(stat(dirname.c_str(),&st) != 0){
-//         mkdir(dirname.c_str(),0755);
-//     }
-    
-// 	std::string snapShotString = to_string(data.meta.steps);
-// 	std::stringstream ss;
-// 	ss << std::setfill('0') << std::setw(5) << snapShotString;
-// 	snapShotString = ss.str();
-	
-// 	runname = dirname + "/" + runname;
-
-// 	vector<double> Xexpanding(opt.grid[1]);
-// 	vector<double> Yexpanding(opt.grid[2]);
-// 	double b_x = opt.min_x * opt.stateInformation[0];
-// 	double b_y = opt.min_y * opt.stateInformation[1];
-// 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-// 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
-// 	for(int i = 0; i < opt.grid[1]; i++){
-// 		Xexpanding[i] = -b_x + h_x * i;
-// 	}
-// 	for(int i = 0; i < opt.grid[2]; i++){
-// 		Yexpanding[i] = -b_y + h_y * i;
-// 	}
-
-// 	vector<double> ranges(2);
-// 	complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
-// 	ranges[0] = opt.min_x * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*tmp3*tmp3));
-// 	ranges[1] = opt.min_y * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*tmp3*tmp3));
-	
-
-	// string plotname = "Control-Plot-" + snapShotString;
-	// string title = "Density " + snapShotString + " " + to_string(data.meta.time);
-	// plotDataToPngEigen(plotname,data.wavefunction[0],opt);
-
-	// if(opt.runmode.compare(1,1,"1") == 0){
-	// 	title = "Density " + snapShotString;
-	// 	plotname = "ExpandingFrame-" + snapShotString;
-	// 	plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
-	// }
-
-	// plotname = "Spectrum-" + snapShotString;
-	// title = "Spectrum " + snapShotString; 
-	// plotSpectrum(plotname,title,totalResult);
-
-	// plotname = "Radial-Density-" + snapShotString;
-	// title = "Radial-Density " + snapShotString; 
-	// plotRadialDensity(plotname,title,totalResult);
-
-	// if(pres[0].vlist.size() >= 0){
-	// 	plotname = "PairDistance" + snapShotString;
-	// 	title = "PairDistance " + snapShotString;
-	// 	plotPairDistance(plotname,title,pres[0]);
-	// }
-
-	// plotname = "Vortices-" + snapShotString;
-	// title = "Vortices " + snapShotString;
-	// plotVortexList(plotname,title,phase,pres[0],opt);	
-
-	// plotname = "Density-" + snapShotString;
-	// title = "Density " + snapShotString;
-	// plotDataToPng(plotname,title,densityLocationMap[0],opt);
-
-	// plotname = "Density-Axial-Distribution-Gradient-" + snapShotString;
-	// title = "Density " + snapShotString;
-	// plotVector(plotname,title,x_dist_grad,y_dist_grad,opt);
-
-	// plotname = "Angular-Dens-" + snapShotString;
-	// title = "Angular Density " + snapShotString;
-	// plotVector(plotname,title,totalResult.angularDensity,opt);	
-
-	// plotname = "Contour-" + snapShotString;
-	// title = "Contour " + snapShotString + " " + to_string(opt.t_abs.real());
-	// plotContour(plotname,title,PsiVec[0],contour[0],opt);
-
-
-// }
-
-// void Eval::checkEdges(){
-// 	int numberOfEdgePoints = 2 * EDGE_RANGE_CHECK * opt.grid[1] + 2 * EDGE_RANGE_CHECK * opt.grid[2] - 4 * EDGE_RANGE_CHECK * EDGE_RANGE_CHECK;
-// 	double threshold = numberOfEdgePoints * opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]);
-
-
-// 	// cout << "Size of checkEdges::sum " << PsiVec.size() << endl;
-// 	vector<double> sum(PsiVec.size());
-// 	for(int k = 0; k < PsiVec.size(); k++){
-// 		sum[k] = 0;
-// 		for(int x = 0; x < EDGE_RANGE_CHECK; x++){
-// 			for(int y = 0; y < opt.grid[2]; y++){
-// 				sum[k] += abs2(PsiVec[k](0,x,y,0));
-// 			}
-// 		}
-// 		for(int x = opt.grid[1] - EDGE_RANGE_CHECK; x < opt.grid[1]; x++){
-// 			for(int y = 0; y < opt.grid[2]; y++){
-// 				sum[k] += abs2(PsiVec[k](0,x,y,0));
-// 			}
-// 		}
-// 		for(int y = 0; y < EDGE_RANGE_CHECK; y++){
-// 			for(int x = 0; x < opt.grid[1]; x++){
-// 				sum[k] += abs2(PsiVec[k](0,x,y,0));
-// 			}
-// 		}
-// 		for(int y = opt.grid[2] - EDGE_RANGE_CHECK; y < opt.grid[2]; y++){
-// 			for(int x = 0; x < opt.grid[1]; x++){
-// 				sum[k] += abs2(PsiVec[k](0,x,y,0));
-// 			}
-// 		}
-// 	}
-// 	for(int k = 0; k < PsiVec.size(); k++){
-// 		std::string error = "Gas reached the edges of the grid, with a density of " + to_string(sum[k]) + "/" + to_string(threshold) + ".  The simulation failed in step: ";
-// 		// cout << "checkEdges[" << k << "] result: " << sum[k] << "/" << threshold << " with " << numberOfEdgePoints << " of points on the edge." << endl;
-// 		if(sum[k] > threshold){			
-// 			expException e(error);
-// 			throw;
-// 		}
-// 	}
-// }
 
 void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres){
 	
-	// double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	// double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
-
 	calc_fields(DATA,opt);
-	// cout << "calc_fields" << endl;
+
 	pres.vlist.clear();
 	findVortices(densityCoordinates,pres.vlist);
 
@@ -554,16 +180,8 @@ int Eval::get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v,
 		return 0;
 }
 
-// bool Eval::checkRanges(Coordinate<int32_t> c,Coordinate<int32_t> d){
-// 	if(c.x() > d.x()){
-// 		if(c.y() > d.y()
-// 	}
-// }
-
 void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) {
 
-	// double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	// double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 	// Nullstellen zaehlen
 	// vector< vector< vector<bool > > > checked(phase.width(), vector< vector<bool> >(phase.height(), vector<bool>(phase.depth(),false)));	// Welche felder schon ueberprueft wurden
 	VortexData vortex;
@@ -743,18 +361,10 @@ void Eval::calc_fields(MatrixXcd &DATA, Options &opt){
 			// }
 		}
 	}
-	// string name = "Test Zeros"+to_string(snapshot_time);
-	// plotDataToPng(name, name, zeros, opt);
 }
 
 
 void Eval::getDensity(){
-	 //  / 
-	// double upper_threshold = 20.;
-	// cout << "Threshold " << threshold << endl;
-
-	// double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	// double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 
 	double maximum = 0;
 	for(int k = 0; k < data.wavefunction.size(); k++){
@@ -766,12 +376,7 @@ void Eval::getDensity(){
 		}
 	}
 	double threshold = maximum * 0.05;
-	// cout << " max " << maximum << " threshold " << threshold << endl;
 
-	  //abs2(data(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9; 
-
-	// RealGrid densMap = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-	// densityLocationMap_local = RealGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 	for(int k = 0; k < data.wavefunction.size(); k++){
 		
 		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
@@ -989,85 +594,6 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 
 	aspectRatio(obs,sampleindex);
 
-	// // Aspect-Ratio
-	// obs.r_max = 0;
-	// obs.r_min = (opt.grid[1] * h_x >= opt.grid[2] * h_y) ? opt.grid[1] * h_x : opt.grid[2] * h_y;
-	// vector<contourData> cData;
-	// for(c_set::iterator it = contour[sampleindex].begin(); it != contour[sampleindex].end(); ++it){
-	// 	contourData tmp;
-	// 	tmp.c = *it;
-	// 	int x_shift = tmp.c.x() - opt.grid[1]/2;
-	// 	int y_shift = tmp.c.y() - opt.grid[2]/2;
-	// 	tmp.phi = atan2(y_shift * h_y,x_shift * h_x) * 180 /M_PI + 180;
-	// 	tmp.r = sqrt(x_shift*x_shift * h_x*h_x + y_shift*y_shift *h_y*h_y);
-	// 	cData.push_back(tmp);
-	// 	// if(obs.r_max <= tmp.r){
-	// 	// 	obs.r_max = tmp.r;
-	// 	// 	obs.r_max_phi = tmp.phi;
-	// 	// }
-	// 	// if(obs.r_min >= tmp.r){
-	// 	// 	obs.r_min = tmp.r;
-	// 	// 	obs.r_min_phi = tmp.phi;
-	// 	// }
-
-	// }
-
-	// std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
-
-	// vector<double> cRadius(361);
-	// vector<int> divisor_counter(361);
-	// for(vector<contourData>::const_iterator it = cData.begin(); it != cData.end(); ++it){
-	// 	int index = round(it->phi);
-	// 	cRadius[index] += it->r;
-	// 	divisor_counter[index]++;
-	// }
-	// // cRadius.erase(cRadius.begin());
-	// // divisor_counter.erase(divisor_counter.begin());
-	// cRadius[0] += cRadius[360]; cRadius.pop_back();
-	// divisor_counter[0] += cRadius[360]; divisor_counter.pop_back();
-
-	// for(int i = 0; i < 360; i++){
-	// 	if(divisor_counter[i] == 0){
-	// 		divisor_counter[i] = 1;
-	// 	}
-
-	// 	cRadius[i] /= divisor_counter[i];
-	// }
-
-	// // string name = "cRadius_" + to_string(sampleindex) + "_" + to_string(sampleindex);
-	// // plotVector(name,cRadius,opt);
-
-	// vector<double> cDistance(180);
-	// for(int i = 0; i < 180; i++){
-	// 	cDistance[i] = fabs(cRadius[i] + cRadius[i+180]);
-	// }
-	// vector<double>::iterator maxDistance = std::max_element(cDistance.begin(), cDistance.end());
-	// obs.r_max = *maxDistance;
-	// obs.r_max_phi = std::distance(cDistance.begin(), maxDistance);
-
-	// vector<double>::iterator minDistance = std::min_element(cDistance.begin(), cDistance.end());
-	// obs.r_min = *minDistance;
-	// obs.r_min_phi = std::distance(cDistance.begin(), minDistance);
-
-	// vector<double> tmp_ratio(90);
-	// // double tmp_ratio = 0;
-	// for(int i = 0; i < 89; i++){
-	// 	if(cDistance[i+90] >= 0.0){
-	// 		tmp_ratio[i] = cDistance[i] / cDistance[i+90];
-	// 	} else {
-	// 		cout << "WARNING: Aspect-Ratio: Calculated Distance smaller than zero!" << endl;
-	// 	}
-	// 	// double tmp1 = cDistance[i] / cDistance[i+90];
-	// 	// double tmp2 = cDistance[i+1] / cDistance[i+91];
-	// 	// tmp_ratio = (tmp1 > tmp2) ? tmp1 : tmp2;
-	// }
-	// obs.fixedAspectRatio = tmp_ratio[0];
-	// vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
-	// int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
-	// obs.aspectRatioAngle = maxAspectRatioIndex;
-	// obs.aspectRatio = *maxElement; // zwischen 0 und 90 grad, also effektiv x und y richtung
-	// // FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
-
 	// == Angular Density
 	// vector<double> angularDensity;
 	vector<double> phi;
@@ -1130,20 +656,12 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
 
-	// vector<double> x_tmp(densityCoordinates[sampleindex].size());
-	// vector<double> y_tmp(densityCoordinates[sampleindex].size());
 
-	// for(int i = 0; i < densityCoordinates[sampleindex].size(); i++){
-	// 	x_tmp[i] = densityCoordinates[sampleindex][i].x();
-	// 	y_tmp[i] = densityCoordinates[sampleindex][i].y();
-	// }
-	// auto x_minmax = std::minmax_element (x_tmp.begin(),x_tmp.end());
-	// auto y_minmax = std::minmax_element (y_tmp.begin(),y_tmp.end());
 
-	// int diff_x = (int)*x_minmax.second - (int)*x_minmax.first;
-	// int diff_y = (int)*y_minmax.second - (int)*y_minmax.first;
+	// vector<int> edges;
+	// checkResizeCondition(edges);
 
-	// MatrixXcd smallData = DATA.block((int)*x_minmax.first,(int)*y_minmax.first,diff_x,diff_y); // MatrixXcd((int)*x_minmax.second - (int)*x_minmax.first,(int)*y_minmax.second - (int)*y_minmax.first);
+	// MatrixXcd smallData = DATA.block(edges[0],edges[1],edges[2],edges[3]); // MatrixXcd((int)*x_minmax.second - (int)*x_minmax.first,(int)*y_minmax.second - (int)*y_minmax.first);
 
 	// plotDataToPngEigen("smallData",smallData,opt);
 
@@ -1242,15 +760,54 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	return obs;
 }
 
-bool Eval::checkResizeCondition(){
-	bool resize = false;
-	double innerCircleDistance = opt.min_x + opt.min_y;
-	if(totalResult.r_max >= (innerCircleDistance * 0.85)){
-		resize = true;
-	}
-	return resize;
-}
+bool Eval::checkResizeCondition(vector<int> &edges){
 
+	edges.resize(4);
+
+	vector<double> x_tmp(densityCoordinates[0].size());
+	vector<double> y_tmp(densityCoordinates[0].size());
+
+	for(int i = 0; i < densityCoordinates[0].size(); i++){
+		x_tmp[i] = densityCoordinates[0][i].x();
+		y_tmp[i] = densityCoordinates[0][i].y();
+	}
+	auto x_minmax = std::minmax_element (x_tmp.begin(),x_tmp.end());
+	auto y_minmax = std::minmax_element (y_tmp.begin(),y_tmp.end());
+
+	edges[0] = (int)*x_minmax.first;
+	edges[1] = (int)*y_minmax.first;
+
+	edges[2] = (int)*x_minmax.second - (int)*x_minmax.first;
+	edges[3] = (int)*y_minmax.second - (int)*y_minmax.first;
+
+	return (edges[2] >= (data.meta.grid[0] * EDGE_RANGE_CHECK) || edges[3] >= (data.meta.grid[1] * EDGE_RANGE_CHECK));
+}		
+
+void Eval::checkNextAngles(vector<double> &r, int &i){
+		int l_index = i-1;
+		int r_index = i;
+		while(cyclicReadout(r,r_index) == 0.0) {
+			r_index++;
+		}
+		if(r_index != i){
+			double average = (cyclicReadout(r,l_index) + cyclicReadout(r,r_index))/2.0;
+			for(int k = l_index+1;k < r_index;k++){
+				cyclicAssignment(r,k,average);
+			}
+		}
+	}
+
+void Eval::cyclicAssignment(vector<double> &r, int i, double rvalue){
+		if(i < 0){  cyclicAssignment(r,i+360,rvalue); }
+		else if(i > 359){ cyclicAssignment(r,i-360,rvalue); }
+		else{  r[i] = rvalue; }
+	}
+
+double Eval::cyclicReadout(vector<double> &r, int i){
+		if(i < 0){ return cyclicReadout(r,i+360); }
+		else if(i > 359){ return cyclicReadout(r,i-360); }
+		else{ return r[i]; }
+	}
 
 // Observables Eval::calculatorITP(ComplexGrid data,int sampleindex){
 	
@@ -1350,30 +907,311 @@ bool Eval::checkResizeCondition(){
 // 	return obs;
 // }
 
-void Eval::checkNextAngles(vector<double> &r, int &i){
-		int l_index = i-1;
-		int r_index = i;
-		while(cyclicReadout(r,r_index) == 0.0) {
-			r_index++;
-		}
-		if(r_index != i){
-			double average = (cyclicReadout(r,l_index) + cyclicReadout(r,r_index))/2.0;
-			for(int k = l_index+1;k < r_index;k++){
-				cyclicAssignment(r,k,average);
-			}
-		}
-	}
+// void Eval::evaluateDataITP(){
 
-void Eval::cyclicAssignment(vector<double> &r, int i, double rvalue){
-		if(i < 0){  cyclicAssignment(r,i+360,rvalue); }
-		else if(i > 359){ cyclicAssignment(r,i-360,rvalue); }
-		else{  r[i] = rvalue; }
-	}
+// 	// pres.vlist.clear();
+// 	densityCoordinates.clear();
+// 	contour.resize(PsiVec.size());
+// 	densityCounter.resize(PsiVec.size());
 
-double Eval::cyclicReadout(vector<double> &r, int i){
-		if(i < 0){ return cyclicReadout(r,i+360); }
-		else if(i > 359){ return cyclicReadout(r,i-360); }
-		else{ return r[i]; }
-	}
+// 	densityLocationMap.resize(PsiVec.size());
+// 	densityCoordinates.resize(PsiVec.size());
+// 	phase.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 	zeros.resize(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+// 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
+		
+// 	// for(int k = 0; k < PsiVec.size(); k++){
+// 		getDensity(PsiVec[0],densityLocationMap[0],densityCoordinates[0],densityCounter[0]);
+// 		totalResult = calculatorITP(PsiVec[0],0);
+// 	// }
+// 	// totalResult /= PsiVec.size();
+// }
+
+// void Eval::CombinedSpectrum(){
+// 	string dirname = "CombinedRunPlots";
+//     struct stat st;
+//     	if(stat(dirname.c_str(),&st) != 0){
+//         mkdir(dirname.c_str(),0755);
+//     }
+    
+// 	std::string snapShotString = to_string(snapshot_time);
+// 	std::stringstream ss;
+// 	ss << std::setfill('0') << std::setw(5) << snapShotString;
+// 	snapShotString = ss.str();
+	
+// 	runname = dirname + "/" + runname;
+
+// 	string plotname = runname + "-Spectrum-" + snapShotString;
+// 	string title = "Spectrum " + snapShotString; 
+// 	plotSpectrum(plotname,title, totalResult);
+
+// }
+
+// void Eval::plot(){
+// 	string dirname = "runPlots";
+//     struct stat st;
+//     	if(stat(dirname.c_str(),&st) != 0){
+//         mkdir(dirname.c_str(),0755);
+//     }
+    
+// 	std::string snapShotString = to_string(data.meta.steps);
+// 	std::stringstream ss;
+// 	ss << std::setfill('0') << std::setw(5) << snapShotString;
+// 	snapShotString = ss.str();
+	
+// 	runname = dirname + "/" + runname;
+
+// 	vector<double> Xexpanding(opt.grid[1]);
+// 	vector<double> Yexpanding(opt.grid[2]);
+// 	double b_x = opt.min_x * opt.stateInformation[0];
+// 	double b_y = opt.min_y * opt.stateInformation[1];
+// 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+// 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+// 	for(int i = 0; i < opt.grid[1]; i++){
+// 		Xexpanding[i] = -b_x + h_x * i;
+// 	}
+// 	for(int i = 0; i < opt.grid[2]; i++){
+// 		Yexpanding[i] = -b_y + h_y * i;
+// 	}
+
+// 	vector<double> ranges(2);
+// 	complex<double> tmp3 = complex<double>(opt.RTE_step * opt.n_it_RTE,0.0);
+// 	ranges[0] = opt.min_x * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_x*opt.dispersion_x*tmp3*tmp3));
+// 	ranges[1] = opt.min_y * real(sqrt(complex<double>(1.0,0.0)+opt.exp_factor*opt.dispersion_y*opt.dispersion_y*tmp3*tmp3));
+	
+
+	// string plotname = "Control-Plot-" + snapShotString;
+	// string title = "Density " + snapShotString + " " + to_string(data.meta.time);
+	// plotDataToPngEigen(plotname,data.wavefunction[0],opt);
+
+	// if(opt.runmode.compare(1,1,"1") == 0){
+	// 	title = "Density " + snapShotString;
+	// 	plotname = "ExpandingFrame-" + snapShotString;
+	// 	plotWithExpandingFrame(plotname,title,PsiVec[0],ranges,Xexpanding,Yexpanding,opt);
+	// }
+
+	// plotname = "Spectrum-" + snapShotString;
+	// title = "Spectrum " + snapShotString; 
+	// plotSpectrum(plotname,title,totalResult);
+
+	// plotname = "Radial-Density-" + snapShotString;
+	// title = "Radial-Density " + snapShotString; 
+	// plotRadialDensity(plotname,title,totalResult);
+
+	// if(pres[0].vlist.size() >= 0){
+	// 	plotname = "PairDistance" + snapShotString;
+	// 	title = "PairDistance " + snapShotString;
+	// 	plotPairDistance(plotname,title,pres[0]);
+	// }
+
+	// plotname = "Vortices-" + snapShotString;
+	// title = "Vortices " + snapShotString;
+	// plotVortexList(plotname,title,phase,pres[0],opt);	
+
+	// plotname = "Density-" + snapShotString;
+	// title = "Density " + snapShotString;
+	// plotDataToPng(plotname,title,densityLocationMap[0],opt);
+
+	// plotname = "Density-Axial-Distribution-Gradient-" + snapShotString;
+	// title = "Density " + snapShotString;
+	// plotVector(plotname,title,x_dist_grad,y_dist_grad,opt);
+
+	// plotname = "Angular-Dens-" + snapShotString;
+	// title = "Angular Density " + snapShotString;
+	// plotVector(plotname,title,totalResult.angularDensity,opt);	
+
+	// plotname = "Contour-" + snapShotString;
+	// title = "Contour " + snapShotString + " " + to_string(opt.t_abs.real());
+	// plotContour(plotname,title,PsiVec[0],contour[0],opt);
+
+
+// }
+
+// void Eval::saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber){
+// 	runname = external_runname;
+// 	opt = external_opt;
+// 	snapshot_time = external_snapshot_time;
+// 	PsiVec.resize(wavefctVec.size());
+// 	#pragma omp parallel for
+// 	for(int k = 0; k < wavefctVec.size(); k++){
+// 		PsiVec[k] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// 		for(int i = 0; i < opt.grid[1]; i++){
+// 			for(int j = 0; j < opt.grid[2]; j++){
+// 				PsiVec[k](0,i,j,0) = wavefctVec[k](0,i,j,sliceNumber) / complex<double>(opt.Ag,0.0);
+// 			}
+// 		}
+// 	}
+// 	convertFromDimensionless();
+// }
+
+// void Eval::saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname){
+// 	runname = external_runname;
+// 	opt = external_opt;
+// 	snapshot_time = external_snapshot_time;
+// 	PsiVec.resize(1);
+
+// 	PsiVec[0] = ComplexGrid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+	
+// 	for(int i = 0; i < opt.grid[1]; i++){
+// 		for(int j = 0; j < opt.grid[2]; j++){		
+// 			PsiVec[0](0,i,j,0) = wavefct(i,j) / complex<double>(opt.Ag,0.0);
+// 		}
+// 	}
+// 	convertFromDimensionless();		
+// }
+
+// void Eval::saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval){
+// 	runname = external_runname;
+// 	opt = external_opt;
+// 	snapshot_time = external_snapshot_time;
+
+// 	int numberOfSamples = extEval.size();
+
+
+// 	totalResult = Observables(extEval[0].totalResult.number.size());
+// 	contour.resize(numberOfSamples*opt.samplesize);
+// 	pres.resize(numberOfSamples*opt.samplesize);
+	
+// 	for(int k = 0; k < numberOfSamples; k++){
+// 		if(k == 0){
+// 			totalResult = extEval[k].totalResult;
+// 		}else{
+// 			totalResult += extEval[k].totalResult;
+// 		}
+// 		for(int i = 0; i < opt.samplesize;i++){
+// 			contour[i+k*opt.samplesize] = extEval[k].contour[i];
+// 			pres[i+k*opt.samplesize].vlist = extEval[k].pres[i].vlist;
+// 		}
+// 	}
+// 	totalResult /= numberOfSamples;
+// 	CombinedEval();
+// 	CombinedSpectrum();
+// }
+
+// void Eval::CombinedEval(){
+
+// 	string dirname = "CombinedRunObservables";
+//     struct stat st;
+//     	if(stat(dirname.c_str(),&st) != 0){
+//         mkdir(dirname.c_str(),0755);
+//     }
+
+// 	string filename = dirname + "/" + runname + "_Observables.dat";	
+	
+// 	struct stat buffer;
+//   	if(stat (filename.c_str(), &buffer) != 0){
+//   		ofstream datafile;
+//   		datafile.open(filename.c_str(), ios::out | ios::app);
+//   		datafile << std::left << std::setw(15) << "Timestep"
+//   						 << std::setw(15) << "X_max"
+//   						 << std::setw(15) << "Y_max"
+//   						 << std::setw(15) << "D_max"
+//   						 << std::setw(15) << "D_min"
+//   						 << std::setw(15) << "Rx"
+// 						 << std::setw(15) << "Ry"
+//   						 << std::setw(15) << "D_max/D_min"
+//   						 << std::setw(15) << "D_max Angle"
+//   						 << std::setw(15) << "D_min Angle"
+//   						 << std::setw(15) << "Ratio"
+//   						 << std::setw(15) << "RatioAngle"
+//   						 << std::setw(15) << "N"
+//   						 << std::setw(15) << "V"
+//   						 << std::setw(15) << "N/V"
+//   						 << std::setw(15) << "E_kin"
+//   				 << endl;
+//   		datafile.close();
+//   	} 
+
+//   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
+// 	// datafile.open;
+// 	datafile << std::left << std::setw(15) << snapshot_time
+// 					 << std::setw(15) << opt.min_x * opt.stateInformation[0]
+// 					 << std::setw(15) << opt.min_y * opt.stateInformation[1]
+//  					 << std::setw(15) << totalResult.r_max
+//  					 << std::setw(15) << totalResult.r_min
+//  					 << std::setw(15) << totalResult.Rx
+//  					 << std::setw(15) << totalResult.Ry
+//  					 << std::setw(15) << totalResult.r_max / totalResult.r_min  
+//  					 << std::setw(15) << totalResult.r_max_phi
+//  					 << std::setw(15) << totalResult.r_min_phi
+//  					 << std::setw(15) << totalResult.aspectRatio 
+//  					 << std::setw(15) << totalResult.aspectRatioAngle 
+// 					 << std::setw(15) << totalResult.particle_count
+// 					 << std::setw(15) << totalResult.volume
+// 					 << std::setw(15) << totalResult.density
+// 					 << std::setw(15) << totalResult.Ekin
+// 			 << endl;
+// 	datafile.close();
+
+
+// 	filename = dirname + "/" + runname + "_Observables.csv";	
+	
+//   	if(stat (filename.c_str(), &buffer) != 0){
+//   		ofstream datafile1;
+//   		datafile1.open(filename.c_str(), ios::out | ios::app);
+//   		datafile1 << std::left << "," << "Timestep"
+//   						 << "," << "X_max"
+//   						 << "," << "Y_max"
+//   						 << "," << "D_max"
+//   						 << "," << "D_min"
+//   						 << "," << "Rx"
+// 						 << "," << "Ry"
+//   						 << "," << "D_max/D_min"
+//   						 << "," << "D_max Angle"
+//   						 << "," << "D_min Angle"
+//   						 << "," << "Ratio"
+//   						 << "," << "RatioAngle"
+//   						 << "," << "N"
+//   						 << "," << "V"
+//   						 << "," << "N/V"
+//   						 << "," << "E_kin"
+//   				 << endl;
+//   		datafile1.close();
+//   	} 
+
+//   	ofstream datafile1(filename.c_str(), std::ios_base::out | std::ios_base::app);
+// 	// datafile.open;
+// 	datafile1 << std::left << "," << snapshot_time
+// 					 << "," << opt.min_x * opt.stateInformation[0]
+// 					 << "," << opt.min_y * opt.stateInformation[1]
+//  					 << "," << totalResult.r_max
+//  					 << "," << totalResult.r_min
+//  					 << "," << totalResult.Rx
+// 					 << "," << totalResult.Ry
+//  					 << "," << totalResult.r_max / totalResult.r_min  
+//  					 << "," << totalResult.r_max_phi
+//  					 << "," << totalResult.r_min_phi
+//  					 << "," << totalResult.aspectRatio 
+//  					 << "," << totalResult.aspectRatioAngle 
+// 					 << "," << totalResult.particle_count
+// 					 << "," << totalResult.volume
+// 					 << "," << totalResult.density
+// 					 << "," << totalResult.Ekin
+// 			 << endl;
+// 	datafile1.close();
+
+// 	filename = dirname + "/" + runname + "_Ratios.csv";	
+	
+//   	if(stat (filename.c_str(), &buffer) != 0){
+//   		ofstream datafile2;
+//   		datafile2.open(filename.c_str(), ios::out | ios::app);
+//   		datafile2 << std::left << "," << "Timestep";
+//   		for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
+//   			datafile2 << "," << std::left << i;
+//   		}
+//   		datafile2 << endl;
+//   		datafile2.close();
+//   	} 
+
+//   	ofstream datafile2(filename.c_str(), std::ios_base::out | std::ios_base::app);
+// 	// datafile2.open;
+// 	datafile2 << std::left << "," << snapshot_time;
+//   	for(int i = 0; i < totalResult.fixedAspectRatio.size(); i++){
+//   		datafile2 << "," << totalResult.fixedAspectRatio(i);
+//   	}
+//   	datafile2 << endl;
+// 	datafile2.close();
+// }
 	
 	

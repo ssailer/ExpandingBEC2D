@@ -48,6 +48,7 @@ public:
 	bool checkResizeCondition();
 	int getVortexNumber();
 	void convertFromDimensionless();
+	bool checkResizeCondition(vector<int> &edges);
 
 
 	// Observables.h
@@ -119,6 +120,7 @@ private:
 	// inline void setDirection(int32_t &direction);
 	// void findInitialP(RealGrid &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s, Coordinate<int32_t> *initial);
 	// void findMostRightP(c_set &contour, Coordinate<int32_t> &p);
+
 
 	// Helpermethods to access radial vectors:
 	void checkNextAngles(vector<double> &r, int &i);

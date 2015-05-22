@@ -208,8 +208,8 @@ void Runner<T>::cli(string name, int index, double start)
 		// expectedhour = (remainingSeconds / 3600);
 		// expectedmin = (remainingSeconds / 60) % 60;
 		// expectedseconds = remainingSeconds % 60;
-		cout << "\r";
-		cout << currentTime() <<  " " << name << " "
+		cerr << "\r";
+		cerr << currentTime() <<  " " << name << " "
 		 	 << std::setw(2) << std::setfill('0') << hour << ":"
 			 << std::setw(2) << std::setfill('0') << min << ":"
 			 << std::setw(2) << std::setfill('0') << seconds  << "    Steps: "
@@ -256,11 +256,22 @@ void Runner<T>::runToTime(string runName)
 {	
 	double start;  // starttime of the run
 
+	Eval* initEval = new Eval(*pData,opt,runName);
+	initEval->process();
+	initEval->save();
+
+	if(opt.runmode == "EXP"){
+		vector<int> edges;
+		if(initEval->checkResizeCondition(edges)){
+			pData->resize();
+			algorithm->setVariables();
+			cout << "Resizing" << endl;
+		}
+	}
+
 	if(opt.initialRun == true){
 
-		Eval* initEval = new Eval(*pData,opt,runName);
-		initEval->process();
-		initEval->save();
+
 
 		Plotter* initPlot = new Plotter(*initEval,opt);
 		initPlot->plotEval();
@@ -272,9 +283,10 @@ void Runner<T>::runToTime(string runName)
 		string evalname = "Evaluation.h5";
 		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
 		evalFile->appendEval(meta.steps,opt,meta,*initEval);
-		delete initEval;
+		
 		delete evalFile;
 	}
+	delete initEval;
 
 	start = omp_get_wtime();
 
@@ -287,14 +299,16 @@ void Runner<T>::runToTime(string runName)
 			algorithm->timeStep(opt.RTE_step);
 
 			opt.t_abs += opt.RTE_step;
+
+			cli(runName,pData->meta.steps,start);
 		}
 
 		// REMOVE
 			if(opt.runmode == "EXP"){
 				opt.stateInformation[0] = real(lambda_x(complex<double>(pData->meta.time,0.0))); // needed for expansion and the computing of the gradient etc.
 				opt.stateInformation[1] = real(lambda_y(complex<double>(pData->meta.time,0.0)));
-				cout << opt.stateInformation[0] << "  " << pData->meta.time << " ";
-				cout << pData->meta.initCoord[0] << " " << pData->meta.coord[0] << " " << pData->meta.time;
+				// cout << opt.stateInformation[0] << "  " << pData->meta.time << " ";
+				// cout << pData->meta.initCoord[0] << " " << pData->meta.coord[0] << endl;
 			}
 			else {
 				opt.stateInformation[0] = 1.0;
@@ -308,6 +322,15 @@ void Runner<T>::runToTime(string runName)
 			Eval* eval = new Eval(*pData,opt,runName);
 			eval->process();
 			eval->save();
+
+			if(opt.runmode == "EXP"){
+				vector<int> edges;
+				if(eval->checkResizeCondition(edges)){
+					pData->resize();
+					algorithm->setVariables();
+					cout << "Resizing" << endl;
+				}
+			}
 
 			Plotter* plotter = new Plotter(*eval,opt);
 			plotter->plotEval();
