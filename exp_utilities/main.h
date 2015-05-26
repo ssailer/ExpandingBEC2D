@@ -134,6 +134,20 @@ inline void InitMain::setVortexnumber(int number){
 }
 
 inline MatrixData::MetaData InitMain::getMeta(){
+
+	meta.Ag = opt.Ag;
+	meta.OmegaG = opt.OmegaG;
+	meta.grid[0] = opt.grid[1];
+	meta.grid[1] = opt.grid[2];
+	meta.initCoord[0] = meta.coord[0] = opt.min_x;
+	meta.initCoord[1] = meta.coord[1] = opt.min_y;
+	meta.initSpacing[0] = meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
+	meta.initSpacing[1] = meta.spacing[1] = opt.min_y * 2 / opt.grid[2];
+	meta.samplesize = opt.samplesize;
+	meta.time = 0;
+	meta.steps = 0;
+	meta.dataToArray();
+
 	return meta;
 }
 
@@ -325,20 +339,9 @@ inline int InitMain::readConfig()
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
-	convertToDimensionless();
+	toDimensionless(opt);
 
-	meta.Ag = opt.Ag;
-	meta.OmegaG = opt.OmegaG;
-	meta.grid[0] = opt.grid[1];
-	meta.grid[1] = opt.grid[2];
-	meta.initCoord[0] = meta.coord[0] = opt.min_x;
-	meta.initCoord[1] = meta.coord[1] = opt.min_y;
-	meta.initSpacing[0] = meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
-	meta.initSpacing[1] = meta.spacing[1] = opt.min_y * 2 / opt.grid[2];
-	meta.samplesize = opt.samplesize;
-	meta.time = 0;
-	meta.steps = 0;
-	meta.dataToArray();
+
 	}
 	catch(const SettingNotFoundException &nfex)
 	{
@@ -402,23 +405,23 @@ inline void InitMain::writeConfig(){
 	datafile.close();
 }
 
-inline void InitMain::convertToDimensionless(){
+// inline void InitMain::convertToDimensionless(){
 
-	const double m = 87 * 1.66 * 1.0e-27;
-	const double hbar = 1.054 * 1.0e-22;	
-	opt.Ag = 2 * opt.min_x / opt.grid[1];
-	opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
+// 	const double m = 87 * 1.66 * 1.0e-27;
+// 	const double hbar = 1.054 * 1.0e-22;	
+// 	opt.Ag = 2 * opt.min_x / opt.grid[1];
+// 	opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
 
-	opt.min_x /= opt.Ag;
-	opt.min_y /= opt.Ag;
-	opt.ITP_step *= opt.OmegaG;
-	opt.RTE_step *= opt.OmegaG;
-	opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
-	opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
-	opt.omega_w *= 2.0 * M_PI / opt.OmegaG;
-	opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
-	opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
-}
+// 	opt.min_x /= opt.Ag;
+// 	opt.min_y /= opt.Ag;
+// 	opt.ITP_step *= opt.OmegaG;
+// 	opt.RTE_step *= opt.OmegaG;
+// 	opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
+// 	opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
+// 	opt.omega_w *= 2.0 * M_PI / opt.OmegaG;
+// 	opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
+// 	opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
+// }
 
 inline void InitMain::convertFromDimensionless(){
 	cout << "WATCH OUT: InitMain::convertFromDimensionless() is not yet implemented" << endl;

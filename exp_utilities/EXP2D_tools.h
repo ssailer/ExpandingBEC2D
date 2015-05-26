@@ -18,9 +18,7 @@
 using namespace std;
 using namespace Eigen;
 
-typedef struct Options {
-
-    
+typedef struct Options {    
 
     double N; // Number of particles    
     double klength[3];
@@ -49,10 +47,14 @@ typedef struct Options {
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
     bool initialRun;
+    bool isDimensionless;
 
-    Options () : N(100000), stateInformation(2), /*t_abs(0,0),*/ snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true), config("sim.cfg") {}
+    Options () : N(100000), stateInformation(2), /*t_abs(0,0),*/ snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true), isDimensionless(false), config("sim.cfg") {}
     
 } Options;
+
+void toDimensionless(Options &opt);
+void fromDimensionless(Options &opt);
 
 
 class expException {

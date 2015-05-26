@@ -60,13 +60,16 @@ protected:
   binaryFile() {}
   bool checkTime(int snapShotTime);
 
-  void writeMatrixData(const string &name, MatrixData const * const &pData );
-  void writeMeta(MatrixData::MetaData &meta );
-  void writeOptions(Options const & options);
+  void writeMatrixData(const string &name, MatrixData * const &pData, Options const &options );
+  void readMatrixData(string const &name, MatrixData* &pData, Options &options);
 
-  void readOptions(Options &options);
-  void readMeta(MatrixData::MetaData &meta);
-  void readMatrixData(string const &name, MatrixData* &pData);
+  void writeMeta(hid_t &h5_group,MatrixData::MetaData &meta );
+  void readMeta(hid_t &h5_group,MatrixData::MetaData &meta);
+
+  void writeOptions(hid_t &h5_group,Options const & options);
+  void readOptions(hid_t &h5_group,Options &options);
+
+
 
 };
 

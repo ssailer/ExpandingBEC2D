@@ -22,14 +22,8 @@ Eval::Eval(MatrixData d,Options o, string runName) : data(d),  opt(o) , runname(
 
 
 void Eval::convertFromDimensionless(){
-	opt.min_x *= opt.Ag;
-	opt.min_y *= opt.Ag;
-	// opt.t_abs /= opt.OmegaG;
-	// opt.t_abs *= 1000.0; // conversion to ms
-	opt.omega_x /= 2.0 * M_PI / opt.OmegaG;
-	opt.omega_y /= 2.0 * M_PI / opt.OmegaG;
-	opt.dispersion_x /= 2.0 * M_PI / opt.OmegaG;
-	opt.dispersion_y /= 2.0 * M_PI / opt.OmegaG;
+	
+	fromDimensionless(opt);
 
 	#pragma omp parallel for
 	for(int k = 0; k < data.wavefunction.size(); k++){

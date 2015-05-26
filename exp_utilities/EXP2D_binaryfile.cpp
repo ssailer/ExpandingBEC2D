@@ -125,7 +125,9 @@ bool binaryFile::checkTime(int snapShotTime){
 
 
 
-void binaryFile::writeMatrixData(const string &name, MatrixData const * const &pData ){
+
+
+void binaryFile::writeMatrixData(const string &name, MatrixData * const &pData, Options const &options ){
 
 	hid_t h5_EMGroup_vecsub = H5Gcreate(h5_timegroup, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); //create dataset with full space selection
 
@@ -154,25 +156,29 @@ void binaryFile::writeMatrixData(const string &name, MatrixData const * const &p
 		H5Pclose(dset_create_props);
 		H5Sclose(dataspace);
 	}
+	writeOptions(h5_EMGroup_vecsub,options);
+	writeMeta(h5_EMGroup_vecsub,pData->meta);
 	H5Gclose(h5_EMGroup_vecsub);
 
 
 }
 
-void binaryFile::writeMeta(MatrixData::MetaData &meta ){
-	if(!H5Aexists(h5_timegroup, "Meta")){
+
+
+void binaryFile::writeMeta(hid_t &h5_group, MatrixData::MetaData &meta ){
+	if(!H5Aexists(h5_group, "Meta")){
 		hsize_t dimsf[1] = {(hsize_t)meta.size()};
 		hid_t dataspace = H5Screate_simple(1, dimsf, NULL);
 	
-		hid_t h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+		hid_t h5a_meta = H5Acreate(h5_group, "Meta", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
 		H5Awrite(h5a_meta, H5T_IEEE_F64LE, meta.data());
 		H5Aclose(h5a_meta);
 		H5Sclose(dataspace);
 	}
 }
 
-void binaryFile::writeOptions(Options const & options){
-  if(!H5Aexists(h5_timegroup, "Options")){
+void binaryFile::writeOptions(hid_t &h5_group, Options const & options){
+  if(!H5Aexists(h5_group, "Options")){
 	hid_t    h5a_options, dataspace;
 
 	double tmpOpt1[30];
@@ -213,7 +219,7 @@ void binaryFile::writeOptions(Options const & options){
 	hsize_t dimsf[1] = {30};
 	dataspace = H5Screate_simple(1, dimsf, NULL);
 
-	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+	h5a_options = H5Acreate(h5_group, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
 	H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
 
 	H5Aclose(h5a_options);
@@ -224,32 +230,12 @@ void binaryFile::writeOptions(Options const & options){
 }
 
 
-bool binaryFile::appendSnapshot(const string &name, MatrixData * const &pData, Options const &options){
-	int snapShotTime = pData->meta.steps;
-  if(m == in){
-	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
-	return false;
-  }
 
-  if(!checkTime(snapShotTime)){
-	cout << "HDF5 Group error for snapShotTime group: " << snapShotTime << endl;
-	H5Gclose(h5_timegroup);
-	return false;
-  }
 
-  writeMatrixData(name, pData);
-  writeMeta(pData->meta);
-  writeOptions(options);
-
-  H5Gclose(h5_timegroup);
-
-  return true;
-}
-
-void binaryFile::readOptions(Options &options){
+void binaryFile::readOptions(hid_t &h5_group, Options &options){
 	
 	hid_t h5a_options;
-	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
+	h5a_options = H5Aopen(h5_group, "Options", H5P_DEFAULT);
 
 	// int sizeOfOptions = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
 
@@ -292,16 +278,16 @@ void binaryFile::readOptions(Options &options){
 	H5Aclose(h5a_options);
 }
 
-void binaryFile::readMeta(MatrixData::MetaData &meta){
+void binaryFile::readMeta(hid_t &h5_group, MatrixData::MetaData &meta){
 
 	hid_t h5a_meta;
-	h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
+	h5a_meta = H5Aopen(h5_group, "Meta", H5P_DEFAULT);
 	H5Aread(h5a_meta, H5T_IEEE_F64LE, meta.data());
 	H5Aclose(h5a_meta);
 	meta.arrayToData(); 
 }
 
-void binaryFile::readMatrixData(string const &name, MatrixData* &pData){
+void binaryFile::readMatrixData(string const &name, MatrixData* &pData, Options &options){
 
   stringstream set_name;
   set_name << name;
@@ -310,6 +296,9 @@ void binaryFile::readMatrixData(string const &name, MatrixData* &pData){
 	cout << "ERROR: HDF5 Dataset " << name << " does not exist for name " << name << " in EigenMatrix branch" << endl;
   }else{
 	hid_t h5_EMGroup_vecsub = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
+
+	readOptions(h5_EMGroup_vecsub,options);
+	readMeta(h5_EMGroup_vecsub,pData->meta);
 		  
 	hsize_t vecsize;
 	H5Gget_num_objs(h5_EMGroup_vecsub, &vecsize);
@@ -332,8 +321,33 @@ void binaryFile::readMatrixData(string const &name, MatrixData* &pData){
 	  free(dimf);
 	  H5Dclose(dataset);
 	}
+
 	H5Gclose(h5_EMGroup_vecsub);
   }
+}
+
+
+
+bool binaryFile::appendSnapshot(const string &name, MatrixData * const &pData, Options const &options){
+	int snapShotTime = pData->meta.steps;
+  if(m == in){
+	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
+	return false;
+  }
+
+  if(!checkTime(snapShotTime)){
+	cout << "HDF5 Group error for snapShotTime group: " << snapShotTime << endl;
+	H5Gclose(h5_timegroup);
+	return false;
+  }
+
+  writeMatrixData(name, pData, options);
+  // writeMeta(pData->meta);
+  // writeOptions(options);
+
+  H5Gclose(h5_timegroup);
+
+  return true;
 }
 
 
@@ -358,9 +372,9 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
 	return false;
   }
 
-  readOptions(options);
-  readMeta(pData->meta);
-  readMatrixData(name, pData);
+  // readOptions(options);
+  // readMeta(pData->meta);
+  readMatrixData(name, pData, options);
 
   H5Gclose(h5_timegroup);
 
@@ -385,13 +399,15 @@ bool binaryFile::getLatestSnapshot(const string &name, MatrixData* &pData, Optio
 		return false;
   	}
 
-  	readOptions(options);
-  	readMeta(pData->meta);
-  	readMatrixData(name, pData);
+  	// readOptions(options);
+  	// readMeta(pData->meta);
+  	readMatrixData(name, pData, options);
 
   	H5Gclose(h5_timegroup);
 
 }
+
+
 
 
 
@@ -414,8 +430,7 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 	return false;
   }
 
-  writeOptions(options);
-  writeMeta(results.data.meta);  
+
 
   hid_t h5_observables;
 
@@ -423,6 +438,9 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 	h5_observables = H5Gopen(h5_timegroup, "Observables", H5P_DEFAULT);
   else
 	h5_observables = H5Gcreate(h5_timegroup, "Observables", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+  	writeOptions(h5_observables, options);
+  	writeMeta(h5_observables, results.data.meta);  
 
 	/// PREPARE THE DOUBLE ARRAYS
 	string vec1Name = "Averages";
@@ -709,8 +727,7 @@ bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 		return false;
 	}
 
-	readOptions(options);
-	readMeta(results.data.meta);
+
 
 	hid_t h5_observables;
 	
@@ -720,6 +737,9 @@ bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 		cout << "Cannot open Group Observables for time " << snapShotTime << ", it doesn't exist." << endl;
 		return false;
 	}
+
+	readOptions(h5_observables, options);
+	readMeta(h5_observables, results.data.meta);
 
 	hid_t dataset, dataspace ;
 	hsize_t *dimf;

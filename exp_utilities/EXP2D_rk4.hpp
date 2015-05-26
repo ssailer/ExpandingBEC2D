@@ -4,6 +4,7 @@
 #include <iostream>
 #include <complex>
 #include <omp.h>
+#include <EXP2D_tools.h>
 #include <EXP2D_MatrixData.h>
 #include <EXP2D_constants.h>
 #include <eigen3/Eigen/Dense>

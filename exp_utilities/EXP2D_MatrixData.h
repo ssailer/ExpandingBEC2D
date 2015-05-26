@@ -229,6 +229,8 @@ inline void MatrixData::MetaData::convertToDimensionless(){
 
     initCoord[0] /= Ag;
     initCoord[1] /= Ag;
+    initSpacing[0] /= Ag;
+    initSpacing[1] /= Ag;
     coord[0] /= Ag;
     coord[1] /= Ag;
     spacing[0] /= Ag;
@@ -247,6 +249,8 @@ inline void MatrixData::MetaData::convertToDimensionless(){
 inline void MatrixData::MetaData::convertFromDimensionless(){
     initCoord[0] *= Ag;
     initCoord[1] *= Ag;
+    initSpacing[0] *= Ag;
+    initSpacing[1] *= Ag;
     coord[0] *= Ag;
     coord[1] *= Ag;
     spacing[0] *= Ag;

@@ -24,7 +24,7 @@ class Plotter
 {
 public:
 	Plotter(Eval &e, Options &o);
-	~Plotter();
+	// ~Plotter();
 
 	void plotEval();
 private:
@@ -33,15 +33,19 @@ private:
 	void contour();
 	void densityMap();
 	void vortices();
+	void prepareData();
+	void combinedControl();
 
 	Eval eval;
 	Options opt;
 
 	double xrange,yrange;
 	string stepsString, dirname;
+	string title;
 
-	mglData density;
-	mglData phase;
+	mglData density, phase, densitymap, contour_x, contour_y, vortex_x, vortex_y, k, number;
+	float kmin, kmax, numbermin, numbermax;
+
 
 	
 };
