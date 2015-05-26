@@ -71,12 +71,12 @@ try{
 	if(initMain.restart()){
 		
 		Options loadedOptions;
-		string filename = "LastGrid.h5";
+		string filename = "rundata.h5";
 		// Loading from existing HDF5
 		MatrixData* loadedData = new MatrixData();
 		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
 		vector<int> timeList = dataFile->getTimeList();
-		dataFile->getSnapshot(runName,timeList[0],data,loadedOptions);
+		dataFile->getLatestSnapshot("MatrixData",data,loadedOptions);
 		delete dataFile;
 		// data->checkedCopy(loadedData);
 		// plotDataToPngEigen("checkedCopy", data->wavefunction[0],opt);
@@ -90,9 +90,9 @@ try{
 		setGridToTF(data,initMain.getOptions());
 		// addVorticesAlternating(data, opt, opt.vortexnumber);
 		// save initial Grid
-		string startGridName = initMain.getStartingGridName();
-		binaryFile* startFile = new binaryFile(startGridName,binaryFile::out);
-		startFile->appendSnapshot("StartGrid",0,data,initMain.getOptions());
+		// string startGridName = initMain.getStartingGridName();
+		binaryFile* startFile = new binaryFile("rundata.h5",binaryFile::out);
+		startFile->appendSnapshot("MatrixData",data,initMain.getOptions());
 		delete startFile;
 	}
 

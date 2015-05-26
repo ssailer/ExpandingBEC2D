@@ -24,8 +24,8 @@ Eval::Eval(MatrixData d,Options o, string runName) : data(d),  opt(o) , runname(
 void Eval::convertFromDimensionless(){
 	opt.min_x *= opt.Ag;
 	opt.min_y *= opt.Ag;
-	opt.t_abs /= opt.OmegaG;
-	opt.t_abs *= 1000.0; // conversion to ms
+	// opt.t_abs /= opt.OmegaG;
+	// opt.t_abs *= 1000.0; // conversion to ms
 	opt.omega_x /= 2.0 * M_PI / opt.OmegaG;
 	opt.omega_y /= 2.0 * M_PI / opt.OmegaG;
 	opt.dispersion_x /= 2.0 * M_PI / opt.OmegaG;
@@ -60,22 +60,21 @@ void Eval::process(){
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 
-	cout << currentTime() <<  " Step: " << data.meta.steps << endl
-		 <<	"         " << "Time : " << data.meta.time << " ms" << endl;		 
+	cout << currentTime() <<  " Step: " << data.meta.steps << " Time : " << data.meta.time << " ms ";		 
 
 	getDensity();
-	cout << "eval: getDensity" << endl;
-	// cout << endl << "Evaluating sample #: ";
+	cout << "dens " ;
+	// cout  << "Evaluating sample #: ";
 	for(int k = 0; k < data.wavefunction.size(); k++){
 
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		cout << "eval: trackContour" << endl;
+		cout << "con " ;
 		totalResult += calculator(data.wavefunction[k],k);
-		cout << "eval: calculator" << endl;
+		cout << "calc " ;
 		getVortices(data.wavefunction[k],densityCoordinates[k],pres[k]);
-		cout << "eval: getVortices" << endl;
+		cout << "vort " ;
 		// getVortexDistance(pres[k]);
-		// cout << "-getVortexDistance" << endl;
+		// cout << "-getVortexDistance" ;
 	}	
 	totalResult /= data.wavefunction.size();
 
@@ -143,7 +142,7 @@ void Eval::save(){
 					 << std::setw(15)  << n0
 			 << endl;
 	datafile.close();
-	cout << "eval: save" << endl;
+	cout << "save" << endl;
 }
 
 

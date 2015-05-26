@@ -349,7 +349,7 @@ inline int InitMain::readConfig()
 	}
 
 	// runspecific Values, just initilized here
-	opt.t_abs = complex<double>(0,0); //Absolute time 
+	// opt.t_abs = complex<double>(0,0); //Absolute time 
 	opt.stateInformation.resize(2);
 	opt.stateInformation[0] = 1;
 	opt.stateInformation[1] = 1;

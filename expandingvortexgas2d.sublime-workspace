@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"Data",
+				"dataToArray"
+			],
+			[
+				"check",
+				"checkResizeCondition"
+			],
+			[
+				"ini",
+				"initSpacing"
+			],
+			[
 				"get",
 				"getOptions"
 			],
@@ -42,10 +54,6 @@
 			[
 				"cycl",
 				"cyclicReadout"
-			],
-			[
-				"check",
-				"checkNextAngles"
 			],
 			[
 				"Ev",
@@ -506,14 +514,6 @@
 			[
 				"inser",
 				"insert_counter"
-			],
-			[
-				"find",
-				"findMostRightP"
-			],
-			[
-				"fin",
-				"findInitialP"
 			]
 		]
 	},
@@ -539,18 +539,8 @@
 			"file": "main.cpp",
 			"settings":
 			{
-				"buffer_size": 6043,
+				"buffer_size": 5275,
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "Searching 30 files for \"initialRun\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.cpp:\n  652  	// vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});\n  653  	\n  654: 	// if(opt.initialRun == true){\n  655  	// 	opt.vortexnumber = vlist.size();\n  656  	// 	cout << \"Evaluation found \" << opt.vortexnumber << \" Vortices.\" << endl;\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rte.cpp:\n  128  	double start;  // starttime of the run\n  129  \n  130: 	if(opt.initialRun == true){\n  131  \n  132  		Eval* initEval = new Eval(*pData,opt);\n  ...\n  138  \n  139  		opt.vortexnumber = initEval->getVortexNumber();\n  140: 		opt.initialRun = false;\n  141  \n  142  		string evalname = \"Evaluation.h5\";\n  ...\n  281  // 	// plotDataToPng(\"RTE_Kprop\",\"Control\",kprop,opt);\n  282  \n  283: // 	if(opt.initialRun == true){\n  284  // 		Eval* initialEval = new Eval;\n  285  // 		initialEval->saveData(wavefctVec,opt,meta.steps,runName);\n  ...\n  289  // 		// This basically counts every Vortex in each step, instead of capping at the initial value\n  290  // 		opt.vortexnumber = initialEval->getVortexNumber();\n  291: // 		opt.initialRun = false;\n  292  \n  293  // 		string evalname = runName + \"-Eval.h5\";\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_runner.hpp:\n  257  	double start;  // starttime of the run\n  258  \n  259: 	if(opt.initialRun == true){\n  260  \n  261  		Eval* initEval = new Eval(*pData,opt,runName);\n  ...\n  268  \n  269  		opt.vortexnumber = initEval->getVortexNumber();\n  270: 		opt.initialRun = false;\n  271  \n  272  		string evalname = \"Evaluation.h5\";\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_tools.h:\n   49      string config; // name of the config file \n   50      string workingdirectory;   // remove it from here, only needed in the program itself\n   51:     bool initialRun;\n   52  \n   53:     Options () : N(100000), stateInformation(2), t_abs(0,0), snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true), config(\"sim.cfg\") {}\n   54      \n   55  } Options;\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h:\n   55  	inline Options getOptions();\n   56  	inline void setOptions(Options &ext_opt);\n   57: 	inline void setInitialRun(bool initialRun);\n   58  	inline void setVortexnumber(int number);\n   59  	inline void setRunMode(string runmode);\n   ..\n  111  }\n  112  \n  113: inline void InitMain::setInitialRun(bool initialRun){\n  114: 	opt.initialRun = initialRun;\n  115  }\n  116  \n\n13 matches across 5 files\n",
-			"settings":
-			{
-				"buffer_size": 2602,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
 			}
 		},
 		{
@@ -573,7 +563,7 @@
 			"file": "exp_utilities/EXP2D_evaluation.cpp",
 			"settings":
 			{
-				"buffer_size": 49040,
+				"buffer_size": 42433,
 				"line_ending": "Unix"
 			}
 		},
@@ -589,7 +579,7 @@
 			"file": "exp_utilities/EXP2D_evaluation.h",
 			"settings":
 			{
-				"buffer_size": 3999,
+				"buffer_size": 4048,
 				"line_ending": "Unix"
 			}
 		},
@@ -637,7 +627,7 @@
 			"file": "exp_utilities/EXP2D_plotter.cpp",
 			"settings":
 			{
-				"buffer_size": 6689,
+				"buffer_size": 6899,
 				"line_ending": "Unix"
 			}
 		},
@@ -661,7 +651,7 @@
 			"file": "exp_utilities/EXP2D_MatrixData.h",
 			"settings":
 			{
-				"buffer_size": 12485,
+				"buffer_size": 15135,
 				"line_ending": "Unix"
 			}
 		},
@@ -693,7 +683,7 @@
 			"file": "tests/rot.cfg",
 			"settings":
 			{
-				"buffer_size": 1313,
+				"buffer_size": 1314,
 				"line_ending": "Unix"
 			}
 		},
@@ -725,7 +715,7 @@
 			"file": "exp_utilities/EXP2D_runner.hpp",
 			"settings":
 			{
-				"buffer_size": 9481,
+				"buffer_size": 9887,
 				"line_ending": "Unix",
 				"name": "#ifndef EXP2D_RUNNER_H__"
 			}
@@ -1124,6 +1114,49 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"1000",
+			"80",
+			"1200",
+			"1024",
+			"1000",
+			"800",
+			"512",
+			"1024",
+			"300",
+			"50",
+			"[j]",
+			"[j].",
+			".",
+			"40",
+			"cli",
+			"320",
+			"2048",
+			"40",
+			"256",
+			"sampleindex",
+			"initCoord",
+			"100",
+			"EDGE_RANGE_CHECK",
+			"meta",
+			";",
+			"->",
+			"-",
+			"trackContour",
+			"\"-trackContour",
+			"-",
+			"getDensity",
+			"cout",
+			"640",
+			"80",
+			"85",
+			"512",
+			"85",
+			"512",
+			"e.",
+			"spacing",
+			"[0]",
+			"pData",
+			"tmpOpt",
 			"smallData",
 			"x",
 			"sum",
@@ -1208,50 +1241,7 @@
 			"m_impl",
 			"fwd",
 			"set_num",
-			"setNum",
-			"setnum",
-			"SplitFree",
-			"SplitPotential",
-			"SplitStep",
-			"opt",
-			"SpitPotential",
-			"SplitPotential",
-			"SplitStep",
-			"1024",
-			"wavefunction[j]",
-			"fftw",
-			"_y_",
-			"_x_",
-			"512",
-			"1024",
-			"512",
-			"convertFromDimensionless",
-			"1024",
-			"x_",
-			"512",
-			"For",
-			"x_axis",
-			"increment",
-			"opt",
-			"RotatingTrap",
-			"sim",
-			"t_RTE",
-			"keeperOfTime",
-			"RTE",
-			"EVOLVER",
-			"RTE",
-			"data",
-			"data.",
-			"wavefctcp",
-			"m_flag",
-			"Unscaled",
-			"unscaled",
-			"data.",
-			"i_unit_diss",
-			"rk4",
-			"RotatingTrap",
-			"i_unit",
-			"gamma"
+			"setNum"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1269,7 +1259,7 @@
 	"groups":
 	[
 		{
-			"selected": 6,
+			"selected": 20,
 			"sheets":
 			[
 				{
@@ -1358,10 +1348,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2988.0,
+						"translation.y": 2757.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 32,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
@@ -1391,7 +1381,7 @@
 						"translation.y": 127.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -1400,15 +1390,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6043,
+						"buffer_size": 5275,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2392,
-								2392
+								3154,
+								3154
 							]
 						],
 						"settings":
@@ -1417,108 +1407,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 793.0,
+						"translation.y": 1200.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2602,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										266,
-										276
-									],
-									[
-										559,
-										569
-									],
-									[
-										720,
-										730
-									],
-									[
-										886,
-										896
-									],
-									[
-										1208,
-										1218
-									],
-									[
-										1433,
-										1443
-									],
-									[
-										1602,
-										1612
-									],
-									[
-										1912,
-										1922
-									],
-									[
-										2067,
-										2077
-									],
-									[
-										2327,
-										2337
-									],
-									[
-										2508,
-										2518
-									],
-									[
-										2533,
-										2543
-									],
-									[
-										2546,
-										2556
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 135.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
 					"file": "tests/sim.cfg",
 					"semi_transient": false,
 					"settings":
@@ -1540,14 +1436,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 315.0,
+						"translation.y": 135.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 4,
 					"file": "itp.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1576,20 +1472,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 5,
 					"file": "exp_utilities/EXP2D_evaluation.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 49040,
+						"buffer_size": 42433,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								41509,
-								41509
+								1665,
+								1665
 							]
 						],
 						"settings":
@@ -1598,14 +1494,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 16999.0,
+						"translation.y": 567.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 6,
 					"file": "utilities/complexgrid.cpp",
 					"semi_transient": true,
 					"settings":
@@ -1630,24 +1526,24 @@
 						"translation.y": 3105.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 7,
 					"file": "exp_utilities/EXP2D_evaluation.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3999,
+						"buffer_size": 4048,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1644,
-								1644
+								1691,
+								1691
 							]
 						],
 						"settings":
@@ -1656,14 +1552,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1124.0,
+						"translation.y": 348.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 8,
 					"file": "exp_utilities/EXP2D_Contour.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1688,11 +1584,11 @@
 						"translation.y": 2655.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 9,
 					"file": "exp_utilities/EXP2D_Contour.h",
 					"semi_transient": false,
 					"settings":
@@ -1717,11 +1613,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 25,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 10,
 					"file": "exp_utilities/main.h",
 					"semi_transient": false,
 					"settings":
@@ -1733,23 +1629,23 @@
 						"selection":
 						[
 							[
-								2047,
-								2047
+								13054,
+								13054
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
-						"translation.x": 0.0,
-						"translation.y": 978.0,
+						"translation.x": -0.0,
+						"translation.y": 5580.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 11,
 					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
@@ -1774,11 +1670,11 @@
 						"translation.y": 135.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 12,
 					"file": "exp_utilities/EXP2D_rk4.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1790,8 +1686,8 @@
 						"selection":
 						[
 							[
-								2157,
-								2157
+								2205,
+								2205
 							]
 						],
 						"settings":
@@ -1800,27 +1696,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2340.0,
+						"translation.y": 2745.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 13,
 					"file": "exp_utilities/EXP2D_plotter.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6689,
+						"buffer_size": 6899,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2799,
-								2799
+								670,
+								670
 							]
 						],
 						"settings":
@@ -1829,14 +1725,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1890.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 14,
 					"file": "exp_utilities/EXP2D_plotter.hpp",
 					"semi_transient": false,
 					"settings":
@@ -1861,11 +1757,11 @@
 						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 15,
 					"file": "exp_utilities/EXP2D_rk4.hpp",
 					"semi_transient": false,
 					"settings":
@@ -1891,24 +1787,24 @@
 						"translation.y": 135.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 16,
 					"file": "exp_utilities/EXP2D_MatrixData.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12485,
+						"buffer_size": 15135,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12014,
-								12014
+								6480,
+								6480
 							]
 						],
 						"settings":
@@ -1918,14 +1814,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5728.0,
+						"translation.y": 5525.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 17,
 					"file": "exp_utilities/plot_with_mgl.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1950,11 +1846,11 @@
 						"translation.y": 11806.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 18,
 					"file": "exp_utilities/plot_with_mgl.h",
 					"semi_transient": false,
 					"settings":
@@ -1977,14 +1873,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 902.0,
+						"translation.y": 732.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 19,
 					"file": "tests/exp.cfg",
 					"semi_transient": false,
 					"settings":
@@ -1996,8 +1892,8 @@
 						"selection":
 						[
 							[
-								832,
-								832
+								293,
+								293
 							]
 						],
 						"settings":
@@ -2006,27 +1902,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 135.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 20,
 					"file": "tests/rot.cfg",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1313,
+						"buffer_size": 1314,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								528,
-								528
+								143,
+								143
 							]
 						],
 						"settings":
@@ -2035,14 +1931,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 315.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 21,
 					"file": "exp_utilities/EXP2D_splitstep.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2054,8 +1950,8 @@
 						"selection":
 						[
 							[
-								3522,
-								3522
+								6546,
+								6546
 							]
 						],
 						"settings":
@@ -2064,14 +1960,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2070.0,
+						"translation.y": 1177.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 22,
 					"file": "exp_utilities/EXP2D_splitstep.hpp",
 					"semi_transient": false,
 					"settings":
@@ -2094,14 +1990,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1033.0,
+						"translation.y": 403.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 23,
 					"file": "exp_utilities/EXP2D_rte.hpp",
 					"semi_transient": false,
 					"settings":
@@ -2131,20 +2027,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 25,
+					"buffer": 24,
 					"file": "exp_utilities/EXP2D_runner.hpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9481,
+						"buffer_size": 9887,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3685,
-								3685
+								4108,
+								4108
 							]
 						],
 						"settings":
@@ -2153,14 +2049,14 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 314.0,
+						"translation.y": 1906.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 26,
+					"buffer": 25,
 					"file": "tests/test28/runObservables/run_Observables.dat",
 					"semi_transient": false,
 					"settings":
@@ -2185,11 +2081,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 27,
+					"buffer": 26,
 					"file": "exp_utilities/EXP2D_binaryfile.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2201,8 +2097,12 @@
 						"selection":
 						[
 							[
-								9781,
-								9781
+								30832,
+								30832
+							],
+							[
+								33343,
+								33343
 							]
 						],
 						"settings":
@@ -2211,14 +2111,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4809.0,
+						"translation.y": 16156.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 28,
+					"buffer": 27,
 					"file": "exp_utilities/EXP2D_binaryfile.h",
 					"semi_transient": false,
 					"settings":
@@ -2244,11 +2144,11 @@
 						"translation.y": 225.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
-					"buffer": 29,
+					"buffer": 28,
 					"file": "exp_utilities/EXP2D_rte.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2277,7 +2177,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 30,
+					"buffer": 29,
 					"file": "exp_utilities/EXP2D_itp.hpp",
 					"semi_transient": false,
 					"settings":
@@ -2307,7 +2207,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 31,
+					"buffer": 30,
 					"file": "exp_utilities/EXP2D_itp.cpp",
 					"semi_transient": false,
 					"settings":
@@ -2336,7 +2236,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 32,
+					"buffer": 31,
 					"file": "exp_utilities/EXP2D_constants.h",
 					"semi_transient": false,
 					"settings":
@@ -2399,7 +2299,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 281.0
+		"height": 358.0
 	},
 	"output.find_results":
 	{

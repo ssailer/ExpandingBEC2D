@@ -228,8 +228,8 @@ template<class T>
 void Runner<T>::plot(const string name){
 
 	if(opt.runmode == "EXP"){
-		Xexpanding = x_expand(opt.t_abs);
-		Yexpanding = y_expand(opt.t_abs);
+		Xexpanding = x_expand(complex<double>(pData->meta.time,0.0));
+		Yexpanding = y_expand(complex<double>(pData->meta.time,0.0));
 		plotDataToPngEigenExpanding(name, wavefctVec[0],ranges,Xexpanding,Yexpanding,opt);
 	}
 	else {
@@ -280,9 +280,9 @@ void Runner<T>::runToTime(string runName)
 		opt.vortexnumber = initEval->getVortexNumber();
 		opt.initialRun = false;
 
-		string evalname = "Evaluation.h5";
-		binaryFile* evalFile = new binaryFile(evalname,binaryFile::out);
-		evalFile->appendEval(meta.steps,opt,meta,*initEval);
+		string evalname = "rundata.h5";
+		binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
+		evalFile->appendEval(*initEval,opt);
 		
 		delete evalFile;
 	}
@@ -298,7 +298,7 @@ void Runner<T>::runToTime(string runName)
 				
 			algorithm->timeStep(opt.RTE_step);
 
-			opt.t_abs += opt.RTE_step;
+			// opt.t_abs += opt.RTE_step;
 
 			cli(runName,pData->meta.steps,start);
 		}
@@ -336,14 +336,14 @@ void Runner<T>::runToTime(string runName)
 			plotter->plotEval();
 			delete plotter;
 
-			string dataname = "LastGrid.h5";
-			binaryFile* dataFile = new binaryFile(dataname,binaryFile::out);
-			dataFile->appendSnapshot(runName,pData->meta.steps,pData,opt);
+			string dataname = "rundata.h5";
+			binaryFile* dataFile = new binaryFile(dataname,binaryFile::append);
+			dataFile->appendSnapshot("MatrixData",pData,opt);
 			delete dataFile;
 
-			string evalname = "Evaluation.h5";
+			string evalname = "rundata.h5";
 			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
-			evalFile->appendEval(pData->meta.steps,opt,pData->getMeta(),*eval);
+			evalFile->appendEval(*eval, opt);
 			delete evalFile;
 
 			delete eval;

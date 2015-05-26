@@ -37,26 +37,36 @@ public:
 
   void close();
 
-  bool appendSnapshot(const string &name, int time, MatrixData* const &pData, Options options);
+  bool appendSnapshot(const string &name, MatrixData * const &pData, Options const &options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
-  bool appendSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data, MatrixData::MetaData &meta, Options &options);
+  // bool appendSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data, MatrixData::MetaData &meta, Options &options);
 
-  bool appendEval(int snapShotTime, Options opt, MatrixData::MetaData meta, Eval results);
+  bool appendEval( Eval &results, Options const & opt );
   // bool appendDocString(const string &group, const string &docstring, double time);
 
   bool getSnapshot(const string &name, int time, MatrixData* &pData, Options &options);
+  bool getLatestSnapshot(const string &name, MatrixData* &pData, Options &options);
   // bool getSnapshot(const string &name, double time, vector<RealGrid> &k);
-  bool getSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data,MatrixData::MetaData &meta, Options &options);
+  // bool getSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data,MatrixData::MetaData &meta, Options &options);
 
-  bool getEval(int snapShotTime, Options &options, MatrixData::MetaData &meta, Eval &results);
+  bool getEval(int snapShotTime, Eval &results, Options &options);
 
   const vector<int> getTimeList() const {return time_list;}
 
   // const Options & getOptions() const {return options;}
 
 protected:
+
   binaryFile() {}
   bool checkTime(int snapShotTime);
+
+  void writeMatrixData(const string &name, MatrixData const * const &pData );
+  void writeMeta(MatrixData::MetaData &meta );
+  void writeOptions(Options const & options);
+
+  void readOptions(Options &options);
+  void readMeta(MatrixData::MetaData &meta);
+  void readMatrixData(string const &name, MatrixData* &pData);
 
 };
 
@@ -99,7 +109,7 @@ inline bool operator== (const Options &p1, const Options &p2)
           (p1.g == p2.g) &&
   		  (p1.min_x == p2.min_x) &&
   		  (p1.min_y == p2.min_y) &&
-  		  (p1.t_abs == p2.t_abs) &&
+  		  // (p1.t_abs == p2.t_abs) &&
   		  (p1.exp_factor == p2.exp_factor) &&
   		  (p1.ITP_step == p2.ITP_step) &&
   		  (p1.RTE_step == p2.RTE_step) &&
@@ -230,7 +240,7 @@ inline void write(ostream &stream, const Options &opt)
   write(stream, opt.dispersion_y);
   write(stream, opt.min_x);
   write(stream, opt.min_y);
-  write(stream, opt.t_abs);
+  // write(stream, opt.t_abs);
   write(stream, opt.exp_factor);
   write(stream, opt.ITP_step);
   write(stream, opt.RTE_step);
@@ -258,7 +268,7 @@ inline void read(istream &stream, Options &opt)
   read(stream, opt.dispersion_y);
   read(stream, opt.min_x);
   read(stream, opt.min_y);
-  read(stream, opt.t_abs);
+  // read(stream, opt.t_abs);
   read(stream, opt.exp_factor);
   read(stream, opt.ITP_step);
   read(stream, opt.RTE_step);

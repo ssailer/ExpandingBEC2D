@@ -19,7 +19,7 @@ class MatrixData {
 
     class MetaData {
         public:
-        MetaData() : steps(0), time(0), coord(2), grid(2), spacing(2), initCoord(2), initSpacing(2), samplesize(0) { for(int i = 0; i < 9; i++){array[i] = 0;}}
+        MetaData() : steps(0), time(0), coord(2), grid(2), spacing(2), initCoord(2), initSpacing(2), samplesize(0), array(13) {}
         // MetaData( const MetaData &m) : coord(2), grid(2), spacing(2) {
         //     steps = m.steps;
         //     time = m.time;
@@ -33,6 +33,7 @@ class MatrixData {
         //     arrayToData();
         // }
         inline double* data();
+        inline int size();
         inline void dataToArray();
         inline void arrayToData();
         inline void convertToDimensionless();
@@ -51,7 +52,7 @@ class MatrixData {
         vector<double> initSpacing;
         vector<double> spacing;
     
-        double array[9];    
+        vector<double> array;   
     };
 
     class FFT_internal {
@@ -304,8 +305,12 @@ inline MatrixData::MetaData MatrixData::getMeta(){
 
 
 
-inline double* MatrixData::MetaData::data(){
-    return array;
+inline double * MatrixData::MetaData::data(){
+    return array.data();
+}
+
+inline int MatrixData::MetaData::size(){
+    return array.size();
 }
 
 inline void MatrixData::MetaData::dataToArray(){
@@ -318,6 +323,10 @@ inline void MatrixData::MetaData::dataToArray(){
     array[6] = coord[1];
     array[7] = spacing[0];
     array[8] = spacing[1];
+    array[9] = initCoord[0];
+    array[10] = initCoord[1];
+    array[11] = initSpacing[0];
+    array[12] = initSpacing[1];
 }
 
 inline void MatrixData::MetaData::arrayToData(){
@@ -330,6 +339,10 @@ inline void MatrixData::MetaData::arrayToData(){
     coord[1] = array[6];
     spacing[0] = array[7];
     spacing[1] = array[8];
+    initCoord[0] = array[9] ;
+    initCoord[1] = array[10];
+    initSpacing[0] = array[11];
+    initSpacing[1] = array[12];
 }
 
 inline void MatrixData::FFT_internal::Forward(){
