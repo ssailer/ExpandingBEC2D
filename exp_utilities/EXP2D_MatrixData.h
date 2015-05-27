@@ -19,7 +19,7 @@ class MatrixData {
 
     class MetaData {
         public:
-        MetaData() : steps(0), time(0), coord(2), grid(2), spacing(2), initCoord(2), initSpacing(2), samplesize(0), array(13) {}
+        MetaData() : steps(0), time(0), coord(2), grid(2), spacing(2), initCoord(2), initSpacing(2), samplesize(0), array(14), isDimensionless(false), Ag(0), OmegaG(0) {}
         // MetaData( const MetaData &m) : coord(2), grid(2), spacing(2) {
         //     steps = m.steps;
         //     time = m.time;
@@ -34,6 +34,7 @@ class MatrixData {
         // }
         inline double* data();
         inline int size();
+        inline void print();
         inline void dataToArray();
         inline void arrayToData();
         inline void convertToDimensionless();
@@ -41,6 +42,7 @@ class MatrixData {
     
         double time;
         int steps, samplesize;
+        bool isDimensionless;
 
         double Ag, OmegaG;
                
@@ -89,8 +91,9 @@ class MatrixData {
     inline MatrixData(const MetaData &extMeta);
     inline MatrixData(const int &samplesize,const int &gridx, const int &gridy,const double &extTime, const int &extStep, const double &xsize, const double &ysize);
 
-    inline void update(const double &extTime, const int &extSteps,const vector<double> &coordFactor);
-
+    inline void updateTo(const double &extTime, const int &extSteps,const vector<double> &coordFactor);
+    inline void convertToDimensionlessUnits();
+    inline void convertToPhysicalUnits();
     inline void setMatrix(const vector<MatrixXcd> &extWavefct);
     inline void setTime(const double &extTime);
     inline void increment(const double extTime,const double factorX,const double factorY);
@@ -186,15 +189,27 @@ inline void MatrixData::resize(){
     int edge = 400;
     int grid0 = meta.grid[0] + edge;
     int grid1 = meta.grid[1] + edge;
+    double ratio0 = (double)grid0 / (double)meta.grid[0];
+    double ratio1 = (double)grid0 / (double)meta.grid[1];
 
-    for(int i = 0; i < wavefunction.size(); i++){
-        MatrixXcd tmp_wavefunction = MatrixXcd::Zero(grid0,grid1);
-        tmp_wavefunction.block(edge/2, edge/2, meta.grid[0],meta.grid[1]) = wavefunction[i];
-        wavefunction[i] = tmp_wavefunction;
+
+    // for(int i = 0; i < wavefunction.size(); i++){
+    //     MatrixXcd tmp_wavefunction = MatrixXcd::Zero(grid0,grid1);
+    //     tmp_wavefunction.block(edge/2+1, edge/2+1, meta.grid[0],meta.grid[1]) = wavefunction[i];
+    //     wavefunction[i] = tmp_wavefunction;
+    // }
+    MatrixXcd tmp_wavefunction = MatrixXcd::Zero(grid0,grid1);
+    for(int i = 0; i < meta.grid[0]; i++){
+        for(int j = 0; j < meta.grid[1]; j++){
+            tmp_wavefunction(i+edge/2,j+edge/2) = wavefunction[0](i,j);
+        }
     }
+    wavefunction[0] = tmp_wavefunction;
 
-    meta.coord[0] = meta.coord[0] * grid0 / meta.grid[0];
-    meta.coord[1] = meta.coord[1] * grid0 / meta.grid[1];
+    meta.initCoord[0] *= ratio0;
+    meta.initCoord[1] *= ratio1;
+    meta.coord[0] *= ratio0;
+    meta.coord[1] *= ratio1;
     meta.grid[0] = grid0;
     meta.grid[1] = grid1;
 
@@ -202,7 +217,7 @@ inline void MatrixData::resize(){
 }
 
 
-inline void MatrixData::update(const double &extTime,const int &extSteps,const vector<double> &coord){
+inline void MatrixData::updateTo(const double &extTime,const int &extSteps,const vector<double> &coord){
     meta.time = extTime;
     meta.steps = extSteps;
     meta.coord[0] = coord[0];
@@ -224,40 +239,62 @@ inline void MatrixData::increment(const double extTime,const double factorX,cons
 
 inline void MatrixData::MetaData::convertToDimensionless(){
 
-    // const double m = 87 * 1.66 * 1.0e-27;
-    // const double hbar = 1.054 * 1.0e-22;   
-
-    initCoord[0] /= Ag;
-    initCoord[1] /= Ag;
-    initSpacing[0] /= Ag;
-    initSpacing[1] /= Ag;
-    coord[0] /= Ag;
-    coord[1] /= Ag;
-    spacing[0] /= Ag;
-    spacing[1] /= Ag;
-    time *= OmegaG / 1000.0;
-    dataToArray();
-
-    // opt.ITP_step *= opt.OmegaG;
-    // opt.RTE_step *= opt.OmegaG;
-    // opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
-    // opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
-    // opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
-    // opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
+    if(Ag != 0.0 && OmegaG != 0.0 && isDimensionless == false){
+        initCoord[0] /= Ag;
+        initCoord[1] /= Ag;
+        initSpacing[0] /= Ag;
+        initSpacing[1] /= Ag;
+        coord[0] /= Ag;
+        coord[1] /= Ag;
+        spacing[0] /= Ag;
+        spacing[1] /= Ag;
+        time *= OmegaG / 1000.0;
+        isDimensionless = true;
+        dataToArray();    
+    } else {
+        cout << "Cannot convert, MetaData is already dimensionless." << endl;
+    }
 }
 
 inline void MatrixData::MetaData::convertFromDimensionless(){
-    initCoord[0] *= Ag;
-    initCoord[1] *= Ag;
-    initSpacing[0] *= Ag;
-    initSpacing[1] *= Ag;
-    coord[0] *= Ag;
-    coord[1] *= Ag;
-    spacing[0] *= Ag;
-    spacing[1] *= Ag;
-    time /= OmegaG;
-    time *= 1000.0; // conversion to ms
-    dataToArray();
+    if(Ag != 0.0 && OmegaG != 0.0 && isDimensionless == true){
+        initCoord[0] *= Ag;
+        initCoord[1] *= Ag;
+        initSpacing[0] *= Ag;
+        initSpacing[1] *= Ag;
+        coord[0] *= Ag;
+        coord[1] *= Ag;
+        spacing[0] *= Ag;
+        spacing[1] *= Ag;
+        time /= OmegaG;
+        time *= 1000.0; // conversion to ms
+        isDimensionless = false;
+        dataToArray();
+    } else {
+        cout << "Cannot convert, MetaData is not dimensionless." << endl;
+    }
+}
+
+inline void MatrixData::convertToDimensionlessUnits(){
+    if(meta.Ag != 0.0 && meta.OmegaG != 0.0){
+        meta.convertToDimensionless();
+        for(int k = 0; k < wavefunction.size(); k++){  
+            wavefunction[k] *= complex<double>(meta.Ag,0.0);
+        }
+    } else {
+        cout << "Cannot convert MatrixData's units, Ag and OmegaG are not set!" << endl;
+    }
+}
+
+inline void MatrixData::convertToPhysicalUnits(){
+    if (meta.Ag != 0.0 && meta.OmegaG != 0.0){
+        meta.convertFromDimensionless();
+        for(int k = 0; k < wavefunction.size(); k++){  
+            wavefunction[k] /= complex<double>(meta.Ag,0.0);
+        }
+    } else {
+        cout << "Cannot convert MatrixData's units, Ag and OmegaG are not set!" << endl;
+    }
 }
 
 inline void MatrixData::setMatrix(const vector<MatrixXcd> &extWavefct){
@@ -331,6 +368,7 @@ inline void MatrixData::MetaData::dataToArray(){
     array[10] = initCoord[1];
     array[11] = initSpacing[0];
     array[12] = initSpacing[1];
+    array[13] = isDimensionless;
 }
 
 inline void MatrixData::MetaData::arrayToData(){
@@ -347,6 +385,7 @@ inline void MatrixData::MetaData::arrayToData(){
     initCoord[1] = array[10];
     initSpacing[0] = array[11];
     initSpacing[1] = array[12];
+    isDimensionless = array[13];
 }
 
 inline void MatrixData::FFT_internal::Forward(){
@@ -491,6 +530,19 @@ inline void MatrixData::FFT_internal::Forward(MatrixXcd &DATA){
         // wavefunction[j] = out;
         DATA = out_temp;
     // }
+}
+
+inline void MatrixData::MetaData::print(){
+    cout << endl
+         << "MatrixData is dimensionless:" << isDimensionless << endl
+         << "At step: " << steps << " with a time t = " << time << endl
+         << "Gridsize: " << grid[0] << "x" << grid[1] << endl << endl
+         << "Inital Values are: " << endl
+         << "x = " << initCoord[0] << " y = " << initCoord[1] << endl
+         << "h_x = " << initSpacing[0] << " h_y " << initSpacing[1] << endl << endl
+         << "Actual Values are: " << endl
+         << "x = " << coord[0] << " y = " << coord[1] << endl
+         << "h_x = " << spacing[0] << " h_y " << spacing[1] << endl << endl;
 }
 
 

@@ -107,7 +107,8 @@ try{
 
 			case EXP : {
 					// FIXME WATCH OUT time var reset for restarting, this can be very DANGEROUS!
-					data->meta.time = 0.0;
+					if(opt.initialRun == true)
+						data->meta.time = 0.0;
 					Runner<Expansion>* run = new Runner<Expansion>(data,opt);
 					run->runToTime(runName);
 					delete run;

@@ -53,8 +53,8 @@ typedef struct Options {
     
 } Options;
 
-void toDimensionless(Options &opt);
-void fromDimensionless(Options &opt);
+void toDimensionlessUnits(Options &opt);
+void toPhysicalUnits(Options &opt);
 
 
 class expException {

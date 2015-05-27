@@ -13,27 +13,9 @@ using namespace Eigen;
 Eval::Eval(MatrixData d,Options o, string runName) : data(d),  opt(o) , runname(runName) {
 	// data = d;
 	// opt = o;
-
-	convertFromDimensionless();
-	data.meta.convertFromDimensionless();
-
+	toPhysicalUnits(opt);
+	data.convertToPhysicalUnits();
 };
-
-
-
-void Eval::convertFromDimensionless(){
-	
-	fromDimensionless(opt);
-
-	#pragma omp parallel for
-	for(int k = 0; k < data.wavefunction.size(); k++){
-		for(int i = 0; i < data.meta.grid[0]; i++){
-			for(int j = 0; j < data.meta.grid[1]; j++){		
-				data.wavefunction[k](i,j) = data.wavefunction[k](i,j) / complex<double>(opt.Ag,0.0);
-			}
-		}
-	}
-}
 
 void Eval::process(){
 

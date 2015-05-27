@@ -146,6 +146,7 @@ inline MatrixData::MetaData InitMain::getMeta(){
 	meta.samplesize = opt.samplesize;
 	meta.time = 0;
 	meta.steps = 0;
+	meta.isDimensionless = opt.isDimensionless;
 	meta.dataToArray();
 
 	return meta;
@@ -339,7 +340,7 @@ inline int InitMain::readConfig()
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
-	toDimensionless(opt);
+	toDimensionlessUnits(opt);
 
 
 	}

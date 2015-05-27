@@ -271,8 +271,6 @@ void Runner<T>::runToTime(string runName)
 
 	if(opt.initialRun == true){
 
-
-
 		Plotter* initPlot = new Plotter(*initEval,opt);
 		initPlot->plotEval();
 		delete initPlot;

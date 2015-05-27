@@ -3,7 +3,7 @@
 
 #include <EXP2D_tools.h>
 
-void toDimensionless(Options &opt){
+void toDimensionlessUnits(Options &opt){
     if(!opt.isDimensionless){
         const double m = 87 * 1.66 * 1.0e-27;
         const double hbar = 1.054 * 1.0e-22;    
@@ -26,7 +26,7 @@ void toDimensionless(Options &opt){
 
 }
 
-void fromDimensionless(Options &opt){
+void toPhysicalUnits(Options &opt){
     if(opt.isDimensionless){
         opt.min_x *= opt.Ag;
         opt.min_y *= opt.Ag;

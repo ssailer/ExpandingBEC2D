@@ -47,7 +47,6 @@ public:
 	// void plot(); // plot Results
 	bool checkResizeCondition();
 	int getVortexNumber();
-	void convertFromDimensionless();
 	bool checkResizeCondition(vector<int> &edges);
 
 

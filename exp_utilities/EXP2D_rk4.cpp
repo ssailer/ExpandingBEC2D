@@ -31,8 +31,8 @@ void RungeKutta::setVariables(){
 	// FIXME in dimensionless coordinates, this should be removed, as the grid indices are the coordinates!!
   	x_axis.resize(w->meta.grid[0]);
   	y_axis.resize(w->meta.grid[1]);
-  	for(int i=0;i<w->meta.grid[0];i++){x_axis[i]=-opt.min_x+i*real(w->meta.initSpacing[0]);}
-  	for(int j=0;j<w->meta.grid[1];j++){y_axis[j]=-opt.min_y+j*real(w->meta.initSpacing[1]);}
+  	for(int i=0;i<w->meta.grid[0];i++){x_axis[i]=-w->meta.initCoord[0]+i*real(w->meta.initSpacing[0]);}
+  	for(int j=0;j<w->meta.grid[1];j++){y_axis[j]=-w->meta.initCoord[1]+j*real(w->meta.initSpacing[1]);}
 
   	X = VectorXcd(w->meta.grid[0]); Y = VectorXcd(w->meta.grid[1]);
 	for(int i = 0;i<w->meta.grid[0];i++){X(i) = complex<double>(x_axis[i],0.0);}
