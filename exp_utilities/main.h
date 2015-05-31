@@ -340,6 +340,11 @@ inline int InitMain::readConfig()
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
+	if(opt.workingdirectory == "default"){
+		opt.workingdirectory = to_string(opt.omega_w.real());
+		cout << "Directory is named " << opt.omega_w.real() << "." << endl;
+	}
+
 	toDimensionlessUnits(opt);
 
 

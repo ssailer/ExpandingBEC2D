@@ -307,5 +307,10 @@ c_set Contour::trackContour(MatrixXi &data){
 	}while(stop == false);
 	
 	wholeContour.insert(contour.begin(),contour.end());
+	smooth(wholeContour);
 	return wholeContour;
+}
+
+void Contour::smooth(c_set &c){
+	
 }

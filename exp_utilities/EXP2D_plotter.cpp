@@ -215,8 +215,9 @@ void Plotter::combinedControl(){
 	gr.Rotate(40,40);
 	gr.Box();
 	gr.Axis();
-	gr.Label('x',"x [\\mu m]",0); gr.Label('y',"y [\\mu m]",0);
 	gr.Colorbar(">");
+	gr.Label('x',"x [\\mu m]",0); gr.Label('y',"y [\\mu m]",0);
+	
 	gr.Surf(density);
 
 	// DENSITY + CONTOUR

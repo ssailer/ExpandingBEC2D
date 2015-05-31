@@ -30,6 +30,8 @@ private:
 	inline void findSecondP(MatrixXi &data,Coordinate<int32_t> &p,Coordinate<int32_t> &s);
 	inline Coordinate<int32_t> nextClockwise(Coordinate<int32_t> &s, int32_t &direction);
 	inline void setDirection(int32_t &direction);
+
+	void smooth(c_set &c);
 	
 };
 
