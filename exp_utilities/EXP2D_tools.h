@@ -49,7 +49,7 @@ typedef struct Options {
     bool initialRun;
     bool isDimensionless;
 
-    Options () : N(100000), stateInformation(2), /*t_abs(0,0),*/ snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true), isDimensionless(false), config("sim.cfg") {}
+    Options () : N(100000), stateInformation(2), /*t_abs(0,0),*/ snapshots(100), vortexnumber(0), vortexspacing(50), potFactor(1), initialRun(true), isDimensionless(false), config("sim.cfg") {}
     
 } Options;
 

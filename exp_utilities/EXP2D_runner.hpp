@@ -26,6 +26,7 @@
 #include <plot_with_mgl.h>
 #include <EXP2D_MatrixData.h>
 #include <EXP2D_plotter.hpp>
+#include <hydro.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
@@ -261,6 +262,10 @@ void Runner<T>::runToTime(string runName)
 	initEval->save();
 
 	if(opt.runmode == "EXP"){
+		hydroSolver solver(initEval);
+		solver.integrate();
+		solver.pyPlot();
+
 		vector<int> edges;
 		if(initEval->checkResizeCondition(edges)){
 			pData->resize();
@@ -328,6 +333,8 @@ void Runner<T>::runToTime(string runName)
 					algorithm->setVariables();
 					cout << "Resizing" << endl;
 				}
+				hydroSolver solver;
+				solver.pyPlot();
 			}
 
 			Plotter* plotter = new Plotter(*eval,opt);
@@ -352,8 +359,6 @@ void Runner<T>::runToTime(string runName)
 		}
 
 		cli(runName,pData->meta.steps,start);
-
-
 	}
 }
 

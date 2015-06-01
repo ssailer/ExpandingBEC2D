@@ -1,28 +1,20 @@
 #include <inttypes.h>
 #include <iostream>
 #include <stdio.h>
-#include <eigen3/Eigen/Dense>
+#include <python2.7/Python.h>
 
 using namespace std;
-using namespace Eigen;
 
- const complex<double> one = complex<double>(1.0,0);
+int main(int argc, char *argv[])
+{	
+	setenv("PYTHONPATH",".",1);
+    // Initialize the Python Interpreter
+    Py_Initialize();
 
-int main() {
-  // printf( "    short int: %zd\n" , sizeof(short int) ) ;
-  // printf( "          int: %zd\n" , sizeof(int) ) ;
-  // printf( "     long int: %zd\n", sizeof(long int) ) ;
-  // printf( "long long int: %zd\n", sizeof(long long int) ) ;
-  // printf( "       size_t: %zd\n", sizeof(size_t) ) ;
-  // printf( "        void*: %zd\n\n", sizeof(void *) ) ;
+  	PyRun_SimpleString("import hello");
+  	PyRun_SimpleString("hello.hello()");
 
-
-  // printf( "PRIu32 usage (see source): %" PRIu32 "\n" , (uint32_t) 42 ) ;
-
-  cout << "TEST" << one << endl;
-
-
-
-
-  return 0;
+    // Finish the Python Interpreter
+    Py_Finalize();
+    return 0;
 }

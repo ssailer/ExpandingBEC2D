@@ -64,7 +64,7 @@ void Eval::save(){
         mkdir(dirname.c_str(),0755);
     }
 
-	string filename = dirname + "/" + runname + "_Observables.dat";	
+	string filename = dirname + "/" + opt.runmode + "_Observables.dat";	
 	
 	struct stat buffer;   
   	if(stat (filename.c_str(), &buffer) != 0){
@@ -74,6 +74,7 @@ void Eval::save(){
   						 << std::setw(15) << "Time" << ","
   						 << std::setw(15) << "X_max" << ","
   						 << std::setw(15) << "Y_max" << ","
+					 	 << std::setw(15) << "Vortexnumber" << ","
   						 << std::setw(15) << "D_max" << ","
   						 << std::setw(15) << "D_min" << ","
   						 << std::setw(15) << "Rx" << ","
@@ -101,6 +102,7 @@ void Eval::save(){
 					 << std::setw(15)  << data.meta.time << ","
 					 << std::setw(15)  << opt.min_x * opt.stateInformation[0] << ","
 					 << std::setw(15)  << opt.min_y * opt.stateInformation[1] << ","
+					 << std::setw(15)  << opt.vortexnumber << ","
 					 << std::setw(15)  << totalResult.r_max << ","
  					 << std::setw(15)  << totalResult.r_min << ","
  					 << std::setw(15)  << totalResult.Rx << ","
@@ -245,7 +247,7 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	// vlist.sort([](VortexData &lhs, VortexData &rhs) {return lhs.surroundDens > rhs.surroundDens;});
 	
 	// if(opt.initialRun == true){
-	// 	opt.vortexnumber = vlist.size();
+		opt.vortexnumber = vlist.size();
 	// 	cout << "Evaluation found " << opt.vortexnumber << " Vortices." << endl;
 	// } else {
 	// 	if(vlist.size() > opt.vortexnumber){

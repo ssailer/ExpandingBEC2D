@@ -177,6 +177,11 @@ inline void InitMain::printInitVar()
 
 inline void InitMain::setDirectory()
 {	
+	if(opt.workingdirectory == "default"){
+		stringstream name;
+		name << std::fixed << std::setprecision(0) << (int)opt.N << "_" << opt.grid[1] << "x" << opt.grid[2] << "_" << std::setprecision(3) << opt.g << "_" << std::setprecision(1) << real(opt.omega_w / (2.0 * M_PI / opt.OmegaG));
+		opt.workingdirectory = name.str();
+	}
 	// cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
 	struct stat wd_stat;
 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){
@@ -184,8 +189,8 @@ inline void InitMain::setDirectory()
 			cerr << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
 			cerr << "Check \"run.log\" for output of this run." << endl;
 		}
-	}else
-	{
+	}else{
+
 		mkdir(opt.workingdirectory.c_str(),0755);
 		cerr << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
 
@@ -339,11 +344,6 @@ inline int InitMain::readConfig()
 	opt.omega_w 			 = complex<double>(omega_w_realValue,0);
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
-
-	if(opt.workingdirectory == "default"){
-		opt.workingdirectory = to_string(opt.omega_w.real());
-		cout << "Directory is named " << opt.omega_w.real() << "." << endl;
-	}
 
 	toDimensionlessUnits(opt);
 

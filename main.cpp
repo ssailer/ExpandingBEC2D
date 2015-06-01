@@ -68,6 +68,10 @@ try{
 
 	string runName = "run";
 
+	// setenv("PYTHONPATH","../",1);
+	// Py_Initialize();
+ //    PyRun_SimpleString("import plot");
+
 	if(initMain.restart()){
 		
 		Options loadedOptions;
@@ -170,6 +174,7 @@ try{
 		}
 	}    
 	delete data;
+	// Py_Finalize();
 }
 
 
