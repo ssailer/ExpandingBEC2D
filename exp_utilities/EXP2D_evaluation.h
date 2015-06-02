@@ -100,6 +100,8 @@ private:
 	void getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres);
 	// void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	void getDensity();
+	int erosion(MatrixXi &d, int &i, int &j);
+	int dilation(MatrixXi &d, int &i, int &j);
 	
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const MatrixXd &phase);

@@ -3,7 +3,7 @@
 #define OBSERVABLES_DATA_POINTS_SIZE data.meta.grid[0]*data.meta.grid[1]
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
-#define VORTEX_SURROUND_DENSITY_RADIUS 5
+#define DENSITY_CHECK_DISTANCE 5
 #define EDGE_RANGE_CHECK 0.9
 
 using namespace std;
@@ -220,8 +220,8 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		vector<double> polarDensity;
 		vector<double> radius;	
-		for(int x_shift = - VORTEX_SURROUND_DENSITY_RADIUS; x_shift < VORTEX_SURROUND_DENSITY_RADIUS; x_shift++){
-		    for(int y_shift = - VORTEX_SURROUND_DENSITY_RADIUS; y_shift < VORTEX_SURROUND_DENSITY_RADIUS; y_shift++){
+		for(int x_shift = - DENSITY_CHECK_DISTANCE; x_shift < DENSITY_CHECK_DISTANCE; x_shift++){
+		    for(int y_shift = - DENSITY_CHECK_DISTANCE; y_shift < DENSITY_CHECK_DISTANCE; y_shift++){
 		    	int x = it->points.front().x() + x_shift;
 				int y = it->points.front().y() + y_shift;
 				radius.push_back(sqrt(x_shift*x_shift * data.meta.spacing[0]*data.meta.spacing[0] + y_shift*y_shift *data.meta.spacing[1]*data.meta.spacing[1]));
@@ -231,7 +231,7 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 		double sum = 0;
 		double zeroDensity = 0;
 		for(int i = 0; i < radius.size(); i++){
-			if(radius[i] < VORTEX_SURROUND_DENSITY_RADIUS){
+			if(radius[i] < DENSITY_CHECK_DISTANCE){
 				sum += polarDensity[i];
 			}
 			if(radius[i] < 2){
@@ -340,6 +340,26 @@ void Eval::calc_fields(MatrixXcd &DATA, Options &opt){
 	}
 }
 
+int Eval::erosion(MatrixXi &d, int &i, int &j){
+
+	int sum = d.block<3,3>(i-1,j-1).sum();
+	if(sum == 9){
+		return 1;
+	} else {
+		return 0;
+	}
+
+}
+
+int Eval::dilation(MatrixXi &d, int &i, int &j){
+
+	int sum = d.block<3,3>(i-1,j-1).sum();
+	if(sum == 0)
+		return 0;
+	else
+		return 1;
+}
+
 
 void Eval::getDensity(){
 
@@ -354,30 +374,55 @@ void Eval::getDensity(){
 	}
 	double threshold = maximum * 0.05;
 
-	for(int k = 0; k < data.wavefunction.size(); k++){
-		
-		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
-	
+	for(int k = 0; k < data.wavefunction.size(); k++){		
+		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);	
 		densityCounter[k] = 0;
 		densityCoordinates[k].clear();
-		// #pragma omp parallel for
-			for(int i = VORTEX_SURROUND_DENSITY_RADIUS; i < data.meta.grid[0] - VORTEX_SURROUND_DENSITY_RADIUS; i++){
-			    for(int j = VORTEX_SURROUND_DENSITY_RADIUS; j < data.meta.grid[1] - VORTEX_SURROUND_DENSITY_RADIUS; j++){
-			    	if((abs2(data.wavefunction[k](i,j)) > threshold)){
-	   					densityLocationMap[k](i,j) = 1;
-	   					// cout << "abs " << abs2(data.wavefunction[k](i,j)) << " coord " << i << " " << j << endl;
-	   					// cout << "denstest " << densityLocationMap[k](i,j) << endl;
-
-	   						Coordinate<int32_t> tmpCoord = Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1);
-	   					// #pragma omp critical (densityCoordinates)
-	   					// {
-							densityCoordinates[k].push_back(tmpCoord);
-							densityCounter[k]++;
-						// }
-					// }else{
-					// 	densityLocationMap[k](i,j) = 0;
-					}
+		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+			    if((abs2(data.wavefunction[k](i,j)) > threshold)){
+	   				densityLocationMap[k](i,j) = 1;
+	   				// Coordinate<int32_t> tmpCoord = Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1);
+					// densityCoordinates[k].push_back(tmpCoord);
+					// densityCounter[k]++;
 				}
+			}
+		}
+		// MatrixXf densMapGrad = MatrixXf::Zero(data.meta.grid[0],data.meta.grid[1]);
+		// for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+		// 	for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+		// 		// smoothing(densityLocationMap[k],i,j);
+		// 		for(int m = i - DENSITY_CHECK_DISTANCE; m < i + DENSITY_CHECK_DISTANCE; m++){
+		// 			for(int n = j - DENSITY_CHECK_DISTANCE; n < j + DENSITY_CHECK_DISTANCE; n++){
+		// 				densMapGrad(i,j) += densityLocationMap[k](m,n);
+		// 			}		
+		// 		}
+		// 		densMapGrad(i,j) /= (DENSITY_CHECK_DISTANCE * DENSITY_CHECK_DISTANCE * 4);
+		// 	}
+		// }
+		MatrixXi tmp_map = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
+		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+				// if(densMapGrad(i,j) < 0.9 && densMapGrad(i,j) > 0.1){
+					tmp_map(i,j) = erosion(densityLocationMap[k],i,j);
+				
+			}
+		}
+		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+				// if(densMapGrad(i,j) < 0.9 && densMapGrad(i,j) > 0.1){
+					densityLocationMap[k](i,j) = dilation(tmp_map,i,j);
+				
+			}
+		}
+		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+			    if(densityLocationMap[k](i,j) == 1){
+	   				Coordinate<int32_t> tmpCoord = Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1);
+					densityCoordinates[k].push_back(tmpCoord);
+					densityCounter[k]++;
+				}
+			}
 		}
 	}
 
@@ -674,20 +719,10 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	for(int d = 0; d < 2; d++){
 		// set k-space
 		kspace[d].resize(data.meta.grid[d]);
-		// for (int i=0; i<opt.grid[d+1]/2; i++){
 		for(int i = 0; i <= data.meta.grid[d]/2; i++){
-		// for (int32_t i = 0; i < kspace[d].size()/2; i++){
-			// kspace[d][i] = opt.klength[d]/**opt.stateInformation[0]*/*2.0*sin( M_PI*((double)i)/((double)opt.grid[d+1]) );
-			// kspace[d][i] = opt.klength[d]*((double)i)/((double)(opt.grid[d+1]/2));
-			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)i) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
 			kspace[d][i] = (M_PI / rmax[d]) * (double)i;
 		}
-		// for (int i=opt.grid[d+1]/2; i<opt.grid[d+1]; i++){
 		for(int i = (data.meta.grid[d]/2)+1; i < data.meta.grid[d]; i++){
-		// for (int32_t i = kspace[d].size()/2; i < kspace[d].size(); i++){
-			// kspace[d][i] = opt.klength[d]/**opt.stateInformation[1]*/*2.0*sin( M_PI*((double)(-opt.grid[d+1]+i))/((double)opt.grid[d+1]) );
-			// kspace[d][i] = opt.klength[d]*((double)(opt.grid[d+1]-i))/((double)opt.grid[d+1]/2);
-			// kspace[d][i] = opt.klength[d] * 2 * M_PI  * ((double)(-opt.grid[d+1]+i)) / ((double)(opt.grid[d+1]*opt.grid[d+1]*h[d]));
 			kspace[d][i] = -(M_PI / rmax[d]) * (double)(data.meta.grid[d] - i);
 		}
 	}
@@ -710,14 +745,11 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	for(int x = 0; x < data.meta.grid[0]; x++){
 		for (int y = 0; y < data.meta.grid[1]; y++){
 				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
-				// Coordinate<int32_t> c = DATA.make_coord(x,y,z);
 				int index = index_factor * k;
-				// cout << k << "*" << index_factor << "=" << index << "/" << OBSERVABLES_DATA_POINTS_SIZE << endl;
 				obs.k(index) += k;
 				divisor(index)++;
 				double number = abs2(DATA(x,y));
 				obs.number(index) += number;
-				// obs.particle_count += number;
 				obs.Ekin += number * k * k;
 		}
 	}
