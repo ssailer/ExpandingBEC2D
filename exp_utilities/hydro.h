@@ -73,9 +73,9 @@ void hydroSolver::integrate()
     cout.precision(20);
     cout.setf(ios::fixed | ios::showpoint);
 
-    int key = 2;
-    const string method[3] = {"simple Euler","modified Euler","4th order Runge-Kutta"};
-    ti = 0.0;             // initial value for variable
+    // int key = 2;
+    // const string method[3] = {"simple Euler","modified Euler","4th order Runge-Kutta"};
+    ti = eval->data.meta.time;             // initial value for variable
                // initial value for function x(t)
     beta = 4 * hbar * hbar * Nv * Nv / (m * m);
     cout << "beta " << beta << endl;
@@ -89,7 +89,7 @@ void hydroSolver::integrate()
 
 /* end of initial information */
 
-    file << setw(30) << method[key] << endl;
+    // file << setw(30) << method[key] << endl;
     file << setw(12) << "t" << "," << setw(12) << "Rx"<< "," << setw(12) << "Ry" << endl;
     
 
@@ -121,7 +121,7 @@ void hydroSolver::integrate()
         ti = tf;
     }
 
-  ti = 0.0;
+  ti = eval->data.meta.time;
   for(int i = 0; i < X.size(); ++i){
     file << setw(12) << ti << "," << setw(12) << X[i] << setw(12) << "," << Y[i]   << endl;
     ti += dt;

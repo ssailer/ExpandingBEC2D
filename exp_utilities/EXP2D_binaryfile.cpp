@@ -184,8 +184,8 @@ void binaryFile::writeOptions(hid_t &h5_group, Options const & options){
 	double tmpOpt1[30];
 
 	tmpOpt1[0] = options.N;
-	for(int i= 0; i < 3; i++)
-	  tmpOpt1[i+1] = options.klength[i];
+	// for(int i= 0; i < 3; i++)
+	//   tmpOpt1[i+1] = options.klength[i];
 
 	 tmpOpt1[4] = options.stateInformation[0];
 	 tmpOpt1[5] = options.stateInformation[1];
@@ -197,7 +197,7 @@ void binaryFile::writeOptions(hid_t &h5_group, Options const & options){
 	 tmpOpt1[11] = options.dispersion_y.real();
 	 tmpOpt1[12] = options.min_x;
 	 tmpOpt1[13] = options.min_y;
-	 tmpOpt1[14] = options.min_z;
+	 // tmpOpt1[14] = options.min_z;
 	 // tmpOpt1[15] = options.t_abs.real();
 	 tmpOpt1[16] = options.exp_factor.real();
 	 tmpOpt1[17] = options.g;
@@ -205,7 +205,7 @@ void binaryFile::writeOptions(hid_t &h5_group, Options const & options){
 	 tmpOpt1[19] = options.RTE_step;
 
 
-	for(int i = 0; i<4;i++)
+	for(int i = 1; i<3;i++)
 	  tmpOpt1[i+20] = options.grid[i];
 
 	tmpOpt1[24] = options.potFactor;
@@ -245,9 +245,9 @@ void binaryFile::readOptions(hid_t &h5_group, Options &options){
 
 	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
 	options.N = tmpOpt1[0];
-	for(int i= 0; i < 3; i++){
-	 options.klength[i] = tmpOpt1[i+1];
-	}
+	// for(int i= 0; i < 3; i++){
+	//  options.klength[i] = tmpOpt1[i+1];
+	// }
 	options.stateInformation[0] = tmpOpt1[4];
 	options.stateInformation[1] = tmpOpt1[5];
 	options.stateInformation[2] = tmpOpt1[6];
@@ -258,14 +258,14 @@ void binaryFile::readOptions(hid_t &h5_group, Options &options){
 	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
 	options.min_x = tmpOpt1[12];
 	options.min_y = tmpOpt1[13];
-	options.min_z = tmpOpt1[14];
+	// options.min_z = tmpOpt1[14];
 	// options.t_abs = complex<double>(tmpOpt1[15],0.0);
 	options.exp_factor = complex<double>(tmpOpt1[16],0.0);
 	options.g = tmpOpt1[17];
 	options.ITP_step = tmpOpt1[18];
 	options.RTE_step = tmpOpt1[19];
 
-	for(int i = 0; i<4;i++)
+	for(int i = 1; i<3;i++)
 	  options.grid[i] = (uint32_t)tmpOpt1[i+20];
 
 	options.potFactor = tmpOpt1[24];

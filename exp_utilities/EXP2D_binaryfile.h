@@ -96,13 +96,13 @@ inline bool operator== (const vector<T> &v1, const vector<T> &v2)
 inline bool operator== (const Options &p1, const Options &p2)
 {
   return ((p1.N == p2.N) &&
-          (p1.grid[0] == p2.grid[0]) &&
+          // (p1.grid[0] == p2.grid[0]) &&
           (p1.grid[1] == p2.grid[1]) &&
           (p1.grid[2] == p2.grid[2]) &&
-          (p1.grid[3] == p2.grid[3]) &&
-          (p1.klength[0] == p2.klength[0]) &&
-          (p1.klength[1] == p2.klength[1]) &&
-          (p1.klength[2] == p2.klength[2]) &&
+          // (p1.grid[3] == p2.grid[3]) &&
+          // (p1.klength[0] == p2.klength[0]) &&
+          // (p1.klength[1] == p2.klength[1]) &&
+          // (p1.klength[2] == p2.klength[2]) &&
           (p1.stateInformation[0] == p2.stateInformation[0]) &&
           (p1.stateInformation[1] == p2.stateInformation[1]) &&
           (p1.omega_x == p2.omega_x) &&
@@ -251,13 +251,13 @@ inline void write(ostream &stream, const Options &opt)
   write(stream, opt.samplesize);
   write(stream, opt.vortexnumber);
   write(stream, opt.g);
-  write(stream, opt.grid[0]);
+  // write(stream, opt.grid[0]);
   write(stream, opt.grid[1]);
   write(stream, opt.grid[2]);
-  write(stream, opt.grid[3]);
-  write(stream, opt.klength[0]);
-  write(stream, opt.klength[1]);
-  write(stream, opt.klength[2]);
+  // write(stream, opt.grid[3]);
+  // write(stream, opt.klength[0]);
+  // write(stream, opt.klength[1]);
+  // write(stream, opt.klength[2]);
 }
 
 inline void read(istream &stream, Options &opt)
@@ -279,13 +279,13 @@ inline void read(istream &stream, Options &opt)
   read(stream, opt.samplesize);
   read(stream, opt.vortexnumber);
   read(stream, opt.g);
-  read(stream, opt.grid[0]);
+  // read(stream, opt.grid[0]);
   read(stream, opt.grid[1]);
   read(stream, opt.grid[2]);
-  read(stream, opt.grid[3]);
-  read(stream, opt.klength[0]);
-  read(stream, opt.klength[1]);
-  read(stream, opt.klength[2]);
+  // read(stream, opt.grid[3]);
+  // read(stream, opt.klength[0]);
+  // read(stream, opt.klength[1]);
+  // read(stream, opt.klength[2]);
 }
 
 inline ostream & operator<< (ostream &o, const Options &opt)
@@ -294,7 +294,7 @@ inline ostream & operator<< (ostream &o, const Options &opt)
   o << "Interaction strength: " << opt.g << endl;
   o << endl;
   o << "Grid dimensions: " << opt.grid[1] << ", " << opt.grid[2] << endl;
-  o << "K-Length: " << opt.klength[0] << ", " << opt.klength[1] <<  endl;
+  // o << "K-Length: " << opt.klength[0] << ", " << opt.klength[1] <<  endl;
   o << endl;
   o << "Potential Frequencies: " << opt.omega_x << ", " << opt.omega_y << endl;
   o << "Dispersion Frequencies: " << opt.dispersion_x << ", " << opt.dispersion_y << " with an overall expansion factor: " << opt.exp_factor << endl;

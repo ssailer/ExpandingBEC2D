@@ -134,7 +134,7 @@ try{
 	if(mC == SPLIT){
 		switch ( runMode ){
 			case ROT : {
-					Runner<SplitRot>* run = new Runner<SplitRot>(data,opt);
+					Runner<SplitRotStrang>* run = new Runner<SplitRotStrang>(data,opt);
 					run->runToTime(runName);
 					delete run;
 				}

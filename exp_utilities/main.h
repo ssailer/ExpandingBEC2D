@@ -50,7 +50,7 @@ public:
 	inline void setDirectory();
 	inline int readCli();
 	inline int readConfig();
-	inline void writeConfig();
+	inline void writeConfig(string filename);
 
 	inline Options getOptions();
 	inline void setOptions(Options &ext_opt);
@@ -311,14 +311,14 @@ inline int InitMain::readConfig()
 	opt.N                    = root["RunOptions"]["N"];
 	opt.min_x                = root["RunOptions"]["min_x"]; 					
 	opt.min_y                = root["RunOptions"]["min_y"];
-	opt.min_z				 = root["RunOptions"]["min_z"];
-	opt.klength[0] 			 = root["RunOptions"]["klength0"];
-	opt.klength[1] 			 = root["RunOptions"]["klength1"];
-	opt.klength[2] 			 = root["RunOptions"]["klength2"];
-	opt.grid[0]              = root["RunOptions"]["grid0"];				
-	opt.grid[1]              = root["RunOptions"]["grid1"];				
-	opt.grid[2]              = root["RunOptions"]["grid2"];	   			
-	opt.grid[3]              = root["RunOptions"]["grid3"];
+	// opt.min_z				 = root["RunOptions"]["min_z"];
+	// opt.klength[0] 			 = root["RunOptions"]["klength0"];
+	// opt.klength[1] 			 = root["RunOptions"]["klength1"];
+	// opt.klength[2] 			 = root["RunOptions"]["klength2"];
+	// opt.grid[0]              = root["RunOptions"]["grid0"];				
+	opt.grid[1]              = root["RunOptions"]["grid_x"];				
+	opt.grid[2]              = root["RunOptions"]["grid_y"];	   			
+	// opt.grid[3]              = root["RunOptions"]["grid3"];
 	opt.g                    = root["RunOptions"]["g"]; 						
 	opt.n_it_RTE             = root["RunOptions"]["sizeOfSnapshots"]; 				
 	opt.snapshots            = root["RunOptions"]["numberOfSnapshots"];
@@ -328,7 +328,7 @@ inline int InitMain::readConfig()
 	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
 	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
 	cfg.lookupValue("RunOptions.runmode",opt.runmode);
-	cfg.lookupValue("RunOptions.startingGridName",startingGridName);
+	// cfg.lookupValue("RunOptions.startingGridName",startingGridName);
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
@@ -377,8 +377,8 @@ inline int InitMain::readConfig()
 	
 }
 
-inline void InitMain::writeConfig(){
-	string filename = "run.cfg";
+inline void InitMain::writeConfig(string filename){
+	// string filename = "sim.cfg";
 	ofstream datafile;
   		datafile.open(filename.c_str(), ios::out);
   		datafile << "RunOptions =\n" << "{\n"
@@ -386,14 +386,14 @@ inline void InitMain::writeConfig(){
 				 << "g = " << opt.g << "\n"
 				 << "min_x = " << opt.min_x << "\n"
 				 << "min_y = " << opt.min_y << "\n"
-				 << "klength0 = " << opt.klength[0] << "\n"
-				 << "klength1 = " << opt.klength[1] << "\n"
-				 << "klength2 = " << opt.klength[2] << "\n"
-				 << "grid0 = " << opt.grid[0] << "\n"
-				 << "grid1 = " << opt.grid[1] << "\n"
-				 << "grid2 = " << opt.grid[2] << "\n"
-				 << "grid3 = " << opt.grid[3] << "\n"
-				 << "numberOfIterations = " << opt.n_it_RTE << "\n"
+				 // << "klength0 = " << opt.klength[0] << "\n"
+				 // << "klength1 = " << opt.klength[1] << "\n"
+				 // << "klength2 = " << opt.klength[2] << "\n"
+				 // << "grid0 = " << opt.grid[0] << "\n"
+				 << "grid_x = " << opt.grid[1] << "\n"
+				 << "grid_y = " << opt.grid[2] << "\n"
+				 // << "grid3 = " << opt.grid[3] << "\n"
+				 << "sizeOfSnapshots = " << opt.n_it_RTE << "\n"
 				 << "numberOfSnapshots = " << opt.snapshots << "\n"
 				 << "ITP_step = " << opt.ITP_step << "\n"
 				 << "RTE_step = " << opt.RTE_step << "\n"

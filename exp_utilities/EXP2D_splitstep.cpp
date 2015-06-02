@@ -70,7 +70,7 @@ void SplitStep::setVariables(){
 		}
 	}
 
-	plotVector("kspace", kspace[0], kspace[1], opt);
+	// plotVector("kspace", kspace[0], kspace[1], opt);
 
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
@@ -100,7 +100,7 @@ void SplitStep::setVariables(){
       		kprop_x(x,y) = complex<double>(cos(T),sin(T))/* / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
 	    }
 	}
-	plotDataToPngEigen("kprop_x", kprop_x, opt);
+	// plotDataToPngEigen("kprop_x", kprop_x, opt);
 
     #pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
@@ -109,7 +109,7 @@ void SplitStep::setVariables(){
       		kprop_y(x,y) = complex<double>(cos(T),sin(T)) /*/ complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
 	    }
 	}
-	plotDataToPngEigen("kprop_y", kprop_y, opt);
+	// plotDataToPngEigen("kprop_y", kprop_y, opt);
 
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
@@ -118,7 +118,7 @@ void SplitStep::setVariables(){
       		kprop_y_strang(x,y) = complex<double>(cos(T),sin(T))/* / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
 	    }
 	}
-	plotDataToPngEigen("kprop_x", kprop_x, opt);
+	// plotDataToPngEigen("kprop_x", kprop_x, opt);
 
     #pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
@@ -127,7 +127,7 @@ void SplitStep::setVariables(){
       		kprop_x_strang(x,y) = complex<double>(cos(T),sin(T)) /*/ complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0)*/;	    
 	    }
 	}
-	plotDataToPngEigen("kprop_y", kprop_y, opt);
+	// plotDataToPngEigen("kprop_y", kprop_y, opt);
 
 	// The following is very very unaesthetic, but necessary, because the fftw_plan in the eigenFFT implementation gets set
     // when the first fwd() or inv() gets called, but creating and destroying a plan is not threadsave, so to use #pragma omp parallel for later
