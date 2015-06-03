@@ -36,7 +36,7 @@ void Eval::process(){
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 
-	cout << currentTime() <<  " Step: " << data.meta.steps << " Time : " << data.meta.time << " ms ";		 
+	cout << currentTime() <<  " Step: " << data.meta.steps << " Time : " << data.meta.time << " s ";		 
 
 	getDensity();
 	cout << "dens " ;

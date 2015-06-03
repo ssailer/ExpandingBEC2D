@@ -22,9 +22,16 @@ Plotter::Plotter(Eval &e, Options &o) : eval(e), opt(o){
     	if(stat(dirname.c_str(),&st) != 0){
         mkdir(dirname.c_str(),0755);
     }
-    std::ostringstream out;
-    out << std::setprecision(5) << eval.data.meta.time;
-    title = "t = " + out.str() + " ms";
+    double currentTime = eval.data.meta.time;
+	std::ostringstream out;
+	if(currentTime <= 0.1){
+		currentTime *= 1000;
+    	out << std::setprecision(5) << currentTime;
+    	title = "t = " + out.str() + " ms";
+    } else {
+    	out << std::setprecision(5) << currentTime;
+    	title = "t = " + out.str() + " s";
+    }
 }
 
 void Plotter::prepareData(){

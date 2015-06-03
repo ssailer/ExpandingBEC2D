@@ -248,7 +248,8 @@ inline void MatrixData::MetaData::convertToDimensionless(){
         coord[1] /= Ag;
         spacing[0] /= Ag;
         spacing[1] /= Ag;
-        time *= OmegaG / 1000.0;
+        time *= OmegaG;
+        // time /= 1000.0;
         isDimensionless = true;
         dataToArray();    
     } else {
@@ -267,7 +268,7 @@ inline void MatrixData::MetaData::convertFromDimensionless(){
         spacing[0] *= Ag;
         spacing[1] *= Ag;
         time /= OmegaG;
-        time *= 1000.0; // conversion to ms
+        // time *= 1000.0; // conversion to ms
         isDimensionless = false;
         dataToArray();
     } else {
