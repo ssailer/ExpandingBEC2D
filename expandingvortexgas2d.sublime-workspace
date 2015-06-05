@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"avera",
+				"average_length"
+			],
+			[
+				"dataset",
+				"dataset1"
+			],
+			[
+				"env",
+				"envelope_plot"
+			],
+			[
 				"dens",
 				"densityLocationMap"
 			],
@@ -250,10 +262,6 @@
 			[
 				"min_",
 				"min_y"
-			],
-			[
-				"dataset",
-				"dataset1"
 			],
 			[
 				"dat",
@@ -506,14 +514,6 @@
 			[
 				"a",
 				"a"
-			],
-			[
-				"Comple",
-				"ComplexGrid"
-			],
-			[
-				"Complex",
-				"complexgrid"
 			]
 		]
 	},
@@ -563,15 +563,7 @@
 			"file": "exp_utilities/EXP2D_evaluation.cpp",
 			"settings":
 			{
-				"buffer_size": 42362,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "exp_utilities/plot_with_mgl.h",
-			"settings":
-			{
-				"buffer_size": 4100,
+				"buffer_size": 42361,
 				"line_ending": "Unix"
 			}
 		},
@@ -580,6 +572,24 @@
 			"settings":
 			{
 				"buffer_size": 4101,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 31 files for \"PathResults\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.cpp:\n  126  \n  127  \n  128: void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres){\n  129  	\n  130  	calc_fields(DATA,opt);\n  ...\n  263  }\n  264  \n  265: void Eval::getVortexDistance(PathResults &pres){\n  266  \n  267  	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];\n  ...\n  309  }\n  310  \n  311: inline void Eval::pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance)\n  312  {\n  313  	double max_distance = sqrt(opt.grid[1]*opt.grid[1] + opt.grid[2]*opt.grid[2] + opt.grid[3]*opt.grid[3]) / 2.0;\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.h:\n   53  	// Observables.h\n   54  	Observables totalResult;\n   55: 	vector<PathResults> pres;\n   56  	vector<c_set> contour;\n   57  	vector<MatrixXi> densityLocationMap;\n   ..\n   98  	// Observables calculatorITP(ComplexGrid data,int sampleindex);\n   99  	void aspectRatio(Observables &obs, int &sampleindex);\n  100: 	void getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres);\n  101  	// void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);\n  102  	void getDensity();\n  ...\n  109  \n  110  	inline double norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y);\n  111: 	inline void pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance);\n  112: 	void getVortexDistance(PathResults &pres);\n  113  	void calc_fields(MatrixXcd &DATA, Options &opt);\n  114  	// void checkEdges();\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_observables.h:\n   53  } VortexData;\n   54  \n   55: struct PathResults {\n   56      list<VortexData> vlist;\n   57      vector<double> histogram;\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.cpp:\n  149  }\n  150  \n  151: void plotPairDistance(string name,string title,PathResults pres){\n  152  \n  153  	ofstream plotfile;\n  ...\n  218  }\n  219  \n  220: void plotVortexList(string name,string title,const RealGrid &phase,PathResults &pres,Options &opt){\n  221  \n  222  	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.h:\n   73  void plotSpectrum(string name,string title,Observables& eval);\n   74  void plotRadialDensity(string name,string title, Observables &ares);\n   75: void plotPairDistance(string name,string title,PathResults pres);\n   76: void plotVortexList(string name,string title,const RealGrid &phase,PathResults &pres,Options &opt);\n   77  void plotContour(string name,string title, ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);\n   78  \n\n12 matches across 5 files\n",
+			"settings":
+			{
+				"buffer_size": 2938,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_observables.h",
+			"settings":
+			{
+				"buffer_size": 7507,
 				"line_ending": "Unix"
 			}
 		},
@@ -619,7 +629,7 @@
 			"file": "exp_utilities/EXP2D_plotter.cpp",
 			"settings":
 			{
-				"buffer_size": 9520,
+				"buffer_size": 9713,
 				"line_ending": "Unix"
 			}
 		},
@@ -643,7 +653,7 @@
 			"file": "exp_utilities/EXP2D_MatrixData.h",
 			"settings":
 			{
-				"buffer_size": 17761,
+				"buffer_size": 17782,
 				"line_ending": "Unix"
 			}
 		},
@@ -652,6 +662,30 @@
 			"settings":
 			{
 				"buffer_size": 1175,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "testRot_remote/vortices.py",
+			"settings":
+			{
+				"buffer_size": 2584,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tests/vortices.py",
+			"settings":
+			{
+				"buffer_size": 1764,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tests/10000_200x200_0.145_12.0/runObservables/ROT_Observables.dat",
+			"settings":
+			{
+				"buffer_size": 320960,
 				"line_ending": "Unix"
 			}
 		},
@@ -871,6 +905,8 @@
 		"height": 145.0,
 		"history":
 		[
+			"view.options().set('wordWrap',False)",
+			"view.options().set(*'wordWrap,False)",
 			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
 		]
 	},
@@ -891,7 +927,21 @@
 	],
 	"file_history":
 	[
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/10000_200x200_0.145_13.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/10000_400x400_0.145_17.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/AveragesPlot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/1000000_600x600_0.145_15.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/100000_300x300_0.145_13.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/testRot_remote/100000_400x400_0.145_15.0/runObservables/ROT_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/tests/100000_400x400_0.145_18.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/10000_400x400_0.145_15.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/10000_400x400_0.145_20.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/testRot_remote/100000_400x400_0.145_17.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/testRot_remote/100000_400x400_0.145_18.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/testRot_remote/100000_400x400_0.145_19.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/projects/expandingvortexgas2d/tests/testRot_remote/100000_400x400_0.145_20.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/.config/awesome/rc.lua",
 		"/home/nhrjr/Downloads/Image.h",
 		"/home/nhrjr/Downloads/hq3x.cpp",
 		"/home/nhrjr/Downloads/hqx-1.1/src/hqx.h",
@@ -941,7 +991,6 @@
 		"/home/nhrjr/projects/cuda_learn/NVIDIA_CUDA-7.0_Samples/0_Simple/matrixMulCUBLAS/matrixMulCUBLAS.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_08_18V/ode_Rx_Ry_2.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/1V/AveragesPlot.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/AveragesPlot.py",
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/gpe comparison/hydroplots.py",
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/general/hydroplots.py",
 		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/hydro/different_ratios/hydroplots.py",
@@ -1005,20 +1054,7 @@
 		"/home/nhrjr/.local/share/applications/defaults.list",
 		"/home/nhrjr/projects/expandingvortexgas2d/evaluator.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/results/run.cfg",
-		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/unitConverter.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/test.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_splitstep.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_binaryfile.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_tools.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/solver/solver.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/hydroplots.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_splitstep.hpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_Contour.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_observables.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/stuff18_12V.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_10/ex_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/andre_10/AveragesPlot.py"
+		"/home/nhrjr/projects/expandingvortexgas2d/pythonScripts/unitConverter.py"
 	],
 	"find":
 	{
@@ -1040,6 +1076,23 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"PathResults",
+			"plot",
+			"average_length):",
+			"10",
+			"i",
+			"1",
+			"getVortices",
+			"300",
+			"30",
+			"400",
+			"40",
+			"ms",
+			"conversion",
+			"convertFromDimensionless",
+			"convertToDimensionless",
+			"len(filenames)",
+			"gnome",
 			"300",
 			"30",
 			"350",
@@ -1150,24 +1203,7 @@
 			"checkTime",
 			"runData",
 			"save",
-			"h5a_wave",
-			"test_id",
-			"save",
-			"<< endl",
-			"eval: ",
-			"1000",
-			"80",
-			"1200",
-			"1024",
-			"1000",
-			"800",
-			"512",
-			"1024",
-			"300",
-			"50",
-			"[j]",
-			"[j].",
-			"."
+			"h5a_wave"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1185,7 +1221,7 @@
 	"groups":
 	[
 		{
-			"selected": 16,
+			"selected": 8,
 			"sheets":
 			[
 				{
@@ -1215,7 +1251,7 @@
 						"translation.y": 915.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
@@ -1243,7 +1279,7 @@
 						"translation.y": 225.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
@@ -1270,10 +1306,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 225.0,
+						"translation.y": 405.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -1289,8 +1325,8 @@
 						"selection":
 						[
 							[
-								1233,
-								1233
+								436,
+								436
 							]
 						],
 						"settings":
@@ -1301,7 +1337,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -1330,7 +1366,7 @@
 						"translation.y": 1665.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
@@ -1339,15 +1375,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 42362,
+						"buffer_size": 42361,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								14442,
-								14442
+								4222,
+								4222
 							]
 						],
 						"settings":
@@ -1356,44 +1392,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5019.0,
+						"translation.y": 1404.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "exp_utilities/plot_with_mgl.h",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 4100,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3853,
-								3853
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 796.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
 					"file": "exp_utilities/EXP2D_evaluation.h",
 					"semi_transient": false,
 					"settings":
@@ -1415,14 +1421,132 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1203.0,
+						"translation.y": 44.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
+					"buffer": 7,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2938,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										244,
+										255
+									],
+									[
+										363,
+										374
+									],
+									[
+										538,
+										549
+									],
+									[
+										876,
+										887
+									],
+									[
+										1201,
+										1212
+									],
+									[
+										1550,
+										1561
+									],
+									[
+										1642,
+										1653
+									],
+									[
+										1870,
+										1881
+									],
+									[
+										2103,
+										2114
+									],
+									[
+										2254,
+										2265
+									],
+									[
+										2639,
+										2650
+									],
+									[
+										2732,
+										2743
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": -0.0,
+						"translation.y": 90.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
 					"buffer": 8,
+					"file": "exp_utilities/EXP2D_observables.h",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 7507,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1461,
+								1461
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": -0.0,
+						"translation.y": 360.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
 					"file": "exp_utilities/EXP2D_Contour.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1447,11 +1571,11 @@
 						"translation.y": 4050.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 10,
 					"file": "exp_utilities/EXP2D_Contour.h",
 					"semi_transient": false,
 					"settings":
@@ -1476,11 +1600,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 11,
 					"file": "exp_utilities/main.h",
 					"semi_transient": false,
 					"settings":
@@ -1501,14 +1625,14 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 324.0,
+						"translation.y": 4877.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 12,
 					"file": "exp_utilities/EXP2D_rk4.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1533,24 +1657,24 @@
 						"translation.y": 255.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 13,
 					"file": "exp_utilities/EXP2D_plotter.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9520,
+						"buffer_size": 9713,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2504,
-								2504
+								576,
+								576
 							]
 						],
 						"settings":
@@ -1559,14 +1683,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1080.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 14,
 					"file": "exp_utilities/EXP2D_plotter.hpp",
 					"semi_transient": false,
 					"settings":
@@ -1591,11 +1715,11 @@
 						"translation.y": 312.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 15,
 					"file": "exp_utilities/EXP2D_rk4.hpp",
 					"semi_transient": false,
 					"settings":
@@ -1621,24 +1745,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 16,
 					"file": "exp_utilities/EXP2D_MatrixData.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17761,
+						"buffer_size": 17782,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7443,
-								7443
+								8777,
+								8777
 							]
 						],
 						"settings":
@@ -1648,14 +1772,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2687.0,
+						"translation.y": 3450.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 17,
 					"file": "tests/rot.cfg",
 					"semi_transient": false,
 					"settings":
@@ -1667,8 +1791,8 @@
 						"selection":
 						[
 							[
-								749,
-								749
+								648,
+								648
 							]
 						],
 						"settings":
@@ -1680,11 +1804,97 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 18,
+					"file": "testRot_remote/vortices.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2584,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1033,
+								1033
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 630.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "tests/vortices.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1764,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1226,
+								1226
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "tests/10000_200x200_0.145_12.0/runObservables/ROT_Observables.dat",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 320960,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								320706,
+								320706
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 14389.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
 					"file": "exp_utilities/EXP2D_splitstep.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1706,14 +1916,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1649.0,
+						"translation.y": 2144.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 22,
 					"file": "exp_utilities/EXP2D_splitstep.hpp",
 					"semi_transient": false,
 					"settings":
@@ -1739,11 +1949,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 23,
 					"file": "exp_utilities/EXP2D_runner.hpp",
 					"semi_transient": false,
 					"settings":
@@ -1765,14 +1975,14 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 3793.0,
+						"translation.y": 4708.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 24,
 					"file": "exp_utilities/EXP2D_binaryfile.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1797,11 +2007,11 @@
 						"translation.y": 2822.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 25,
 					"file": "exp_utilities/EXP2D_binaryfile.h",
 					"semi_transient": false,
 					"settings":
@@ -1827,11 +2037,11 @@
 						"translation.y": 1612.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 26,
 					"file": "exp_utilities/EXP2D_constants.h",
 					"semi_transient": false,
 					"settings":
@@ -1855,7 +2065,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 26,
 					"type": "text"
 				}
 			]

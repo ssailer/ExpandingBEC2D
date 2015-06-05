@@ -622,13 +622,13 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 
 
   string vec3Name = "Vortices";
-  samples = results.pres.size();
+  samples = results.vlist.size();
   int vec3Ranks[samples];
   arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
   double *vec3;
 
   for(int k = 0; k < samples; k++){
-	vec3Ranks[k] = results.pres[k].vlist.size();
+	vec3Ranks[k] = results.vlist[k].size();
 	arraysize += 2 * vec3Ranks[k]; // x and y coordinate of each vortex summed over all samples
   }
 
@@ -638,9 +638,9 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
   l = 1 + samples;
   for(int k = 0; k < samples; k++){
 	vec3[k+1] = vec3Ranks[k];    
-	for(std::list<VortexData>::const_iterator it = results.pres[k].vlist.begin(); it != results.pres[k].vlist.end(); ++it){
-	  vec3[l] = it->x.x();
-	  vec3[l+1] = it->x.y();
+	for(std::list<VortexData>::const_iterator it = results.vlist[k].begin(); it != results.vlist[k].end(); ++it){
+	  vec3[l] = it->c.x();
+	  vec3[l+1] = it->c.y();
 	  l+=2;
 	}
   }
@@ -663,13 +663,13 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
   free(vec3);
 
   string vec7Name = "VortexWinding";
-  samples = results.pres.size();
+  samples = results.vlist.size();
   int vec7Ranks[samples];
   arraysize = 1 + samples;
   double *vec7;
 
   for(int k = 0; k < samples; k++){
-  	vec7Ranks[k] = results.pres[k].vlist.size();
+  	vec7Ranks[k] = results.vlist[k].size();
   	arraysize += vec7Ranks[k];
   }
 
@@ -679,7 +679,7 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
   l = 1 + samples;
   for(int k = 0; k < samples; k++){
 	vec7[k+1] = vec7Ranks[k];    
-	for(std::list<VortexData>::const_iterator it = results.pres[k].vlist.begin(); it != results.pres[k].vlist.end(); ++it){
+	for(std::list<VortexData>::const_iterator it = results.vlist[k].begin(); it != results.vlist[k].end(); ++it){
 	  vec7[l] = it->n;
 	  l++;
 	}
@@ -943,7 +943,7 @@ bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 		H5Sclose(dataspace);
 		int samples = vec3[0];
 		int vec3Ranks[samples];
-		results.pres.resize(samples);
+		results.vlist.resize(samples);
 		for(int i = 0; i < samples; i++){
 			vec3Ranks[i] = vec3[i+1];
 		}
@@ -979,16 +979,16 @@ bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 		
 		int l = 1 + samples;
 		for(int k = 0; k < samples; k++){
-			results.pres[k].vlist.clear();
+			results.vlist[k].clear();
 			for(int j = 0; j < vec3Ranks[k]; j++){
 				VortexData c;
 				Coordinate<int32_t> x(vec3[l],vec3[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
-				c.x = x;
+				c.c = x;
 				c.n = (int) vec7[j];
 				// c.x.x() = vec3[l];
 				// c.x.y() = vec3[l+1];
 				l+=2;
-				results.pres[k].vlist.push_back(c);
+				results.vlist[k].push_back(c);
 			}
 		}
 	}

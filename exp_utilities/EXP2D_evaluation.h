@@ -52,7 +52,8 @@ public:
 
 	// Observables.h
 	Observables totalResult;
-	vector<PathResults> pres;
+	// vector<PathResults> pres;
+	vector<list<VortexData>> vlist;
 	vector<c_set> contour;
 	vector<MatrixXi> densityLocationMap;
 
@@ -97,19 +98,23 @@ private:
 	Observables calculator(MatrixXcd DATA,int sampleindex);
 	// Observables calculatorITP(ComplexGrid data,int sampleindex);
 	void aspectRatio(Observables &obs, int &sampleindex);
-	void getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres);
+	void getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,list<VortexData> &vlist);
 	// void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	void getDensity();
-	int erosion(MatrixXi &d, int &i, int &j);
-	int dilation(MatrixXi &d, int &i, int &j);
+	void erosion(MatrixXi &d);
+	void dilation(MatrixXi &d);
+
+	void floodFillUtil(MatrixXi &checkedCounter, MatrixXi &mask ,MatrixXi &dens, int x, int y, int prevC, int newC);
+	MatrixXi floodFill(MatrixXi &dens,int prevC, int newC);
+	void fillHoles(MatrixXi &dens, MatrixXi &mask);
 	
 
-	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const MatrixXd &phase);
+	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v);
 	void findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
 
 	inline double norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y);
-	inline void pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance);
-	void getVortexDistance(PathResults &pres);
+	// inline void pairDistanceHistogram(list<Vo &pres, double &distance, double &coordDistance);
+	// void getVortexDistance(PathResults &pres);
 	void calc_fields(MatrixXcd &DATA, Options &opt);
 	// void checkEdges();
 

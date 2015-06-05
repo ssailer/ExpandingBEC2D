@@ -19,7 +19,9 @@ Eval::Eval(MatrixData d,Options o, string runName) : data(d),  opt(o) , runname(
 
 void Eval::process(){
 
-	pres.resize(data.wavefunction.size());
+	// pres.resize(data.wavefunction.size());
+
+	vlist.resize(data.wavefunction.size());
 
 	densityCoordinates.clear();
 
@@ -47,7 +49,7 @@ void Eval::process(){
 		cout << "con " ;
 		totalResult += calculator(data.wavefunction[k],k);
 		cout << "calc " ;
-		getVortices(data.wavefunction[k],densityCoordinates[k],pres[k]);
+		getVortices(data.wavefunction[k],densityCoordinates[k],vlist[k]);
 		cout << "vort " ;
 		// getVortexDistance(pres[k]);
 		// cout << "-getVortexDistance" ;
@@ -125,89 +127,20 @@ void Eval::save(){
 
 
 
-void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,PathResults &pres){
+void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,list<VortexData> &vlist){
 	
 	calc_fields(DATA,opt);
 
-	pres.vlist.clear();
-	findVortices(densityCoordinates,pres.vlist);
-
-	// cout << "Vortices: " << endl;
-	// double number = 0;
-	// for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
-	// 	int x = it->x.x();
-	// 	int y = it->x.y();
-	// 	number += it->num_points;
-	// 	double sD = it->surroundDens;
-	// 	cout << " " << x << " " << y << "  " << abs2(PsiVec[0](0,x,y,0)) << " " << arg(PsiVec[0](0,x,y,0)) << " " << sD << endl;
-	// }
-	// cout << "Number of Vortices counted: " << number << "  " << endl;
-
-	// calc_vortex_veloctities();
-	// calc_vortex_discances();
-	// calc_g2();
-}
-
-int Eval::get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v, const MatrixXd &phase){
-	if(phase(c.x() + v.x(),c.y()+v.y()) + M_PI < phase(c.x(),c.y()))	// Phase ueberschreitet 0/2pi von unten
-		return 1;
-	else if(phase(c.x(),c.y()) + M_PI < phase(c.x() + v.x(),c.y()+v.y()))	// Phase ueberschreitet 0/2pi von oben
-		return -1;
-	else
-		return 0;
-}
-
-void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) {
-
-	// Nullstellen zaehlen
-	// vector< vector< vector<bool > > > checked(phase.width(), vector< vector<bool> >(phase.height(), vector<bool>(phase.depth(),false)));	// Welche felder schon ueberprueft wurden
-	VortexData vortex;
-					// Charakteristika eines gefundenen Vortex
-
-	// Vector<int32_t> down = phase.make_vector(0,-2,0);
-	// Vector<int32_t> right = phase.make_vector(2,0,0);
-	// Vector<int32_t> up = phase.make_vector(0,2,0);
-	// Vector<int32_t> left = phase.make_vector(-2,0,0);
-
-	Vector<int32_t> down = Vector<int32_t>(0,-1,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> right = Vector<int32_t>(1,0,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> up = Vector<int32_t>(0,1,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> left = Vector<int32_t>(-1,0,0,data.meta.grid[0],data.meta.grid[1],1);
-	// Vector<int32_t> rightdown = Vector<int32_t>(1, -1, 0,data.meta.grid[0],data.meta.grid[1],1);
-
-	// #pragma omp parallel for
-	for(int i = 0; i < densityCoordinates.size(); i++){
-	// for(vector<Coordinate<int32_t>>::const_iterator it = densityCoordinates.begin(); it != densityCoordinates.end(); ++it){
-
-		Coordinate<int32_t> c = densityCoordinates[i]; // phase.make_coord(x,y,z);
-
-			
-		int phase_winding = get_phase_jump(c, down, phase) + get_phase_jump(c+down, right, phase) + get_phase_jump(c+down+right, up, phase) + get_phase_jump(c+right, left, phase);
-
-		if(phase_winding != 0){
-			vortex.n = phase_winding;
-			vortex.x = c /*+ rightdown*/;
-			vortex.points.clear();
-			vortex.points.push_back(c);
-			vortex.num_points = 1;
-
-			// #pragma omp critical (vortex)
-			// {
-				vlist.push_back(vortex);					
-			// }
-		}
-	}
-
-	// cout << "Vortexnumber before surround dens check: " << vlist.size() << endl;
+	vlist.clear();
+	findVortices(densityCoordinates,vlist);
 
 	// CHECK DENSITY AROUND VORTEX
-	vector<list<VortexData>::iterator> to_delete;
 
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		list<VortexData>::iterator it1 = it;
 		
 		for(++it1; it1 != vlist.end();){
-			Vector<int32_t> distance = it->x - it1->x;
+			Vector<int32_t> distance = it->c - it1->c;
 			if( distance.norm() <= 2.0){
 				it1 = vlist.erase(it1);
 			}else{
@@ -222,8 +155,8 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 		vector<double> radius;	
 		for(int x_shift = - DENSITY_CHECK_DISTANCE; x_shift < DENSITY_CHECK_DISTANCE; x_shift++){
 		    for(int y_shift = - DENSITY_CHECK_DISTANCE; y_shift < DENSITY_CHECK_DISTANCE; y_shift++){
-		    	int x = it->points.front().x() + x_shift;
-				int y = it->points.front().y() + y_shift;
+		    	int x = it->c.x() + x_shift;
+				int y = it->c.y() + y_shift;
 				radius.push_back(sqrt(x_shift*x_shift * data.meta.spacing[0]*data.meta.spacing[0] + y_shift*y_shift *data.meta.spacing[1]*data.meta.spacing[1]));
 				polarDensity.push_back(abs2(data.wavefunction[0](x,y)));
 			}
@@ -258,106 +191,187 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	// }
 }
 
+int Eval::get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v){
+	if(phase(c.x() + v.x(),c.y()+v.y()) + M_PI < phase(c.x(),c.y()))	// Phase ueberschreitet 0/2pi von unten
+		return 1;
+	else if(phase(c.x(),c.y()) + M_PI < phase(c.x() + v.x(),c.y()+v.y()))	// Phase ueberschreitet 0/2pi von oben
+		return -1;
+	else
+		return 0;
+}
+
+void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist) {
+
+	VortexData vortex;
+
+	Vector<int32_t> down = Vector<int32_t>(0,-1,0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> right = Vector<int32_t>(1,0,0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> up = Vector<int32_t>(0,1,0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> left = Vector<int32_t>(-1,0,0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> rightdown = Vector<int32_t>(0.5, -0.5, 0,data.meta.grid[0],data.meta.grid[1],1);
+
+	// #pragma omp parallel for
+	for(int i = 0; i < densityCoordinates.size(); i++){
+	// for(vector<Coordinate<int32_t>>::const_iterator it = densityCoordinates.begin(); it != densityCoordinates.end(); ++it){
+
+		Coordinate<int32_t> c = densityCoordinates[i];
+			
+		int phase_winding = get_phase_jump(c, down) + get_phase_jump(c+down, right) + get_phase_jump(c+down+right, up) + get_phase_jump(c+right, left);
+
+		if(phase_winding != 0){
+			vortex.n = phase_winding;
+			vortex.c = c +right; // /*+ rightdown*/;
+			vlist.push_back(vortex);
+		}
+	}
+
+	// cout << "Vortexnumber before surround dens check: " << vlist.size() << endl;
+
+
+}
+
 inline double Eval::norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y){
 	return sqrt( (a.x() - b.x()) * (a.x() - b.x()) * h_x * h_x + (a.y() - b.y()) * (a.y() - b.y()) * h_y * h_y);
 }
 
-void Eval::getVortexDistance(PathResults &pres){
+// void Eval::getVortexDistance(list<VortexData &vlist){
 
-	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
-	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
+// 	double h_x = 2. * opt.stateInformation[0] * opt.min_x / opt.grid[1];
+// 	double h_y = 2. * opt.stateInformation[1] * opt.min_y / opt.grid[2];
 
-	pres.histogram.resize(OBSERVABLES_DATA_POINTS_SIZE);
-	pres.distance.resize(OBSERVABLES_DATA_POINTS_SIZE);
-	for (list<VortexData>::iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it)
-	{
-		if(it->n != 0)
-		{
-			double shortest_distance = 65536.0;
-			for(list<VortexData>::iterator oit = pres.vlist.begin(); oit != pres.vlist.end(); ++oit)
-			{
-				if((it != oit) && (oit->n!=0))
-				{
-					double distance = (it->x - oit->x).norm();
-					double coordDistance = Eval::norm(it->x, oit->x,h_x,h_y);
-					// cout << "Coordinate Distance: " << coordDistance << endl;
-					// cout << "Grid Distance: " << distance << endl;
-					if(distance < shortest_distance)
-						shortest_distance = distance;
-					pairDistanceHistogram(pres, distance, coordDistance);
-				}
-			}
-			// if(shortest_distance != 65536.0)
-			// {
-			// 	it->pair_distance = shortest_distance;
-			// 	//inc_pd_histogram(ares.pd_histogram_closest, shortest_distance);
-			// 	av_pair_distance.average(it->pair_distance);
-			// 	if(it->pair_distance > ares.max_pair_distance)
-			// 		ares.max_pair_distance = it->pair_distance;
-			// }
-			// else
-			// 	it->pair_distance = 0.0;
-		}
-		// else
-		// 	it->pair_distance = 0.0;
-	}
+// 	pres.histogram.resize(OBSERVABLES_DATA_POINTS_SIZE);
+// 	pres.distance.resize(OBSERVABLES_DATA_POINTS_SIZE);
+// 	for (list<VortexData>::iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it)
+// 	{
+// 		if(it->n != 0)
+// 		{
+// 			double shortest_distance = 65536.0;
+// 			for(list<VortexData>::iterator oit = pres.vlist.begin(); oit != pres.vlist.end(); ++oit)
+// 			{
+// 				if((it != oit) && (oit->n!=0))
+// 				{
+// 					double distance = (it->x - oit->x).norm();
+// 					double coordDistance = Eval::norm(it->x, oit->x,h_x,h_y);
+// 					// cout << "Coordinate Distance: " << coordDistance << endl;
+// 					// cout << "Grid Distance: " << distance << endl;
+// 					if(distance < shortest_distance)
+// 						shortest_distance = distance;
+// 					pairDistanceHistogram(pres, distance, coordDistance);
+// 				}
+// 			}
+// 			// if(shortest_distance != 65536.0)
+// 			// {
+// 			// 	it->pair_distance = shortest_distance;
+// 			// 	//inc_pd_histogram(ares.pd_histogram_closest, shortest_distance);
+// 			// 	av_pair_distance.average(it->pair_distance);
+// 			// 	if(it->pair_distance > ares.max_pair_distance)
+// 			// 		ares.max_pair_distance = it->pair_distance;
+// 			// }
+// 			// else
+// 			// 	it->pair_distance = 0.0;
+// 		}
+// 		// else
+// 		// 	it->pair_distance = 0.0;
+// 	}
 	
-	// // mittlerer Abstand der Vortices
-	// ares.pair_distance_all = av_pair_distance.av();
-	// if(av_pair_distance.av() != 0)
-	// 	ares.pair_distance_nonzero = av_pair_distance.av();
-}
+// 	// // mittlerer Abstand der Vortices
+// 	// ares.pair_distance_all = av_pair_distance.av();
+// 	// if(av_pair_distance.av() != 0)
+// 	// 	ares.pair_distance_nonzero = av_pair_distance.av();
+// }
 
-inline void Eval::pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance)
-{
-	double max_distance = sqrt(opt.grid[1]*opt.grid[1] + opt.grid[2]*opt.grid[2] + opt.grid[3]*opt.grid[3]) / 2.0;
-	int index = (pres.histogram.size() - 1) * distance / max_distance;
-	pres.histogram[index] += 0.5;
-	pres.distance[index] = coordDistance;
+// inline void Eval::pairDistanceHistogram(PathResults &pres, double &distance, double &coordDistance)
+// {
+// 	double max_distance = sqrt(opt.grid[1]*opt.grid[1] + opt.grid[2]*opt.grid[2] + opt.grid[3]*opt.grid[3]) / 2.0;
+// 	int index = (pres.histogram.size() - 1) * distance / max_distance;
+// 	pres.histogram[index] += 0.5;
+// 	pres.distance[index] = coordDistance;
 
-}
+// }
 
 int Eval::getVortexNumber(){
 	return opt.vortexnumber;
 }
 
 void Eval::calc_fields(MatrixXcd &DATA, Options &opt){
-	// double LOWER_THRESHOLD = 0.0; // opt.N * 0.05 / (4. * opt.min_x * opt.stateInformation[0] * opt.min_y * opt.stateInformation[1]); //opt.N * 0.05 / data.width() / data.height() / data.depth();
 	#pragma omp parallel for
 	for(int x = 0; x < data.meta.grid[0]; x++)
 	{
 		for(int y = 0; y < data.meta.grid[1]; y++)
 		{
-			// for(int z = 0; z < data.depth(); z++)
-			// {	
-				phase(x,y) = arg(DATA(x,y));
-				// if(abs2(data(0,x,y,z)) <= LOWER_THRESHOLD)
-				// 	zeros.at(0,x,y,z) = 0.0;
-				// else
-				// 	zeros.at(0,x,y,z) = 1.0;
-			// }
+			phase(x,y) = arg(DATA(x,y));
 		}
 	}
 }
 
-int Eval::erosion(MatrixXi &d, int &i, int &j){
+void Eval::erosion(MatrixXi &d){
+	MatrixXi tmp_map = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
 
-	int sum = d.block<3,3>(i-1,j-1).sum();
-	if(sum == 9){
-		return 1;
-	} else {
-		return 0;
+	for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+	 	for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+			int sum = d.block<3,3>(i-1,j-1).sum();
+			if(sum == 9){
+				tmp_map(i,j) = 1;
+			} 
+		}
 	}
+	d = tmp_map;
 
 }
 
-int Eval::dilation(MatrixXi &d, int &i, int &j){
+void Eval::dilation(MatrixXi &d){
+	MatrixXi tmp_map = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
 
-	int sum = d.block<3,3>(i-1,j-1).sum();
-	if(sum == 0)
-		return 0;
-	else
-		return 1;
+	for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+	 	for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+			int sum = d.block<3,3>(i-1,j-1).sum();
+			if(sum != 0){
+				tmp_map(i,j) = 1;
+			} 
+		}
+	}
+	d = tmp_map;
+}
+
+void Eval::floodFillUtil(MatrixXi &checkedCounter ,MatrixXi &mask ,MatrixXi &dens, int x, int y, int prevC, int newC)
+{
+    // Base cases
+    if (x < 0 || x >= data.meta.grid[0] || y < 0 || y >= data.meta.grid[1])
+        return;
+    if (dens(x,y) != prevC)
+        return;
+ 
+    // Replace the color at (x, y)
+    if(checkedCounter(x,y) == 1)
+    	return;
+    mask(x,y) = newC;
+    checkedCounter(x,y) = 1;
+    // Recur for north, east, south and west
+    // if(checkedCounter(x+1,y) == 0)
+    	floodFillUtil(checkedCounter,mask,dens, x+1, y, prevC, newC);
+	// if(checkedCounter(x-1,y) == 0)
+    	floodFillUtil(checkedCounter,mask,dens, x-1, y, prevC, newC);
+    // if(checkedCounter(x,y+1) == 0)
+    	floodFillUtil(checkedCounter,mask,dens, x, y+1, prevC, newC);
+    // if(checkedCounter(x,y-1) == 0)
+    	floodFillUtil(checkedCounter,mask,dens, x, y-1, prevC, newC);
+}
+
+MatrixXi Eval::floodFill(MatrixXi &dens,int prevC, int newC){
+	MatrixXi tmpD = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
+	MatrixXi checkedCounter = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
+	floodFillUtil(checkedCounter,tmpD,dens,1,1,prevC,newC); // Start at (1,1) and replace prevC of dens with newC's in tmpD, create a mask for the zero regions
+	return tmpD;
+}
+
+void Eval::fillHoles(MatrixXi &dens, MatrixXi &mask){
+	for(int i = 0; i < data.meta.grid[0]; i++){
+		for(int j = 0; j < data.meta.grid[1]; j++){
+			if(mask(i,j) != 1){
+				dens(i,j) = 1;
+			}
+		}
+	}
 }
 
 
@@ -388,6 +402,8 @@ void Eval::getDensity(){
 				}
 			}
 		}
+
+		
 		// MatrixXf densMapGrad = MatrixXf::Zero(data.meta.grid[0],data.meta.grid[1]);
 		// for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
 		// 	for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
@@ -400,21 +416,16 @@ void Eval::getDensity(){
 		// 		densMapGrad(i,j) /= (DENSITY_CHECK_DISTANCE * DENSITY_CHECK_DISTANCE * 4);
 		// 	}
 		// }
-		MatrixXi tmp_map = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
-		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
-			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+
 				// if(densMapGrad(i,j) < 0.9 && densMapGrad(i,j) > 0.1){
-					tmp_map(i,j) = erosion(densityLocationMap[k],i,j);
-				
-			}
-		}
-		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
-			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
-				// if(densMapGrad(i,j) < 0.9 && densMapGrad(i,j) > 0.1){
-					densityLocationMap[k](i,j) = dilation(tmp_map,i,j);
-				
-			}
-		}
+		erosion(densityLocationMap[k]);
+		dilation(densityLocationMap[k]);
+		// dilation(densityLocationMap[k]);	
+
+		MatrixXi zeroMask = floodFill(densityLocationMap[k],0,1);
+
+		fillHoles(densityLocationMap[k],zeroMask);
+
 		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
 			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
 			    if(densityLocationMap[k](i,j) == 1){

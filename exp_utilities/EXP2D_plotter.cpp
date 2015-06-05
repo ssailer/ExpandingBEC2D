@@ -39,7 +39,7 @@ void Plotter::prepareData(){
 	const int n = eval.data.meta.grid[0];
 	const int m = eval.data.meta.grid[1];
 	const int contour_size = eval.contour[0].size();
-	const int vortex_size = eval.pres[0].vlist.size();
+	const int vortex_size = eval.vlist[0].size();
 	int index;
 
 	// Phase and Density
@@ -76,9 +76,9 @@ void Plotter::prepareData(){
 	vortex_y = mglData(vortex_size);
 
 	index = 0;
-	for(list<VortexData>::const_iterator it = eval.pres[0].vlist.begin(); it != eval.pres[0].vlist.end(); ++it){
-		vortex_x.a[index] = it->x.x();
-		vortex_y.a[index] = it->x.y();
+	for(list<VortexData>::const_iterator it = eval.vlist[0].begin(); it != eval.vlist[0].end(); ++it){
+		vortex_x.a[index] = it->c.x();
+		vortex_y.a[index] = it->c.y();
 		index++;
 	}
 
@@ -153,7 +153,7 @@ void Plotter::plotEval(){
 	combinedControl();
 	// control();
 	// spectrum();
-	// densityMap();
+	densityMap();
 	// contour();
 	// vortices();
 	
@@ -208,7 +208,9 @@ void Plotter::combinedControl(){
 	gr.Colorbar(">");
 	gr.Label('x',"x [points]",0); gr.Label('y',"y [points]",0);
 	gr.Dens(phase);
-	gr.Plot(vortex_x,vortex_y," .w");
+	// gr.SetMarkSize(0.01);
+	gr.Plot(vortex_x,vortex_y," #<w");
+	gr.Plot(vortex_x,vortex_y," <k");
 	// gr.Adjust("c");
 	gr.SetTicks('c');
 

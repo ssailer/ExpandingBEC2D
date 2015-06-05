@@ -148,91 +148,91 @@ void plotRadialDensity(string name,string title, Observables &ares){
 	gr.WritePNG(name.c_str(),"Radial Density",false);
 }
 
-void plotPairDistance(string name,string title,PathResults pres){
+// void plotPairDistance(string name,string title,list<VortexData> vlist){
 
-	ofstream plotfile;
-    vector<double> histogram;
-	vector<double> distance;
+// 	ofstream plotfile;
+//     vector<double> histogram;
+// 	vector<double> distance;
 	
-	plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
-    for (int r = 0; r < pres.distance.size(); r++)             
-	{	
-		if(pres.histogram[r] != 0.0){
-			plotfile << r <<"\t"<< pres.histogram[r] <<"\t" << pres.distance[r] <<"\t";
-			plotfile << endl;
+// 	plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
+//     for (int r = 0; r < pres.distance.size(); r++)             
+// 	{	
+// 		if(pres.histogram[r] != 0.0){
+// 			plotfile << r <<"\t"<< pres.histogram[r] <<"\t" << pres.distance[r] <<"\t";
+// 			plotfile << endl;
 
-			histogram.push_back(pres.histogram[r]);
-			distance.push_back(pres.distance[r]);
+// 			histogram.push_back(pres.histogram[r]);
+// 			distance.push_back(pres.distance[r]);
 			
-        }
-	}
-	plotfile << endl << endl;	
-	plotfile.close();
+//         }
+// 	}
+// 	plotfile << endl << endl;	
+// 	plotfile.close();
 
 
-	int n = histogram.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
-	mglData m_histogram(n);
-	mglData m_distance(n);
+// 	int n = histogram.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
+// 	mglData m_histogram(n);
+// 	mglData m_distance(n);
 
 
-	for(int i = 0; i < n; i++){
-		m_histogram.a[i] = histogram[i];
-		m_distance.a[i] = distance[i];
-		// cout << "Histogram: " << m_histogram.a[i] << endl;
-		// cout << "Distance: " << m_distance.a[i] << endl;
-	}
+// 	for(int i = 0; i < n; i++){
+// 		m_histogram.a[i] = histogram[i];
+// 		m_distance.a[i] = distance[i];
+// 		// cout << "Histogram: " << m_histogram.a[i] << endl;
+// 		// cout << "Distance: " << m_distance.a[i] << endl;
+// 	}
 
-	// cout << "copied" << endl;
+// 	// cout << "copied" << endl;
 
-	mglGraph gr;
+// 	mglGraph gr;
 
-	double maxrange = 10 * sqrt(2); // This is bad, but I have no access to opt.min_x etc.
+// 	double maxrange = 10 * sqrt(2); // This is bad, but I have no access to opt.min_x etc.
 
-	gr.SetMarkSize(0.7);
-	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
-	gr.SetFontSize(3.0);
-	gr.SetQuality(3);
-	gr.Title(title.c_str());
-	gr.SetRange('x',0.0,maxrange);
-	gr.SetRange('y',0.0,2);
-	// gr.SetCoor(11); // log-log-coordinates
+// 	gr.SetMarkSize(0.7);
+// 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+// 	gr.SetFontSize(3.0);
+// 	gr.SetQuality(3);
+// 	gr.Title(title.c_str());
+// 	gr.SetRange('x',0.0,maxrange);
+// 	gr.SetRange('y',0.0,2);
+// 	// gr.SetCoor(11); // log-log-coordinates
 
-	// gr.SubPlot(2,1,0);
-	// gr.Axis();
-	// gr.Plot(k,m_distance);
-	// gr.SubPlot(2,1,1);
+// 	// gr.SubPlot(2,1,0);
+// 	// gr.Axis();
+// 	// gr.Plot(k,m_distance);
+// 	// gr.SubPlot(2,1,1);
 
-	gr.Axis();
+// 	gr.Axis();
 
-	// gr.SetFunc("lg(x)","lg(y)");
-	// gr.FPlot("x^(-2)");
-	// gr.FPlot("x^(-4.666)");
-	// gr.FPlot("x^(-5)");
+// 	// gr.SetFunc("lg(x)","lg(y)");
+// 	// gr.FPlot("x^(-2)");
+// 	// gr.FPlot("x^(-4.666)");
+// 	// gr.FPlot("x^(-5)");
 
-	// gr.Stem(healing_length);
-	gr.Plot(m_distance,m_histogram," .");
+// 	// gr.Stem(healing_length);
+// 	gr.Plot(m_distance,m_histogram," .");
 
-	name = name + ".png";
+// 	name = name + ".png";
 
-	gr.WritePNG(name.c_str(),"Spectrum",false);
-}
+// 	gr.WritePNG(name.c_str(),"Spectrum",false);
+// }
 
-void plotVortexList(string name,string title,const RealGrid &phase,PathResults &pres,Options &opt){
+void plotVortexList(string name,string title,const RealGrid &phase,list<VortexData> &vlist,Options &opt){
 
 	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
 	int n = opt.grid[1]/factor;
 	int m = opt.grid[2]/factor;
 
-	int size = pres.vlist.size();
+	int size = vlist.size();
 
 	mglData phaseData(n,m);
 	mglData v_x(size);
 	mglData v_y(size);
 
 	int l = 0;
-	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
-		v_x.a[l] = it->x.x()/factor;
-		v_y.a[l] = it->x.y()/factor;
+	for(list<VortexData>::const_iterator it = vlist.begin(); it != vlist.end(); ++it){
+		v_x.a[l] = it->c.x()/factor;
+		v_y.a[l] = it->c.y()/factor;
 		l++;
 	}
 
