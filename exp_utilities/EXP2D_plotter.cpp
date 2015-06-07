@@ -153,7 +153,7 @@ void Plotter::plotEval(){
 	combinedControl();
 	// control();
 	// spectrum();
-	densityMap();
+	// densityMap();
 	// contour();
 	// vortices();
 	

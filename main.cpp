@@ -61,47 +61,49 @@ try{
  	initMain.printInitVar();
 
 	Options opt = initMain.getOptions();
-	MainControl mC = initMain.getControl(); // controls the choise between expansion and trapped simulations, e.g. the lab setup, has to be set in console
-	MainControl runMode = initMain.getRunMode(); // controls the chosen integration algorithm, has to be set in the cfg
+	MainControl algo = initMain.getAlgorithm(); // controls the choise between expansion and trapped simulations, e.g. the lab setup, has to be set in console
+	MainControl dgl = initMain.getDgl(); // controls the chosen integration algorithm, has to be set in the cfg
+	MainControl start = initMain.getRestart();
+
+	string runName = "run";
+	string filename = "rundata.h5";
+
 
 	MatrixData* data = new MatrixData(initMain.getMeta());
 
-	string runName = "run";
-
-	// setenv("PYTHONPATH","../",1);
-	// Py_Initialize();
- //    PyRun_SimpleString("import plot");
-
-	if(initMain.restart()){
-		
-		Options loadedOptions;
-		string filename = "rundata.h5";
+	if(start == RESUME){
+		// Options loadedOptions;		
 		// Loading from existing HDF5
-		MatrixData* loadedData = new MatrixData();
+		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
+		vector<int> timeList = dataFile->getTimeList();
+		dataFile->getLatestSnapshot("MatrixData",data,opt);
+		delete dataFile;
+		// temp fix to change behaviour of sim object;
+		opt.initialRun = false;
+	}
+	if(start == TAKEUP){
+		Options loadedOptions;
+		// Loading from existing HDF5
 		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
 		vector<int> timeList = dataFile->getTimeList();
 		dataFile->getLatestSnapshot("MatrixData",data,loadedOptions);
 		delete dataFile;
-		// data->checkedCopy(loadedData);
-		// plotDataToPngEigen("checkedCopy", data->wavefunction[0],opt);
-		delete loadedData;
 		// temp fix to change behaviour of sim object;
 		opt.initialRun = false;
+		data->meta.time = 0.0;
 		// opt.n_it_RTE = initMain.getRunTime();
 		// opt.snapshots = initMain.getSnapShots();
-	} else {
-		// set MatrixData to specified initial conditions
+	}
+	if(start == NEW){
 		setGridToTF(data,initMain.getOptions());
 		// addVorticesAlternating(data, opt, opt.vortexnumber);
-		// save initial Grid
-		// string startGridName = initMain.getStartingGridName();
 		binaryFile* startFile = new binaryFile("rundata.h5",binaryFile::out);
 		startFile->appendSnapshot("MatrixData",data,initMain.getOptions());
 		delete startFile;
 	}
 
-	if(mC == RK4){
-		switch ( runMode ){
+	if(algo == RK4){
+		switch ( dgl ){
 			case ROT : {
 					Runner<RotatingTrap>* run = new Runner<RotatingTrap>(data,opt);
 					run->runToTime(runName);
@@ -110,9 +112,6 @@ try{
 				break;
 
 			case EXP : {
-					// FIXME WATCH OUT time var reset for restarting, this can be very DANGEROUS!
-					if(opt.initialRun == true)
-						data->meta.time = 0.0;
 					Runner<Expansion>* run = new Runner<Expansion>(data,opt);
 					run->runToTime(runName);
 					delete run;
@@ -131,8 +130,8 @@ try{
 				break;
 		}
 	}
-	if(mC == SPLIT){
-		switch ( runMode ){
+	if(algo == SPLIT){
+		switch ( dgl ){
 			case ROT : {
 					Runner<SplitRotStrang>* run = new Runner<SplitRotStrang>(data,opt);
 					run->runToTime(runName);
@@ -158,23 +157,8 @@ try{
 				cout << "No known runmode was recognized in main. Please revise." << endl;
 				break;
 		}
-	}
-	if(mC == SPLITSTRANG){
-		switch ( runMode ){
-			case ROT : {
-					Runner<SplitRotStrang>* run = new Runner<SplitRotStrang>(data,opt);
-					run->runToTime(runName);
-					delete run;
-				}
-				break;
-
-			default :
-				cout << "No known runmode was recognized in main. Please revise." << endl;
-				break;
-		}
-	}    
+	}  
 	delete data;
-	// Py_Finalize();
 }
 
 

@@ -28,18 +28,21 @@ private:
 
 enum MainControl {
 	SPLIT,
-	SPLITSTRANG,
+	// SPLITSTRANG,
 	RK4,
 	TRAP,
 	EXP,
-	ROT
+	ROT,
+	RESUME,
+	TAKEUP,
+	NEW
 };
 
 
 
 class InitMain {
 public:
-	InitMain(int argcTmp, char** argvTmp) : restartValue(false) {
+	InitMain(int argcTmp, char** argvTmp) /*: restartValue(false) */{
 		argc = argcTmp;
 		argv = argvTmp;
 		readCli();
@@ -60,12 +63,14 @@ public:
 	inline void setRunTime(int runtime);
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
-	inline MainControl getRunMode();
-	inline bool restart();
+	
+	// inline bool restart();
 	inline string getStartingGridName();
 	inline int getRunTime(){ return opt.n_it_RTE;};
 	inline int getSnapShots(){ return opt.snapshots;};
-	inline MainControl getControl(){return toMainControl(MainControlString);};
+	inline MainControl getRestart(){ return toMainControl(restartString);};
+	inline MainControl getDgl(){ return toMainControl(dglString);};
+	inline MainControl getAlgorithm(){return toMainControl(algorithmString);};
 	inline string getRunName(){return runName;};
 
 
@@ -73,30 +78,36 @@ public:
 	inline void convertFromDimensionless();
 private:
 	MainControl toMainControl(const std::string& s);
-	bool restartValue;
+	// bool restartValue;
 	string startingGridName;
 	MatrixData::MetaData meta;
 	Options opt;
 	int argc;
 	char** argv;
-	string MainControlString = "Empty String";
+	string algorithmString = "Empty String";
+	string dglString = "Empty String";
+	string restartString = "Empty String";
 	string runName = "expansion";
 };
 
 MainControl InitMain::toMainControl(const std::string& s)
-{
+{	
+	cerr << "to Maincontrol: " << s << endl;
     if (s == "SPLIT") return SPLIT;
-    if (s == "SPLITSTRANG") return SPLITSTRANG;
+    // if (s == "SPLITSTRANG") return SPLITSTRANG;
     if (s == "RK4") return RK4;
     if (s == "TRAP") return TRAP;
     if (s == "EXP") return EXP;
     if (s == "ROT") return ROT;
+    if (s == "RESUME") return RESUME;
+    if (s == "TAKEUP") return TAKEUP;
+    if (s == "NEW") return NEW;
     throw std::runtime_error("Invalid conversion from string to MainControl.");
 }
 
-inline bool InitMain::restart(){
-	return restartValue;
-}
+// inline bool InitMain::restart(){
+// 	return restartValue;
+// }
 
 inline string InitMain::getStartingGridName(){
 	return startingGridName;
@@ -114,16 +125,16 @@ inline void InitMain::setInitialRun(bool initialRun){
 	opt.initialRun = initialRun;
 }
 
-inline void InitMain::setRunMode(string runmode){
-	// FIXME: Here should be checks for the sanity of runmode!
-	opt.runmode = runmode;
-}
+// inline void InitMain::setRunMode(string runmode){
+// 	// FIXME: Here should be checks for the sanity of runmode!
+// 	opt.runmode = runmode;
+// }
 
-inline MainControl InitMain::getRunMode(){
-	// FIXME: Here should be checks for the sanity of runmode!
-	return toMainControl(opt.runmode);
-	// return opt.runmode;
-}
+// inline MainControl InitMain::getRunMode(){
+// 	// FIXME: Here should be checks for the sanity of runmode!
+// 	return toMainControl(opt.runmode);
+// 	// return opt.runmode;
+// }
 
 inline void InitMain::setRunTime(int runtime){
 	opt.n_it_RTE = runtime;
@@ -215,8 +226,11 @@ inline int InitMain::readCli()
       ("help,h", "Print help messages.") 
       ("config,c",po::value<string>(&opt.config), "Name of the configfile.")      
       ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data.")
-      ("restart,r","Use if you want to restart the run from LastGrid.")
-      ("mode,m",po::value<string>(&MainControlString), "Runmode given: Choose between SPLIT and RK4.")
+      // ("takeup,t","Start the run from last Grid, with time set to 0")
+      // ("resume,r","Resume the run from the last saved Grid.")
+      ("restart",po::value<string>(&restartString), "NEW RESUME TAKEUP")      
+      ("dgl",po::value<string>(&dglString), "EXP ROT TRAP")
+      ("algo",po::value<string>(&algorithmString), "SPLIT RK4")
       ("name,n",po::value<string>(&runName), "Name of the run.");
 
       // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
@@ -236,8 +250,10 @@ inline int InitMain::readCli()
 
 	po::positional_options_description positionalOptions; 
 	positionalOptions.add("config", 1);	
-	positionalOptions.add("directory",1);	
-	positionalOptions.add("mode", 1);
+	positionalOptions.add("directory",1);
+	positionalOptions.add("restart",1);
+	positionalOptions.add("dgl",1);
+	positionalOptions.add("algo", 1);	
 	// positionalOptions.add("name",1);
 
     po::variables_map vm; 
@@ -264,10 +280,13 @@ inline int InitMain::readCli()
       po::notify(vm); // throws on error, so do after help in case 
                       // there are any problems 
 
-    	if(vm.count("restart")){
-    		restartValue = true;
+  //   	if(vm.count("resume"))
+  //   		restartString = "RESUME";
+		// else if(vm.count("takeup"))
+		// 	restartString = "TAKEUP";
+		// else 
+		// 	restartString = "NEW";
 
-		}
     } 
     catch(po::error& e) 
     { 
@@ -327,8 +346,9 @@ inline int InitMain::readConfig()
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
 	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
-	cfg.lookupValue("RunOptions.runmode",opt.runmode);
+	// cfg.lookupValue("RunOptions.runmode",opt.runmode);
 	// cfg.lookupValue("RunOptions.startingGridName",startingGridName);
+	opt.runmode = dglString;
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
