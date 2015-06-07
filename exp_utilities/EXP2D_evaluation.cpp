@@ -333,43 +333,45 @@ void Eval::dilation(MatrixXi &d){
 	d = tmp_map;
 }
 
-void Eval::floodFillUtil(MatrixXi &checkedCounter ,MatrixXi &mask ,MatrixXi &dens, int x, int y, int prevC, int newC)
-{
-    // Base cases
-    if (x < 0 || x >= data.meta.grid[0] || y < 0 || y >= data.meta.grid[1])
-        return;
-    if (dens(x,y) != prevC)
-        return;
- 
-    // Replace the color at (x, y)
-    if(checkedCounter(x,y) == 1)
-    	return;
-    mask(x,y) = newC;
-    checkedCounter(x,y) = 1;
-    // Recur for north, east, south and west
-    // if(checkedCounter(x+1,y) == 0)
-    	floodFillUtil(checkedCounter,mask,dens, x+1, y, prevC, newC);
-	// if(checkedCounter(x-1,y) == 0)
-    	floodFillUtil(checkedCounter,mask,dens, x-1, y, prevC, newC);
-    // if(checkedCounter(x,y+1) == 0)
-    	floodFillUtil(checkedCounter,mask,dens, x, y+1, prevC, newC);
-    // if(checkedCounter(x,y-1) == 0)
-    	floodFillUtil(checkedCounter,mask,dens, x, y-1, prevC, newC);
+
+
+void Eval::floodFill(MatrixXi &dens){
+
+	typedef struct {
+			int32_t x;
+			int32_t y;
+	} Coord;
+
+	std::stack<Coord> cStack;
+	cStack.push(Coord{0,0});
+	while(!cStack.empty()){
+		Coord now = cStack.top();
+		if(now.x < 0 || now.x >= data.meta.grid[0] || now.y < 0 || now.y >= data.meta.grid[1])
+			cStack.pop();
+		else if(dens(now.x,now.y) != 0)
+			cStack.pop();
+		else {
+			dens(now.x,now.y) = 2;
+			cStack.push(Coord{now.x+1,now.y});
+			cStack.push(Coord{now.x-1,now.y});
+			cStack.push(Coord{now.x,now.y+1});
+			cStack.push(Coord{now.x,now.y-1});
+		}
+	}
 }
 
-MatrixXi Eval::floodFill(MatrixXi &dens,int prevC, int newC){
-	MatrixXi tmpD = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
-	MatrixXi checkedCounter = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
-	floodFillUtil(checkedCounter,tmpD,dens,1,1,prevC,newC); // Start at (1,1) and replace prevC of dens with newC's in tmpD, create a mask for the zero regions
-	return tmpD;
-}
-
-void Eval::fillHoles(MatrixXi &dens, MatrixXi &mask){
+void Eval::fillHoles(MatrixXi &dens/*, MatrixXi &mask*/){
 	for(int i = 0; i < data.meta.grid[0]; i++){
 		for(int j = 0; j < data.meta.grid[1]; j++){
-			if(mask(i,j) != 1){
+			// if(mask(i,j) != 1){
+			// 	dens(i,j) = 1;
+			// }
+			if(dens(i,j) != 2){
 				dens(i,j) = 1;
+			} else {
+				dens(i,j) = 0;
 			}
+
 		}
 	}
 }
@@ -421,10 +423,8 @@ void Eval::getDensity(){
 		erosion(densityLocationMap[k]);
 		dilation(densityLocationMap[k]);
 		// dilation(densityLocationMap[k]);	
-
-		MatrixXi zeroMask = floodFill(densityLocationMap[k],0,1);
-
-		fillHoles(densityLocationMap[k],zeroMask);
+		floodFill(densityLocationMap[k]);
+		fillHoles(densityLocationMap[k]);
 
 		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
 			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){

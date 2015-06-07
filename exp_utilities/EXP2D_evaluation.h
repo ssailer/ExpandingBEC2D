@@ -8,6 +8,7 @@
 #include <complex>
 #include <cmath>
 #include <numeric>
+#include <stack>
 #include <algorithm>
 #include <complexgrid.h>
 #include <realgrid.h>
@@ -104,9 +105,8 @@ private:
 	void erosion(MatrixXi &d);
 	void dilation(MatrixXi &d);
 
-	void floodFillUtil(MatrixXi &checkedCounter, MatrixXi &mask ,MatrixXi &dens, int x, int y, int prevC, int newC);
-	MatrixXi floodFill(MatrixXi &dens,int prevC, int newC);
-	void fillHoles(MatrixXi &dens, MatrixXi &mask);
+	void floodFill(MatrixXi &dens);
+	void fillHoles(MatrixXi &dens);
 	
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v);
