@@ -90,7 +90,7 @@ void hydroSolver::integrate()
 /* end of initial information */
 
     // file << setw(30) << method[key] << endl;
-    file << setw(12) << "t" << "," << setw(12) << "Rx"<< "," << setw(12) << "Ry" << endl;
+    // file << setw(12) << "t" << "," << setw(12) << "Rx"<< "," << setw(12) << "Ry" << endl;
     
 
 

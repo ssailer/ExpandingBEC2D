@@ -53,7 +53,7 @@ def main():
 
 	from_data2 = pd.read_csv(datafile2,header=1,names=cols2)
 	data1 = from_data2['Time']
-	data1 *= 1000.0
+	#data1 *= 1000.0
 	data2 = from_data2['Rx']
 	data3 = from_data2['Ry']
 
@@ -77,7 +77,7 @@ def main():
 	name += " "
 	name += r'$\mu m$'
 	plt.ylabel(name)
-	plt.xlabel('Time in ms')
+	plt.xlabel('Time in s')
 	plt.legend(loc='upper left')
 
 	ax2 = fig.add_subplot(312)
@@ -85,7 +85,7 @@ def main():
 	ax2.plot(data1,data3,color='b',label=r'$R_y$ $Hydro$')
 
 	plt.ylabel(name)
-	plt.xlabel('Time in ms')
+	plt.xlabel('Time in s')
 	plt.legend(loc='upper left')
 
 	# ax1 = fig.add_subplot(312)	
