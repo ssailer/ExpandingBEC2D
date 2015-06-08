@@ -51,7 +51,7 @@ def main():
 
 	cols2 = ["Time","Rx", "Ry"]
 
-	from_data2 = pd.read_csv(datafile2,header=1,names=cols2)
+	from_data2 = pd.read_csv(datafile2,header=0,names=cols2)
 	data1 = from_data2['Time']
 	#data1 *= 1000.0
 	data2 = from_data2['Rx']

@@ -92,7 +92,7 @@ private:
 
 MainControl InitMain::toMainControl(const std::string& s)
 {	
-	cerr << "to Maincontrol: " << s << endl;
+	// cerr << "to Maincontrol: " << s << endl;
     if (s == "SPLIT") return SPLIT;
     // if (s == "SPLITSTRANG") return SPLITSTRANG;
     if (s == "RK4") return RK4;

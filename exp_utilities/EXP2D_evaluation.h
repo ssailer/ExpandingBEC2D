@@ -102,6 +102,8 @@ private:
 	void getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,list<VortexData> &vlist);
 	// void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	void getDensity();
+
+	int checkSum(MatrixXi &d,int &i, int &j);
 	void erosion(MatrixXi &d);
 	void dilation(MatrixXi &d);
 

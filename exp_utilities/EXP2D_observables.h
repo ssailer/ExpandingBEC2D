@@ -64,7 +64,7 @@ inline Observables::Observables() :
         r(),
         radialDensity(),
         angularDensity(360),
-        fixedAspectRatio(90)
+        fixedAspectRatio(360)
 {
     Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
     number.setZero();
@@ -83,7 +83,7 @@ inline Observables::Observables(int avgrid) :
         r(avgrid),
         radialDensity(avgrid),
         angularDensity(360),
-        fixedAspectRatio(90)
+        fixedAspectRatio(360)
 {
     Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
     number.setZero();

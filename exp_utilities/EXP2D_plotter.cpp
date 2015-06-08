@@ -147,6 +147,26 @@ void Plotter::prepareData(){
 		k.a[i] = kval[i];
 		number.a[i] = numberval[i];
 	}
+
+	// calculate ellipse axis
+	int angle = eval.totalResult.aspectRatioAngle;
+
+	int major_y = eval.data.meta.grid[1]/2 + eval.data.meta.grid[1]/2 * sin(angle * M_PI / 180.0);
+	int major_x = eval.data.meta.grid[0]/2 + eval.data.meta.grid[0]/2 * cos(angle * M_PI / 180.0);
+	int minor_y = eval.data.meta.grid[1]/2 + eval.data.meta.grid[1]/2 * sin((angle+90) * M_PI / 180.0);
+	int minor_x = eval.data.meta.grid[0]/2 + eval.data.meta.grid[0]/2 * cos((angle+90) * M_PI / 180.0);
+
+	major_1 = mglPoint(major_x,major_y);
+	minor_1 = mglPoint(minor_x,minor_y);
+
+	major_y = eval.data.meta.grid[1]/2 - eval.data.meta.grid[1]/2 * sin(angle * M_PI / 180.0);
+	major_x = eval.data.meta.grid[0]/2 - eval.data.meta.grid[0]/2 * cos(angle * M_PI / 180.0);
+	minor_y = eval.data.meta.grid[1]/2 - eval.data.meta.grid[1]/2 * sin((angle+90) * M_PI / 180.0);
+	minor_x = eval.data.meta.grid[0]/2 - eval.data.meta.grid[0]/2 * cos((angle+90) * M_PI / 180.0);
+
+	major_2 = mglPoint(major_x,major_y);
+	minor_2 = mglPoint(minor_x,minor_y);
+	origin = mglPoint(eval.data.meta.grid[0]/2,eval.data.meta.grid[1]/2);
 }
 
 void Plotter::plotEval(){
@@ -241,6 +261,8 @@ void Plotter::combinedControl(){
 	gr.Colorbar(">");
 	gr.Dens(density);
 	gr.Plot(contour_x,contour_y," .w");
+	gr.Line(major_1,major_2,"W2");
+	gr.Line(minor_1,minor_2,"H2");
 
 	// gr.ShowImage("eog",true);
 

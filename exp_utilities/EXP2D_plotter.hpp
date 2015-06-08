@@ -45,6 +45,7 @@ private:
 
 	mglData density, phase, densitymap, contour_x, contour_y, vortex_x, vortex_y, k, number;
 	float kmin, kmax, numbermin, numbermax;
+	mglPoint major_1, minor_1,major_2, minor_2, origin;
 
 
 	
