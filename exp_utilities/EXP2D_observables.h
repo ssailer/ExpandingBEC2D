@@ -52,6 +52,14 @@ typedef struct {
     double zeroDensity;
 } VortexData;
 
+struct Ellipse {
+	Matrix<double, 6,1> coef;
+	vector<double> center;
+	double major;
+	double minor;
+	double angle;
+};
+
 // struct PathResults {
 //     list<VortexData> vlist;
 //     vector<double> histogram;

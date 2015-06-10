@@ -65,15 +65,16 @@ try{
 	MainControl dgl = initMain.getDgl(); // controls the chosen integration algorithm, has to be set in the cfg
 	MainControl start = initMain.getRestart();
 
-	string runName = "run";
-	string filename = "rundata.h5";
-
+	string filename;
 
 	MatrixData* data = new MatrixData(initMain.getMeta());
 
 	if(start == RESUME){
 		// Options loadedOptions;		
 		// Loading from existing HDF5
+		if(dgl == ROT) filename = "rotdata.h5";
+		if(dgl == EXP) filename = "expdata.h5";
+		if(dgl == TRAP) filename = "trapdata.h5";
 		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
 		vector<int> timeList = dataFile->getTimeList();
 		dataFile->getLatestSnapshot("MatrixData",data,opt);
@@ -81,15 +82,18 @@ try{
 		// temp fix to change behaviour of sim object;
 		opt.initialRun = false;
 	}
-	if(start == TAKEUP){
+	if(start == RESTART){
 		Options loadedOptions;
 		// Loading from existing HDF5
+		if(dgl == EXP) filename = "rotdata.h5";
+		if(dgl == TRAP) filename = "rotdata.h5";
+		if(dgl == ROT) filename = "rotdata.h5";
 		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
 		vector<int> timeList = dataFile->getTimeList();
 		dataFile->getLatestSnapshot("MatrixData",data,loadedOptions);
 		delete dataFile;
 		// temp fix to change behaviour of sim object;
-		opt.initialRun = false;
+		opt.initialRun = true;
 		data->meta.time = 0.0;
 		// opt.n_it_RTE = initMain.getRunTime();
 		// opt.snapshots = initMain.getSnapShots();
@@ -97,23 +101,20 @@ try{
 	if(start == NEW){
 		setGridToTF(data,initMain.getOptions());
 		// addVorticesAlternating(data, opt, opt.vortexnumber);
-		binaryFile* startFile = new binaryFile("rundata.h5",binaryFile::out);
-		startFile->appendSnapshot("MatrixData",data,initMain.getOptions());
-		delete startFile;
 	}
 
 	if(algo == RK4){
 		switch ( dgl ){
 			case ROT : {
 					Runner<RotatingTrap>* run = new Runner<RotatingTrap>(data,opt);
-					run->runToTime(runName);
+					run->runToTime("rot");
 					delete run;
 				}
 				break;
 
 			case EXP : {
 					Runner<Expansion>* run = new Runner<Expansion>(data,opt);
-					run->runToTime(runName);
+					run->runToTime("exp");
 					delete run;
 				}
 				break;
@@ -134,21 +135,21 @@ try{
 		switch ( dgl ){
 			case ROT : {
 					Runner<SplitRotStrang>* run = new Runner<SplitRotStrang>(data,opt);
-					run->runToTime(runName);
+					run->runToTime("rot");
 					delete run;
 				}
 				break;
 
 			case EXP : {
 					Runner<SplitFree>* run = new Runner<SplitFree>(data,opt);
-					run->runToTime(runName);
+					run->runToTime("exp");
 					delete run;
 				}
 				break;
 
 			case TRAP : {
 					Runner<SplitTrap>* run = new Runner<SplitTrap>(data,opt);
-					run->runToTime(runName);
+					run->runToTime("trap");
 					delete run;
 				}
 				break;

@@ -34,7 +34,7 @@ enum MainControl {
 	EXP,
 	ROT,
 	RESUME,
-	TAKEUP,
+	RESTART,
 	NEW
 };
 
@@ -87,7 +87,7 @@ private:
 	string algorithmString = "Empty String";
 	string dglString = "Empty String";
 	string restartString = "Empty String";
-	string runName = "expansion";
+	string runName = "default_runname";
 };
 
 MainControl InitMain::toMainControl(const std::string& s)
@@ -100,7 +100,7 @@ MainControl InitMain::toMainControl(const std::string& s)
     if (s == "EXP") return EXP;
     if (s == "ROT") return ROT;
     if (s == "RESUME") return RESUME;
-    if (s == "TAKEUP") return TAKEUP;
+    if (s == "RESTART") return RESTART;
     if (s == "NEW") return NEW;
     throw std::runtime_error("Invalid conversion from string to MainControl.");
 }
@@ -228,7 +228,7 @@ inline int InitMain::readCli()
       ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data.")
       // ("takeup,t","Start the run from last Grid, with time set to 0")
       // ("resume,r","Resume the run from the last saved Grid.")
-      ("restart",po::value<string>(&restartString), "NEW RESUME TAKEUP")      
+      ("restart",po::value<string>(&restartString), "NEW RESUME RESTART")      
       ("dgl",po::value<string>(&dglString), "EXP ROT TRAP")
       ("algo",po::value<string>(&algorithmString), "SPLIT RK4")
       ("name,n",po::value<string>(&runName), "Name of the run.");
@@ -283,7 +283,7 @@ inline int InitMain::readCli()
   //   	if(vm.count("resume"))
   //   		restartString = "RESUME";
 		// else if(vm.count("takeup"))
-		// 	restartString = "TAKEUP";
+		// 	restartString = "RESTART";
 		// else 
 		// 	restartString = "NEW";
 

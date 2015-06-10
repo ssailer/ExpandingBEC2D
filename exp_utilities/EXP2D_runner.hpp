@@ -283,11 +283,12 @@ void Runner<T>::runToTime(string runName)
 		opt.vortexnumber = initEval->getVortexNumber();
 		opt.initialRun = false;
 
-		string evalname = "rundata.h5";
-		binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
-		evalFile->appendEval(*initEval,opt);
-		
-		delete evalFile;
+		string filename = runName + "data.h5";
+
+		binaryFile* bFile = new binaryFile(filename,binaryFile::out);
+		bFile->appendSnapshot("MatrixData",pData,opt);
+		bFile->appendEval(*initEval,opt);		
+		delete bFile;
 	}
 	delete initEval;
 
@@ -310,8 +311,6 @@ void Runner<T>::runToTime(string runName)
 			if(opt.runmode == "EXP"){
 				opt.stateInformation[0] = real(lambda_x(complex<double>(pData->meta.time,0.0))); // needed for expansion and the computing of the gradient etc.
 				opt.stateInformation[1] = real(lambda_y(complex<double>(pData->meta.time,0.0)));
-				// cout << opt.stateInformation[0] << "  " << pData->meta.time << " ";
-				// cout << pData->meta.initCoord[0] << " " << pData->meta.coord[0] << endl;
 			}
 			else {
 				opt.stateInformation[0] = 1.0;
@@ -341,17 +340,11 @@ void Runner<T>::runToTime(string runName)
 			plotter->plotEval();
 			delete plotter;
 
-			string dataname = "rundata.h5";
-			binaryFile* dataFile = new binaryFile(dataname,binaryFile::append);
-			dataFile->appendSnapshot("MatrixData",pData,opt);
-			delete dataFile;
-
-			string evalname = "rundata.h5";
-			binaryFile* evalFile = new binaryFile(evalname,binaryFile::append);
-			evalFile->appendEval(*eval, opt);
-			delete evalFile;
-
-			delete eval;
+			string dataname = runName + "data.h5";
+			binaryFile* bFile = new binaryFile(dataname,binaryFile::append);
+			bFile->appendSnapshot("MatrixData",pData,opt);
+			bFile->appendEval(*eval, opt);
+			delete bFile;
 		}
 		catch(const std::exception& e) { 
 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 

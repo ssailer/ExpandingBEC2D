@@ -61,14 +61,37 @@ void Plotter::prepareData(){
 	}
 
 	// contour vectors
-	contour_x = mglData(contour_size); 
-	contour_y = mglData(contour_size);
+	// contour_x = mglData(contour_size); 
+	// contour_y = mglData(contour_size);
 
-	index = 0;
-	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = eval.contour[0].begin(); it != eval.contour[0].end(); ++it){
-		contour_x.a[index] = it->x();
-		contour_y.a[index] = it->y();
-		index++;
+	// index = 0;
+	// for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = eval.contour[0].begin(); it != eval.contour[0].end(); ++it){
+	// 	contour_x.a[index] = it->x();
+	// 	contour_y.a[index] = it->y();
+	// 	index++;
+	// }
+
+	vector<int> c_x;
+	vector<int> c_y;
+	double thresh = 100;
+	for(int i = 0; i < eval.data.meta.grid[0]; i++ ){
+		for(int j = 0; j < eval.data.meta.grid[1]; j++ ){
+			int x = i ;
+			int y = j ;
+			float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
+			
+			if(cond <= thresh && cond >= -thresh){
+				// cerr << "x " << x << " y " << endl;
+				c_x.push_back(x);
+				c_y.push_back(y);
+			}
+		}
+	}
+	contour_x = mglData(c_x.size());
+	contour_y = mglData(c_y.size());
+	for(int i = 0; i < c_x.size(); i++){
+		contour_x.a[i] = c_x[i];
+		contour_y.a[i] = c_y[i];
 	}
 
 	// vortex vectors
@@ -149,24 +172,31 @@ void Plotter::prepareData(){
 	}
 
 	// calculate ellipse axis
-	int angle = eval.totalResult.aspectRatioAngle;
+	// int angle = eval.totalResult.aspectRatioAngle;
+	int angle_max = eval.totalResult.Rx;
+	int angle_min = eval.totalResult.Ry;
 
-	int major_y = eval.data.meta.grid[1]/2 + eval.data.meta.grid[1]/2 * sin(angle * M_PI / 180.0);
-	int major_x = eval.data.meta.grid[0]/2 + eval.data.meta.grid[0]/2 * cos(angle * M_PI / 180.0);
-	int minor_y = eval.data.meta.grid[1]/2 + eval.data.meta.grid[1]/2 * sin((angle+90) * M_PI / 180.0);
-	int minor_x = eval.data.meta.grid[0]/2 + eval.data.meta.grid[0]/2 * cos((angle+90) * M_PI / 180.0);
+
+	int major_y = eval.data.meta.grid[1]/2 + eval.data.meta.grid[1]/2 * sin(angle_max * M_PI / 180.0);
+	int major_x = eval.data.meta.grid[0]/2 + eval.data.meta.grid[0]/2 * cos(angle_max * M_PI / 180.0);
+	int minor_y = eval.data.meta.grid[1]/2 + eval.data.meta.grid[1]/2 * sin((angle_min) * M_PI / 180.0);
+	int minor_x = eval.data.meta.grid[0]/2 + eval.data.meta.grid[0]/2 * cos((angle_min) * M_PI / 180.0);
 
 	major_1 = mglPoint(major_x,major_y);
 	minor_1 = mglPoint(minor_x,minor_y);
 
-	major_y = eval.data.meta.grid[1]/2 - eval.data.meta.grid[1]/2 * sin(angle * M_PI / 180.0);
-	major_x = eval.data.meta.grid[0]/2 - eval.data.meta.grid[0]/2 * cos(angle * M_PI / 180.0);
-	minor_y = eval.data.meta.grid[1]/2 - eval.data.meta.grid[1]/2 * sin((angle+90) * M_PI / 180.0);
-	minor_x = eval.data.meta.grid[0]/2 - eval.data.meta.grid[0]/2 * cos((angle+90) * M_PI / 180.0);
+	major_y = eval.data.meta.grid[1]/2 - eval.data.meta.grid[1]/2 * sin(angle_max * M_PI / 180.0);
+	major_x = eval.data.meta.grid[0]/2 - eval.data.meta.grid[0]/2 * cos(angle_max * M_PI / 180.0);
+	minor_y = eval.data.meta.grid[1]/2 - eval.data.meta.grid[1]/2 * sin((angle_min) * M_PI / 180.0);
+	minor_x = eval.data.meta.grid[0]/2 - eval.data.meta.grid[0]/2 * cos((angle_min) * M_PI / 180.0);
 
 	major_2 = mglPoint(major_x,major_y);
 	minor_2 = mglPoint(minor_x,minor_y);
 	origin = mglPoint(eval.data.meta.grid[0]/2,eval.data.meta.grid[1]/2);
+
+	origin = mglPoint(eval.ellipse.center[0],eval.ellipse.center[1]);
+	major_1 = mglPoint(eval.ellipse.center[0] + eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.major * sin(eval.ellipse.angle));
+	minor_1 = mglPoint(eval.ellipse.center[0] - eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.minor * cos(eval.ellipse.angle));
 }
 
 void Plotter::plotEval(){
@@ -261,8 +291,8 @@ void Plotter::combinedControl(){
 	gr.Colorbar(">");
 	gr.Dens(density);
 	gr.Plot(contour_x,contour_y," .w");
-	gr.Line(major_1,major_2,"W2");
-	gr.Line(minor_1,minor_2,"H2");
+	gr.Line(origin,major_1,"W2");
+	gr.Line(origin,minor_1,"H2");
 
 	// gr.ShowImage("eog",true);
 

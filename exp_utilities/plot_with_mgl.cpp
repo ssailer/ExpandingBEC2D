@@ -268,11 +268,10 @@ void plotVortexList(string name,string title,const RealGrid &phase,list<VortexDa
 	gr.WritePNG(name.c_str(),"Vortices",false);
 }
 
-void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
+void plotContour(string name,  MatrixXcd &data, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
 
-	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
-	int n = opt.grid[1]/factor;
-	int m = opt.grid[2]/factor;
+	int n = data.rows();
+	int m = data.cols();
 	int size = contour.size();
 
 	mglData densData(n,m);
@@ -281,8 +280,8 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 
 	int l = 0;
 	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){
-		v_x.a[l] = it->x()/factor;
-		v_y.a[l] = it->y()/factor;
+		v_x.a[l] = it->x();
+		v_y.a[l] = it->y();
 		l++;
 	}
 
@@ -291,7 +290,7 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
 	{	
 		k = i+n*j;
-		densData.a[k] = abs2(Psi(0,factor*i,factor*j,0));
+		densData.a[k] = abs2(data(i,j));
 	}
 
 	mglGraph gr;
@@ -299,14 +298,14 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(title.c_str());
+	// gr.Title(title.c_str());
 
 	// gr.SetRange('x',-opt.min_x,opt.min_x);
 	// gr.SetRange('y',-opt.min_y,opt.min_y);
 	// gr.SetRange('z',densData);
 	gr.SetRange('c',densData);
-	gr.SetRange('x',0,opt.grid[1]/factor);
-	gr.SetRange('y',0,opt.grid[2]/factor);
+	gr.SetRange('x',0,data.rows());
+	gr.SetRange('y',0,data.rows());
 
 	gr.Axis();
 	gr.Colorbar();

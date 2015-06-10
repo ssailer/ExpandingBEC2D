@@ -4,7 +4,7 @@
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
 #define DENSITY_CHECK_DISTANCE 10
-#define EDGE_RANGE_CHECK 0.9
+#define EDGE_RANGE_CHECK 0.85
 
 using namespace std;
 using namespace Eigen;
@@ -33,6 +33,7 @@ void Eval::process(){
 	densityCoordinates.resize(data.wavefunction.size());
 
 	phase = MatrixXd::Zero(data.meta.grid[0],data.meta.grid[1]);
+	density = MatrixXd::Zero(data.meta.grid[0],data.meta.grid[1]);
 
 	Contour tracker(data.meta);
 
@@ -40,10 +41,12 @@ void Eval::process(){
 
 	cout << currentTime() <<  " Step: " << data.meta.steps << " Time : " << data.meta.time << " s ";		 
 
+	calc_fields(data.wavefunction[0],opt);
 	getDensity();
 	cout << "dens " ;
 	// cout  << "Evaluating sample #: ";
 	for(int k = 0; k < data.wavefunction.size(); k++){
+
 
 		contour[k] = tracker.trackContour(densityLocationMap[k]);
 		cout << "con " ;
@@ -129,7 +132,7 @@ void Eval::save(){
 
 void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,list<VortexData> &vlist){
 	
-	calc_fields(DATA,opt);
+	
 
 	vlist.clear();
 	findVortices(densityCoordinates,vlist);
@@ -300,6 +303,7 @@ void Eval::calc_fields(MatrixXcd &DATA, Options &opt){
 		for(int y = 0; y < data.meta.grid[1]; y++)
 		{
 			phase(x,y) = arg(DATA(x,y));
+			density(x,y) = abs2(DATA(x,y));
 		}
 	}
 }
@@ -309,26 +313,32 @@ int Eval::checkSum(MatrixXi &d,int &i, int &j){
 
 	int sum = 0;
 	int counter = 0;
+	// cerr << endl;
+	// cerr << "radius " << radius << endl;
 	for(int x = 0; x <= 2 * radius; x++){
 		for(int y = 0; y <= 2 * radius; y++){
 			int k = x - radius;
 			int l = y - radius;
 			int distance = sqrt(k*k + l*l);
-			if(distance <= radius){
+			// cerr << "k = " << k << " l = " << l << " distance = " << distance << endl;
+			if(distance < radius){
 				int m = i + k;
 				int n = j + l;
+				// cerr << " m = " << m << " n = " << n << endl;
 				sum += d(m,n);
-				counter++;
+				counter++;				
 			}
+
 		}
 	}
-	if(counter == sum){
-		return 1;
+	// cerr << "counter " << counter << endl;
+	if(sum != 0){				
+		if(counter == sum){
+			return 1;
+		}
+		return 2;		
 	}
-	if(sum != 0){
-		return 2;
-	}
-	return 3;
+	return 0;
 }
 
 void Eval::erosion(MatrixXi &d){
@@ -350,7 +360,7 @@ void Eval::dilation(MatrixXi &d){
 
 	for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
 	 	for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
-			if(checkSum(d,i,j) == 2){
+			if(checkSum(d,i,j) >= 1){
 				tmp_map(i,j) = 1;
 			} 
 		}
@@ -404,6 +414,8 @@ void Eval::fillHoles(MatrixXi &dens/*, MatrixXi &mask*/){
 
 void Eval::getDensity(){
 
+
+
 	double maximum = 0;
 	for(int k = 0; k < data.wavefunction.size(); k++){
 		for(int i = 0; i < data.meta.grid[0]; i++){
@@ -445,13 +457,22 @@ void Eval::getDensity(){
 		// }
 
 				// if(densMapGrad(i,j) < 0.9 && densMapGrad(i,j) > 0.1){
-		erosion(densityLocationMap[k]);
-		dilation(densityLocationMap[k]);
-		erosion(densityLocationMap[k]);
-		dilation(densityLocationMap[k]);
-		// dilation(densityLocationMap[k]);	
+		// plotDataToPng("1before", densityLocationMap[k], opt);
 		floodFill(densityLocationMap[k]);
+		// plotDataToPng("2floodFill", densityLocationMap[k], opt);
 		fillHoles(densityLocationMap[k]);
+		// plotDataToPng("3fillHoles", densityLocationMap[k], opt);
+		erosion(densityLocationMap[k]);
+		// plotDataToPng("4erosion", densityLocationMap[k], opt);
+		dilation(densityLocationMap[k]);
+
+		// dilation(densityLocationMap[k]);
+		// dilation(densityLocationMap[k]);
+		// erosion(densityLocationMap[k]);
+		// erosion(densityLocationMap[k]);
+		// plotDataToPng("5dilation", densityLocationMap[k], opt);
+
+
 
 		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
 			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
@@ -464,6 +485,195 @@ void Eval::getDensity(){
 		}
 	}
 }
+
+vector<int> Eval::findMajorMinor(){
+	vector<double> p = polarDensity();
+	vector<double> halfaxis(360);
+	int size = 40;
+	int middle = (size-1) / 2;
+	for(int i = 0; i < 360; ++i){
+		for(int k = 0; k < size; ++k){
+			int j = i - middle + k;
+			if(j < 0) j += 360;
+			if(j >= 360) j -= 360;
+			halfaxis[i] += p[j];
+		}
+	}
+	vector<double> halfaxis2(360);
+	for(int i = 0; i < 360; ++i){
+			int j = i + 180;
+			if(j < 0) j += 360;
+			if(j >= 360) j -= 360;
+			halfaxis2[i] += halfaxis[j];
+	}
+	halfaxis = halfaxis2;
+	vector<int> axis(2);
+	vector<double>::iterator maxAngle = std::max_element(halfaxis.begin(), halfaxis.end());
+	axis[0] = std::distance(halfaxis.begin(), maxAngle);
+
+	vector<double>::iterator minangle = std::min_element(halfaxis.begin(), halfaxis.end());
+	axis[1] = std::distance(halfaxis.begin(), minangle);
+	return axis;
+}
+
+vector<double> Eval::polarDensity(){
+	vector<double> pDensity(360);
+	
+	for(int x = 0; x < data.meta.grid[0]; ++x){
+		for(int y = 0; y < data.meta.grid[1]; ++y){
+			int x_shift = x - data.meta.grid[0]/2;
+			int y_shift = y - data.meta.grid[1]/2;
+			int i;
+			if(x_shift != 0 && y_shift != 0)
+				i = round(atan2(y_shift,x_shift) * 180 / M_PI);
+			i = (i >= 0 ) ? i % 360 : ( 360 - abs ( i%360 ) ) % 360;
+			// pDensity[i]	+= density(x,y);	
+			pDensity[i]	+= densityLocationMap[0](x,y);
+		}
+	}
+	// moving average
+	vector<double> av(360);
+	for(int i = 0; i < 360; ++i){
+		int size = 5;
+		int middle = (size-1)/2;
+		double sum = 0;
+		for(int j = 0; j < size; j++){
+			int k = i + j - middle;
+			if(k < 0) k += 360;
+			if(k >= 360) k -= 360;
+			sum += pDensity[k];
+		}
+		av[i] = sum / size;
+	}
+	return av;
+}
+
+Ellipse Eval::fitEllipse(c_set &c_data){
+
+	// http://www.r-bloggers.com/fitting-an-ellipse-to-point-data/
+
+	int numPoints = c_data.size();
+	MatrixXd D1(numPoints,3);
+	MatrixXd D2(numPoints,3);
+	Matrix<double, 3, 3> S1;
+	Matrix<double, 3, 3> S2;
+	Matrix<double, 3, 3> S3;
+	Matrix<double, 3, 3> T;
+	Matrix<double, 3, 3> M;
+	Matrix<double, 3, 3> C1;
+	Matrix<double, 3, 1> a1;
+	Matrix<double, 3, 1> a2;
+	Matrix<double, 6, 1> f;
+	MatrixXd temp;
+
+	C1(0,2) = 0.5;
+	C1(1,1) = -1.0;
+	C1(2,0) = 0.5;
+
+	// cerr << endl << "C1 " << C1 << endl;
+
+
+	int i = 0;
+	for(c_set::iterator it = c_data.begin(); it != c_data.end(); ++it){
+	// for(int i = 0; i < numPoints; ++i){
+		int x = it->x();
+		int y = it->y();
+		D1(i,0) = x * x;
+		D1(i,1) = x * y;
+		D1(i,2) = y * y;
+
+		D2(i,0) = x;
+		D2(i,1) = y;
+		D2(i,2) = 1;
+		i++;
+	}
+	S1 = D1.transpose() * D1;
+	S2 = D1.transpose() * D2;
+	S3 = D2.transpose() * D2;
+
+	T = -1.0 * S3.inverse() * S2.transpose();
+
+	M = S1 + S2 * T;
+	M = C1 * M;
+
+	EigenSolver<MatrixXd> es(M);
+	for(int i = 0; i < 3; ++i){
+		Vector3cd v = es.eigenvectors().col(i);
+		complex<double> condition = 4.0 * v(0) * v(2) - v(1) * v(1);
+		if(condition.imag() == 0 && condition.real() > 0){
+			a1 = v.real();
+		}
+		// cerr << endl << "V = " << v << endl;
+		// cerr << endl << "A1 = " << a1 << endl;
+	}
+
+	a2 = T * a1;
+	f(0) = a1(0);
+	f(1) = a1(1);
+	f(2) = a1(2);
+	f(3) = a2(0);
+	f(4) = a2(1);
+	f(5) = a2(2);
+
+	Matrix<double,2,2> A;
+	A(0,0) = 2*f(0);
+	A(0,1) = f(1);
+	A(1,0) = f(1);
+	A(1,1) = 2*f(2);
+  	Matrix<double,2,1> b(-f(3), -f(4));
+    Matrix<double,2,1> soln = A.inverse() * b;
+
+  	double b2 = f(1) * f(1) / 4;
+  
+  	double center[2] = {soln(0), soln(1)}; 
+  
+    double num = 2 * (f(0) * f(4) * f(4) / 4 + f(2) * f(3) * f(3) / 4 + f(5) * b2 - f(1)*f(3)*f(4)/4 - f(0)*f(2)*f(5)); 
+    double den1 = (b2 - f(0)*f(2));
+    double den2 = sqrt((f(0) - f(2)) * (f(0) - f(2)) + 4*b2) ;
+    double den3 = f(0) + f(2) ;
+  
+  	double axes[2] = {sqrt( num / (den1 * (den2 - den3))), sqrt( num / (den1 * (-den2 - den3)))};
+  
+  // calculate the angle of rotation 
+    double term = (f(0) - f(2)) / f(1);
+    cerr << endl << "term " << term << endl;
+    double angle = atan(1 / term) / 2;
+    cerr << " Angle " << angle << " " << angle * 180 / M_PI << endl;
+    angle = (angle < 0) ? (M_PI / 2) + angle : angle;
+    cerr << " Angle " << angle << " " << angle * 180 / M_PI << endl;
+
+  // inline double vortex(int b, int y, int a, int x) //Vortex with phase [0,2*pi)          
+  // {
+  //         if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
+  //     else{ return atan2(b-y,a-x); }        
+  // }
+  	
+  	Ellipse eFit;
+  // list(coef=f, center = center, major = max(semi.axes), minor = min(semi.axes), angle = unname(angle)) 
+    eFit.coef = f;
+    eFit.center.resize(2);
+    eFit.center[0] = center[0];
+    eFit.center[1] = center[1];
+    eFit.major = (axes[0] > axes[1]) ? axes[0] : axes[1];
+    eFit.minor = (axes[0] < axes[1]) ? axes[0] : axes[1];
+    eFit.angle = angle;
+    return eFit;
+
+}
+
+
+
+// void Eval::trafoEllipse(Matrix<double, 6, 1> old){
+// 	double A = old(0);
+// 	double B = old(1);
+// 	double C = old(2);
+// 	double D = old(3);
+// 	double E = old(4);
+// 	double F = old(5);
+
+// 	F = -F;
+
+// }
 
 void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	double h_x = data.meta.spacing[0];
@@ -480,6 +690,8 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 		cData.push_back(tmp);
 		// cerr << "x = " << x << " y = " << y << " => " << " phi = " << tmp.phi << " r = " << tmp.r << " conv back: x = " << tmp.r * cos((tmp.phi - 180) * M_PI / 180) << " y = " << tmp.r * sin((tmp.phi - 180 ) * M_PI / 180) << endl;
 	}
+
+	ellipse = fitEllipse(contour[sampleindex]);
 
 	std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
 
@@ -502,8 +714,13 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 		checkNextAngles(cRadius,i);		
 	}
 
-	obs.Rx = cRadius[0];
-	obs.Ry = cRadius[90];
+	vector<int> axis(2);
+	axis = findMajorMinor();
+	obs.Rx = axis[0];
+	obs.Ry = axis[1];	
+
+	// obs.Rx = cRadius[0];
+	// obs.Ry = cRadius[90];
 
 	// moving median of radii
 	vector<double> tRadius(360);

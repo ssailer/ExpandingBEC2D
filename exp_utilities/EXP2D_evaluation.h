@@ -58,6 +58,8 @@ public:
 	vector<c_set> contour;
 	vector<MatrixXi> densityLocationMap;
 
+	Ellipse ellipse;
+
 	MatrixData data;
 	Options opt;
 
@@ -80,6 +82,8 @@ private:
 
 	// RealGrid phase, zeros;
 	MatrixXd phase;
+	MatrixXd density;
+
 	string runname;
 	// vector<ComplexGrid> PsiVec;
 	
@@ -109,6 +113,10 @@ private:
 
 	void floodFill(MatrixXi &dens);
 	void fillHoles(MatrixXi &dens);
+
+	vector<double> polarDensity();
+	vector<int> findMajorMinor();
+	Ellipse fitEllipse(c_set &Data);
 	
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v);

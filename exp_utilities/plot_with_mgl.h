@@ -74,7 +74,7 @@ void plotSpectrum(string name,string title,Observables& eval);
 void plotRadialDensity(string name,string title, Observables &ares);
 void plotPairDistance(string name,string title,list<VortexData> vlist);
 void plotVortexList(string name,string title,const RealGrid &phase,list<VortexData> &vlist,Options &opt);
-void plotContour(string name,string title, ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
+void plotContour(string filename, MatrixXcd &data, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
 
 void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt);
 void plotDataToPng(string filename,string title,ComplexGrid &g,Options &opt);
