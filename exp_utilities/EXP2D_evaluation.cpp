@@ -3,7 +3,7 @@
 #define OBSERVABLES_DATA_POINTS_SIZE data.meta.grid[0]*data.meta.grid[1]
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
-#define DENSITY_CHECK_DISTANCE 10
+#define DENSITY_CHECK_DISTANCE 2
 #define EDGE_RANGE_CHECK 0.85
 
 using namespace std;
@@ -80,16 +80,16 @@ void Eval::save(){
   						 << std::setw(15) << "X_max" << ","
   						 << std::setw(15) << "Y_max" << ","
 					 	 << std::setw(15) << "Vortexnumber" << ","
-  						 << std::setw(15) << "D_max" << ","
-  						 << std::setw(15) << "D_min" << ","
+  						 // << std::setw(15) << "D_max" << ","
+  						 // << std::setw(15) << "D_min" << ","
   						 << std::setw(15) << "Rx" << ","
 						 << std::setw(15) << "Ry" << ","
 						 << std::setw(15) << "Rx/Ry" << ","
-  						 << std::setw(15) << "D_max/D_min" << ","
-  						 << std::setw(15) << "D_max Angle" << ","
-  						 << std::setw(15) << "D_min Angle" << ","
-  						 << std::setw(15) << "Ratio" << ","
-  						 << std::setw(15) << "RatioAngle" << ","
+  						 << std::setw(15) << "E_Major" << ","
+  						 << std::setw(15) << "E_Minor" << ","
+  						 << std::setw(15) << "E_Major_Angle" << ","
+  						 << std::setw(15) << "E_Minor_Angle" << ","
+  						 << std::setw(15) << "E_Ratio" << ","
   						 << std::setw(15) << "N" << ","
   						 << std::setw(15) << "V" << ","
   						 << std::setw(15) << "N/V" << ","
@@ -108,16 +108,17 @@ void Eval::save(){
 					 << std::setw(15)  << opt.min_x * opt.stateInformation[0] << ","
 					 << std::setw(15)  << opt.min_y * opt.stateInformation[1] << ","
 					 << std::setw(15)  << opt.vortexnumber << ","
-					 << std::setw(15)  << totalResult.r_max << ","
- 					 << std::setw(15)  << totalResult.r_min << ","
+					 // << std::setw(15)  << totalResult.r_max << ","
+ 					//  << std::setw(15)  << totalResult.r_min << ","
  					 << std::setw(15)  << totalResult.Rx << ","
  					 << std::setw(15)  << totalResult.Ry << ","
  					 << std::setw(15)  << totalResult.Rx / totalResult.Ry << ","
- 					 << std::setw(15)  << totalResult.r_max / totalResult.r_min   << ","
+ 					 << std::setw(15)  << totalResult.r_max << ","
+ 					 << std::setw(15)  << totalResult.r_min << ","
  					 << std::setw(15)  << totalResult.r_max_phi << ","
  					 << std::setw(15)  << totalResult.r_min_phi << ","
  					 << std::setw(15)  << totalResult.aspectRatio  << ","
- 					 << std::setw(15)  << totalResult.aspectRatioAngle  << ","
+ 					 // << std::setw(15)  << totalResult.aspectRatioAngle  << ","
 					 << std::setw(15)  << totalResult.particle_count << ","
 					 << std::setw(15)  << totalResult.volume << ","
 					 << std::setw(15)  << totalResult.density << ","
@@ -693,6 +694,15 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 	ellipse = fitEllipse(contour[sampleindex]);
 
+	obs.r_max = ellipse.major * h_x;
+	obs.r_min = ellipse.minor * h_y;
+
+	obs.r_max_phi = ellipse.angle * 180/M_PI;
+	obs.r_min_phi = ellipse.angle * 180/M_PI + 90;
+
+	obs.aspectRatio = obs.r_max / obs.r_min;
+	obs.aspectRatioAngle = obs.r_max_phi;
+
 	std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
 
 	vector<double> cRadius(361);
@@ -714,38 +724,38 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 		checkNextAngles(cRadius,i);		
 	}
 
-	vector<int> axis(2);
-	axis = findMajorMinor();
-	obs.Rx = axis[0];
-	obs.Ry = axis[1];	
+	// vector<int> axis(2);
+	// axis = findMajorMinor();
+	// obs.Rx = ellipse.major * h_x;
+	// obs.Ry = ellipse.minor * h_y;	
 
-	// obs.Rx = cRadius[0];
-	// obs.Ry = cRadius[90];
+	obs.Rx = cRadius[0];
+	obs.Ry = cRadius[90];
 
-	// moving median of radii
-	vector<double> tRadius(360);
-	for(int i = 0; i < 360; i++){
-		int size = 9;
-		int middle = (size-1)/2;
-		vector<double> median(size);
-		for(int j = 0; j < size; j++){
-			int k = i + j - middle;
-			if(k < 0) k += 360;
-			if(k >= 360) k -= 360;
-			median[j] = cRadius[k];
-		}
-		std::sort(median.begin(),median.end());
-		tRadius[i] = median[middle];
-	}
-	cRadius = tRadius;
+	// // moving median of radii
+	// vector<double> tRadius(360);
+	// for(int i = 0; i < 360; i++){
+	// 	int size = 9;
+	// 	int middle = (size-1)/2;
+	// 	vector<double> median(size);
+	// 	for(int j = 0; j < size; j++){
+	// 		int k = i + j - middle;
+	// 		if(k < 0) k += 360;
+	// 		if(k >= 360) k -= 360;
+	// 		median[j] = cRadius[k];
+	// 	}
+	// 	std::sort(median.begin(),median.end());
+	// 	tRadius[i] = median[middle];
+	// }
+	// cRadius = tRadius;
 
-	vector<double>::iterator maxRadius = std::max_element(cRadius.begin(), cRadius.end());
-	obs.r_max = *maxRadius;
-	obs.r_max_phi = std::distance(cRadius.begin(), maxRadius);
+	// vector<double>::iterator maxRadius = std::max_element(cRadius.begin(), cRadius.end());
+	// obs.r_max = *maxRadius;
+	// obs.r_max_phi = std::distance(cRadius.begin(), maxRadius);
 
-	vector<double>::iterator minRadius = std::min_element(cRadius.begin(), cRadius.end());
-	obs.r_min = *minRadius;
-	obs.r_min_phi = std::distance(cRadius.begin(), minRadius);
+	// vector<double>::iterator minRadius = std::min_element(cRadius.begin(), cRadius.end());
+	// obs.r_min = *minRadius;
+	// obs.r_min_phi = std::distance(cRadius.begin(), minRadius);
 
 	vector<double> tmp_ratio(360);
 	for(int i = 0; i < 360; i++){
@@ -757,10 +767,10 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 			cout << "WARNING: Aspect-Ratio: Calculated Distance smaller than zero!" << endl;
 		}
 	}
-	vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
-	int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
-	obs.aspectRatioAngle = maxAspectRatioIndex;
-	obs.aspectRatio = *maxElement; // zwischen 0 und 180 grad, obere Halbebene
+	// vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
+	// int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
+	// obs.aspectRatioAngle = maxAspectRatioIndex;
+	// obs.aspectRatio = *maxElement; // zwischen 0 und 180 grad, obere Halbebene
 	// FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
 	// cerr << endl;
 	// cerr << "obs.aspectRatioAngle \t" << "obs.r_max_phi \t" << "obs.aspectRatio \t" << "stuff \t" << endl;

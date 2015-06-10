@@ -58,7 +58,7 @@ void hydroSolver::integrate()
     PchangingValue = new double;
     // cout << "g = " << g << endl;
     int Nv = eval->opt.vortexnumber;
-    double r[2] = {eval->totalResult.Rx,eval->totalResult.Ry};
+    double r[2] = {eval->totalResult.r_max,eval->totalResult.r_min};
     double v[2] = {0.0,0.0};
     
     double ti, xi, vi, tf, xf, vf, dt, tmax;
@@ -80,7 +80,7 @@ void hydroSolver::integrate()
     beta = 4 * hbar * hbar * Nv * Nv / (m * m);
     cout << "beta " << beta << endl;
             // initial
-    dt = 1.0e-7;             // step size for integration
+    dt = 1.0e-6;             // step size for integration
     tmax = eval->opt.n_it_RTE * eval->opt.snapshots * eval->opt.RTE_step;          // integrate from ti till tmax
 
     cout << "tmax = " << tmax << endl;
