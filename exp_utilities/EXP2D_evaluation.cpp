@@ -105,8 +105,8 @@ void Eval::save(){
 	// datafile.open;
 	datafile << std::left << std::setw(15) << data.meta.steps << ","
 					 << std::setw(15)  << data.meta.time << ","
-					 << std::setw(15)  << opt.min_x * opt.stateInformation[0] << ","
-					 << std::setw(15)  << opt.min_y * opt.stateInformation[1] << ","
+					 << std::setw(15)  << data.meta.coord[0] << ","
+					 << std::setw(15)  << data.meta.coord[1] << ","
 					 << std::setw(15)  << opt.vortexnumber << ","
 					 // << std::setw(15)  << totalResult.r_max << ","
  					//  << std::setw(15)  << totalResult.r_min << ","
