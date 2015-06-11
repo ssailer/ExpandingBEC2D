@@ -118,7 +118,6 @@ void Eval::save(){
  					 << std::setw(15)  << totalResult.r_max_phi << ","
  					 << std::setw(15)  << totalResult.r_min_phi << ","
  					 << std::setw(15)  << totalResult.aspectRatio  << ","
- 					 // << std::setw(15)  << totalResult.aspectRatioAngle  << ","
 					 << std::setw(15)  << totalResult.particle_count << ","
 					 << std::setw(15)  << totalResult.volume << ","
 					 << std::setw(15)  << totalResult.density << ","
@@ -600,11 +599,11 @@ Ellipse Eval::fitEllipse(c_set &c_data){
 	EigenSolver<MatrixXd> es(M);
 	for(int i = 0; i < 3; ++i){
 		Vector3cd v = es.eigenvectors().col(i);
-		complex<double> condition = 4.0 * v(0) * v(2) - v(1) * v(1);
-		if(condition.imag() == 0 && condition.real() > 0){
+		complex<double> condition = v(1) * v(1) - 4.0 * v(0) * v(2);
+		if(condition.imag() == 0 && condition.real() < 0){
 			a1 = v.real();
 		}
-		// cerr << endl << "V = " << v << endl;
+		// cerr << condition << endl;
 		// cerr << endl << "A1 = " << a1 << endl;
 	}
 
@@ -615,6 +614,10 @@ Ellipse Eval::fitEllipse(c_set &c_data){
 	f(3) = a2(0);
 	f(4) = a2(1);
 	f(5) = a2(2);
+
+	// if(f(0) < 0 && f(1) > 0 && f(2) < 0 && f(3) > 0 && f(4) > 0 && f(5) < 0 ){
+	// 	f = -f;
+	// }
 
 	Matrix<double,2,2> A;
 	A(0,0) = 2*f(0);
@@ -627,6 +630,20 @@ Ellipse Eval::fitEllipse(c_set &c_data){
   	double b2 = f(1) * f(1) / 4;
   
   	double center[2] = {soln(0), soln(1)}; 
+
+  	double cond = f(0) * center[0] * center[0] + f(1) * center[0] * center[1] + f(2) * center[1] * center[1] + f(3) * center[0] + f(4) * center[1] + f(5);
+  	if(cond >= 0.0){
+  		f = -f;
+		A(0,0) = 2*f(0);
+		A(0,1) = f(1);
+		A(1,0) = f(1);
+		A(1,1) = 2*f(2);
+	  	b = Matrix<double,2,1>(-f(3), -f(4));
+	    soln = A.inverse() * b;	
+  		b2 = f(1) * f(1) / 4; 	
+  		center[0] = soln(0);
+  		center[1] = soln(1);
+  	}
   
     double num = 2 * (f(0) * f(4) * f(4) / 4 + f(2) * f(3) * f(3) / 4 + f(5) * b2 - f(1)*f(3)*f(4)/4 - f(0)*f(2)*f(5)); 
     double den1 = (b2 - f(0)*f(2));
@@ -636,13 +653,19 @@ Ellipse Eval::fitEllipse(c_set &c_data){
   	double axes[2] = {sqrt( num / (den1 * (den2 - den3))), sqrt( num / (den1 * (-den2 - den3)))};
   
   // calculate the angle of rotation 
-    double term = (f(0) - f(2)) / f(1);
-    cerr << endl << "term " << term << endl;
-    double angle = atan(1 / term) / 2;
-    cerr << " Angle " << angle << " " << angle * 180 / M_PI << endl;
-    angle = (angle < 0) ? (M_PI / 2) + angle : angle;
-    cerr << " Angle " << angle << " " << angle * 180 / M_PI << endl;
-
+    // double term = (f(0) - f(2)) / f(1);
+    double y = /*fabs*/(f(1));
+    double x = /*fabs*/(f(0) - f(2));
+    double angle = atan2( y , x ) / 2 + M_PI/2;
+    // cerr << "                                 ";
+    // cerr << " cond = " << cond;
+    // cerr << " y = " << y << " x = " << x;
+    // cerr << " a = " << angle * 180/M_PI;
+    // if(angle < 0) {angle += (M_PI/2);}
+    // if(x > 0 && y > 0) {angle += (M_PI/2); cerr << " 90 >0";}
+    // cerr << " a = " << angle * 180/M_PI << endl;
+    // else if(angle >= (M_PI / 2)) {angle -= M_PI;  cerr << " -180 ";}
+    // cerr << " =  " << angle * 180/M_PI << endl;;
   // inline double vortex(int b, int y, int a, int x) //Vortex with phase [0,2*pi)          
   // {
   //         if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
@@ -676,6 +699,24 @@ Ellipse Eval::fitEllipse(c_set &c_data){
 
 // }
 
+c_set Eval::generateContour(Ellipse &ellipse){
+	c_set tmp;
+	double t = 0;
+	double delta = 0.0001;
+	while(t < 2 * M_PI){
+		int32_t x = ellipse.center[0] + ellipse.major * cos(t) * cos(ellipse.angle) - ellipse.minor * sin(t) * sin(ellipse.angle);
+		int32_t y = ellipse.center[0] + ellipse.major * cos(t) * sin(ellipse.angle) + ellipse.minor * sin(t) * cos(ellipse.angle);	
+		Coordinate<int32_t> c = Coordinate<int32_t>(x,y,0,data.meta.grid[0],data.meta.grid[1],1);
+		pair<c_set::iterator,bool> test = tmp.insert(c);
+		if(test.second == false){
+			t += delta;
+		} else {
+			t += delta;
+		}
+	}
+	return tmp;
+}
+
 void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	double h_x = data.meta.spacing[0];
 	double h_y = data.meta.spacing[1];
@@ -693,6 +734,7 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	}
 
 	ellipse = fitEllipse(contour[sampleindex]);
+	c_set cEllipse = generateContour(ellipse);
 
 	obs.r_max = ellipse.major * h_x;
 	obs.r_min = ellipse.minor * h_y;
@@ -702,6 +744,19 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 	obs.aspectRatio = obs.r_max / obs.r_min;
 	obs.aspectRatioAngle = obs.r_max_phi;
+
+	contour[sampleindex] = cEllipse;
+	cData.clear();
+	for(c_set::iterator it =  contour[sampleindex].begin(); it !=  contour[sampleindex].end(); ++it){
+		contourData tmp;
+		tmp.c = *it;
+		double x = (tmp.c.x() - data.meta.grid[0]/2) * h_x;
+		double y = (tmp.c.y() - data.meta.grid[1]/2) * h_y;
+		tmp.phi = atan2(y,x) * 180 / M_PI + 180;
+		tmp.r = sqrt(x*x  + y*y);
+		cData.push_back(tmp);
+		// cerr << "x = " << x << " y = " << y << " => " << " phi = " << tmp.phi << " r = " << tmp.r << " conv back: x = " << tmp.r * cos((tmp.phi - 180) * M_PI / 180) << " y = " << tmp.r * sin((tmp.phi - 180 ) * M_PI / 180) << endl;
+	}
 
 	std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
 

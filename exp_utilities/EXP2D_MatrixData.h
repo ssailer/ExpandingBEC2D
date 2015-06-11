@@ -101,7 +101,7 @@ class MatrixData {
     inline void setCoord(const vector<double> &extCoord);
     inline void setMeta(const MetaData &extMeta);
     inline void checkedCopy(MatrixData* &e);
-    inline void resize();
+    inline void resizeBy(int edge);
 
 
 
@@ -185,8 +185,8 @@ inline void MatrixData::checkedCopy(MatrixData* &e){
     }
 }
 
-inline void MatrixData::resize(){
-    int edge = 400;
+inline void MatrixData::resizeBy(int edge){
+    // int edge = 400;
     int grid0 = meta.grid[0] + edge;
     int grid1 = meta.grid[1] + edge;
     double ratio0 = (double)grid0 / (double)meta.grid[0];

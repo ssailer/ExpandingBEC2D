@@ -60,38 +60,40 @@ void Plotter::prepareData(){
 		}
 	}
 
-	// contour vectors
-	// contour_x = mglData(contour_size); 
-	// contour_y = mglData(contour_size);
+	// // contour vectors
+	contour_x = mglData(contour_size); 
+	contour_y = mglData(contour_size);
 
-	// index = 0;
-	// for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = eval.contour[0].begin(); it != eval.contour[0].end(); ++it){
-	// 	contour_x.a[index] = it->x();
-	// 	contour_y.a[index] = it->y();
-	// 	index++;
-	// }
+	index = 0;
+	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = eval.contour[0].begin(); it != eval.contour[0].end(); ++it){
+		contour_x.a[index] = it->x();
+		contour_y.a[index] = it->y();
+		index++;
+	}
+
+	// ellipse cover for phase
 
 	vector<int> c_x;
 	vector<int> c_y;
-	double thresh = 100;
+	double thresh = 0;
 	for(int i = 0; i < eval.data.meta.grid[0]; i++ ){
 		for(int j = 0; j < eval.data.meta.grid[1]; j++ ){
 			int x = i ;
 			int y = j ;
 			float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
 			
-			if(cond <= thresh && cond >= -thresh){
+			if(cond >= thresh /*&& cond >= -thresh*/){
 				// cerr << "x " << x << " y " << endl;
 				c_x.push_back(x);
 				c_y.push_back(y);
 			}
 		}
 	}
-	contour_x = mglData(c_x.size());
-	contour_y = mglData(c_y.size());
+	cover_x = mglData(c_x.size());
+	cover_y = mglData(c_y.size());
 	for(int i = 0; i < c_x.size(); i++){
-		contour_x.a[i] = c_x[i];
-		contour_y.a[i] = c_y[i];
+		cover_x.a[i] = c_x[i];
+		cover_y.a[i] = c_y[i];
 	}
 
 	// vortex vectors
@@ -125,23 +127,52 @@ void Plotter::prepareData(){
         }
 	}
 
-	int binsize = 200;
-	int c1 = 0;
-	// int c2 = 0;
+
+	int binsize = 0;
+	double c1 = 0;
+	int c = 1;
 	double ksum = 0;
 	double nsum = 0;
+	double lastbin = 0;
+	
+	double min_value = 0.1;
+	double max_value = 12;
+
+	double min_log = log(min_value);
+	double max_log = log(max_value);
+	int nBins = 80;
+	// double binMax = exp(min_value);
+	double log_increment = (max_value - min_value) / nBins;
+	double value = min_value;
+	double log_value = min_log;
+
 	for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
-		c1++;
-		ksum += it->first;
-		nsum += it->second;
-		if(c1 == binsize){
-			c1 = 0;
-			ksum /= binsize;
-			nsum /= binsize;
-			kval.push_back(ksum);
+		if(it->first <= value){
+			nsum += it->second;
+			c++;}
+		else{
+			nsum /= c;
 			numberval.push_back(nsum);
+			log_value += log_increment;
+			double tmp_value = exp(log_value);
+			double k = tmp_value - value / 2.0;
+			kval.push_back(k);
+			value = tmp_value;
+			nsum = it->second;
+			c = 1;
 		}
 	}
+
+	// ksum /= c;
+	// nsum /= c;
+	// kval.push_back(ksum);
+	// numberval.push_back(nsum);
+
+	// binsize = c1 - lastbin;
+	// ksum /= binsize;
+	// nsum /= binsize;
+	// kval.push_back(ksum);
+	// numberval.push_back(nsum);
 
 	// int max_k = *std::max_element(kval.begin(),kval.end());
 	// vector<int> kk(max_k);
@@ -160,9 +191,6 @@ void Plotter::prepareData(){
 	numbermin = *number_minmax.first;
 	numbermax = *number_minmax.second;
 
-	int num_bins = 100;
-	float bin_width = (kmax - kmin) / num_bins;
-
 	k = mglData(kval.size());
 	number = mglData(kval.size());
 
@@ -171,32 +199,13 @@ void Plotter::prepareData(){
 		number.a[i] = numberval[i];
 	}
 
-	// calculate ellipse axis
-	// int angle = eval.totalResult.aspectRatioAngle;
-	int angle_max = eval.totalResult.Rx;
-	int angle_min = eval.totalResult.Ry;
-
-
-	int major_y = eval.data.meta.grid[1]/2 + eval.data.meta.grid[1]/2 * sin(angle_max * M_PI / 180.0);
-	int major_x = eval.data.meta.grid[0]/2 + eval.data.meta.grid[0]/2 * cos(angle_max * M_PI / 180.0);
-	int minor_y = eval.data.meta.grid[1]/2 + eval.data.meta.grid[1]/2 * sin((angle_min) * M_PI / 180.0);
-	int minor_x = eval.data.meta.grid[0]/2 + eval.data.meta.grid[0]/2 * cos((angle_min) * M_PI / 180.0);
-
-	major_1 = mglPoint(major_x,major_y);
-	minor_1 = mglPoint(minor_x,minor_y);
-
-	major_y = eval.data.meta.grid[1]/2 - eval.data.meta.grid[1]/2 * sin(angle_max * M_PI / 180.0);
-	major_x = eval.data.meta.grid[0]/2 - eval.data.meta.grid[0]/2 * cos(angle_max * M_PI / 180.0);
-	minor_y = eval.data.meta.grid[1]/2 - eval.data.meta.grid[1]/2 * sin((angle_min) * M_PI / 180.0);
-	minor_x = eval.data.meta.grid[0]/2 - eval.data.meta.grid[0]/2 * cos((angle_min) * M_PI / 180.0);
-
-	major_2 = mglPoint(major_x,major_y);
-	minor_2 = mglPoint(minor_x,minor_y);
-	origin = mglPoint(eval.data.meta.grid[0]/2,eval.data.meta.grid[1]/2);
-
+	// ellipse axis
 	origin = mglPoint(eval.ellipse.center[0],eval.ellipse.center[1]);
 	major_1 = mglPoint(eval.ellipse.center[0] + eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.major * sin(eval.ellipse.angle));
 	minor_1 = mglPoint(eval.ellipse.center[0] - eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.minor * cos(eval.ellipse.angle));
+
+	major_2 = mglPoint(eval.ellipse.center[0] - eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.major * sin(eval.ellipse.angle));
+	minor_2 = mglPoint(eval.ellipse.center[0] + eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.minor * cos(eval.ellipse.angle));
 }
 
 void Plotter::plotEval(){
@@ -211,6 +220,9 @@ void Plotter::plotEval(){
 }
 
 void Plotter::combinedControl(){
+
+	// https://groups.google.com/forum/#!topic/mathgl/68VMLblLd7U
+	// check this for plot margins, set by hand
 	mglGraph gr;
 
 	string filename = dirname + "/control_" + stepsString + ".png";
@@ -224,8 +236,8 @@ void Plotter::combinedControl(){
 	// SPECTRUM
 	gr.SubPlot(2,2,0);
 	// gr.Title("Spectrum");
-	gr.SetRange('x',kmin,kmax);
-	gr.SetRange('y',numbermin,numbermax);
+	gr.SetRange('x',kmin,kmax+2);
+	gr.SetRange('y',numbermin,numbermax+2);
 	gr.SetCoor(11); // log-log-coordinates
 
 	gr.Axis();
@@ -233,12 +245,13 @@ void Plotter::combinedControl(){
 
 	gr.FPlot("x^(-2)","k");
 	gr.AddLegend("k^(-2)","k");
-	gr.FPlot("x^(-4.66)","r");
-	gr.AddLegend("k^(-4.66)","r");
 	gr.FPlot("x^(-4)","b");
 	gr.AddLegend("k^(-4)","b");
+	gr.FPlot("x^(-4.66)","r");
+	gr.AddLegend("k^(-4.66)","r");
 
-	gr.Plot(k,number," .");
+
+	gr.Plot(k,number," o6");
 	gr.Legend();
 	gr.SetCoor(0);
 
@@ -259,6 +272,7 @@ void Plotter::combinedControl(){
 	gr.Label('x',"x [points]",0); gr.Label('y',"y [points]",0);
 	gr.Dens(phase);
 	// gr.SetMarkSize(0.01);
+	gr.Plot(cover_x,cover_y," .w");
 	gr.Plot(vortex_x,vortex_y," #<w");
 	gr.Plot(vortex_x,vortex_y," <k");
 	// gr.Adjust("c");
@@ -291,8 +305,10 @@ void Plotter::combinedControl(){
 	gr.Colorbar(">");
 	gr.Dens(density);
 	gr.Plot(contour_x,contour_y," .w");
-	gr.Line(origin,major_1,"W2");
-	gr.Line(origin,minor_1,"H2");
+	gr.Line(major_2,major_1,"W2");
+	gr.Line(minor_2,minor_1,"H2");
+	// gr.Line(origin-major_2,origin,"W2");
+	// gr.Line(origin-minor_2,origin,"H2");
 
 	// gr.ShowImage("eog",true);
 

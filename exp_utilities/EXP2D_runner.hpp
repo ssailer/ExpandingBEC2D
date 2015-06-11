@@ -268,7 +268,7 @@ void Runner<T>::runToTime(string runName)
 
 		vector<int> edges;
 		if(initEval->checkResizeCondition(edges)){
-			pData->resize();
+			pData->resizeBy(400);
 			algorithm->setVariables();
 			cout << "Resizing" << endl;
 		}
@@ -328,7 +328,7 @@ void Runner<T>::runToTime(string runName)
 			if(opt.runmode == "EXP"){
 				vector<int> edges;
 				if(eval->checkResizeCondition(edges)){
-					pData->resize();
+					pData->resizeBy(400);
 					algorithm->setVariables();
 					cout << "Resizing" << endl;
 				}
