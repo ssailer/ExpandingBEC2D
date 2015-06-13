@@ -2,6 +2,7 @@
 #define MAIN_H__
 
 #include <libconfig.h++>
+#include <boost/program_options.hpp>
 #include <string>
 #include <cstring>
 #include <unistd.h>

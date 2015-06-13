@@ -5,7 +5,7 @@ Last Update: 22/07/13
 **************************************************************************/
 #define EIGEN_FFTW_DEFAULT
 
-#include <boost/program_options.hpp>
+
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>
@@ -17,15 +17,15 @@ Last Update: 22/07/13
 #include <sys/stat.h>
 #include <dirent.h>
 
-#include <complexgrid.h>
+// #include <complexgrid.h>
 #include <bh3defaultgrid.h>
-#include <averageclass.h>
-#include <bh3observables.h>
+// #include <averageclass.h>
+// #include <bh3observables.h>
 
 #include <EXP2D_MatrixData.h>
 #include <main.h>
 #include <EXP2D_tools.h>
-#include <EXP2D_itp.hpp>
+// #include <EXP2D_itp.hpp>
 #include <EXP2D_binaryfile.h>
 #include <EXP2D_rk4.hpp>
 // #include <EXP2D_rte.hpp>

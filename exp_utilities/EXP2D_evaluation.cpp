@@ -10,7 +10,7 @@ using namespace std;
 using namespace Eigen;
 
 
-Eval::Eval(MatrixData d,Options o, string runName) : data(d),  opt(o) , runname(runName) {
+Eval::Eval(MatrixData d,Options o) : data(d),  opt(o) {
 	// data = d;
 	// opt = o;
 	toPhysicalUnits(opt);
@@ -958,6 +958,7 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	// for(int i = 0; i < data.meta.grid[0]; i++){
 	//     for(int j = 0; j < data.meta.grid[1]; j++){	    	    		
 	//       	sum2 += abs2(DATA(i,j));
+	
 
 	//     }
 	// }

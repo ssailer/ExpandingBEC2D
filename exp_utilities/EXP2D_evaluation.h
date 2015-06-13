@@ -33,7 +33,7 @@ using namespace Eigen;
 
 class Eval{
 public:
-	Eval(MatrixData d,Options o, string runName);
+	Eval(MatrixData d,Options o);
 	// Eval();
 	// ~Eval();
 
@@ -84,7 +84,6 @@ private:
 	MatrixXd phase;
 	MatrixXd density;
 
-	string runname;
 	// vector<ComplexGrid> PsiVec;
 	
 	int snapshot_time;

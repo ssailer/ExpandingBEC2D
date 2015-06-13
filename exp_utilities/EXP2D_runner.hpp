@@ -257,7 +257,7 @@ void Runner<T>::runToTime(string runName)
 {	
 	double start;  // starttime of the run
 
-	Eval* initEval = new Eval(*pData,opt,runName);
+	Eval* initEval = new Eval(*pData,opt);
 	initEval->process();
 	initEval->save();
 
@@ -321,7 +321,7 @@ void Runner<T>::runToTime(string runName)
 
 		try{
 
-			Eval* eval = new Eval(*pData,opt,runName);
+			Eval* eval = new Eval(*pData,opt);
 			eval->process();
 			eval->save();
 

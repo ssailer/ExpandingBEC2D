@@ -42,25 +42,56 @@ void Plotter::prepareData(){
 	const int vortex_size = eval.vlist[0].size();
 	int index;
 
-	// Phase and Density
+
+
+
+
+	// // ellipse cover for phase
+
+	// vector<int> c_x;
+	// vector<int> c_y;
+	// 
+	// for(int i = 0; i < eval.data.meta.grid[0]; i++ ){
+	// 	for(int j = 0; j < eval.data.meta.grid[1]; j++ ){
+	// 		int x = i ;
+	// 		int y = j ;
+	// 		float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
+			
+	// 		if(cond >= thresh /*&& cond >= -thresh*/){
+	// 			// cerr << "x " << x << " y " << endl;
+	// 			// c_x.push_back(x);
+	// 			// c_y.push_back(y);
+	// 			phase(x,y) = 0.0;
+	// 		}
+	// 	}
+	// }
+	// cover_x = mglData(c_x.size());
+	// cover_y = mglData(c_y.size());
+	// for(int i = 0; i < c_x.size(); i++){
+	// 	cover_x.a[i] = c_x[i];
+	// 	cover_y.a[i] = c_y[i];
+	// }
+
+		// Phase (with elliptic cover) and Density
 	density = mglData(n,m);
 	phase = mglData(n,m);
 	densitymap = mglData(n,m);
 
-	for(int i = 0; i < n; i++){
-		for(int j = 0; j < m; j++){
-			index = i + n * j;
-			density.a[index] = abs2(eval.data.wavefunction[0](i,j));
-			if(density.a[index] != 0.0){
-				phase.a[index] = arg(eval.data.wavefunction[0](i,j));
+	for(int x = 0; x < n; x++){
+		for(int y = 0; y < m; y++){
+			index = x + n * y;
+			float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
+			density.a[index] = abs2(eval.data.wavefunction[0](x,y));
+			if(cond <= 0.0){
+				phase.a[index] = arg(eval.data.wavefunction[0](x,y));
 			} else {
 				phase.a[index] = 0.0;
 			}
-			densitymap.a[index] = eval.densityLocationMap[0](i,j);
+			densitymap.a[index] = eval.densityLocationMap[0](x,y);
 		}
 	}
 
-	// // contour vectors
+		// // contour vectors
 	contour_x = mglData(contour_size); 
 	contour_y = mglData(contour_size);
 
@@ -69,31 +100,6 @@ void Plotter::prepareData(){
 		contour_x.a[index] = it->x();
 		contour_y.a[index] = it->y();
 		index++;
-	}
-
-	// ellipse cover for phase
-
-	vector<int> c_x;
-	vector<int> c_y;
-	double thresh = 0;
-	for(int i = 0; i < eval.data.meta.grid[0]; i++ ){
-		for(int j = 0; j < eval.data.meta.grid[1]; j++ ){
-			int x = i ;
-			int y = j ;
-			float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
-			
-			if(cond >= thresh /*&& cond >= -thresh*/){
-				// cerr << "x " << x << " y " << endl;
-				c_x.push_back(x);
-				c_y.push_back(y);
-			}
-		}
-	}
-	cover_x = mglData(c_x.size());
-	cover_y = mglData(c_y.size());
-	for(int i = 0; i < c_x.size(); i++){
-		cover_x.a[i] = c_x[i];
-		cover_y.a[i] = c_y[i];
 	}
 
 	// vortex vectors
@@ -113,38 +119,39 @@ void Plotter::prepareData(){
 	vector<double> numberval;
 	map<double,double> spectrum;
     pair<map<double,double>::iterator,bool> ret;
+    vector<double> tmpKval;
 		
     for (int r = 0; r < eval.totalResult.number.size(); r++){
 		if(eval.totalResult.k(r) != 0.0){
 			if(eval.totalResult.number(r) != 0.0){
 				ret = spectrum.insert(map<double,double>::value_type(eval.totalResult.k(r),eval.totalResult.number(r)));
+				tmpKval.push_back(eval.totalResult.k(r));
 				if(ret.second==false){
 					cout << "Binning of spectrum failed, double value inserted." << endl;
 				}
+
 				// kval.push_back(k_int);
 				// numberval.push_back(eval.totalResult.number(r));
 			}
         }
 	}
 
+	auto tmpMinMax = std::minmax_element(tmpKval.begin(),tmpKval.end());
 
-	int binsize = 0;
-	double c1 = 0;
+
+
 	int c = 1;
-	double ksum = 0;
-	double nsum = 0;
-	double lastbin = 0;
-	
-	double min_value = 0.1;
-	double max_value = 12;
-
+	double nsum = 0;	
+	double min_value = *tmpMinMax.first;
+	double max_value = *tmpMinMax.second;
 	double min_log = log(min_value);
 	double max_log = log(max_value);
-	int nBins = 80;
+	int nBins = sqrt(eval.data.meta.grid[0] * eval.data.meta.grid[0] + eval.data.meta.grid[1] * eval.data.meta.grid[1])/2;
 	// double binMax = exp(min_value);
 	double log_increment = (max_value - min_value) / nBins;
-	double value = min_value;
-	double log_value = min_log;
+	
+	double log_value = min_log + log_increment;
+	double value = exp(log_value);
 
 	for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
 		if(it->first <= value){
@@ -251,7 +258,7 @@ void Plotter::combinedControl(){
 	gr.AddLegend("k^(-4.66)","r");
 
 
-	gr.Plot(k,number," o6");
+	gr.Plot(k,number," .2");
 	gr.Legend();
 	gr.SetCoor(0);
 
@@ -272,7 +279,7 @@ void Plotter::combinedControl(){
 	gr.Label('x',"x [points]",0); gr.Label('y',"y [points]",0);
 	gr.Dens(phase);
 	// gr.SetMarkSize(0.01);
-	gr.Plot(cover_x,cover_y," .w");
+	// gr.Plot(cover_x,cover_y," .w");
 	gr.Plot(vortex_x,vortex_y," #<w");
 	gr.Plot(vortex_x,vortex_y," <k");
 	// gr.Adjust("c");
