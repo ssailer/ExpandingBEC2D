@@ -452,7 +452,7 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 	vec1[3] = results.totalResult.volume;
 	vec1[4] = results.totalResult.density;
 	vec1[5] = results.totalResult.aspectRatio;
-	vec1[6] = results.totalResult.aspectRatioAngle;
+	vec1[6] = results.totalResult.alpha;
 	vec1[7] = results.totalResult.r_max;
 	vec1[8] = results.totalResult.r_min;
 	vec1[9] = results.totalResult.r_max_phi;
@@ -770,7 +770,7 @@ bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 		results.totalResult.volume = vec1[3];
 		results.totalResult.density = vec1[4];
 		results.totalResult.aspectRatio = vec1[5];
-		results.totalResult.aspectRatioAngle = vec1[6];
+		results.totalResult.alpha = vec1[6];
 		results.totalResult.r_max = vec1[7];
 		results.totalResult.r_min = vec1[8];
 		results.totalResult.r_max_phi = vec1[9];

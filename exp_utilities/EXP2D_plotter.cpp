@@ -213,6 +213,12 @@ void Plotter::prepareData(){
 
 	major_2 = mglPoint(eval.ellipse.center[0] - eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.major * sin(eval.ellipse.angle));
 	minor_2 = mglPoint(eval.ellipse.center[0] + eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.minor * cos(eval.ellipse.angle));
+
+	reg_1 = mglPoint(eval.punkte[0],eval.punkte[1]);
+	reg_2 = mglPoint(eval.punkte[2],eval.punkte[3]);
+
+	cerr << endl << eval.punkte[0] << " " << eval.punkte[1] << " " << eval.punkte[2] << " " << eval.punkte[3] << endl;
+
 }
 
 void Plotter::plotEval(){
@@ -252,13 +258,15 @@ void Plotter::combinedControl(){
 
 	gr.FPlot("x^(-2)","k");
 	gr.AddLegend("k^(-2)","k");
-	gr.FPlot("x^(-4)","b");
-	gr.AddLegend("k^(-4)","b");
-	gr.FPlot("x^(-4.66)","r");
-	gr.AddLegend("k^(-4.66)","r");
+	// gr.FPlot("x^(-4)","b");
+	// gr.AddLegend("k^(-4)","b");
+	// gr.FPlot("x^(-4.66)","r");
+	// gr.AddLegend("k^(-4.66)","r");
 
-
-	gr.Plot(k,number," .2");
+	string leg_s = "\\alpha = " + to_string(eval.steigung) + " \\pm " + to_string(eval.fehler);
+	gr.Plot(k,number," .2b");
+	gr.Line(reg_1,reg_2,";r4");
+	gr.AddLegend(leg_s.c_str(),"r");
 	gr.Legend();
 	gr.SetCoor(0);
 

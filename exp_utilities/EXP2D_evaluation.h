@@ -26,6 +26,8 @@
 #include <EXP2D_observables.h>
 #include <eigen3/Eigen/Dense>
 
+#include <gsl/gsl_sf_zeta.h>
+
 using namespace std;
 using namespace Eigen;
 
@@ -62,6 +64,11 @@ public:
 
 	MatrixData data;
 	Options opt;
+
+	vector<double> punkte;
+
+	// TEMPORARY
+	double steigung, fehler/*, abschnitt*/;
 
 private:
 

@@ -58,15 +58,26 @@ void SplitStep::setVariables(){
 
 
 	
-	for(int d = 0; d < 2; d++){
+	vector<vector<double>> kspace;
+	vector<double> Kmax(2);
+	Kmax[0] = M_PI / w->meta.spacing[0];
+	Kmax[1] = M_PI / w->meta.spacing[1];
+	vector<double> deltaK(2);
+	deltaK[0] = Kmax[0] / (w->meta.grid[0] / 2.0);
+	deltaK[1] = Kmax[1] / (w->meta.grid[1] / 2.0);
 
+
+	kspace.resize(2);
+	for(int d = 0; d < 2; d++){
+		// set k-space
 		kspace[d].resize(w->meta.grid[d]);
 		for(int i = 0; i <= w->meta.grid[d]/2; i++){
-			kspace[d][i] = (M_PI / w->meta.coord[d]) * (double)i;
+			// kspace[d][i] = (M_PI / rmax[d]) * (double)i;
+			kspace[d][i] = deltaK[d] * (double)i;
 		}
-
 		for(int i = (w->meta.grid[d]/2)+1; i < w->meta.grid[d]; i++){
-			kspace[d][i] = -(M_PI / w->meta.coord[d]) * (double)(w->meta.grid[d] - i);
+			// kspace[d][i] = -(M_PI / rmax[d]) * (double)(w->meta.grid[d] - i);
+			kspace[d][i] = - deltaK[d] * (double)(w->meta.grid[d] - i);
 		}
 	}
 

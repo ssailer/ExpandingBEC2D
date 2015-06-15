@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	initMain.printInitVar();
 	Options opt = initMain.getOptions();
 	MatrixData* data = new MatrixData(initMain.getMeta());
-	setGridToSinus(data,initMain.getOptions());
+	setGridToTF(data,initMain.getOptions());
 
 	Eval* initEval = new Eval(*data,opt);
 	initEval->process();

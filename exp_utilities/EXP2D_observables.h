@@ -17,7 +17,7 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length, volume, density, aspectRatio, aspectRatioAngle, r_max, r_min, r_max_phi, r_min_phi, Rx, Ry;
+        double Ekin, particle_count, healing_length, volume, density, aspectRatio, alpha, r_max, r_min, r_max_phi, r_min_phi, Rx, Ry;
         ArrayXd number;
         ArrayXd k,r;
         ArrayXd angularDensity,radialDensity;
@@ -74,7 +74,7 @@ inline Observables::Observables() :
         angularDensity(360),
         fixedAspectRatio(360)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = alpha = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
     number.setZero();
     k.setZero();
     r.setZero();
@@ -93,7 +93,7 @@ inline Observables::Observables(int avgrid) :
         angularDensity(360),
         fixedAspectRatio(360)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = aspectRatioAngle = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = alpha = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
     number.setZero();
     k.setZero();
      r.setZero();
@@ -111,7 +111,7 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.Ekin = Ekin + a.Ekin;
     ret.aspectRatio = aspectRatio + a.aspectRatio;
     ret.fixedAspectRatio = fixedAspectRatio + a.fixedAspectRatio;
-    ret.aspectRatioAngle = aspectRatioAngle + a.aspectRatioAngle;
+    ret.alpha = alpha + a.alpha;
     ret.r_max = r_max + a.r_max;
     ret.r_min = r_min + a.r_min;
     ret.r_max_phi = r_max_phi + a.r_max_phi;    
@@ -140,7 +140,7 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.Ekin = Ekin - a.Ekin;
     ret.aspectRatio = aspectRatio - a.aspectRatio;
     ret.fixedAspectRatio = fixedAspectRatio - a.fixedAspectRatio;
-    ret.aspectRatioAngle = aspectRatioAngle - a.aspectRatioAngle;
+    ret.alpha = alpha - a.alpha;
     ret.r_max = r_max - a.r_max;
     ret.r_min = r_min - a.r_min;
     ret.r_max_phi = r_max_phi - a.r_max_phi; 
@@ -168,7 +168,7 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.Ekin = Ekin * a.Ekin;
     ret.aspectRatio = aspectRatio * a.aspectRatio;
     ret.fixedAspectRatio = fixedAspectRatio * a.fixedAspectRatio;
-    ret.aspectRatioAngle = aspectRatioAngle * a.aspectRatioAngle;
+    ret.alpha = alpha * a.alpha;
     ret.r_max = r_max * a.r_max;
     ret.r_min = r_min * a.r_min;
     ret.r_max_phi = r_max_phi * a.r_max_phi; 
@@ -196,7 +196,7 @@ inline Observables Observables::operator* (double d) const
     ret.Ekin = Ekin * d;
     ret.aspectRatio = aspectRatio * d;
     ret.fixedAspectRatio = fixedAspectRatio * d;
-    ret.aspectRatioAngle = aspectRatioAngle * d;
+    ret.alpha = alpha * d;
     ret.r_max = r_max * d;
     ret.r_min = r_min * d;
     ret.r_max_phi = r_max_phi * d; 
@@ -224,7 +224,7 @@ inline Observables Observables::operator/ (double d) const
     ret.Ekin = Ekin / d;
     ret.aspectRatio = aspectRatio / d;
     ret.fixedAspectRatio = fixedAspectRatio / d;
-    ret.aspectRatioAngle = aspectRatioAngle / d;
+    ret.alpha = alpha / d;
     ret.r_max = r_max / d;
     ret.r_min = r_min / d;
     ret.r_max_phi = r_max_phi / d; 
