@@ -3,6 +3,8 @@
 #import h5py
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # from scipy.cluster.vq import kmeans, kmeans2, whiten
 
@@ -15,15 +17,18 @@ def main():
 
 	datafile = 'runObservables/EXP_Observables.dat'
 
-	cols = ["Timestep","Time","X_max","Y_max","Vortexnumber","D_max","D_min","Rx","Ry","Rx/Ry","D_max/D_min","D_maxAngle","D_minAngle","Ratio","RatioAngle","N","V","N/V","E_kin","N_0"]
+	cols = ["Timestep","Time","X_max","Y_max","Vortexnumber","Rx","Ry","R_Ratio","E_Major","E_Minor","E_Major_Angle","E_Minor_Angle","E_Ratio","N","V","N/V","E_kin","N_0"]
 
 	from_data = pd.read_csv(datafile,header=0,sep=',',names=cols)
 
 	dataset1 = from_data['Time']
 
+	# dataset2 = from_data['E_Major']
+	# dataset3 = from_data['E_Minor']
+	# ratio1 = from_data['E_Ratio']
 	dataset2 = from_data['Rx']
 	dataset3 = from_data['Ry']
-	ratio1 = from_data['Rx/Ry']
+	ratio1 = from_data['R_Ratio']
 	#dataset4 = from_data['Ratio']
 
 				# dataset4 = from_data['D_Ratio']
@@ -51,7 +56,7 @@ def main():
 
 	cols2 = ["Time","Rx", "Ry"]
 
-	from_data2 = pd.read_csv(datafile2,header=0,names=cols2)
+	from_data2 = pd.read_csv(datafile2,header=0,sep=',',names=cols2)
 	data1 = from_data2['Time']
 	#data1 *= 1000.0
 	data2 = from_data2['Rx']

@@ -62,6 +62,8 @@ public:
 	inline void setVortexnumber(int number);
 	inline void setRunMode(string runmode);
 	inline void setRunTime(int runtime);
+	inline void setOmegaW(double ow);
+	inline void setWorkingDirectory(string dir);
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
 	
@@ -115,7 +117,9 @@ inline string InitMain::getStartingGridName(){
 }
 
 inline Options InitMain::getOptions(){
-	return opt;
+	Options tmpOptions = opt;
+	toDimensionlessUnits(tmpOptions);
+	return tmpOptions;
 }
 
 inline void InitMain::setOptions(Options &ext_opt){
@@ -124,6 +128,15 @@ inline void InitMain::setOptions(Options &ext_opt){
 
 inline void InitMain::setInitialRun(bool initialRun){
 	opt.initialRun = initialRun;
+}
+
+inline void InitMain::setOmegaW(double ow){
+	opt.omega_w = ow;
+	cout << endl << endl << "ow " << ow << " omega_w " << opt.omega_w << endl << endl;
+}
+
+inline void InitMain::setWorkingDirectory(string dir){
+	opt.workingdirectory = dir;
 }
 
 // inline void InitMain::setRunMode(string runmode){
@@ -147,18 +160,21 @@ inline void InitMain::setVortexnumber(int number){
 
 inline MatrixData::MetaData InitMain::getMeta(){
 
-	meta.Ag = opt.Ag;
-	meta.OmegaG = opt.OmegaG;
-	meta.grid[0] = opt.grid[1];
-	meta.grid[1] = opt.grid[2];
-	meta.initCoord[0] = meta.coord[0] = opt.min_x;
-	meta.initCoord[1] = meta.coord[1] = opt.min_y;
-	meta.initSpacing[0] = meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
-	meta.initSpacing[1] = meta.spacing[1] = opt.min_y * 2 / opt.grid[2];
-	meta.samplesize = opt.samplesize;
+	Options tmpOptions = opt;
+	toDimensionlessUnits(tmpOptions);
+
+	meta.Ag = tmpOptions.Ag;
+	meta.OmegaG = tmpOptions.OmegaG;
+	meta.grid[0] = tmpOptions.grid[1];
+	meta.grid[1] = tmpOptions.grid[2];
+	meta.initCoord[0] = meta.coord[0] = tmpOptions.min_x;
+	meta.initCoord[1] = meta.coord[1] = tmpOptions.min_y;
+	meta.initSpacing[0] = meta.spacing[0] = tmpOptions.min_x * 2 / tmpOptions.grid[1];
+	meta.initSpacing[1] = meta.spacing[1] = tmpOptions.min_y * 2 / tmpOptions.grid[2];
+	meta.samplesize = tmpOptions.samplesize;
 	meta.time = 0;
 	meta.steps = 0;
-	meta.isDimensionless = opt.isDimensionless;
+	meta.isDimensionless = tmpOptions.isDimensionless;
 	meta.dataToArray();
 
 	return meta;
@@ -180,6 +196,7 @@ inline void InitMain::printInitVar()
 	std::cout 	<< "Configfile: \"" << opt.config << "\"" << endl
 				<< "Gridpoints in x-direction: " << meta.grid[0] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
 				<< "Gridpoints in y-direction: " << meta.grid[1] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
+				<< "omega_w = " << opt.omega_w.real() << endl
 				// << "Coordinates in x-direction: " << meta.initCoord[0] << endl
 				// << "Coordinates in y-direction: " << meta.initCoord[1] << endl
 				<< "Expansionfactor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
@@ -191,7 +208,7 @@ inline void InitMain::setDirectory()
 {	
 	if(opt.workingdirectory == "default"){
 		stringstream name;
-		name << std::fixed << std::setprecision(0) << (int)opt.N << "_" << opt.grid[1] << "x" << opt.grid[2] << "_" << std::setprecision(3) << opt.g << "_" << std::setprecision(1) << real(opt.omega_w / (2.0 * M_PI / opt.OmegaG));
+		name << std::fixed << std::setprecision(0) << (int)opt.N << "_" << opt.grid[1] << "x" << opt.grid[2] << "_" << std::setprecision(3) << opt.g << "_" << std::setprecision(1) << real(opt.omega_w /*/ (2.0 * M_PI / opt.OmegaG)*/);
 		opt.workingdirectory = name.str();
 	}
 	// cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
@@ -366,7 +383,7 @@ inline int InitMain::readConfig()
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
-	toDimensionlessUnits(opt);
+	
 
 
 	}

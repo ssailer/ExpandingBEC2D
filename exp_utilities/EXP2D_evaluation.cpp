@@ -1007,6 +1007,8 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	
 	double index_factor = (obs.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
 
+
+
 	for(int x = 0; x < data.meta.grid[0]; x++){
 		for (int y = 0; y < data.meta.grid[1]; y++){
 				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
@@ -1029,66 +1031,84 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	
 
 	obs.number /= divisor;
-	obs.k /= divisor;	
+	obs.k /= divisor;
 
+
+	// spectrum
+	vector<double> kval;
+	vector<double> numberval;
+	map<double,double> spectrum;
+	pair<map<double,double>::iterator,bool> ret;    
+    vector<double> tmpKval;
+		
+    for (int r = 0; r < obs.number.size(); r++){
+		if(obs.k(r) != 0.0){
+			if(obs.number(r) != 0.0){
+				ret = spectrum.insert(map<double,double>::value_type(obs.k(r),obs.number(r)));
+				tmpKval.push_back(obs.k(r));
+				if(ret.second==false){
+					cout << "Binning of spectrum failed, double value inserted." << endl;
+				}
+
+				// kval.push_back(k_int);
+				// numberval.push_back(eval.totalResult.number(r));
+			}
+        }
+	}
+
+	// auto tmpMinMax_binning = std::minmax_element(tmpKval.begin(),tmpKval.end());
+
+	// int c = 1;
+	// double nsum = 0;	
+	// double min_value = *tmpMinMax_binning.first;
+	// double max_value = *tmpMinMax_binning.second;
+	// double min_log = log(min_value);
+	// double max_log = log(max_value);
+	// int nBins = sqrt(data.meta.grid[0] * data.meta.grid[0] + data.meta.grid[1] * data.meta.grid[1])/2;
+	// // double binMax = exp(min_value);
+	// double log_increment = (max_value - min_value) / nBins;
+	
+	// double log_value = min_log + log_increment;
+	// double value = exp(log_value);
+
+	// for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
+	// 	if(it->first <= value){
+	// 		nsum += it->second;
+	// 		c++;}
+	// 	else{
+	// 		nsum /= c;
+	// 		numberval.push_back(nsum);
+	// 		log_value += log_increment;
+	// 		double tmp_value = exp(log_value);
+	// 		double k = tmp_value - value / 2.0;
+	// 		kval.push_back(k);
+	// 		value = tmp_value;
+	// 		nsum = it->second;
+	// 		c = 1;
+	// 	}
+	// }
 
 	// // estimate powerlaw
 	// double gamma = 3.0;
-	double k_max = 8.0;
-	double k_min = 1.0;
+	double k_max = 7.0;
+	double k_min = 2.0;
 
-	// double log_k_sum = 0;
-	// double n_samples = 0;
-	// for(int i = 0; i < obs.k.size(); i++){
-	// 	double k = obs.k(i);
-	// 	if(k <= k_max && k_min <= k){
-	// 		log_k_sum += log(k/k_min);
-	// 		++n_samples;
-	// 	}
-	// }
-	// obs.alpha = 1 + n_samples / log_k_sum;
-	// cerr << endl << "alpha " << obs.alpha << endl;
-
-	// cerr << log_k_sum << endl;
-	// cerr << n_samples << endl;
-	// cerr << n_samples / log_k_sum << endl;
-	// bool end = true;
-	// double gamma_max = 3.0;
-	// double hurwitz = gsl_sf_hzeta (gamma, k_min) - gsl_sf_hzeta (gamma, k_max);
-	// double old_argmax = - gamma * log_k_sum - n_samples * log(hurwitz);
-	// gamma += 0.01;
-
-	// while( end ){
-	// 	double hurwitz = gsl_sf_hzeta (gamma, k_min) - gsl_sf_hzeta (gamma, k_max);
-	// 	double argmax = - gamma * log_k_sum - n_samples * log(hurwitz);
-	// 	if(argmax > old_argmax){
-	// 		gamma_max = gamma;
-	// 		cerr << "gamma = " << gamma_max << endl;
-	// 	}
-	// 	gamma += 0.01;
-	// 	if(gamma >= 6.0){
-	// 		end = false;
-	// 	}
-
-	// }
-	// obs.alpha = gamma_max;
 	vector<double> klog;
 	vector<double> nlog;
-	for(int i = 0; i < obs.number.size(); ++i){
-		if(obs.k(i) != 0.0 && obs.number(i) != 0.0){
+	for(int i = 0; i < obs.k.size(); ++i){
+		if(obs.k(i) != 0.0 && obs.number(i)){
 			if(obs.k(i) <= k_max && k_min <= obs.k(i)){
 				klog.push_back(log(obs.k(i)));
 				nlog.push_back(log(obs.number(i)));
-
 			}
 		}
 	}
+	
 
 	auto tmpMinMax = std::minmax_element(klog.begin(),klog.end());
 
 	double linksX = *tmpMinMax.first;
 	double rechtsX = *tmpMinMax.second;
-
 
    double SUMx = 0;     //sum of x values
    double SUMy = 0;     //sum of y values
@@ -1132,13 +1152,14 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 
    steigung = slope;
    double abschnitt = y_intercept;
-   double linksY = slope * linksX - y_intercept;
-   double rechtsY = slope * rechtsX - y_intercept;
+   double linksY = slope * linksX + y_intercept;
+   double rechtsY = slope * rechtsX + y_intercept;
 
    punkte.push_back(exp(linksX));
    punkte.push_back(exp(linksY));
    punkte.push_back(exp(rechtsX));
    punkte.push_back(exp(rechtsY));
+
 
    // printf("x mean(AVGx) = %0.5E\n", AVGx);
 

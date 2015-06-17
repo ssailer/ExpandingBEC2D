@@ -70,20 +70,20 @@ void hydroSolver::integrate()
     file.open (name);
     file.precision(20);
     file.setf(ios::fixed | ios::showpoint);
-    cout.precision(20);
-    cout.setf(ios::fixed | ios::showpoint);
+    // cout.precision(20);
+    // cout.setf(ios::fixed | ios::showpoint);
 
     // int key = 2;
     // const string method[3] = {"simple Euler","modified Euler","4th order Runge-Kutta"};
     ti = eval->data.meta.time;             // initial value for variable
                // initial value for function x(t)
     beta = 4 * hbar * hbar * Nv * Nv / (m * m);
-    cout << "beta " << beta << endl;
+    // cout << "beta " << beta << endl;
             // initial
     dt = 1.0e-6;             // step size for integration
     tmax = eval->opt.n_it_RTE * eval->opt.snapshots * eval->opt.RTE_step;          // integrate from ti till tmax
 
-    cout << "tmax = " << tmax << endl;
+    // cout << "tmax = " << tmax << endl;
     X.push_back(r[0]);
     Y.push_back(r[1]);
 

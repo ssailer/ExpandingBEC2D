@@ -44,21 +44,9 @@ Last Update: 22/07/13
 
 using namespace std;
 
-int main( int argc, char** argv){	
+int simulation(InitMain &initMain){
 
-try{
-
-	InitMain initMain(argc,argv);	
-
-	#if DEBUG_LOG
- 		std::ofstream logstream("simulation.log");
- 		redirecter redirectcout(logstream,std::cout);
- 		// redirects cout to logstream, until termination of this program. If DEBUG_LOG 1 is set, use cerr for output to console.
- 		// std::ofstream errorstream("error.log");
- 		// redirecter redirectcerr(errorstream,std::cerr);
- 	#endif
-
- 	initMain.printInitVar();
+	initMain.printInitVar();
 
 	Options opt = initMain.getOptions();
 	MainControl algo = initMain.getAlgorithm(); // controls the choise between expansion and trapped simulations, e.g. the lab setup, has to be set in console
@@ -160,6 +148,53 @@ try{
 		}
 	}  
 	delete data;
+
+	chdir("..");
+	cerr << "[END]" << endl;
+}
+
+int main( int argc, char** argv){	
+
+try{
+
+	InitMain initMain(argc,argv);	
+
+	#if DEBUG_LOG
+ 		std::ofstream logstream("simulation.log");
+ 		redirecter redirectcout(logstream,std::cout);
+ 	#endif
+
+ 	simulation(initMain);
+
+  	initMain.setOmegaW(15.0);
+ 	initMain.setWorkingDirectory("default");
+ 	initMain.setDirectory();
+ 	simulation(initMain);
+
+  	initMain.setOmegaW(16.0);
+ 	initMain.setWorkingDirectory("default");
+ 	initMain.setDirectory();
+ 	simulation(initMain);
+
+ 	initMain.setOmegaW(17.0);
+ 	initMain.setWorkingDirectory("default");
+ 	initMain.setDirectory();
+ 	simulation(initMain);
+
+ 	initMain.setOmegaW(18.0);
+ 	initMain.setWorkingDirectory("default");
+ 	initMain.setDirectory();
+ 	simulation(initMain);
+
+ 	initMain.setOmegaW(19.0);
+ 	initMain.setWorkingDirectory("default");
+ 	initMain.setDirectory();
+ 	simulation(initMain);
+
+ 	initMain.setOmegaW(20.0);
+ 	initMain.setWorkingDirectory("default");
+ 	initMain.setDirectory();
+ 	simulation(initMain);
 }
 
 
@@ -178,7 +213,7 @@ catch (const std::string& errorMessage){
 	std::cerr << " Terminating now." << endl; 
 	return ERROR_UNHANDLED_EXCEPTION; 
 }
-cerr << "[END]" << endl; 
+ 
 return SUCCESS; 	
 }
 

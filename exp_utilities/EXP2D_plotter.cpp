@@ -146,27 +146,38 @@ void Plotter::prepareData(){
 	double max_value = *tmpMinMax.second;
 	double min_log = log(min_value);
 	double max_log = log(max_value);
-	int nBins = sqrt(eval.data.meta.grid[0] * eval.data.meta.grid[0] + eval.data.meta.grid[1] * eval.data.meta.grid[1])/2;
+	int nBins = sqrt(eval.data.meta.grid[0] * eval.data.meta.grid[0] + eval.data.meta.grid[1] * eval.data.meta.grid[1])/4;
 	// double binMax = exp(min_value);
 	double log_increment = (max_value - min_value) / nBins;
 	
 	double log_value = min_log + log_increment;
 	double value = exp(log_value);
-
+	
+	vector<double> median;
 	for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
+
 		if(it->first <= value){
-			nsum += it->second;
-			c++;}
-		else{
-			nsum /= c;
+			// nsum += it->second;
+			// c++;
+			median.push_back(it->second);
+		} else {
+			sort(median.begin(),median.end());
+			int size = median.size();
+			if(size%2 == 0){
+				nsum = median[size/2];
+			} else {
+				nsum = (median[size/2] + median[size/2 +1]) /2;
+			}
+			// nsum /= c;
 			numberval.push_back(nsum);
+			double tmp_log = log_value;
 			log_value += log_increment;
-			double tmp_value = exp(log_value);
-			double k = tmp_value - value / 2.0;
+			double k = exp((tmp_log + log_value)/2);
 			kval.push_back(k);
-			value = tmp_value;
+			value = exp(log_value);
 			nsum = it->second;
 			c = 1;
+			median.clear();
 		}
 	}
 
@@ -193,7 +204,8 @@ void Plotter::prepareData(){
 	auto k_minmax = std::minmax_element(kval.begin(),kval.end());
 	auto number_minmax = std::minmax_element(numberval.begin(),numberval.end());
 
-	kmin = *k_minmax.first;
+	// kmin = *k_minmax.first;
+	kmin = 0.5;
 	kmax = *k_minmax.second;
 	numbermin = *number_minmax.first;
 	numbermax = *number_minmax.second;
@@ -202,8 +214,10 @@ void Plotter::prepareData(){
 	number = mglData(kval.size());
 
 	for(int i = 0; i < kval.size(); i++){
-		k.a[i] = kval[i];
-		number.a[i] = numberval[i];
+		if(kval[i] >= kmin){
+			k.a[i] = kval[i];
+			number.a[i] = numberval[i];
+		}
 	}
 
 	// ellipse axis
@@ -265,7 +279,7 @@ void Plotter::combinedControl(){
 
 	string leg_s = "\\alpha = " + to_string(eval.steigung) + " \\pm " + to_string(eval.fehler);
 	gr.Plot(k,number," .2b");
-	gr.Line(reg_1,reg_2,";r4");
+	gr.Line(reg_1,reg_2,"r2");
 	gr.AddLegend(leg_s.c_str(),"r");
 	gr.Legend();
 	gr.SetCoor(0);
