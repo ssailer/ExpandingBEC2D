@@ -164,37 +164,43 @@ try{
  		redirecter redirectcout(logstream,std::cout);
  	#endif
 
- 	simulation(initMain);
+ 	int size = initMain.getIterations();
+ 	for(int i = 0; i < size; ++i){
+ 		initMain.setIteration(i);
+ 		simulation(initMain);
+ 	}
 
-  	initMain.setOmegaW(15.0);
- 	initMain.setWorkingDirectory("default");
- 	initMain.setDirectory();
- 	simulation(initMain);
+ 	// simulation(initMain);
 
-  	initMain.setOmegaW(16.0);
- 	initMain.setWorkingDirectory("default");
- 	initMain.setDirectory();
- 	simulation(initMain);
+  // 	initMain.setOmegaW(15.0);
+ 	// initMain.setWorkingDirectory("default");
+ 	// initMain.setDirectory();
+ 	// simulation(initMain);
 
- 	initMain.setOmegaW(17.0);
- 	initMain.setWorkingDirectory("default");
- 	initMain.setDirectory();
- 	simulation(initMain);
+  // 	initMain.setOmegaW(16.0);
+ 	// initMain.setWorkingDirectory("default");
+ 	// initMain.setDirectory();
+ 	// simulation(initMain);
 
- 	initMain.setOmegaW(18.0);
- 	initMain.setWorkingDirectory("default");
- 	initMain.setDirectory();
- 	simulation(initMain);
+ 	// initMain.setOmegaW(17.0);
+ 	// initMain.setWorkingDirectory("default");
+ 	// initMain.setDirectory();
+ 	// simulation(initMain);
 
- 	initMain.setOmegaW(19.0);
- 	initMain.setWorkingDirectory("default");
- 	initMain.setDirectory();
- 	simulation(initMain);
+ 	// initMain.setOmegaW(18.0);
+ 	// initMain.setWorkingDirectory("default");
+ 	// initMain.setDirectory();
+ 	// simulation(initMain);
 
- 	initMain.setOmegaW(20.0);
- 	initMain.setWorkingDirectory("default");
- 	initMain.setDirectory();
- 	simulation(initMain);
+ 	// initMain.setOmegaW(19.0);
+ 	// initMain.setWorkingDirectory("default");
+ 	// initMain.setDirectory();
+ 	// simulation(initMain);
+
+ 	// initMain.setOmegaW(20.0);
+ 	// initMain.setWorkingDirectory("default");
+ 	// initMain.setDirectory();
+ 	// simulation(initMain);
 }
 
 

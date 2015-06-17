@@ -48,8 +48,9 @@ public:
 		argv = argvTmp;
 		readCli();
 		readConfig();
-		setDirectory();		
+		// setDirectory();		
 	}
+	inline void setIteration(int i);
 	inline void printInitVar();
 	inline void setDirectory();
 	inline int readCli();
@@ -79,6 +80,7 @@ public:
 
 	inline void convertToDimensionless();
 	inline void convertFromDimensionless();
+	inline int getIterations();
 private:
 	MainControl toMainControl(const std::string& s);
 	// bool restartValue;
@@ -91,6 +93,8 @@ private:
 	string dglString = "Empty String";
 	string restartString = "Empty String";
 	string runName = "default_runname";
+
+	vector<double> omega_w_vector;
 };
 
 MainControl InitMain::toMainControl(const std::string& s)
@@ -112,8 +116,18 @@ MainControl InitMain::toMainControl(const std::string& s)
 // 	return restartValue;
 // }
 
+inline int InitMain::getIterations(){
+	return omega_w_vector.size();
+}
+
 inline string InitMain::getStartingGridName(){
 	return startingGridName;
+}
+
+inline void InitMain::setIteration(int i){
+	opt.omega_w = omega_w_vector[i];
+	setWorkingDirectory("default");
+ 	setDirectory();
 }
 
 inline Options InitMain::getOptions(){
@@ -371,7 +385,20 @@ inline int InitMain::readConfig()
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
-	double omega_w_realValue = root["RunOptions"]["omega_w"];
+	// double omega_w_realValue = root["RunOptions"]["omega_w"];
+	// double omega_w_realValue_1 = root["RunOptions"]["omega_w"][1];
+	
+	// double omega_w_array;
+	// cerr << endl << "before setting" << endl;
+	// libconfig::Setting & ow = cfg.lookup("RunOptions.omega_w");
+	// cerr << endl << "setting" << endl;
+	// cout << endl <" w1 = " << omega_w_realValue_0 << " w2 = " << omega_w_realValue_1 << endl;
+	omega_w_vector.resize(root["RunOptions"]["omega_w"].getLength());
+	for(int i = 0; i < root["RunOptions"]["omega_w"].getLength(); ++i){
+		omega_w_vector[i] = root["RunOptions"]["omega_w"][i];
+	}
+	opt.omega_w = omega_w_vector[0];
+
 	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
 	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
 
@@ -379,7 +406,7 @@ inline int InitMain::readConfig()
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
 	opt.omega_y              = complex<double>(omega_y_realValue,0);
-	opt.omega_w 			 = complex<double>(omega_w_realValue,0);
+	// opt.omega_w 			 = complex<double>(omega_w_realValue,0);
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 

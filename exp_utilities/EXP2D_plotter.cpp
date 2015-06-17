@@ -231,7 +231,7 @@ void Plotter::prepareData(){
 	reg_1 = mglPoint(eval.punkte[0],eval.punkte[1]);
 	reg_2 = mglPoint(eval.punkte[2],eval.punkte[3]);
 
-	cerr << endl << eval.punkte[0] << " " << eval.punkte[1] << " " << eval.punkte[2] << " " << eval.punkte[3] << endl;
+	// cerr << endl << eval.punkte[0] << " " << eval.punkte[1] << " " << eval.punkte[2] << " " << eval.punkte[3] << endl;
 
 }
 
