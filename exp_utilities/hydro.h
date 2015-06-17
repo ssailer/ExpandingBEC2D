@@ -58,7 +58,7 @@ void hydroSolver::integrate()
     PchangingValue = new double;
     // cout << "g = " << g << endl;
     int Nv = eval->opt.vortexnumber;
-    double r[2] = {eval->totalResult.r_max,eval->totalResult.r_min};
+    double r[2] = {eval->totalResult.Rx,eval->totalResult.Ry};
     double v[2] = {0.0,0.0};
     
     double ti, xi, vi, tf, xf, vf, dt, tmax;

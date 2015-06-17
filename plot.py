@@ -17,7 +17,7 @@ def main():
 
 	datafile = 'runObservables/EXP_Observables.dat'
 
-	cols = ["Timestep","Time","X_max","Y_max","Vortexnumber","Rx","Ry","R_Ratio","E_Major","E_Minor","E_Major_Angle","E_Minor_Angle","E_Ratio","N","V","N/V","E_kin","N_0"]
+	cols = ["Timestep","Time","X_max","Y_max","Vortexnumber","Alpha","Rx","Ry","R_Ratio","E_Major","E_Minor","E_Major_Angle","E_Minor_Angle","E_Ratio","N","V","N/V","E_kin","N_0"]
 
 	from_data = pd.read_csv(datafile,header=0,sep=',',names=cols)
 
