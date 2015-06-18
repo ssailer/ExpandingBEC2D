@@ -6,7 +6,7 @@
 #define IMAGE_SIZE 2500
 #define FONT_SIZE 2.0
 
-Plotter::Plotter(Eval &e, Options &o) : eval(e), opt(o){
+Plotter::Plotter(Eval &e) : eval(e){
 	// eval = e;
 	// opt = o;
 
@@ -75,7 +75,7 @@ void Plotter::prepareData(){
 		// Phase (with elliptic cover) and Density
 	density = mglData(n,m);
 	phase = mglData(n,m);
-	densitymap = mglData(n,m);
+	
 
 	for(int x = 0; x < n; x++){
 		for(int y = 0; y < m; y++){
@@ -87,7 +87,7 @@ void Plotter::prepareData(){
 			} else {
 				phase.a[index] = 0.0;
 			}
-			densitymap.a[index] = eval.densityLocationMap[0](x,y);
+			// densitymap.a[index] = eval.densityLocationMap[0](x,y);
 		}
 	}
 
@@ -123,7 +123,7 @@ void Plotter::prepareData(){
 		
     for (int r = 0; r < eval.totalResult.number.size(); r++){
 		if(eval.totalResult.k(r) != 0.0){
-			if(eval.totalResult.number(r) != 0.0){
+			// if(eval.totalResult.number(r) != 0.0){
 				ret = spectrum.insert(map<double,double>::value_type(eval.totalResult.k(r),eval.totalResult.number(r)));
 				tmpKval.push_back(eval.totalResult.k(r));
 				if(ret.second==false){
@@ -132,7 +132,7 @@ void Plotter::prepareData(){
 
 				// kval.push_back(k_int);
 				// numberval.push_back(eval.totalResult.number(r));
-			}
+			// }
         }
 	}
 
@@ -146,15 +146,16 @@ void Plotter::prepareData(){
 	double max_value = *tmpMinMax.second;
 	double min_log = log(min_value);
 	double max_log = log(max_value);
-	int nBins = sqrt(eval.data.meta.grid[0] * eval.data.meta.grid[0] + eval.data.meta.grid[1] * eval.data.meta.grid[1])/4;
-	// double binMax = exp(min_value);
-	double log_increment = (max_value - min_value) / nBins;
-	
+	double binSize = ((M_PI ) / eval.data.meta.spacing[0]) / (  eval.data.meta.grid[0] / 2.0);
+	double log_increment = binSize;
+
 	double log_value = min_log + log_increment;
 	double value = exp(log_value);
 	
 	vector<double> median;
 	for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
+		// kval.push_back(it->first);
+		// numberval.push_back(it->second);
 
 		if(it->first <= value){
 			// nsum += it->second;
@@ -181,6 +182,8 @@ void Plotter::prepareData(){
 		}
 	}
 
+
+
 	// ksum /= c;
 	// nsum /= c;
 	// kval.push_back(ksum);
@@ -204,32 +207,44 @@ void Plotter::prepareData(){
 	auto k_minmax = std::minmax_element(kval.begin(),kval.end());
 	auto number_minmax = std::minmax_element(numberval.begin(),numberval.end());
 
-	// kmin = *k_minmax.first;
-	kmin = 0.5;
+	kmin = *k_minmax.first;
+	// kmin = 0.5;
 	kmax = *k_minmax.second;
 	numbermin = *number_minmax.first;
 	numbermax = *number_minmax.second;
+	cout << "nmax " << numbermax << " " << "nmin " << numbermin << endl;
+	cout << "kval size " << kval.size() << endl;
+	cout << "numberval size " << numberval.size() << endl;
 
 	k = mglData(kval.size());
 	number = mglData(kval.size());
+	ableitung = mglData(kval.size());
+
+	vector<double> ableitungval(numberval.size());
+	// ableitungval[0] = 0.0;
+	ableitungval[numberval.size()-1] = 0.0;
+	for(int i = 0; i < numberval.size()-1; i++){
+		double tmp = (log(numberval[i+1]) - log(numberval[i])) / (log(kval[i+1]) - log(kval[i]));
+		if(fabs(tmp) <= 10) {ableitungval[i] = tmp; } else { ableitungval[i] = 0.0;}
+		// ableitungval[i] = log(numberval[i]);
+		// cout << " n " << numberval[i] << " " << ableitung
+	}
 
 	for(int i = 0; i < kval.size(); i++){
 		if(kval[i] >= kmin){
 			k.a[i] = kval[i];
 			number.a[i] = numberval[i];
+			ableitung.a[i] = ableitungval[i];
 		}
 	}
 
-	// ellipse axis
-	origin = mglPoint(eval.ellipse.center[0],eval.ellipse.center[1]);
-	major_1 = mglPoint(eval.ellipse.center[0] + eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.major * sin(eval.ellipse.angle));
-	minor_1 = mglPoint(eval.ellipse.center[0] - eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.minor * cos(eval.ellipse.angle));
-
-	major_2 = mglPoint(eval.ellipse.center[0] - eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.major * sin(eval.ellipse.angle));
-	minor_2 = mglPoint(eval.ellipse.center[0] + eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.minor * cos(eval.ellipse.angle));
-
 	reg_1 = mglPoint(eval.punkte[0],eval.punkte[1]);
 	reg_2 = mglPoint(eval.punkte[2],eval.punkte[3]);
+
+	// writeTexData("runObservables/spectrum.data",kval,numberval);
+
+	// ellipse axis
+
 
 	// cerr << endl << eval.punkte[0] << " " << eval.punkte[1] << " " << eval.punkte[2] << " " << eval.punkte[3] << endl;
 
@@ -246,7 +261,25 @@ void Plotter::plotEval(){
 
 }
 
+void Plotter::writeTexData(string filename,vector<double> x, vector<double> y){
+	// string filename = "runObservables/spectrum.data"
+
+  	ofstream datafile(filename.c_str(), std::ios_base::out);
+  	for(int i = 0; i < x.size(); )
+	datafile << std::left << std::setw(15)  << x[i] << "\t"
+					 	  << std::setw(15)  << y[i] << endl;
+	datafile.close();
+}
+
 void Plotter::combinedControl(){
+
+
+	origin = mglPoint(eval.ellipse.center[0],eval.ellipse.center[1]);
+	major_1 = mglPoint(eval.ellipse.center[0] + eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.major * sin(eval.ellipse.angle));
+	minor_1 = mglPoint(eval.ellipse.center[0] - eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.minor * cos(eval.ellipse.angle));
+
+	major_2 = mglPoint(eval.ellipse.center[0] - eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.major * sin(eval.ellipse.angle));
+	minor_2 = mglPoint(eval.ellipse.center[0] + eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.minor * cos(eval.ellipse.angle));
 
 	// https://groups.google.com/forum/#!topic/mathgl/68VMLblLd7U
 	// check this for plot margins, set by hand
@@ -271,15 +304,15 @@ void Plotter::combinedControl(){
 	gr.Label('x',"|k|",0); gr.Label('y',"n",0);
 
 	gr.FPlot("x^(-2)","k");
-	gr.AddLegend("k^(-2)","k");
-	// gr.FPlot("x^(-4)","b");
-	// gr.AddLegend("k^(-4)","b");
+	gr.AddLegend("k^{(-2)}","k");
+	gr.FPlot("x^(-4)","b");
+	gr.AddLegend("k^{(-4)}","b");
 	// gr.FPlot("x^(-4.66)","r");
 	// gr.AddLegend("k^(-4.66)","r");
 
 	string leg_s = "\\alpha = " + to_string(eval.steigung) + " \\pm " + to_string(eval.fehler);
 	gr.Plot(k,number," .2b");
-	gr.Line(reg_1,reg_2,"r2");
+	// gr.Line(reg_1,reg_2,"r2");
 	gr.AddLegend(leg_s.c_str(),"r");
 	gr.Legend();
 	gr.SetCoor(0);
@@ -424,28 +457,70 @@ void Plotter::spectrum(){
 	gr.SetQuality(3);
 	gr.SubPlot(1,1,0,"_");
 	gr.Title(title.c_str());
-	gr.SetRange('x',kmin,kmax);
-	// gr.SetRange('x',*number_minmax.first,*number_minmax.second);
-	gr.SetRange('y',numbermin,numbermax);
+
+	gr.SetRange('x',kmin,kmax+2);
+	gr.SetRange('y',numbermin,numbermax+2);
 	gr.SetCoor(11); // log-log-coordinates
 
 	gr.Axis();
 	gr.Label('x',"|k|",0); gr.Label('y',"n",0);
 
-	// gr.SetFunc("lg(x)","lg(y)");
 	gr.FPlot("x^(-2)","k");
-	gr.AddLegend("k^(-2)","k");
-	gr.FPlot("x^(-4.66)","r");
-	gr.AddLegend("k^(-4.66)","r");
-	gr.FPlot("x^(-4)","b");
-	gr.AddLegend("k^(-4)","b");
+	gr.AddLegend("k^{(-2)}","k");
+	// gr.FPlot("x^(-4)","b");
+	// gr.AddLegend("k^(-4)","b");
+	// gr.FPlot("x^(-4.66)","r");
+	// gr.AddLegend("k^(-4.66)","r");
 
-	gr.Plot(k,number," .");
+	string leg_s = "\\alpha = " + to_string(eval.steigung) + " \\pm " + to_string(eval.fehler);
+	gr.Plot(k,number," .2b");
+	gr.Line(reg_1,reg_2,"r2");
+	gr.AddLegend(leg_s.c_str(),"r");
 	gr.Legend();
+	gr.SetCoor(0);
 
 	string name = dirname + "/Spectrum_" + stepsString + ".png";
 
 	gr.WritePNG(name.c_str(),"Spectrum",false);
+}
+
+void Plotter::alphas(){
+
+
+
+	mglGraph gr;
+
+	gr.SetMarkSize(0.7);
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(FONT_SIZE);
+	gr.SetQuality(3);
+	gr.SubPlot(1,1,0,"_");
+	gr.Title(title.c_str());
+
+	gr.SetRange('x',kmin,kmax+2);
+	gr.SetRange('y',ableitung);
+	gr.SetCoor(12); // log-log-coordinates
+
+	gr.Axis();
+	gr.Label('x',"|k|",0); gr.Label('y',"del n",0);
+
+	// gr.FPlot("x^(-2)","k");
+	// gr.AddLegend("k^(-2)","k");
+	// gr.FPlot("x^(-4)","b");
+	// gr.AddLegend("k^(-4)","b");
+	// gr.FPlot("x^(-4.66)","r");
+	// gr.AddLegend("k^(-4.66)","r");
+
+	// string leg_s = "\\alpha = " + to_string(eval.steigung) + " \\pm " + to_string(eval.fehler);
+	gr.Plot(k,ableitung," .2b");
+	// gr.Line(reg_1,reg_2,"r2");
+	// gr.AddLegend(leg_s.c_str(),"r");
+	// gr.Legend();
+	// gr.SetCoor(0);
+
+	string name = dirname + "/Ableitung_" + stepsString + ".png";
+
+	gr.WritePNG(name.c_str(),"Ableitung",false);
 }
 
 void Plotter::contour(){
@@ -459,8 +534,6 @@ void Plotter::contour(){
 	gr.Title(title.c_str());
 	// gr.Title(title.c_str());
 
-	// gr.SetRange('x',-opt.min_x,opt.min_x);
-	// gr.SetRange('y',-opt.min_y,opt.min_y);
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
 	gr.SetRange('x',0,eval.data.meta.grid[0]);
@@ -479,6 +552,19 @@ void Plotter::contour(){
 }
 
 void Plotter::densityMap(){
+
+	const int n = eval.data.meta.grid[0];
+	const int m = eval.data.meta.grid[1];
+
+	densitymap = mglData(n,m);
+
+	int index;
+	for(int x = 0; x < n; x++){
+		for(int y = 0; y < m; y++){
+			index = x + n * y;
+			densitymap.a[index] = eval.densityLocationMap[0](x,y);
+		}
+	}
 
 	mglGraph gr;
 

@@ -29,19 +29,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {	
-	InitMain initMain(argc,argv);	
-	initMain.printInitVar();
-	Options opt = initMain.getOptions();
-	MatrixData* data = new MatrixData(initMain.getMeta());
-	setGridToTF(data,initMain.getOptions());
 
-	Eval* initEval = new Eval(*data,opt);
-	initEval->process();
-	initEval->save();
-
-	Plotter* initPlot = new Plotter(*initEval,opt);
-	initPlot->plotEval();
-	delete initPlot, initEval, data;
 
     return 0;
 }

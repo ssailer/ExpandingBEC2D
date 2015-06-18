@@ -276,7 +276,7 @@ void Runner<T>::runToTime(string runName)
 
 	if(opt.initialRun == true){
 
-		Plotter* initPlot = new Plotter(*initEval,opt);
+		Plotter* initPlot = new Plotter(*initEval);
 		initPlot->plotEval();
 		delete initPlot;
 
@@ -336,7 +336,7 @@ void Runner<T>::runToTime(string runName)
 				solver.pyPlot();
 			}
 
-			Plotter* plotter = new Plotter(*eval,opt);
+			Plotter* plotter = new Plotter(*eval);
 			plotter->plotEval();
 			delete plotter;
 

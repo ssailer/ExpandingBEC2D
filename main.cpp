@@ -73,9 +73,9 @@ int simulation(InitMain &initMain){
 	if(start == RESTART){
 		Options loadedOptions;
 		// Loading from existing HDF5
-		if(dgl == EXP) filename = "rotdata.h5";
-		if(dgl == TRAP) filename = "rotdata.h5";
 		if(dgl == ROT) filename = "rotdata.h5";
+		if(dgl == EXP) filename = "rotdata.h5";
+		if(dgl == TRAP) filename = "rotdata.h5";		
 		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
 		vector<int> timeList = dataFile->getTimeList();
 		dataFile->getLatestSnapshot("MatrixData",data,loadedOptions);
@@ -169,38 +169,6 @@ try{
  		initMain.setIteration(i);
  		simulation(initMain);
  	}
-
- 	// simulation(initMain);
-
-  // 	initMain.setOmegaW(15.0);
- 	// initMain.setWorkingDirectory("default");
- 	// initMain.setDirectory();
- 	// simulation(initMain);
-
-  // 	initMain.setOmegaW(16.0);
- 	// initMain.setWorkingDirectory("default");
- 	// initMain.setDirectory();
- 	// simulation(initMain);
-
- 	// initMain.setOmegaW(17.0);
- 	// initMain.setWorkingDirectory("default");
- 	// initMain.setDirectory();
- 	// simulation(initMain);
-
- 	// initMain.setOmegaW(18.0);
- 	// initMain.setWorkingDirectory("default");
- 	// initMain.setDirectory();
- 	// simulation(initMain);
-
- 	// initMain.setOmegaW(19.0);
- 	// initMain.setWorkingDirectory("default");
- 	// initMain.setDirectory();
- 	// simulation(initMain);
-
- 	// initMain.setOmegaW(20.0);
- 	// initMain.setWorkingDirectory("default");
- 	// initMain.setDirectory();
- 	// simulation(initMain);
 }
 
 

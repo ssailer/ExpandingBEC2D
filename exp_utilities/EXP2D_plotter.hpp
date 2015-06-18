@@ -23,27 +23,30 @@ using namespace std;
 class Plotter
 {
 public:
-	Plotter(Eval &e, Options &o);
+	Plotter(Eval &e);
 	// ~Plotter();
 
 	void plotEval();
-private:
 	void control();
 	void spectrum();
+	void alphas();
 	void contour();
 	void densityMap();
 	void vortices();
 	void prepareData();
 	void combinedControl();
 
+	void writeTexData(string filename,vector<double> x, vector<double> y);
+private:
+
+
 	Eval eval;
-	Options opt;
 
 	double xrange,yrange;
 	string stepsString, dirname;
 	string title;
 
-	mglData density, phase, densitymap, contour_x, contour_y, vortex_x, vortex_y, cover_x, cover_y, k, number;
+	mglData density, phase, densitymap, contour_x, contour_y, vortex_x, vortex_y, cover_x, cover_y, k, number, ableitung;
 	float kmin, kmax, numbermin, numbermax;
 	mglPoint major_1, minor_1,major_2, minor_2, origin;
 	mglPoint reg_1, reg_2;

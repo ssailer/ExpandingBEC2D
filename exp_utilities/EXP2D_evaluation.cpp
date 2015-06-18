@@ -13,6 +13,8 @@ using namespace Eigen;
 Eval::Eval(MatrixData d,Options o) : data(d),  opt(o) {
 	// data = d;
 	// opt = o;
+	cout << opt.Ag << "  " << opt.OmegaG << endl;
+	cout << data.meta.Ag << "  " << data.meta.OmegaG << endl;
 	toPhysicalUnits(opt);
 	data.convertToPhysicalUnits();
 };
@@ -1056,37 +1058,49 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
         }
 	}
 
-	// auto tmpMinMax_binning = std::minmax_element(tmpKval.begin(),tmpKval.end());
+	auto tmpMinMax_binning = std::minmax_element(tmpKval.begin(),tmpKval.end());
 
-	// int c = 1;
-	// double nsum = 0;	
-	// double min_value = *tmpMinMax_binning.first;
-	// double max_value = *tmpMinMax_binning.second;
-	// double min_log = log(min_value);
-	// double max_log = log(max_value);
-	// int nBins = sqrt(data.meta.grid[0] * data.meta.grid[0] + data.meta.grid[1] * data.meta.grid[1])/2;
-	// // double binMax = exp(min_value);
-	// double log_increment = (max_value - min_value) / nBins;
+	int c = 1;
+	double nsum = 0;	
+	double min_value = *tmpMinMax_binning.first;
+	double max_value = *tmpMinMax_binning.second;
+	double min_log = log(min_value);
+	double max_log = log(max_value);
+	double binSize = ((M_PI ) / data.meta.spacing[0]) / (  data.meta.grid[0] / 2.0);
+	double log_increment = binSize;
+
+	double log_value = min_log + log_increment;
+	double value = exp(log_value);
 	
-	// double log_value = min_log + log_increment;
-	// double value = exp(log_value);
+	vector<double> median;
+	for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
+		// kval.push_back(it->first);
+		// numberval.push_back(it->second);
 
-	// for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
-	// 	if(it->first <= value){
-	// 		nsum += it->second;
-	// 		c++;}
-	// 	else{
-	// 		nsum /= c;
-	// 		numberval.push_back(nsum);
-	// 		log_value += log_increment;
-	// 		double tmp_value = exp(log_value);
-	// 		double k = tmp_value - value / 2.0;
-	// 		kval.push_back(k);
-	// 		value = tmp_value;
-	// 		nsum = it->second;
-	// 		c = 1;
-	// 	}
-	// }
+		if(it->first <= value){
+			// nsum += it->second;
+			// c++;
+			median.push_back(it->second);
+		} else {
+			sort(median.begin(),median.end());
+			int size = median.size();
+			if(size%2 == 0){
+				nsum = median[size/2];
+			} else {
+				nsum = (median[size/2] + median[size/2 +1]) /2;
+			}
+			// nsum /= c;
+			numberval.push_back(nsum);
+			double tmp_log = log_value;
+			log_value += log_increment;
+			double k = exp((tmp_log + log_value)/2);
+			kval.push_back(k);
+			value = exp(log_value);
+			nsum = it->second;
+			c = 1;
+			median.clear();
+		}
+	}
 
 	// // estimate powerlaw
 	// double gamma = 3.0;
@@ -1095,11 +1109,11 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 
 	vector<double> klog;
 	vector<double> nlog;
-	for(int i = 0; i < obs.k.size(); ++i){
-		if(obs.k(i) != 0.0 && obs.number(i)){
-			if(obs.k(i) <= k_max && k_min <= obs.k(i)){
-				klog.push_back(log(obs.k(i)));
-				nlog.push_back(log(obs.number(i)));
+	for(int i = 0; i < kval.size(); ++i){
+		if(kval[i] != 0.0 && numberval[i]){
+			if(kval[i] <= k_max && k_min <= kval[i]){
+				klog.push_back(log(kval[i]));
+				nlog.push_back(log(numberval[i]));
 			}
 		}
 	}
