@@ -1084,23 +1084,31 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 		} else {
 			sort(median.begin(),median.end());
 			int size = median.size();
-			if(size%2 == 0){
-				nsum = median[size/2];
-			} else {
-				nsum = (median[size/2] + median[size/2 +1]) /2;
-			}
-			// nsum /= c;
-			numberval.push_back(nsum);
-			double tmp_log = log_value;
-			log_value += log_increment;
-			double k = exp((tmp_log + log_value)/2);
-			kval.push_back(k);
-			value = exp(log_value);
-			nsum = it->second;
-			c = 1;
-			median.clear();
+			
+				if(size%2 == 0){
+					nsum = median[size/2];
+				} else {
+					nsum = (median[size/2] + median[size/2 +1]) /2;
+				}
+				// nsum /= c;
+				
+				double tmp_log = log_value;
+				log_value += log_increment;
+				double k = exp((tmp_log + log_value)/2);
+				
+				value = exp(log_value);
+				c = 1;
+				median.clear();
+				if(size > 0){
+					numberval.push_back(nsum);
+					kval.push_back(k);
+				}
+			
 		}
 	}
+
+	kval.erase(kval.begin());
+	numberval.erase(numberval.begin());
 
 	// // estimate powerlaw
 	// double gamma = 3.0;
