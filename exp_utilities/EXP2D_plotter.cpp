@@ -6,7 +6,7 @@
 #define IMAGE_SIZE 2500
 #define FONT_SIZE 2.0
 
-Plotter::Plotter(Eval &e) : eval(e){
+Plotter::Plotter(Eval &e,Options &o) : eval(e), opt(o) {
 	// eval = e;
 	// opt = o;
 
@@ -164,7 +164,6 @@ void Plotter::prepareData(){
 		} else {
 			sort(median.begin(),median.end());
 			int size = median.size();
-			cerr << "size " << size << endl;
 				if(size%2 == 0){
 					nsum = median[size/2];
 				} else {
@@ -292,8 +291,7 @@ void Plotter::combinedControl(){
 	// https://groups.google.com/forum/#!topic/mathgl/68VMLblLd7U
 	// check this for plot margins, set by hand
 	mglGraph gr;
-
-	string filename = dirname + "/control_" + stepsString + ".png";
+	string filename = dirname + "/" + opt.runmode + "control_" + stepsString + ".png";
 
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(FONT_SIZE);

@@ -23,7 +23,7 @@ using namespace std;
 class Plotter
 {
 public:
-	Plotter(Eval &e);
+	Plotter(Eval &e, Options &o);
 	// ~Plotter();
 
 	void plotEval();
@@ -41,6 +41,7 @@ private:
 
 
 	Eval eval;
+	Options opt;
 
 	double xrange,yrange;
 	string stepsString, dirname;

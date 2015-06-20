@@ -215,7 +215,7 @@ try{
 
    eval.fehler = sqrt(SUM_Yres / (dataSize - 2));
 
-	Plotter plot(eval);
+	Plotter plot(eval,opt);
 	plot.spectrum();
 	plot.alphas();
 	delete dataFile;
