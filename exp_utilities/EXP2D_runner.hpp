@@ -264,7 +264,7 @@ void Runner<T>::runToTime(string runName)
 	if(opt.runmode == "EXP"){
 		hydroSolver solver(initEval);
 		solver.integrate();
-		solver.pyPlot();
+		// solver.pyPlot();
 
 		vector<int> edges;
 		if(initEval->checkResizeCondition(edges)){
@@ -333,8 +333,8 @@ void Runner<T>::runToTime(string runName)
 					algorithm->setVariables();
 					cout << "Resizing" << endl;
 				}
-				hydroSolver solver;
-				solver.pyPlot();
+				// hydroSolver solver;
+				// solver.pyPlot();
 			}
 			if(opt.runmode != "EXP"){
 				Plotter* plotter = new Plotter(*eval,opt);
