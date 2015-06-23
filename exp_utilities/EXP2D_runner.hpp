@@ -336,17 +336,17 @@ void Runner<T>::runToTime(string runName)
 				hydroSolver solver;
 				solver.pyPlot();
 			}
-			// if(opt.runmode != "EXP"){
+			if(opt.runmode != "EXP"){
 				Plotter* plotter = new Plotter(*eval,opt);
 				plotter->plotEval();
 				delete plotter;
-			// }
+			}
 
 			string dataname = runName + "data.h5";
 			binaryFile* bFile = new binaryFile(dataname,binaryFile::append);
 			bFile->appendSnapshot("MatrixData",pData,opt);
 			// if(opt.runmode != "EXP"){
-				bFile->appendEval(*eval, opt);
+			bFile->appendEval(*eval, opt);
 			// }
 			delete bFile;
 		}
