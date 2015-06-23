@@ -81,7 +81,7 @@ void hydroSolver::integrate()
     // cout << "beta " << beta << endl;
             // initial
     dt = 1.0e-6;             // step size for integration
-    tmax = eval->opt.n_it_RTE * eval->opt.snapshots * eval->opt.RTE_step;          // integrate from ti till tmax
+    tmax = eval->opt.n_it_RTE * eval->opt.snapshots * eval->opt.RTE_step + eval->data.meta.time;          // integrate from ti till tmax
 
     // cout << "tmax = " << tmax << endl;
     X.push_back(r[0]);
@@ -121,7 +121,7 @@ void hydroSolver::integrate()
         ti = tf;
     }
 
-  ti = eval->data.meta.time;
+  ti = 0.0;
   for(int i = 0; i < X.size(); ++i){
     file << setw(12) << ti << "," << setw(12) << X[i] << setw(12) << "," << Y[i]   << endl;
     ti += dt;

@@ -473,8 +473,8 @@ void Plotter::spectrum(){
 
 	gr.FPlot("x^(-2)","k");
 	gr.AddLegend("k^{(-2)}","k");
-	// gr.FPlot("x^(-4)","b");
-	// gr.AddLegend("k^(-4)","b");
+	gr.FPlot("x^(-4)","b");
+	gr.AddLegend("k^(-4)","b");
 	// gr.FPlot("x^(-4.66)","r");
 	// gr.AddLegend("k^(-4.66)","r");
 

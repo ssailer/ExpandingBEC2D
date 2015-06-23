@@ -72,19 +72,28 @@ try{
 	data->meta.OmegaG = opt.OmegaG;
 	Eval eval(*data,opt);
 	Observables obs;
-	int counter = 0;
+	int counter = 1;
 
-	dataFile->getEval(700000,eval,opt);
+	dataFile->getEval(3000000,eval,opt);
 	obs = eval.totalResult;
-	for(int k = 70; k < size; k++){
+	for(int k = 301; k <= 400; k++){
 		dataFile->getEval(timeList[k],eval,opt);
 		// cout << "timeList " << timeList[k] << endl;
 		obs += eval.totalResult;
 		counter++;
 	}
 	// dataFile->getLatestSnapshot("MatrixData",data,opt);
-	obs /= (counter+1);
+	obs /= counter;
 	eval.totalResult = obs;
+
+	delete dataFile;
+
+	filename = "2M_4M_eval_combined_totalResult.h5";
+	binaryFile* evalFile = new binaryFile(filename,binaryFile::out);
+	dataFile->appendEval(eval,opt);
+	delete evalFile;
+
+
 
 		// spectrum
 	vector<double> kval;
@@ -110,8 +119,12 @@ try{
 
 	// // estimate powerlaw
 	// double gamma = 3.0;
-	double k_max = 4.0;
-	double k_min = 2.0;
+
+	double k_max = atof(argv[2]);
+	double k_min = atof(argv[1]);
+
+	// double k_max = 11.0;
+	// double k_min = 8.0;
 
 	vector<double> klog;
 	vector<double> nlog;
@@ -218,7 +231,7 @@ try{
 	Plotter plot(eval,opt);
 	plot.spectrum();
 	plot.alphas();
-	delete dataFile;
+
 	delete data;
 
 }  // exceptions catcher

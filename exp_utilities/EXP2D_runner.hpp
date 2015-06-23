@@ -320,10 +320,11 @@ void Runner<T>::runToTime(string runName)
 		// END REMOVE
 
 		try{
-
-			Eval* eval = new Eval(*pData,opt);
-			eval->process();
-			eval->save();
+			// if(opt.runmode != "EXP"){
+				Eval* eval = new Eval(*pData,opt);
+				eval->process();
+				eval->save();
+			// }
 
 			if(opt.runmode == "EXP"){
 				vector<int> edges;
@@ -335,15 +336,18 @@ void Runner<T>::runToTime(string runName)
 				hydroSolver solver;
 				solver.pyPlot();
 			}
-
-			Plotter* plotter = new Plotter(*eval,opt);
-			plotter->plotEval();
-			delete plotter;
+			// if(opt.runmode != "EXP"){
+				Plotter* plotter = new Plotter(*eval,opt);
+				plotter->plotEval();
+				delete plotter;
+			// }
 
 			string dataname = runName + "data.h5";
 			binaryFile* bFile = new binaryFile(dataname,binaryFile::append);
 			bFile->appendSnapshot("MatrixData",pData,opt);
-			bFile->appendEval(*eval, opt);
+			// if(opt.runmode != "EXP"){
+				bFile->appendEval(*eval, opt);
+			// }
 			delete bFile;
 		}
 		catch(const std::exception& e) { 
