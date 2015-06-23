@@ -36,7 +36,8 @@ enum MainControl {
 	ROT,
 	RESUME,
 	RESTART,
-	NEW
+	NEW,
+	PLOT
 };
 
 
@@ -109,6 +110,7 @@ MainControl InitMain::toMainControl(const std::string& s)
     if (s == "RESUME") return RESUME;
     if (s == "RESTART") return RESTART;
     if (s == "NEW") return NEW;
+    if (s == "PLOT") return PLOT;
     throw std::runtime_error("Invalid conversion from string to MainControl.");
 }
 

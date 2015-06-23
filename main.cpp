@@ -44,6 +44,41 @@ Last Update: 22/07/13
 
 using namespace std;
 
+int plotting(InitMain &initMain){
+	initMain.printInitVar();
+	Options opt = initMain.getOptions();
+	MatrixData* data = new MatrixData();
+
+	string filename = "expdata.h5";
+
+
+	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);
+	vector<int> timeList = dataFile->getTimeList();
+	int size = timeList.size();
+
+	
+
+	for(int k = 0; k < size; ++k){
+		cerr << "loading: " << k << " / " << size;
+		dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
+		opt.isDimensionless = true;
+		data->meta.Ag = opt.Ag;
+		data->meta.OmegaG = opt.OmegaG;
+		cerr << " " << data->meta.steps << " step " << data->meta.time << " time";
+	
+		Eval eval(*data,opt);
+		cerr << " processing ";
+		eval.process();
+	
+		// dataFile->getEval(timeList[k],eval,opt);
+	
+		Plotter plotter(eval,opt);
+		cerr << "plotting" << endl;
+		plotter.plotEval();
+	}
+
+}
+
 int simulation(InitMain &initMain){
 
 	initMain.printInitVar();
@@ -165,10 +200,18 @@ try{
  	#endif
 
  	int size = initMain.getIterations();
- 	for(int i = 0; i < size; ++i){
- 		initMain.setIteration(i);
- 		simulation(initMain);
+ 	if(initMain.getRestart() != PLOT){
+ 		for(int i = 0; i < size; ++i){
+ 			initMain.setIteration(i);
+ 			simulation(initMain);
+ 		}
+ 	} else {
+ 		for(int i = 0; i < size; ++i){
+ 			initMain.setIteration(i);
+ 			plotting(initMain);
+ 		}
  	}
+
 }
 
 

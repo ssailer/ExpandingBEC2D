@@ -1037,194 +1037,194 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 
 
 	// spectrum
-	vector<double> kval;
-	vector<double> numberval;
-	map<double,double> spectrum;
-	pair<map<double,double>::iterator,bool> ret;    
-    vector<double> tmpKval;
+	// vector<double> kval;
+	// vector<double> numberval;
+	// map<double,double> spectrum;
+	// pair<map<double,double>::iterator,bool> ret;    
+ //    vector<double> tmpKval;
 		
-    for (int r = 0; r < obs.number.size(); r++){
-		if(obs.k(r) != 0.0){
-			if(obs.number(r) != 0.0){
-				ret = spectrum.insert(map<double,double>::value_type(obs.k(r),obs.number(r)));
-				tmpKval.push_back(obs.k(r));
-				if(ret.second==false){
-					cout << "Binning of spectrum failed, double value inserted." << endl;
-				}
+ //    for (int r = 0; r < obs.number.size(); r++){
+	// 	if(obs.k(r) != 0.0){
+	// 		if(obs.number(r) != 0.0){
+	// 			ret = spectrum.insert(map<double,double>::value_type(obs.k(r),obs.number(r)));
+	// 			tmpKval.push_back(obs.k(r));
+	// 			if(ret.second==false){
+	// 				cout << "Binning of spectrum failed, double value inserted." << endl;
+	// 			}
 
-				// kval.push_back(k_int);
-				// numberval.push_back(eval.totalResult.number(r));
-			}
-        }
-	}
+	// 			// kval.push_back(k_int);
+	// 			// numberval.push_back(eval.totalResult.number(r));
+	// 		}
+ //        }
+	// }
 
-	auto tmpMinMax_binning = std::minmax_element(tmpKval.begin(),tmpKval.end());
+	// auto tmpMinMax_binning = std::minmax_element(tmpKval.begin(),tmpKval.end());
 
-	int c = 1;
-	double nsum = 0;	
-	double min_value = *tmpMinMax_binning.first;
-	double max_value = *tmpMinMax_binning.second;
-	double min_log = log(min_value);
-	double max_log = log(max_value);
-	double binSize = ((M_PI ) / data.meta.spacing[0]) / (  data.meta.grid[0] / 2.0);
-	double log_increment = binSize;
+	// int c = 1;
+	// double nsum = 0;	
+	// double min_value = *tmpMinMax_binning.first;
+	// double max_value = *tmpMinMax_binning.second;
+	// double min_log = log(min_value);
+	// double max_log = log(max_value);
+	// double binSize = ((M_PI ) / data.meta.spacing[0]) / (  data.meta.grid[0] / 2.0);
+	// double log_increment = binSize;
 
-	double log_value = min_log + log_increment;
-	double value = exp(log_value);
+	// double log_value = min_log + log_increment;
+	// double value = exp(log_value);
 	
-	vector<double> median;
-	for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
-		// kval.push_back(it->first);
-		// numberval.push_back(it->second);
+	// vector<double> median;
+	// for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
+	// 	// kval.push_back(it->first);
+	// 	// numberval.push_back(it->second);
 
-		if(it->first <= value){
-			// nsum += it->second;
-			// c++;
-			median.push_back(it->second);
-		} else {
-			sort(median.begin(),median.end());
-			int size = median.size();
+	// 	if(it->first <= value){
+	// 		// nsum += it->second;
+	// 		// c++;
+	// 		median.push_back(it->second);
+	// 	} else {
+	// 		sort(median.begin(),median.end());
+	// 		int size = median.size();
 			
-				if(size%2 == 0){
-					nsum = median[size/2];
-				} else {
-					nsum = (median[size/2] + median[size/2 +1]) /2;
-				}
-				// nsum /= c;
+	// 			if(size%2 == 0){
+	// 				nsum = median[size/2];
+	// 			} else {
+	// 				nsum = (median[size/2] + median[size/2 +1]) /2;
+	// 			}
+	// 			// nsum /= c;
 				
-				double tmp_log = log_value;
-				log_value += log_increment;
-				double k = exp((tmp_log + log_value)/2);
+	// 			double tmp_log = log_value;
+	// 			log_value += log_increment;
+	// 			double k = exp((tmp_log + log_value)/2);
 				
-				value = exp(log_value);
-				c = 1;
-				median.clear();
-				if(size > 0){
-					numberval.push_back(nsum);
-					kval.push_back(k);
-				}
+	// 			value = exp(log_value);
+	// 			c = 1;
+	// 			median.clear();
+	// 			if(size > 0){
+	// 				numberval.push_back(nsum);
+	// 				kval.push_back(k);
+	// 			}
 			
-		}
-	}
+	// 	}
+	// }
 
-	kval.erase(kval.begin());
-	numberval.erase(numberval.begin());
+	// kval.erase(kval.begin());
+	// numberval.erase(numberval.begin());
 
-	// // estimate powerlaw
-	// double gamma = 3.0;
-	double k_max = 7.0;
-	double k_min = 2.0;
+	// // // estimate powerlaw
+	// // double gamma = 3.0;
+	// double k_max = 7.0;
+	// double k_min = 2.0;
 
-	vector<double> klog;
-	vector<double> nlog;
-	for(int i = 0; i < kval.size(); ++i){
-		if(kval[i] != 0.0 && numberval[i]){
-			if(kval[i] <= k_max && k_min <= kval[i]){
-				klog.push_back(log(kval[i]));
-				nlog.push_back(log(numberval[i]));
-			}
-		}
-	}
+	// vector<double> klog;
+	// vector<double> nlog;
+	// for(int i = 0; i < kval.size(); ++i){
+	// 	if(kval[i] != 0.0 && numberval[i]){
+	// 		if(kval[i] <= k_max && k_min <= kval[i]){
+	// 			klog.push_back(log(kval[i]));
+	// 			nlog.push_back(log(numberval[i]));
+	// 		}
+	// 	}
+	// }
 	
 
-	auto tmpMinMax = std::minmax_element(klog.begin(),klog.end());
+	// auto tmpMinMax = std::minmax_element(klog.begin(),klog.end());
 
-	double linksX = *tmpMinMax.first;
-	double rechtsX = *tmpMinMax.second;
+	// double linksX = *tmpMinMax.first;
+	// double rechtsX = *tmpMinMax.second;
 
-   double SUMx = 0;     //sum of x values
-   double SUMy = 0;     //sum of y values
-   double SUMxy = 0;    //sum of x * y
-   double SUMxx = 0;    //sum of x^2
-   double SUMres = 0;   //sum of squared residue
-   double res = 0;      //residue squared
-   double slope = 0;    //slope of regression line
-   double y_intercept = 0; //y intercept of regression line
-   double SUM_Yres = 0; //sum of squared of the discrepancies
-   double AVGy = 0;     //mean of y
-   double AVGx = 0;     //mean of x
-   double Yres = 0;     //squared of the discrepancies
-   double Rsqr = 0;     //coefficient of determination
-   int dataSize = nlog.size();
-   //calculate various sums 
-   for (int i = 0; i < dataSize; i++)
-   {
-      //sum of x
-      SUMx = SUMx + klog[i];
-      //sum of y
-      SUMy = SUMy + nlog[i];
-      //sum of squared x*y
-      SUMxy = SUMxy + klog[i] * nlog[i];
-      //sum of squared x
-      SUMxx = SUMxx + klog[i] * klog[i];
-   }
+ //   double SUMx = 0;     //sum of x values
+ //   double SUMy = 0;     //sum of y values
+ //   double SUMxy = 0;    //sum of x * y
+ //   double SUMxx = 0;    //sum of x^2
+ //   double SUMres = 0;   //sum of squared residue
+ //   double res = 0;      //residue squared
+ //   double slope = 0;    //slope of regression line
+ //   double y_intercept = 0; //y intercept of regression line
+ //   double SUM_Yres = 0; //sum of squared of the discrepancies
+ //   double AVGy = 0;     //mean of y
+ //   double AVGx = 0;     //mean of x
+ //   double Yres = 0;     //squared of the discrepancies
+ //   double Rsqr = 0;     //coefficient of determination
+ //   int dataSize = nlog.size();
+ //   //calculate various sums 
+ //   for (int i = 0; i < dataSize; i++)
+ //   {
+ //      //sum of x
+ //      SUMx = SUMx + klog[i];
+ //      //sum of y
+ //      SUMy = SUMy + nlog[i];
+ //      //sum of squared x*y
+ //      SUMxy = SUMxy + klog[i] * nlog[i];
+ //      //sum of squared x
+ //      SUMxx = SUMxx + klog[i] * klog[i];
+ //   }
 
-   //calculate the means of x and y
-   AVGy = SUMy / dataSize;
-   AVGx = SUMx / dataSize;
+ //   //calculate the means of x and y
+ //   AVGy = SUMy / dataSize;
+ //   AVGx = SUMx / dataSize;
 
-   //slope or a1
-   slope = (dataSize * SUMxy - SUMx * SUMy) / (dataSize * SUMxx - SUMx*SUMx);
+ //   //slope or a1
+ //   slope = (dataSize * SUMxy - SUMx * SUMy) / (dataSize * SUMxx - SUMx*SUMx);
 
-   //y intercept or a0
-   y_intercept = AVGy - slope * AVGx;
+ //   //y intercept or a0
+ //   y_intercept = AVGy - slope * AVGx;
 
-   obs.alpha = slope;
-
-
-   steigung = slope;
-   double abschnitt = y_intercept;
-   double linksY = slope * linksX + y_intercept;
-   double rechtsY = slope * rechtsX + y_intercept;
-
-   punkte.push_back(exp(linksX));
-   punkte.push_back(exp(linksY));
-   punkte.push_back(exp(rechtsX));
-   punkte.push_back(exp(rechtsY));
+ //   obs.alpha = slope;
 
 
-   // printf("x mean(AVGx) = %0.5E\n", AVGx);
+ //   steigung = slope;
+ //   double abschnitt = y_intercept;
+ //   double linksY = slope * linksX + y_intercept;
+ //   double rechtsY = slope * rechtsX + y_intercept;
 
-   // printf("y mean(AVGy) = %0.5E\n", AVGy);
+ //   punkte.push_back(exp(linksX));
+ //   punkte.push_back(exp(linksY));
+ //   punkte.push_back(exp(rechtsX));
+ //   punkte.push_back(exp(rechtsY));
 
-   // printf ("\n");
-   // printf ("The linear equation that best fits the given data:\n");
-   // printf ("       y = %2.8lfx + %2.8f\n", slope, y_intercept);
-   // printf ("------------------------------------------------------------\n");
-   // printf ("   Original (x,y)   (y_i - y_avg)^2     (y_i - a_o - a_1*x_i)^2\n");
-   // printf ("------------------------------------------------------------\n");
 
-   // //calculate squared residues, their sum etc.
-   for (int i = 0; i < dataSize; i++) 
-   {
-      //current (y_i - a0 - a1 * x_i)^2
-      Yres = pow(nlog[i] - y_intercept - (slope * (klog[i])), 2);
+ //   // printf("x mean(AVGx) = %0.5E\n", AVGx);
 
-      //sum of (y_i - a0 - a1 * x_i)^2
-      SUM_Yres += Yres;
+ //   // printf("y mean(AVGy) = %0.5E\n", AVGy);
 
-      //current residue squared (y_i - AVGy)^2
-      res = pow(nlog[i] - AVGy, 2);
+ //   // printf ("\n");
+ //   // printf ("The linear equation that best fits the given data:\n");
+ //   // printf ("       y = %2.8lfx + %2.8f\n", slope, y_intercept);
+ //   // printf ("------------------------------------------------------------\n");
+ //   // printf ("   Original (x,y)   (y_i - y_avg)^2     (y_i - a_o - a_1*x_i)^2\n");
+ //   // printf ("------------------------------------------------------------\n");
 
-      //sum of squared residues
-      SUMres += res;
+ //   // //calculate squared residues, their sum etc.
+ //   for (int i = 0; i < dataSize; i++) 
+ //   {
+ //      //current (y_i - a0 - a1 * x_i)^2
+ //      Yres = pow(nlog[i] - y_intercept - (slope * (klog[i])), 2);
+
+ //      //sum of (y_i - a0 - a1 * x_i)^2
+ //      SUM_Yres += Yres;
+
+ //      //current residue squared (y_i - AVGy)^2
+ //      res = pow(nlog[i] - AVGy, 2);
+
+ //      //sum of squared residues
+ //      SUMres += res;
       
-      // printf ("   (%0.2f %0.2f)      %0.5E         %0.5E\n", 
-      //  klog[i], nlog[i], res, Yres);
-   }
+ //      // printf ("   (%0.2f %0.2f)      %0.5E         %0.5E\n", 
+ //      //  klog[i], nlog[i], res, Yres);
+ //   }
 
-   fehler = sqrt(SUM_Yres / (dataSize - 2));
+ //   fehler = sqrt(SUM_Yres / (dataSize - 2));
 
-   //calculate r^2 coefficient of determination
-   // Rsqr = (SUMres - SUM_Yres) / SUMres;
+ //   //calculate r^2 coefficient of determination
+ //   // Rsqr = (SUMres - SUM_Yres) / SUMres;
    
-   // printf("--------------------------------------------------\n");
-   // printf("Sum of (y_i - y_avg)^2 = %0.5E\t\n", SUMres);
-   // printf("Sum of (y_i - a_o - a_1*x_i)^2 = %0.5E\t\n", SUM_Yres);
-   // printf("Standard deviation(St) = %0.5E\n", sqrt(SUMres / (dataSize - 1)));
-   // printf("Standard error of the estimate(Sr) = %0.5E\t\n", sqrt(SUM_Yres / (dataSize-2)));
-   // printf("Coefficent of determination(r^2) = %0.5E\t\n", (SUMres - SUM_Yres)/SUMres);
-   // printf("Correlation coefficient(r) = %0.5E\t\n", sqrt(Rsqr));
+ //   // printf("--------------------------------------------------\n");
+ //   // printf("Sum of (y_i - y_avg)^2 = %0.5E\t\n", SUMres);
+ //   // printf("Sum of (y_i - a_o - a_1*x_i)^2 = %0.5E\t\n", SUM_Yres);
+ //   // printf("Standard deviation(St) = %0.5E\n", sqrt(SUMres / (dataSize - 1)));
+ //   // printf("Standard error of the estimate(Sr) = %0.5E\t\n", sqrt(SUM_Yres / (dataSize-2)));
+ //   // printf("Coefficent of determination(r^2) = %0.5E\t\n", (SUMres - SUM_Yres)/SUMres);
+ //   // printf("Correlation coefficient(r) = %0.5E\t\n", sqrt(Rsqr));
 
 	
 	

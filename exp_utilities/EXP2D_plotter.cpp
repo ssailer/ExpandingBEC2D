@@ -245,8 +245,7 @@ void Plotter::prepareData(){
 		}
 	}
 
-	reg_1 = mglPoint(eval.punkte[0],eval.punkte[1]);
-	reg_2 = mglPoint(eval.punkte[2],eval.punkte[3]);
+
 
 	// writeTexData("runObservables/spectrum.data",kval,numberval);
 
@@ -453,7 +452,8 @@ void Plotter::control(){
 
 void Plotter::spectrum(){
 
-
+	reg_1 = mglPoint(eval.punkte[0],eval.punkte[1]);
+	reg_2 = mglPoint(eval.punkte[2],eval.punkte[3]);
 
 	mglGraph gr;
 
