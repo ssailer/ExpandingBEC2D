@@ -59,7 +59,7 @@ int plotting(InitMain &initMain){
 	
 
 	for(int k = 0; k < size; ++k){
-		cerr << "loading: " << k << " / " << size;
+		cerr << "loading: " << k << " / " << size-1;
 		dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
 		opt.isDimensionless = true;
 		data->meta.Ag = opt.Ag;
