@@ -76,6 +76,8 @@ int plotting(InitMain &initMain){
 		cerr << "plotting" << endl;
 		plotter.plotEval();
 	}
+	chdir("..");
+	cerr << "[END]" << endl;
 
 }
 
