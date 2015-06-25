@@ -69,13 +69,19 @@ int plotting(InitMain &initMain){
 		Eval eval(*data,opt);
 		cerr << " processing ";
 		eval.process();
-	
+
 		// dataFile->getEval(timeList[k],eval,opt);
 	
 		Plotter plotter(eval,opt);
 		cerr << "plotting" << endl;
 		plotter.plotEval();
 	}
+
+	hydroSolver solver;
+	solver.pyPlot();
+
+
+
 	chdir("..");
 	cerr << "[END]" << endl;
 
