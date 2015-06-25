@@ -262,8 +262,8 @@ void Runner<T>::runToTime(string runName)
 	initEval->save();
 
 	if(opt.runmode == "EXP"){
-		hydroSolver solver(initEval);
-		solver.integrate();
+		// hydroSolver solver(initEval);
+		// solver.integrate();
 		// solver.pyPlot();
 
 		vector<int> edges;

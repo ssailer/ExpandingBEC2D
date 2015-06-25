@@ -32,9 +32,10 @@ using namespace std;
 
 class hydroSolver {
 public:
-  hydroSolver(Eval* &e) : eval(e), hbar(1.054e-22), m(87 * 1.66e-27) {
+  hydroSolver(Eval* &e, double &maxTime) : eval(e), hbar(1.054e-22), m(87 * 1.66e-27), ti(0), tmax(maxTime) {
     g = eval->opt.g * (hbar * hbar / (m * m)) * (4.0) * eval->opt.N / M_PI;
   }
+
   hydroSolver() : hbar(1.054e-22), m(87 * 1.66e-27) {}
   double rk4_2nd(double, double, double, double,double&, double&);
   double f1(double, double, double);
@@ -49,6 +50,9 @@ public:
   double hbar;
   double m;
   double g;
+
+  double ti;
+  double tmax;
 };
 
 
@@ -61,7 +65,7 @@ void hydroSolver::integrate()
     double r[2] = {eval->totalResult.Rx,eval->totalResult.Ry};
     double v[2] = {0.0,0.0};
     
-    double ti, xi, vi, tf, xf, vf, dt, tmax;
+    double xi, vi, tf, xf, vf, dt;
     double energy;
     vector<double> T, X, Y, Xdot, Ydot;
 
@@ -75,13 +79,13 @@ void hydroSolver::integrate()
 
     // int key = 2;
     // const string method[3] = {"simple Euler","modified Euler","4th order Runge-Kutta"};
-    ti = eval->data.meta.time;             // initial value for variable
+    // ti = 0.0;             // initial value for variable
                // initial value for function x(t)
     beta = 4 * hbar * hbar * Nv * Nv / (m * m);
     // cout << "beta " << beta << endl;
             // initial
     dt = 1.0e-6;             // step size for integration
-    tmax = eval->opt.n_it_RTE * eval->opt.snapshots * eval->opt.RTE_step + eval->data.meta.time;          // integrate from ti till tmax
+    // tmax = eval->opt.n_it_RTE * eval->opt.snapshots * eval->opt.RTE_step + eval->data.meta.time;          // integrate from ti till tmax
 
     // cout << "tmax = " << tmax << endl;
     X.push_back(r[0]);

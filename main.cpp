@@ -28,6 +28,7 @@ Last Update: 22/07/13
 // #include <EXP2D_itp.hpp>
 #include <EXP2D_binaryfile.h>
 #include <EXP2D_rk4.hpp>
+// #include <hydro.h>
 // #include <EXP2D_rte.hpp>
 #include <EXP2D_runner.hpp>
 #include <EXP2D_evaluation.h>
@@ -56,7 +57,16 @@ int plotting(InitMain &initMain){
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
-	
+	Eval* initEval = new Eval(*data,opt);
+	dataFile->getEval(timeList[size-1],*initEval,opt);
+	double maxTime = initEval->data.meta.time;
+	dataFile->getEval(timeList[0],*initEval,opt);
+
+	cerr << endl << "hydro plotting" << endl;
+	hydroSolver solver(initEval,maxTime);
+	solver.integrate();
+	solver.pyPlot();
+	delete initEval;	
 
 	for(int k = 0; k < size; ++k){
 		cerr << "loading: " << k << " / " << size-1;
@@ -76,11 +86,6 @@ int plotting(InitMain &initMain){
 		cerr << "plotting" << endl;
 		plotter.plotEval();
 	}
-
-	hydroSolver solver;
-	solver.pyPlot();
-
-
 
 	chdir("..");
 	cerr << "[END]" << endl;
