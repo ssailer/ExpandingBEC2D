@@ -92,6 +92,33 @@ int plotting(InitMain &initMain){
 
 }
 
+int hydro(InitMain &initMain){
+		initMain.printInitVar();
+	Options opt = initMain.getOptions();
+	MatrixData* data = new MatrixData();
+
+	string filename = "expdata.h5";
+
+
+	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);
+	vector<int> timeList = dataFile->getTimeList();
+	int size = timeList.size();
+
+	Eval* initEval = new Eval(*data,opt);
+	dataFile->getEval(timeList[size-1],*initEval,opt);
+	double maxTime = initEval->data.meta.time;
+	dataFile->getEval(timeList[0],*initEval,opt);
+
+	cerr << endl << "hydro plotting" << endl;
+	hydroSolver solver(initEval,maxTime);
+	solver.integrate();
+	solver.pyPlot();
+	delete initEval;
+
+	chdir("..");
+	cerr << "[END]" << endl;
+}
+
 int simulation(InitMain &initMain){
 
 	initMain.printInitVar();
@@ -213,18 +240,23 @@ try{
  	#endif
 
  	int size = initMain.getIterations();
- 	if(initMain.getRestart() != PLOT){
- 		for(int i = 0; i < size; ++i){
- 			initMain.setIteration(i);
- 			simulation(initMain);
- 		}
- 	} else {
+ 	MainControl mode = initMain.getRestart();
+ 	if(mode == PLOT){
  		for(int i = 0; i < size; ++i){
  			initMain.setIteration(i);
  			plotting(initMain);
  		}
+ 	} else if(mode == HYDRO){
+ 		for(int i = 0; i < size; ++i){
+ 			initMain.setIteration(i);
+ 			hydro(initMain);
+ 		}
+ 	} else {
+ 		for(int i = 0; i < size; ++i){
+ 			initMain.setIteration(i);
+ 			simulation(initMain);
+ 		}
  	}
-
 }
 
 

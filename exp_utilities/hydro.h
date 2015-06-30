@@ -34,6 +34,7 @@ class hydroSolver {
 public:
   hydroSolver(Eval* &e, double &maxTime) : eval(e), hbar(1.054e-22), m(87 * 1.66e-27), ti(0), tmax(maxTime) {
     g = eval->opt.g * (hbar * hbar / (m * m)) * (4.0) * eval->opt.N / M_PI;
+    // g = eval->opt.g * (hbar * hbar / (m * m)) * (15.0/8.0) * eval->opt.N / M_PI;
   }
 
   hydroSolver() : hbar(1.054e-22), m(87 * 1.66e-27) {}
