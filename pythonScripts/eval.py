@@ -18,29 +18,32 @@ from matplotlib.lines import Line2D
 import segment
 import fit
 
-def draw_plot(bins,data,plot_title):
+def draw_plot(bins,data,plot_title,borders):
 	edata = np.exp(data)
 	ebins = np.exp(bins)
+	title(plot_title)
+	xlabel("log(k)")
+	ylabel("log(n)")
+	xlim(borders[0],borders[1]*10.0)
+	ylim(borders[2],borders[3]*10.0)
 	# plot(range(len(data)),data,alpha=0.8,color='red')
 	plot(ebins,edata,alpha=0.8,marker='o',linestyle=' ',color='red')
-	title(plot_title)
-	xlabel("k in 1/m")
-	ylabel("n OccupationNumber")
-	xlim(ebins.min(),ebins.max())
-	ylim(edata.min(),edata.max())
+
 
 def draw_segments(bins,segments):
-	ax = gca()
+	ax = plt.gca()
 	for segment in segments:
 		deltaX = (bins[segment[2]] - bins[segment[0]])
 		deltaY = (segment[3] - segment[1])
 		# print(segment[3],segment[2])
 		steigung = deltaY / deltaX
 		if abs(segment[2] - segment[0]) > 2:
-			if abs(steigung) < 10:
-				line = Line2D((np.exp(bins[segment[0]]),np.exp(bins[segment[2]])),(np.exp(segment[1]),np.exp(segment[3])))
-				ax.add_line(line) 
-				ax.annotate(str(steigung)[:5],xy=(np.exp(bins[segment[0]] + deltaX/2),np.exp(segment[1] + deltaY/2)),xytext=(5,10), textcoords='offset points',)
+			if abs(steigung) < 15:
+				if abs(steigung) > 1:
+					line = Line2D((np.exp(bins[segment[0]]),np.exp(bins[segment[2]])),(np.exp(segment[1]),np.exp(segment[3])))
+					ax.add_line(line)
+					ax.annotate(str(steigung)[:5],rotation=30,xy=(np.exp(bins[segment[0]] + deltaX/2),np.exp(segment[1] + deltaY/2)),size='8',xytext=(5,30), textcoords='offset points',)
+					# +"$\pm$"+str(abs(steigung*0.1))[:5]
 
 def window(size):
 	return np.ones(size)/float(size)
@@ -64,13 +67,45 @@ def nan_helper(y):
 
 def main():
 
-	h5fileName = sys.argv[1]
-	h5file = h5py.File(h5fileName,'r')
-	snapshots = h5file.attrs["SnapshotTimes"]
-	directory = "runRegFit"
+	h5fileName = ["expdata.h5","rotdata.h5","trapdata.h5"]
 
-	if not os.path.exists(directory):
-		os.makedirs(directory)
+	tmp1 = "10000_400x400_0.145_"
+	tmp2 = ".0"
+	directory = [tmp1+str(x)+tmp2 for x in range(14,22)]
+	print(directory)
+	for d in directory:
+		for f in h5fileName:
+			eval(d,f)
+
+def eval(directory,h5fileName):
+
+	h5file = h5py.File(directory+'/'+h5fileName,'r')
+	snapshots = h5file.attrs["SnapshotTimes"]
+
+	if not os.path.exists(directory+"/runRegFit"):
+		os.makedirs(directory+"/runRegFit")
+
+	borders = []
+	borders.append([])
+	borders.append([])
+	borders.append([])
+	borders.append([])
+	for times in snapshots:
+		kSetName = str(times) + "/Observables/KVector"
+		kvector = np.array(h5file[kSetName])
+		nSetname = str(times) + "/Observables/OccupationNumber"
+		nvector = np.array(h5file[nSetname])
+		kvector = np.delete(kvector,0)
+		nvector = np.delete(nvector,0)
+		borders[0].append(kvector.min())
+		borders[1].append(kvector.max())
+		borders[2].append(nvector.min())
+		borders[3].append(nvector.max())
+	borders[0] = np.array(borders[0]).min()
+	borders[1] = np.array(borders[1]).max()
+	borders[2] = np.array(borders[2]).min()
+	borders[3] = np.array(borders[3]).max()
+
 
 	for times in snapshots:
 		print("Fitting " + str(times))
@@ -78,13 +113,16 @@ def main():
 		kvector = h5file[kSetName]
 		nSetname = str(times) + "/Observables/OccupationNumber"
 		nvector = h5file[nSetname]
+		obs = h5file[str(times) + "/Observables"]
+		meta = obs.attrs["Meta"]
+		the_time = meta[0] * 1000 #in ms
 	
 		kLog = np.log(kvector)
 		kLog = np.delete(kLog,0)
 		nLog = np.log(nvector)
 		nLog = np.delete(nLog,0)
 	
-		total_bins = 100
+		total_bins = 200
 		bins = np.linspace(kLog.min(),kLog.max(),total_bins)
 		delta = bins[1] - bins[0]
 		idx = np.digitize(kLog,bins)
@@ -97,7 +135,7 @@ def main():
 		data[nans]= np.interp(x(nans), x(~nans), data[~nans])
 		data = data.tolist()
 	
-		max_error = 0.05
+		max_error = 0.1
 		#sliding window with regression
 		figure()
 		yscale('log')
@@ -105,11 +143,11 @@ def main():
 		# subplot()
 		# segments = segment.slidingwindowsegment(data, fit.regression, fit.sumsquared_error, max_error)
 
-		# segments = segment.bottomupsegment(data, fit.regression, fit.sumsquared_error, max_error)
+		segments = segment.bottomupsegment(data, fit.regression, fit.sumsquared_error, max_error)
 		
 		# segments = segment.topdownsegment(data, fit.regression, fit.sumsquared_error, max_error)
 		
-		segments = segment.slidingwindowsegment(data, fit.interpolate, fit.sumsquared_error, max_error)
+		# segments = segment.slidingwindowsegment(data, fit.interpolate, fit.sumsquared_error, max_error)
 		
 		# segments = segment.bottomupsegment(data, fit.interpolate, fit.sumsquared_error, max_error)
 		
@@ -121,7 +159,7 @@ def main():
 		# data = np.exp(data)
 		# bins = np.exp(bins)
 		# segments = np.exp(segments)
-		draw_plot(bins,data,"Sliding window with regression")
+		draw_plot(bins,data,"Regression Fit of the Spectrum at " + str(the_time) + " ms",borders)
 		draw_segments(bins,segments)
 	
 	
@@ -144,7 +182,7 @@ def main():
 		# plt.tight_layout()  
 		# show()
 		# # fig.text(.001,.001,txt)
-		savefig(str(directory)+'/'+str(sys.argv[1])+'_'+str(times)+'_regfit.png',dpi=150)
+		savefig(str(directory)+'/runRegFit/'+str(h5fileName)+'_'+str(times)+'_regfit.png',dpi=150)
 		close()
 
 
