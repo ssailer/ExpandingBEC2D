@@ -2,6 +2,7 @@
 #define MAIN_H__
 
 #include <libconfig.h++>
+#include <boost/program_options.hpp>
 #include <string>
 #include <cstring>
 #include <unistd.h>
@@ -28,27 +29,35 @@ private:
 
 enum MainControl {
 	SPLIT,
+	// SPLITSTRANG,
 	RK4,
-	RK4_RESTART,
-	TRAP
+	TRAP,
+	EXP,
+	ROT,
+	RESUME,
+	RESTART,
+	NEW,
+	PLOT,
+	HYDRO
 };
 
 
 
-class StartUp {
+class InitMain {
 public:
-	StartUp(int argcTmp, char** argvTmp) : restartValue(false) {
+	InitMain(int argcTmp, char** argvTmp) /*: restartValue(false) */{
 		argc = argcTmp;
 		argv = argvTmp;
 		readCli();
 		readConfig();
-		setDirectory();		
+		// setDirectory();		
 	}
+	inline void setIteration(int i);
 	inline void printInitVar();
 	inline void setDirectory();
 	inline int readCli();
 	inline int readConfig();
-	inline void writeConfig();
+	inline void writeConfig(string filename);
 
 	inline Options getOptions();
 	inline void setOptions(Options &ext_opt);
@@ -56,83 +65,140 @@ public:
 	inline void setVortexnumber(int number);
 	inline void setRunMode(string runmode);
 	inline void setRunTime(int runtime);
+	inline void setOmegaW(double ow);
+	inline void setWorkingDirectory(string dir);
 	inline MatrixData::MetaData getMeta();
 	inline void rotatePotential();
-	inline string getRunMode();
-	inline bool restart();
+	
+	// inline bool restart();
 	inline string getStartingGridName();
 	inline int getRunTime(){ return opt.n_it_RTE;};
 	inline int getSnapShots(){ return opt.snapshots;};
-	inline MainControl getControl(){return toMainControl(MainControlString);};
+	inline MainControl getRestart(){ return toMainControl(restartString);};
+	inline MainControl getDgl(){ return toMainControl(dglString);};
+	inline MainControl getAlgorithm(){return toMainControl(algorithmString);};
 	inline string getRunName(){return runName;};
 
 
 	inline void convertToDimensionless();
 	inline void convertFromDimensionless();
+	inline int getIterations();
 private:
 	MainControl toMainControl(const std::string& s);
-	bool restartValue;
+	// bool restartValue;
 	string startingGridName;
 	MatrixData::MetaData meta;
 	Options opt;
 	int argc;
 	char** argv;
-	string MainControlString = "Empty String";
-	string runName = "expansion";
+	string algorithmString = "Empty String";
+	string dglString = "Empty String";
+	string restartString = "Empty String";
+	string runName = "default_runname";
+
+	vector<double> omega_w_vector;
 };
 
-MainControl StartUp::toMainControl(const std::string& s)
-{
+MainControl InitMain::toMainControl(const std::string& s)
+{	
+	// cerr << "to Maincontrol: " << s << endl;
     if (s == "SPLIT") return SPLIT;
+    // if (s == "SPLITSTRANG") return SPLITSTRANG;
     if (s == "RK4") return RK4;
-    if (s == "RK4_RESTART") return RK4_RESTART;
     if (s == "TRAP") return TRAP;
+    if (s == "EXP") return EXP;
+    if (s == "ROT") return ROT;
+    if (s == "RESUME") return RESUME;
+    if (s == "RESTART") return RESTART;
+    if (s == "NEW") return NEW;
+    if (s == "PLOT") return PLOT;
+    if (s == "HYDRO") return HYDRO;
     throw std::runtime_error("Invalid conversion from string to MainControl.");
 }
 
-inline bool StartUp::restart(){
-	return restartValue;
+// inline bool InitMain::restart(){
+// 	return restartValue;
+// }
+
+inline int InitMain::getIterations(){
+	return omega_w_vector.size();
 }
 
-inline string StartUp::getStartingGridName(){
+inline string InitMain::getStartingGridName(){
 	return startingGridName;
 }
 
-inline Options StartUp::getOptions(){
-	return opt;
+inline void InitMain::setIteration(int i){
+	opt.omega_w = omega_w_vector[i];
+	setWorkingDirectory("default");
+ 	setDirectory();
 }
 
-inline void StartUp::setOptions(Options &ext_opt){
+inline Options InitMain::getOptions(){
+	Options tmpOptions = opt;
+	toDimensionlessUnits(tmpOptions);
+	return tmpOptions;
+}
+
+inline void InitMain::setOptions(Options &ext_opt){
 	opt = ext_opt;
 }
 
-inline void StartUp::setInitialRun(bool initialRun){
+inline void InitMain::setInitialRun(bool initialRun){
 	opt.initialRun = initialRun;
 }
 
-inline void StartUp::setRunMode(string runmode){
-	// FIXME: Here should be checks for the sanity of runmode!
-	opt.runmode = runmode;
+inline void InitMain::setOmegaW(double ow){
+	opt.omega_w = ow;
+	cout << endl << endl << "ow " << ow << " omega_w " << opt.omega_w << endl << endl;
 }
 
-inline string StartUp::getRunMode(){
-	// FIXME: Here should be checks for the sanity of runmode!
-	return opt.runmode;
+inline void InitMain::setWorkingDirectory(string dir){
+	opt.workingdirectory = dir;
 }
 
-inline void StartUp::setRunTime(int runtime){
+// inline void InitMain::setRunMode(string runmode){
+// 	// FIXME: Here should be checks for the sanity of runmode!
+// 	opt.runmode = runmode;
+// }
+
+// inline MainControl InitMain::getRunMode(){
+// 	// FIXME: Here should be checks for the sanity of runmode!
+// 	return toMainControl(opt.runmode);
+// 	// return opt.runmode;
+// }
+
+inline void InitMain::setRunTime(int runtime){
 	opt.n_it_RTE = runtime;
 }
 
-inline void StartUp::setVortexnumber(int number){
+inline void InitMain::setVortexnumber(int number){
 	opt.vortexnumber = number;
 }
 
-inline MatrixData::MetaData StartUp::getMeta(){
+inline MatrixData::MetaData InitMain::getMeta(){
+
+	Options tmpOptions = opt;
+	toDimensionlessUnits(tmpOptions);
+
+	meta.Ag = tmpOptions.Ag;
+	meta.OmegaG = tmpOptions.OmegaG;
+	meta.grid[0] = tmpOptions.grid[1];
+	meta.grid[1] = tmpOptions.grid[2];
+	meta.initCoord[0] = meta.coord[0] = tmpOptions.min_x;
+	meta.initCoord[1] = meta.coord[1] = tmpOptions.min_y;
+	meta.initSpacing[0] = meta.spacing[0] = tmpOptions.min_x * 2 / tmpOptions.grid[1];
+	meta.initSpacing[1] = meta.spacing[1] = tmpOptions.min_y * 2 / tmpOptions.grid[2];
+	meta.samplesize = tmpOptions.samplesize;
+	meta.time = 0;
+	meta.steps = 0;
+	meta.isDimensionless = tmpOptions.isDimensionless;
+	meta.dataToArray();
+
 	return meta;
 }
 
-inline void StartUp::rotatePotential(){
+inline void InitMain::rotatePotential(){
 	complex<double> tmp = opt.omega_x;
 	opt.omega_x = opt.omega_y;
 	opt.omega_y = tmp;
@@ -142,24 +208,27 @@ inline void StartUp::rotatePotential(){
 }
 
 
-inline void StartUp::printInitVar()
+inline void InitMain::printInitVar()
 {
 	std::cout.setf(std::ios::boolalpha);
-	std::cout 	<< "Used configfile: \"" << opt.config << "\"" << endl
-				<< "Gridpoints in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
-				<< "Gridpoints in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
-				<< "Coordinates in x-direction: " << opt.min_x << endl
-				<< "Coordinates in y-direction: " << opt.min_y << endl
-				<< "Expansion factor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
-				<< "ITP Step: " << opt.ITP_step << "\t" << "RTE Step: " << opt.RTE_step << endl
-				<< "Reading from Datafile: " << opt.runmode[0] << "\t" << endl
-				<< "RTE potential on: " << opt.runmode[2] << endl
-				<< "Runmode: " << opt.runmode << endl
-				<< "Runtime of the RTE: " << opt.n_it_RTE << " steps." << endl << endl;
+	std::cout 	<< "Configfile: \"" << opt.config << "\"" << endl
+				<< "Gridpoints in x-direction: " << meta.grid[0] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
+				<< "Gridpoints in y-direction: " << meta.grid[1] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
+				<< "omega_w = " << opt.omega_w.real() << endl
+				// << "Coordinates in x-direction: " << meta.initCoord[0] << endl
+				// << "Coordinates in y-direction: " << meta.initCoord[1] << endl
+				<< "Expansionfactor: " << opt.exp_factor.real() << "\t" << "Number of particles: " << opt.N << "\t" << "Interaction constant g: " << opt.g << endl
+				<< "Stepsize: " << opt.RTE_step
+				<< " Runtime of the RTE: " << opt.n_it_RTE * opt.snapshots << " steps." << endl << endl;
 }
 
-inline void StartUp::setDirectory()
+inline void InitMain::setDirectory()
 {	
+	if(opt.workingdirectory == "default"){
+		stringstream name;
+		name << std::fixed << std::setprecision(0) << (int)opt.N << "_" << opt.grid[1] << "x" << opt.grid[2] << "_" << std::setprecision(3) << opt.g << "_" << std::setprecision(1) << real(opt.omega_w /*/ (2.0 * M_PI / opt.OmegaG)*/);
+		opt.workingdirectory = name.str();
+	}
 	// cout << "Workingdirectory: " << "\"" << opt.workingdirectory << "\"" << endl;
 	struct stat wd_stat;
 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){
@@ -167,8 +236,8 @@ inline void StartUp::setDirectory()
 			cerr << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
 			cerr << "Check \"run.log\" for output of this run." << endl;
 		}
-	}else
-	{
+	}else{
+
 		mkdir(opt.workingdirectory.c_str(),0755);
 		cerr << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
 
@@ -181,7 +250,7 @@ inline void StartUp::setDirectory()
 }
 
 
-inline int StartUp::readCli()
+inline int InitMain::readCli()
 {
 	// Beginning of the options block
 
@@ -193,8 +262,11 @@ inline int StartUp::readCli()
       ("help,h", "Print help messages.") 
       ("config,c",po::value<string>(&opt.config), "Name of the configfile.")      
       ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data.")
-      ("restart,r","Use if you want to restart the run from LastGrid.")
-      ("mode,m",po::value<string>(&MainControlString), "Runmode given: Choose between SPLIT and RK4.")
+      // ("takeup,t","Start the run from last Grid, with time set to 0")
+      // ("resume,r","Resume the run from the last saved Grid.")
+      ("restart",po::value<string>(&restartString), "NEW RESUME RESTART")      
+      ("dgl",po::value<string>(&dglString), "EXP ROT TRAP")
+      ("algo",po::value<string>(&algorithmString), "SPLIT RK4")
       ("name,n",po::value<string>(&runName), "Name of the run.");
 
       // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
@@ -214,8 +286,10 @@ inline int StartUp::readCli()
 
 	po::positional_options_description positionalOptions; 
 	positionalOptions.add("config", 1);	
-	positionalOptions.add("directory",1);	
-	positionalOptions.add("mode", 1);
+	positionalOptions.add("directory",1);
+	positionalOptions.add("restart",1);
+	positionalOptions.add("dgl",1);
+	positionalOptions.add("algo", 1);	
 	// positionalOptions.add("name",1);
 
     po::variables_map vm; 
@@ -242,10 +316,13 @@ inline int StartUp::readCli()
       po::notify(vm); // throws on error, so do after help in case 
                       // there are any problems 
 
-    	if(vm.count("restart")){
-    		restartValue = true;
+  //   	if(vm.count("resume"))
+  //   		restartString = "RESUME";
+		// else if(vm.count("takeup"))
+		// 	restartString = "RESTART";
+		// else 
+		// 	restartString = "NEW";
 
-		}
     } 
     catch(po::error& e) 
     { 
@@ -259,7 +336,7 @@ inline int StartUp::readCli()
 }
 
 
-inline int StartUp::readConfig()
+inline int InitMain::readConfig()
 {
 	libconfig::Config cfg;
 
@@ -289,30 +366,43 @@ inline int StartUp::readConfig()
 	opt.N                    = root["RunOptions"]["N"];
 	opt.min_x                = root["RunOptions"]["min_x"]; 					
 	opt.min_y                = root["RunOptions"]["min_y"];
-	opt.min_z				 = root["RunOptions"]["min_z"];
-	opt.klength[0] 			 = root["RunOptions"]["klength0"];
-	opt.klength[1] 			 = root["RunOptions"]["klength1"];
-	opt.klength[2] 			 = root["RunOptions"]["klength2"];
-	opt.grid[0]              = root["RunOptions"]["grid0"];				
-	opt.grid[1]              = root["RunOptions"]["grid1"];				
-	opt.grid[2]              = root["RunOptions"]["grid2"];	   			
-	opt.grid[3]              = root["RunOptions"]["grid3"];
+	// opt.min_z				 = root["RunOptions"]["min_z"];
+	// opt.klength[0] 			 = root["RunOptions"]["klength0"];
+	// opt.klength[1] 			 = root["RunOptions"]["klength1"];
+	// opt.klength[2] 			 = root["RunOptions"]["klength2"];
+	// opt.grid[0]              = root["RunOptions"]["grid0"];				
+	opt.grid[1]              = root["RunOptions"]["grid_x"];				
+	opt.grid[2]              = root["RunOptions"]["grid_y"];	   			
+	// opt.grid[3]              = root["RunOptions"]["grid3"];
 	opt.g                    = root["RunOptions"]["g"]; 						
-	opt.n_it_RTE             = root["RunOptions"]["numberOfIterations"]; 				
+	opt.n_it_RTE             = root["RunOptions"]["sizeOfSnapshots"]; 				
 	opt.snapshots            = root["RunOptions"]["numberOfSnapshots"];
 	opt.ITP_step             = root["RunOptions"]["ITP_step"]; 				
 	opt.RTE_step             = root["RunOptions"]["RTE_step"];
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
 	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
-	// opt.runmode 			 = root["RunOptions"]["runmode"];
-	cfg.lookupValue("RunOptions.runmode",opt.runmode);
-	cfg.lookupValue("RunOptions.startingGridName",startingGridName);
+	// cfg.lookupValue("RunOptions.runmode",opt.runmode);
+	// cfg.lookupValue("RunOptions.startingGridName",startingGridName);
+	opt.runmode = dglString;
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
-	double omega_z_realValue = root["RunOptions"]["omega_z"];
+	// double omega_w_realValue = root["RunOptions"]["omega_w"];
+	// double omega_w_realValue_1 = root["RunOptions"]["omega_w"][1];
+	
+	// double omega_w_array;
+	// cerr << endl << "before setting" << endl;
+	// libconfig::Setting & ow = cfg.lookup("RunOptions.omega_w");
+	// cerr << endl << "setting" << endl;
+	// cout << endl <" w1 = " << omega_w_realValue_0 << " w2 = " << omega_w_realValue_1 << endl;
+	omega_w_vector.resize(root["RunOptions"]["omega_w"].getLength());
+	for(int i = 0; i < root["RunOptions"]["omega_w"].getLength(); ++i){
+		omega_w_vector[i] = root["RunOptions"]["omega_w"][i];
+	}
+	opt.omega_w = omega_w_vector[0];
+
 	double dispersion_x_realValue = root["RunOptions"]["dispersion_x"]; 
 	double dispersion_y_realValue = root["RunOptions"]["dispersion_y"]; 
 
@@ -320,22 +410,13 @@ inline int StartUp::readConfig()
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
 	opt.omega_y              = complex<double>(omega_y_realValue,0);
-	opt.omega_z 			 = complex<double>(omega_y_realValue,0);
+	// opt.omega_w 			 = complex<double>(omega_w_realValue,0);
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
-	convertToDimensionless();
+	
 
-	meta.grid[0] = opt.grid[1];
-	meta.grid[1] = opt.grid[2];
-	meta.coord[0] = opt.min_x;
-	meta.coord[1] = opt.min_y;
-	meta.spacing[0] = opt.min_x * 2 / opt.grid[1];
-	meta.spacing[0] = opt.min_y * 2 / opt.grid[2];
-	meta.samplesize = opt.samplesize;
-	meta.time = 0;
-	meta.steps = 0;
-	meta.dataToArray();
+
 	}
 	catch(const SettingNotFoundException &nfex)
 	{
@@ -346,7 +427,7 @@ inline int StartUp::readConfig()
 	}
 
 	// runspecific Values, just initilized here
-	opt.t_abs = complex<double>(0,0); //Absolute time 
+	// opt.t_abs = complex<double>(0,0); //Absolute time 
 	opt.stateInformation.resize(2);
 	opt.stateInformation[0] = 1;
 	opt.stateInformation[1] = 1;
@@ -365,8 +446,8 @@ inline int StartUp::readConfig()
 	
 }
 
-inline void StartUp::writeConfig(){
-	string filename = "run.cfg";
+inline void InitMain::writeConfig(string filename){
+	// string filename = "sim.cfg";
 	ofstream datafile;
   		datafile.open(filename.c_str(), ios::out);
   		datafile << "RunOptions =\n" << "{\n"
@@ -374,14 +455,14 @@ inline void StartUp::writeConfig(){
 				 << "g = " << opt.g << "\n"
 				 << "min_x = " << opt.min_x << "\n"
 				 << "min_y = " << opt.min_y << "\n"
-				 << "klength0 = " << opt.klength[0] << "\n"
-				 << "klength1 = " << opt.klength[1] << "\n"
-				 << "klength2 = " << opt.klength[2] << "\n"
-				 << "grid0 = " << opt.grid[0] << "\n"
-				 << "grid1 = " << opt.grid[1] << "\n"
-				 << "grid2 = " << opt.grid[2] << "\n"
-				 << "grid3 = " << opt.grid[3] << "\n"
-				 << "numberOfIterations = " << opt.n_it_RTE << "\n"
+				 // << "klength0 = " << opt.klength[0] << "\n"
+				 // << "klength1 = " << opt.klength[1] << "\n"
+				 // << "klength2 = " << opt.klength[2] << "\n"
+				 // << "grid0 = " << opt.grid[0] << "\n"
+				 << "grid_x = " << opt.grid[1] << "\n"
+				 << "grid_y = " << opt.grid[2] << "\n"
+				 // << "grid3 = " << opt.grid[3] << "\n"
+				 << "sizeOfSnapshots = " << opt.n_it_RTE << "\n"
 				 << "numberOfSnapshots = " << opt.snapshots << "\n"
 				 << "ITP_step = " << opt.ITP_step << "\n"
 				 << "RTE_step = " << opt.RTE_step << "\n"
@@ -399,25 +480,26 @@ inline void StartUp::writeConfig(){
 	datafile.close();
 }
 
-inline void StartUp::convertToDimensionless(){
+// inline void InitMain::convertToDimensionless(){
 
-	double m = 87 * 1.66 * 1.0e-27;
-	double hbar = 1.054 * 1.0e-22;	
-	opt.Ag = 2 * opt.min_x / opt.grid[1];
-	opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
+// 	const double m = 87 * 1.66 * 1.0e-27;
+// 	const double hbar = 1.054 * 1.0e-22;	
+// 	opt.Ag = 2 * opt.min_x / opt.grid[1];
+// 	opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
 
-	opt.min_x /= opt.Ag;
-	opt.min_y /= opt.Ag;
-	opt.ITP_step *= opt.OmegaG;
-	opt.RTE_step *= opt.OmegaG;
-	opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
-	opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
-	opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
-	opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
-}
+// 	opt.min_x /= opt.Ag;
+// 	opt.min_y /= opt.Ag;
+// 	opt.ITP_step *= opt.OmegaG;
+// 	opt.RTE_step *= opt.OmegaG;
+// 	opt.omega_x *= 2.0 * M_PI / opt.OmegaG;
+// 	opt.omega_y *= 2.0 * M_PI / opt.OmegaG;
+// 	opt.omega_w *= 2.0 * M_PI / opt.OmegaG;
+// 	opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
+// 	opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
+// }
 
-inline void StartUp::convertFromDimensionless(){
-	cout << "WATCH OUT: StartUp::convertFromDimensionless() is not yet implemented" << endl;
+inline void InitMain::convertFromDimensionless(){
+	cout << "WATCH OUT: InitMain::convertFromDimensionless() is not yet implemented" << endl;
 }
 
 

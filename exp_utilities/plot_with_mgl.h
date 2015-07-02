@@ -72,17 +72,18 @@ protected:
 
 void plotSpectrum(string name,string title,Observables& eval);
 void plotRadialDensity(string name,string title, Observables &ares);
-void plotPairDistance(string name,string title,PathResults pres);
-void plotVortexList(string name,string title,const RealGrid &phase,PathResults &pres,Options &opt);
-void plotContour(string name,string title, ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
+void plotPairDistance(string name,string title,list<VortexData> vlist);
+void plotVortexList(string name,string title,const RealGrid &phase,list<VortexData> &vlist,Options &opt);
+void plotContour(string filename, MatrixXcd &data, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
 
 void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt);
 void plotDataToPng(string filename,string title,ComplexGrid &g,Options &opt);
 void plotDataToPng(string filename,string title,RealGrid g,Options &opt);
+void plotDataToPng(string filename,MatrixXi &g,Options &opt);
 void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options &opt);
 void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vector<double> &ranges,vector<double> &Xexpanding,vector<double> &Yexpanding,Options &opt);
 void plotVector(string filename,string title,vector<double> v,Options &opt);
-void plotVector(string filename,string title,vector<double> v,vector<double> w,Options &opt);
+void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
 void plotVector(string filename,string title,ArrayXd v,Options &opt);
 
 void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);

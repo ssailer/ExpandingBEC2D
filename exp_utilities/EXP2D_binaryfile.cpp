@@ -15,10 +15,9 @@
 // Class implementation
 binaryFile::binaryFile(const string &file, mode nm)
 {
-  filename = "runData/" + file;
-  // options = opt;
+  filename = file;
   m = nm;
-
+ 
   if(m == in || m == append)
 	{
 	  struct stat buf;
@@ -33,13 +32,13 @@ binaryFile::binaryFile(const string &file, mode nm)
 	
 			  	if(H5Aexists(h5_file, "SnapshotTimes") > 0){
 	
-					hid_t h5a_options;
+					hid_t h5a_times;
 	
-					h5a_options = H5Aopen(h5_file, "SnapshotTimes", H5P_DEFAULT);
-					int size = (int)(H5Aget_storage_size(h5a_options)/sizeof(int));
+					h5a_times = H5Aopen(h5_file, "SnapshotTimes", H5P_DEFAULT);
+					int size = (int)(H5Aget_storage_size(h5a_times)/sizeof(int));
 					time_list.resize(size);
-					H5Aread(h5a_options, H5T_STD_I32LE , &time_list.front());
-					H5Aclose(h5a_options);
+					H5Aread(h5a_times, H5T_STD_I32LE , &time_list.front());
+					H5Aclose(h5a_times);
 					}
 				  	else
 					{
@@ -57,11 +56,11 @@ binaryFile::binaryFile(const string &file, mode nm)
 	}
   else
 	{
-	  string dirname = "runData";
-	  struct stat st;
-	  if(stat(dirname.c_str(),&st) != 0){
-		mkdir(dirname.c_str(),0755);
-	  }
+	 //  string dirname = "runData";
+	 //  struct stat st;
+	 //  if(stat(dirname.c_str(),&st) != 0){
+		// mkdir(dirname.c_str(),0755);
+	 //  }
 	  h5_file = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	}
 }
@@ -124,76 +123,89 @@ bool binaryFile::checkTime(int snapShotTime){
 }
 
 
-bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData* const &pData, Options &options){
 
-  if(m == in){
-	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
-	return false;
-  }
 
-  if(!checkTime(snapShotTime)){
-	cout << "HDF5 Group error for snapShotTime group: " << snapShotTime << endl;
-	H5Gclose(h5_timegroup);
-	return false;
-  }
 
-  hid_t h5_EMGroup_vecsub = H5Gcreate(h5_timegroup, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); //create dataset with full space selection
 
-  for (int i = 0; i < pData->wavefunction.size(); i++){
-	hid_t    dataset, dataspace, dset_create_props;
+void binaryFile::writeMatrixData(const string &name, MatrixData * const &pData, Options const &options ){
 
-	hsize_t rank = 2;
+	hid_t h5_EMGroup_vecsub = H5Gcreate(h5_timegroup, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); //create dataset with full space selection
 
-	hsize_t *dimsf = (hsize_t *) malloc(rank*sizeof(hsize_t));
+	for (int i = 0; i < pData->wavefunction.size(); i++){
+		hid_t dataset, dataspace, dset_create_props;
+	
+		hsize_t rank = 2;
+	
+		hsize_t *dimsf = (hsize_t *) malloc(rank*sizeof(hsize_t));
+	
+		dimsf[0] = 2 * pData->wavefunction[i].rows();
+		dimsf[1] = pData->wavefunction[i].cols();
+	
+		dset_create_props = H5Pcreate(H5P_DATASET_CREATE); //create a default creation property list
+		dataspace = H5Screate_simple(rank, dimsf, NULL); //define space in file
+	
+		stringstream comp;
+		comp << i;
+	
+		dataset = H5Dcreate(h5_EMGroup_vecsub, (comp.str()).c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT); //create data block in file
+	
+		H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)pData->wavefunction[i].data()); //write grid data
+	
+		free(dimsf);
+		H5Dclose(dataset);
+		H5Pclose(dset_create_props);
+		H5Sclose(dataspace);
+	}
+	writeOptions(h5_EMGroup_vecsub,options);
+	writeMeta(h5_EMGroup_vecsub,pData->meta);
+	H5Gclose(h5_EMGroup_vecsub);
 
-	dimsf[0] = 2 * pData->wavefunction[i].rows();
-	dimsf[1] = pData->wavefunction[i].cols();
 
-	dset_create_props = H5Pcreate(H5P_DATASET_CREATE); //create a default creation property list
-	dataspace = H5Screate_simple(rank, dimsf, NULL); //define space in file
+}
 
-	stringstream comp;
-	comp << i;
 
-	dataset = H5Dcreate(h5_EMGroup_vecsub, (comp.str()).c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT); //create data block in file
 
-	H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)pData->wavefunction[i].data()); //write grid data
+void binaryFile::writeMeta(hid_t &h5_group, MatrixData::MetaData &meta ){
+	if(!H5Aexists(h5_group, "Meta")){
+		hsize_t dimsf[1] = {(hsize_t)meta.size()};
+		hid_t dataspace = H5Screate_simple(1, dimsf, NULL);
+	
+		hid_t h5a_meta = H5Acreate(h5_group, "Meta", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+		H5Awrite(h5a_meta, H5T_IEEE_F64LE, meta.data());
+		H5Aclose(h5a_meta);
+		H5Sclose(dataspace);
+	}
+}
 
-	free(dimsf);
-	H5Dclose(dataset);
-	H5Pclose(dset_create_props);
-	H5Sclose(dataspace);
-  }
-  H5Gclose(h5_EMGroup_vecsub);
-
-  if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
+void binaryFile::writeOptions(hid_t &h5_group, Options const & options){
+  if(!H5Aexists(h5_group, "Options")){
 	hid_t    h5a_options, dataspace;
 
 	double tmpOpt1[30];
 
 	tmpOpt1[0] = options.N;
-	for(int i= 0; i < 3; i++)
-	  tmpOpt1[i+1] = options.klength[i];
+	// for(int i= 0; i < 3; i++)
+	//   tmpOpt1[i+1] = options.klength[i];
 
 	 tmpOpt1[4] = options.stateInformation[0];
 	 tmpOpt1[5] = options.stateInformation[1];
 	 tmpOpt1[6] = options.stateInformation[2];
 	 tmpOpt1[7] = options.omega_x.real();
 	 tmpOpt1[8] = options.omega_y.real();
-	 tmpOpt1[9] = options.omega_z.real();
+	 tmpOpt1[9] = options.omega_w.real();
 	 tmpOpt1[10] = options.dispersion_x.real();
 	 tmpOpt1[11] = options.dispersion_y.real();
 	 tmpOpt1[12] = options.min_x;
 	 tmpOpt1[13] = options.min_y;
-	 tmpOpt1[14] = options.min_z;
-	 tmpOpt1[15] = options.t_abs.real();
+	 // tmpOpt1[14] = options.min_z;
+	 // tmpOpt1[15] = options.t_abs.real();
 	 tmpOpt1[16] = options.exp_factor.real();
 	 tmpOpt1[17] = options.g;
 	 tmpOpt1[18] = options.ITP_step;
 	 tmpOpt1[19] = options.RTE_step;
 
 
-	for(int i = 0; i<4;i++)
+	for(int i = 1; i<3;i++)
 	  tmpOpt1[i+20] = options.grid[i];
 
 	tmpOpt1[24] = options.potFactor;
@@ -207,29 +219,117 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, MatrixData
 	hsize_t dimsf[1] = {30};
 	dataspace = H5Screate_simple(1, dimsf, NULL);
 
-	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+	h5a_options = H5Acreate(h5_group, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
 	H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
 
 	H5Aclose(h5a_options);
 	H5Sclose(dataspace);
-
-	hid_t h5a_meta;
-	dimsf[0] = 9;
-	dataspace = H5Screate_simple(1, dimsf, NULL);
-
-	h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
-	H5Awrite(h5a_meta, H5T_IEEE_F64LE, pData->meta.data());
-	H5Aclose(h5a_meta);
-	H5Sclose(dataspace);
   }
 
-  H5Gclose(h5_timegroup);
-
-  return true;
+  
 }
 
-bool binaryFile::appendSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data, MatrixData::MetaData &meta, Options &options){
 
+
+
+void binaryFile::readOptions(hid_t &h5_group, Options &options){
+	
+	hid_t h5a_options;
+	h5a_options = H5Aopen(h5_group, "Options", H5P_DEFAULT);
+
+	// int sizeOfOptions = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
+
+	double tmpOpt1[30];
+
+	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
+
+	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
+	options.N = tmpOpt1[0];
+	// for(int i= 0; i < 3; i++){
+	//  options.klength[i] = tmpOpt1[i+1];
+	// }
+	options.stateInformation[0] = tmpOpt1[4];
+	options.stateInformation[1] = tmpOpt1[5];
+	options.stateInformation[2] = tmpOpt1[6];
+	options.omega_x = complex<double>(tmpOpt1[7],0.0);
+	options.omega_y = complex<double>(tmpOpt1[8],0.0);
+	options.omega_w = complex<double>(tmpOpt1[9],0.0);
+	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
+	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
+	options.min_x = tmpOpt1[12];
+	options.min_y = tmpOpt1[13];
+	// options.min_z = tmpOpt1[14];
+	// options.t_abs = complex<double>(tmpOpt1[15],0.0);
+	options.exp_factor = complex<double>(tmpOpt1[16],0.0);
+	options.g = tmpOpt1[17];
+	options.ITP_step = tmpOpt1[18];
+	options.RTE_step = tmpOpt1[19];
+
+	for(int i = 1; i<3;i++)
+	  options.grid[i] = (uint32_t)tmpOpt1[i+20];
+
+	options.potFactor = tmpOpt1[24];
+	options.samplesize = (int)tmpOpt1[25];
+	options.vortexnumber = (int)tmpOpt1[26];
+	options.vortexspacing = (int)tmpOpt1[27];
+	options.Ag = tmpOpt1[28];
+	options.OmegaG = tmpOpt1[29];              
+
+	H5Aclose(h5a_options);
+}
+
+void binaryFile::readMeta(hid_t &h5_group, MatrixData::MetaData &meta){
+
+	hid_t h5a_meta;
+	h5a_meta = H5Aopen(h5_group, "Meta", H5P_DEFAULT);
+	H5Aread(h5a_meta, H5T_IEEE_F64LE, meta.data());
+	H5Aclose(h5a_meta);
+	meta.arrayToData(); 
+}
+
+void binaryFile::readMatrixData(string const &name, MatrixData* &pData, Options &options){
+
+  stringstream set_name;
+  set_name << name;
+
+  if(!H5Lexists(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT)){
+	cout << "ERROR: HDF5 Dataset " << name << " does not exist for name " << name << " in EigenMatrix branch" << endl;
+  }else{
+	hid_t h5_EMGroup_vecsub = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
+
+	readOptions(h5_EMGroup_vecsub,options);
+	readMeta(h5_EMGroup_vecsub,pData->meta);
+		  
+	hsize_t vecsize;
+	H5Gget_num_objs(h5_EMGroup_vecsub, &vecsize);
+	pData->wavefunction.resize(vecsize);
+
+	for(int i = 0; i < vecsize; i++){
+	  pData->wavefunction[i] = MatrixXcd(pData->meta.grid[0], pData->meta.grid[1]);
+	  stringstream comp;
+	  comp << i;
+
+	  hid_t dataset = H5Dopen(h5_EMGroup_vecsub, (comp.str()).c_str(), H5P_DEFAULT);
+	  hid_t dataspace = H5Dget_space(dataset);
+
+	  hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
+	  hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
+	  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+
+	  H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)pData->wavefunction[i].data());
+
+	  free(dimf);
+	  H5Dclose(dataset);
+	}
+
+	H5Gclose(h5_EMGroup_vecsub);
+  }
+}
+
+
+
+bool binaryFile::appendSnapshot(const string &name, MatrixData * const &pData, Options const &options){
+	int snapShotTime = pData->meta.steps;
   if(m == in){
 	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
 	return false;
@@ -241,91 +341,9 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, vector<Com
 	return false;
   }
 
-  hid_t h5_EMGroup_vecsub = H5Gcreate(h5_timegroup, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); //create dataset with full space selection
-
-  for (int i = 0; i < data.size(); i++){
-	hid_t    dataset, dataspace, dset_create_props;
-
-	hsize_t rank = 3;
-
-	hsize_t *dimsf = (hsize_t *) malloc(rank*sizeof(hsize_t));
-
-	dimsf[0] = 2 * data[i].width();
-	dimsf[1] = data[i].height();
-	dimsf[2] = data[i].depth();
-
-	dset_create_props = H5Pcreate(H5P_DATASET_CREATE); //create a default creation property list
-	dataspace = H5Screate_simple(rank, dimsf, NULL); //define space in file
-
-	stringstream comp;
-	comp << i;
-
-	dataset = H5Dcreate(h5_EMGroup_vecsub, (comp.str()).c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT); //create data block in file
-
-	H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)data[i].get_address()); //write grid data
-
-	free(dimsf);
-	H5Dclose(dataset);
-	H5Pclose(dset_create_props);
-	H5Sclose(dataspace);
-  }
-  H5Gclose(h5_EMGroup_vecsub);
-
-  if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
-	hid_t    h5a_options, dataspace;
-	double tmpOpt1[30];
-
-	tmpOpt1[0] = options.N;
-	for(int i= 0; i < 3; i++)
-	  tmpOpt1[i+1] = options.klength[i];
-
-	 tmpOpt1[4] = options.stateInformation[0];
-	 tmpOpt1[5] = options.stateInformation[1];
-	 tmpOpt1[6] = options.stateInformation[2];
-	 tmpOpt1[7] = options.omega_x.real();
-	 tmpOpt1[8] = options.omega_y.real();
-	 tmpOpt1[9] = options.omega_z.real();
-	 tmpOpt1[10] = options.dispersion_x.real();
-	 tmpOpt1[11] = options.dispersion_y.real();
-	 tmpOpt1[12] = options.min_x;
-	 tmpOpt1[13] = options.min_y;
-	 tmpOpt1[14] = options.min_z;
-	 tmpOpt1[15] = options.t_abs.real();
-	 tmpOpt1[16] = options.exp_factor.real();
-	 tmpOpt1[17] = options.g;
-	 tmpOpt1[18] = options.ITP_step;
-	 tmpOpt1[19] = options.RTE_step;
-
-
-	for(int i = 0; i<4;i++)
-	  tmpOpt1[i+20] = options.grid[i];
-
-	tmpOpt1[24] = options.potFactor;
-	tmpOpt1[25] = options.samplesize;
-	tmpOpt1[26] = options.vortexnumber;
-	tmpOpt1[27] = options.vortexspacing;
-	tmpOpt1[28] = options.Ag;
-	tmpOpt1[29] = options.OmegaG;    
-
-	//copy options to file
-	hsize_t dimsf[1] = {30};
-	dataspace = H5Screate_simple(1, dimsf, NULL);
-
-	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
-	H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
-
-	H5Aclose(h5a_options);
-	H5Sclose(dataspace);
-
-	hid_t h5a_meta;
-	dimsf[0] = 9;
-	dataspace = H5Screate_simple(1, dimsf, NULL);
-
-	h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
-	H5Awrite(h5a_meta, H5T_IEEE_F64LE, meta.data());
-	H5Aclose(h5a_meta);
-	H5Sclose(dataspace);
-  }
+  writeMatrixData(name, pData, options);
+  // writeMeta(pData->meta);
+  // writeOptions(options);
 
   H5Gclose(h5_timegroup);
 
@@ -333,7 +351,75 @@ bool binaryFile::appendSnapshot(const string &name, int snapShotTime, vector<Com
 }
 
 
-bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaData meta, Eval results){
+bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &pData, Options &options)
+{
+  if(m == out)
+	{
+		cout << "file "<< filename.c_str() << "is not in read mode" << endl;
+		return false;
+	}
+
+  stringstream time_name;
+  // snapShotTime will always be formatted with two decimal digits
+  time_name.setf(ios_base::fixed);
+  time_name.precision(2);
+  time_name << snapShotTime;
+
+  if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
+	h5_timegroup = H5Gopen(h5_file, (time_name.str()).c_str(), H5P_DEFAULT);
+  }else{
+	cout << "ERROR: HDF5 Group for time " << snapShotTime << " does not exist" << endl;
+	return false;
+  }
+
+  // readOptions(options);
+  // readMeta(pData->meta);
+  readMatrixData(name, pData, options);
+
+  H5Gclose(h5_timegroup);
+
+  return true;
+}
+
+bool binaryFile::getLatestSnapshot(const string &name, MatrixData* &pData, Options &options){
+	if(m == out){
+		cout << "file " << filename.c_str() << " is not in read mode" << endl;
+		return false;
+	}
+
+	stringstream time_name;
+	time_name.setf(ios_base::fixed);
+	time_name.precision(2);
+	time_name << time_list.back();
+
+	if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
+		h5_timegroup = H5Gopen(h5_file, (time_name.str()).c_str(), H5P_DEFAULT);
+  	}else{
+		cout << "ERROR: HDF5 Group for latest time " << time_list.back() << " does not exist" << endl;
+		return false;
+  	}
+
+  	// readOptions(options);
+  	// readMeta(pData->meta);
+  	readMatrixData(name, pData, options);
+
+  	H5Gclose(h5_timegroup);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+bool binaryFile::appendEval(Eval &results, Options const & options){
+	int snapShotTime = results.data.meta.steps;
+
   if(m == in){
 	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
 	return false;
@@ -344,66 +430,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 	return false;
   }
 
-  if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){      
-	hid_t    h5a_options, dataspace_opt;
-	double tmpOpt1[30];
 
-	tmpOpt1[0] = options.N;
-	for(int i= 0; i < 3; i++)
-	  tmpOpt1[i+1] = options.klength[i];
-
-	 tmpOpt1[4] = options.stateInformation[0];
-	 tmpOpt1[5] = options.stateInformation[1];
-	 tmpOpt1[6] = options.stateInformation[2];
-	 tmpOpt1[7] = options.omega_x.real();
-	 tmpOpt1[8] = options.omega_y.real();
-	 tmpOpt1[9] = options.omega_z.real();
-	 tmpOpt1[10] = options.dispersion_x.real();
-	 tmpOpt1[11] = options.dispersion_y.real();
-	 tmpOpt1[12] = options.min_x;
-	 tmpOpt1[13] = options.min_y;
-	 tmpOpt1[14] = options.min_z;
-	 tmpOpt1[15] = options.t_abs.real();
-	 tmpOpt1[16] = options.exp_factor.real();
-	 tmpOpt1[17] = options.g;
-	 tmpOpt1[18] = options.ITP_step;
-	 tmpOpt1[19] = options.RTE_step;
-
-
-	for(int i = 0; i<4;i++)
-	  tmpOpt1[i+20] = options.grid[i];
-
-	tmpOpt1[24] = options.potFactor;
-	tmpOpt1[25] = options.samplesize;
-	tmpOpt1[26] = options.vortexnumber;
-	tmpOpt1[27] = options.vortexspacing;
-	tmpOpt1[28] = options.Ag;
-	tmpOpt1[29] = options.OmegaG;    
-
-	//copy options to file
-	hsize_t dimsf[1] = {30};
-	dataspace_opt = H5Screate_simple(1, dimsf, NULL);
-
-	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
-	H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
-
-	H5Aclose(h5a_options);
-	H5Sclose(dataspace_opt);
-
-	if(!H5Lexists(h5_timegroup, "Meta", H5P_DEFAULT)){
-	  hid_t h5a_meta;
-	  dimsf[0] = 9;
-	  dataspace_opt = H5Screate_simple(1, dimsf, NULL);
-
-	  h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace_opt, H5P_DEFAULT, H5P_DEFAULT);
-	  H5Awrite(h5a_meta, H5T_IEEE_F64LE, meta.data());
-	  H5Aclose(h5a_meta);
-	}
-
-  H5Sclose(dataspace_opt);
-  }
-
-  
 
   hid_t h5_observables;
 
@@ -411,6 +438,9 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 	h5_observables = H5Gopen(h5_timegroup, "Observables", H5P_DEFAULT);
   else
 	h5_observables = H5Gcreate(h5_timegroup, "Observables", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+  	writeOptions(h5_observables, options);
+  	writeMeta(h5_observables, results.data.meta);  
 
 	/// PREPARE THE DOUBLE ARRAYS
 	string vec1Name = "Averages";
@@ -422,7 +452,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 	vec1[3] = results.totalResult.volume;
 	vec1[4] = results.totalResult.density;
 	vec1[5] = results.totalResult.aspectRatio;
-	vec1[6] = results.totalResult.aspectRatioAngle;
+	vec1[6] = results.totalResult.alpha;
 	vec1[7] = results.totalResult.r_max;
 	vec1[8] = results.totalResult.r_min;
 	vec1[9] = results.totalResult.r_max_phi;
@@ -592,13 +622,13 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 
 
   string vec3Name = "Vortices";
-  samples = results.pres.size();
+  samples = results.vlist.size();
   int vec3Ranks[samples];
   arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
   double *vec3;
 
   for(int k = 0; k < samples; k++){
-	vec3Ranks[k] = results.pres[k].vlist.size();
+	vec3Ranks[k] = results.vlist[k].size();
 	arraysize += 2 * vec3Ranks[k]; // x and y coordinate of each vortex summed over all samples
   }
 
@@ -608,9 +638,9 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   l = 1 + samples;
   for(int k = 0; k < samples; k++){
 	vec3[k+1] = vec3Ranks[k];    
-	for(std::list<VortexData>::const_iterator it = results.pres[k].vlist.begin(); it != results.pres[k].vlist.end(); ++it){
-	  vec3[l] = it->x.x();
-	  vec3[l+1] = it->x.y();
+	for(std::list<VortexData>::const_iterator it = results.vlist[k].begin(); it != results.vlist[k].end(); ++it){
+	  vec3[l] = it->c.x();
+	  vec3[l+1] = it->c.y();
 	  l+=2;
 	}
   }
@@ -633,13 +663,13 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   free(vec3);
 
   string vec7Name = "VortexWinding";
-  samples = results.pres.size();
+  samples = results.vlist.size();
   int vec7Ranks[samples];
   arraysize = 1 + samples;
   double *vec7;
 
   for(int k = 0; k < samples; k++){
-  	vec7Ranks[k] = results.pres[k].vlist.size();
+  	vec7Ranks[k] = results.vlist[k].size();
   	arraysize += vec7Ranks[k];
   }
 
@@ -649,7 +679,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
   l = 1 + samples;
   for(int k = 0; k < samples; k++){
 	vec7[k+1] = vec7Ranks[k];    
-	for(std::list<VortexData>::const_iterator it = results.pres[k].vlist.begin(); it != results.pres[k].vlist.end(); ++it){
+	for(std::list<VortexData>::const_iterator it = results.vlist[k].begin(); it != results.vlist[k].end(); ++it){
 	  vec7[l] = it->n;
 	  l++;
 	}
@@ -681,7 +711,7 @@ bool binaryFile::appendEval(int snapShotTime, Options options, MatrixData::MetaD
 }
 
 
-bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaData &meta, Eval &results){
+bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 
 	if(m == out){
 		cout << "file "<< filename.c_str() << "is not in read mode" << endl;
@@ -697,54 +727,6 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 		return false;
 	}
 
-	hid_t h5a_options;
-	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
-
-	double tmpOpt1[30];
-
-	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
-
-	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
-	options.N = tmpOpt1[0];
-	for(int i= 0; i < 3; i++){
-	 options.klength[i] = tmpOpt1[i+1];
-	}
-	options.stateInformation[0] = tmpOpt1[4];
-	options.stateInformation[1] = tmpOpt1[5];
-	options.stateInformation[2] = tmpOpt1[6];
-	options.omega_x = complex<double>(tmpOpt1[7],0.0);
-	options.omega_y = complex<double>(tmpOpt1[8],0.0);
-	options.omega_z = complex<double>(tmpOpt1[9],0.0);
-	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
-	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
-	options.min_x = tmpOpt1[12];
-	options.min_y = tmpOpt1[13];
-	options.min_z = tmpOpt1[14];
-	options.t_abs = complex<double>(tmpOpt1[15],0.0);
-	options.exp_factor = complex<double>(tmpOpt1[16],0.0);
-	options.g = tmpOpt1[17];
-	options.ITP_step = tmpOpt1[18];
-	options.RTE_step = tmpOpt1[19];
-
-	for(int i = 0; i<4;i++)
-	  options.grid[i] = (uint32_t)tmpOpt1[i+20];
-
-	options.potFactor = tmpOpt1[24];
-	options.samplesize = (int)tmpOpt1[25];
-	options.vortexnumber = (int)tmpOpt1[26];
-	options.vortexspacing = (int)tmpOpt1[27];
-	options.Ag = tmpOpt1[28];
-	options.OmegaG = tmpOpt1[29];              
-
-	H5Aclose(h5a_options);
-
-
-	hid_t h5a_meta;
-	h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
-	H5Aread(h5a_meta, H5T_IEEE_F64LE, meta.data());
-	H5Aclose(h5a_meta);
-	meta.arrayToData(); 
-
 
 
 	hid_t h5_observables;
@@ -755,6 +737,9 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 		cout << "Cannot open Group Observables for time " << snapShotTime << ", it doesn't exist." << endl;
 		return false;
 	}
+
+	readOptions(h5_observables, options);
+	readMeta(h5_observables, results.data.meta);
 
 	hid_t dataset, dataspace ;
 	hsize_t *dimf;
@@ -785,7 +770,7 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 		results.totalResult.volume = vec1[3];
 		results.totalResult.density = vec1[4];
 		results.totalResult.aspectRatio = vec1[5];
-		results.totalResult.aspectRatioAngle = vec1[6];
+		results.totalResult.alpha = vec1[6];
 		results.totalResult.r_max = vec1[7];
 		results.totalResult.r_min = vec1[8];
 		results.totalResult.r_max_phi = vec1[9];
@@ -958,7 +943,7 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 		H5Sclose(dataspace);
 		int samples = vec3[0];
 		int vec3Ranks[samples];
-		results.pres.resize(samples);
+		results.vlist.resize(samples);
 		for(int i = 0; i < samples; i++){
 			vec3Ranks[i] = vec3[i+1];
 		}
@@ -994,16 +979,16 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 		
 		int l = 1 + samples;
 		for(int k = 0; k < samples; k++){
-			results.pres[k].vlist.clear();
+			results.vlist[k].clear();
 			for(int j = 0; j < vec3Ranks[k]; j++){
 				VortexData c;
 				Coordinate<int32_t> x(vec3[l],vec3[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
-				c.x = x;
+				c.c = x;
 				c.n = (int) vec7[j];
 				// c.x.x() = vec3[l];
 				// c.x.y() = vec3[l+1];
 				l+=2;
-				results.pres[k].vlist.push_back(c);
+				results.vlist[k].push_back(c);
 			}
 		}
 	}
@@ -1014,224 +999,219 @@ bool binaryFile::getEval(int snapShotTime, Options &options, MatrixData::MetaDat
 	return true;
 }
 
-bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &pData, Options &options)
-{
-  if(m == out)
-	{
-		cout << "file "<< filename.c_str() << "is not in read mode" << endl;
-		return false;
-	}
-
-  stringstream time_name;
-  // snapShotTime will always be formatted with two decimal digits
-  time_name.setf(ios_base::fixed);
-  time_name.precision(2);
-  time_name << snapShotTime;
-
-  if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
-	h5_timegroup = H5Gopen(h5_file, (time_name.str()).c_str(), H5P_DEFAULT);
-  }else{
-	cout << "ERROR: HDF5 Group for time " << snapShotTime << " does not exist" << endl;
-	return false;
-  }
-
-  stringstream set_name;
-  set_name << name;
-
-  if(!H5Lexists(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT)){
-	cout << "ERROR: HDF5 Dataset " << name << " does not exist for time " << snapShotTime << " in EigenMatrix branch" << endl;
-
-	H5Gclose(h5_timegroup);
-	return false;
-  }else{
-	hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
 
 
-	
-	hid_t h5a_options;
-	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
+// bool binaryFile::appendSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data, MatrixData::MetaData &meta, Options &options){
 
-	// int sizeOfOptions = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
+//   if(m == in){
+// 	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
+// 	return false;
+//   }
 
-	double tmpOpt1[30];
+//   if(!checkTime(snapShotTime)){
+// 	cout << "HDF5 Group error for snapShotTime group: " << snapShotTime << endl;
+// 	H5Gclose(h5_timegroup);
+// 	return false;
+//   }
 
-	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
+//   hid_t h5_EMGroup_vecsub = H5Gcreate(h5_timegroup, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); //create dataset with full space selection
 
-	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
-	options.N = tmpOpt1[0];
-	for(int i= 0; i < 3; i++){
-	 options.klength[i] = tmpOpt1[i+1];
-	}
-	options.stateInformation[0] = tmpOpt1[4];
-	options.stateInformation[1] = tmpOpt1[5];
-	options.stateInformation[2] = tmpOpt1[6];
-	options.omega_x = complex<double>(tmpOpt1[7],0.0);
-	options.omega_y = complex<double>(tmpOpt1[8],0.0);
-	options.omega_z = complex<double>(tmpOpt1[9],0.0);
-	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
-	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
-	options.min_x = tmpOpt1[12];
-	options.min_y = tmpOpt1[13];
-	options.min_z = tmpOpt1[14];
-	options.t_abs = complex<double>(tmpOpt1[15],0.0);
-	options.exp_factor = complex<double>(tmpOpt1[16],0.0);
-	options.g = tmpOpt1[17];
-	options.ITP_step = tmpOpt1[18];
-	options.RTE_step = tmpOpt1[19];
+//   for (int i = 0; i < data.size(); i++){
+// 	hid_t    dataset, dataspace, dset_create_props;
 
-	for(int i = 0; i<4;i++)
-	  options.grid[i] = (uint32_t)tmpOpt1[i+20];
+// 	hsize_t rank = 3;
 
-	options.potFactor = tmpOpt1[24];
-	options.samplesize = (int)tmpOpt1[25];
-	options.vortexnumber = (int)tmpOpt1[26];
-	options.vortexspacing = (int)tmpOpt1[27];
-	options.Ag = tmpOpt1[28];
-	options.OmegaG = tmpOpt1[29];              
+// 	hsize_t *dimsf = (hsize_t *) malloc(rank*sizeof(hsize_t));
 
-	H5Aclose(h5a_options);
+// 	dimsf[0] = 2 * data[i].width();
+// 	dimsf[1] = data[i].height();
+// 	dimsf[2] = data[i].depth();
 
-	hid_t h5a_meta;
-	h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
-	H5Aread(h5a_meta, H5T_IEEE_F64LE, pData->meta.data());
-	H5Aclose(h5a_meta);
-	pData->meta.arrayToData();  
-			  
-	hsize_t vecsize;
-	H5Gget_num_objs(test_id, &vecsize);
-	pData->wavefunction.resize(vecsize);
+// 	dset_create_props = H5Pcreate(H5P_DATASET_CREATE); //create a default creation property list
+// 	dataspace = H5Screate_simple(rank, dimsf, NULL); //define space in file
 
-	for(int i = 0; i < vecsize; i++){
-	  pData->wavefunction[i] = MatrixXcd(pData->meta.grid[0], pData->meta.grid[1]);
-	  stringstream comp;
-	  comp << i;
+// 	stringstream comp;
+// 	comp << i;
 
-	  hid_t dataset = H5Dopen(test_id, (comp.str()).c_str(), H5P_DEFAULT);
-	  hid_t dataspace = H5Dget_space(dataset);
+// 	dataset = H5Dcreate(h5_EMGroup_vecsub, (comp.str()).c_str(), H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, dset_create_props, H5P_DEFAULT); //create data block in file
 
-	  hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
-	  hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
-	  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+// 	H5Dwrite (dataset, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)data[i].get_address()); //write grid data
 
-	  H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)pData->wavefunction[i].data());
+// 	free(dimsf);
+// 	H5Dclose(dataset);
+// 	H5Pclose(dset_create_props);
+// 	H5Sclose(dataspace);
+//   }
+//   H5Gclose(h5_EMGroup_vecsub);
 
-	  free(dimf);
-	  H5Dclose(dataset);
-	}
-	H5Gclose(test_id);
-  }
-  H5Gclose(h5_timegroup);
+//   if(!H5Lexists(h5_timegroup, "Options", H5P_DEFAULT)){
+// 	hid_t    h5a_options, dataspace;
+// 	double tmpOpt1[30];
 
-  return true;
-}
+// 	tmpOpt1[0] = options.N;
+// 	for(int i= 0; i < 3; i++)
+// 	  tmpOpt1[i+1] = options.klength[i];
 
-bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data,MatrixData::MetaData &meta, Options &options)
-{
-  if(m == out)
-	{
-		cout << "file "<< filename.c_str() << "is not in read mode" << endl;
-		return false;
-	}
+// 	 tmpOpt1[4] = options.stateInformation[0];
+// 	 tmpOpt1[5] = options.stateInformation[1];
+// 	 tmpOpt1[6] = options.stateInformation[2];
+// 	 tmpOpt1[7] = options.omega_x.real();
+// 	 tmpOpt1[8] = options.omega_y.real();
+// 	 tmpOpt1[9] = options.omega_w.real();
+// 	 tmpOpt1[10] = options.dispersion_x.real();
+// 	 tmpOpt1[11] = options.dispersion_y.real();
+// 	 tmpOpt1[12] = options.min_x;
+// 	 tmpOpt1[13] = options.min_y;
+// 	 tmpOpt1[14] = options.min_z;
+// 	 tmpOpt1[15] = options.t_abs.real();
+// 	 tmpOpt1[16] = options.exp_factor.real();
+// 	 tmpOpt1[17] = options.g;
+// 	 tmpOpt1[18] = options.ITP_step;
+// 	 tmpOpt1[19] = options.RTE_step;
 
-  stringstream time_name;
-  // snapShotTime will always be formatted with two decimal digits
-  time_name.setf(ios_base::fixed);
-  time_name.precision(2);
-  time_name << snapShotTime;
 
-  if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
-	h5_timegroup = H5Gopen(h5_file, (time_name.str()).c_str(), H5P_DEFAULT);
-  }else{
-	cout << "ERROR: HDF5 Group for time " << snapShotTime << " does not exist" << endl;
-	return false;
-  }
+// 	for(int i = 0; i<4;i++)
+// 	  tmpOpt1[i+20] = options.grid[i];
 
-  stringstream set_name;
-  set_name << name;
+// 	tmpOpt1[24] = options.potFactor;
+// 	tmpOpt1[25] = options.samplesize;
+// 	tmpOpt1[26] = options.vortexnumber;
+// 	tmpOpt1[27] = options.vortexspacing;
+// 	tmpOpt1[28] = options.Ag;
+// 	tmpOpt1[29] = options.OmegaG;    
 
-  if(!H5Lexists(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT)){
-	cout << "ERROR: HDF5 Dataset " << name << " does not exist for time " << snapShotTime << " in ComplexGrid branch" << endl;
+// 	//copy options to file
+// 	hsize_t dimsf[1] = {30};
+// 	dataspace = H5Screate_simple(1, dimsf, NULL);
 
-	H5Gclose(h5_timegroup);
-	return false;
-  }else{
-	hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
+// 	h5a_options = H5Acreate(h5_timegroup, "Options", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+// 	H5Awrite (h5a_options, H5T_IEEE_F64LE, tmpOpt1);
+
+// 	H5Aclose(h5a_options);
+// 	H5Sclose(dataspace);
+
+// 	hid_t h5a_meta;
+// 	dimsf[0] = 9;
+// 	dataspace = H5Screate_simple(1, dimsf, NULL);
+
+// 	h5a_meta = H5Acreate(h5_timegroup, "Meta", H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+// 	H5Awrite(h5a_meta, H5T_IEEE_F64LE, meta.data());
+// 	H5Aclose(h5a_meta);
+// 	H5Sclose(dataspace);
+//   }
+
+//   H5Gclose(h5_timegroup);
+
+//   return true;
+// }
+
+// bool binaryFile::getSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data,MatrixData::MetaData &meta, Options &options)
+// {
+//   if(m == out)
+// 	{
+// 		cout << "file "<< filename.c_str() << "is not in read mode" << endl;
+// 		return false;
+// 	}
+
+//   stringstream time_name;
+//   // snapShotTime will always be formatted with two decimal digits
+//   time_name.setf(ios_base::fixed);
+//   time_name.precision(2);
+//   time_name << snapShotTime;
+
+//   if(H5Lexists(h5_file, (time_name.str()).c_str(), H5P_DEFAULT)){
+// 	h5_timegroup = H5Gopen(h5_file, (time_name.str()).c_str(), H5P_DEFAULT);
+//   }else{
+// 	cout << "ERROR: HDF5 Group for time " << snapShotTime << " does not exist" << endl;
+// 	return false;
+//   }
+
+//   stringstream set_name;
+//   set_name << name;
+
+//   if(!H5Lexists(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT)){
+// 	cout << "ERROR: HDF5 Dataset " << name << " does not exist for time " << snapShotTime << " in ComplexGrid branch" << endl;
+
+// 	H5Gclose(h5_timegroup);
+// 	return false;
+//   }else{
+// 	hid_t test_id = H5Oopen(h5_timegroup, (set_name.str()).c_str(), H5P_DEFAULT);
 
 
 	
-	hid_t h5a_options;
-	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
+// 	hid_t h5a_options;
+// 	h5a_options = H5Aopen(h5_timegroup, "Options", H5P_DEFAULT);
 
-	// int sizeOfOptions = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
+// 	// int sizeOfOptions = (int)(H5Aget_storage_size(h5a_options)/sizeof(double));
 
-	double tmpOpt1[30];
+// 	double tmpOpt1[30];
 
-	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
+// 	H5Aread(h5a_options, H5T_IEEE_F64LE , tmpOpt1);
 
-	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
-	options.N = tmpOpt1[0];
-	for(int i= 0; i < 3; i++){
-	 options.klength[i] = tmpOpt1[i+1];
-	}
-	options.stateInformation[0] = tmpOpt1[4];
-	options.stateInformation[1] = tmpOpt1[5];
-	options.stateInformation[2] = tmpOpt1[6];
-	options.omega_x = complex<double>(tmpOpt1[7],0.0);
-	options.omega_y = complex<double>(tmpOpt1[8],0.0);
-	options.omega_z = complex<double>(tmpOpt1[9],0.0);
-	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
-	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
-	options.min_x = tmpOpt1[12];
-	options.min_y = tmpOpt1[13];
-	options.min_z = tmpOpt1[14];
-	options.t_abs = complex<double>(tmpOpt1[15],0.0);
-	options.exp_factor = complex<double>(tmpOpt1[16],0.0);
-	options.g = tmpOpt1[17];
-	options.ITP_step = tmpOpt1[18];
-	options.RTE_step = tmpOpt1[19];
+// 	//load Options struct from file array. Don't forget to change appropriately when changing Options struct
+// 	options.N = tmpOpt1[0];
+// 	for(int i= 0; i < 3; i++){
+// 	 options.klength[i] = tmpOpt1[i+1];
+// 	}
+// 	options.stateInformation[0] = tmpOpt1[4];
+// 	options.stateInformation[1] = tmpOpt1[5];
+// 	options.stateInformation[2] = tmpOpt1[6];
+// 	options.omega_x = complex<double>(tmpOpt1[7],0.0);
+// 	options.omega_y = complex<double>(tmpOpt1[8],0.0);
+// 	options.omega_w = complex<double>(tmpOpt1[9],0.0);
+// 	options.dispersion_x = complex<double>(tmpOpt1[10],0.0);
+// 	options.dispersion_y = complex<double>(tmpOpt1[11],0.0);
+// 	options.min_x = tmpOpt1[12];
+// 	options.min_y = tmpOpt1[13];
+// 	options.min_z = tmpOpt1[14];
+// 	options.t_abs = complex<double>(tmpOpt1[15],0.0);
+// 	options.exp_factor = complex<double>(tmpOpt1[16],0.0);
+// 	options.g = tmpOpt1[17];
+// 	options.ITP_step = tmpOpt1[18];
+// 	options.RTE_step = tmpOpt1[19];
 
-	for(int i = 0; i<4;i++)
-	  options.grid[i] = (uint32_t)tmpOpt1[i+20];
+// 	for(int i = 0; i<4;i++)
+// 	  options.grid[i] = (uint32_t)tmpOpt1[i+20];
 
-	options.potFactor = tmpOpt1[24];
-	options.samplesize = (int)tmpOpt1[25];
-	options.vortexnumber = (int)tmpOpt1[26];
-	options.vortexspacing = (int)tmpOpt1[27];
-	options.Ag = tmpOpt1[28];
-	options.OmegaG = tmpOpt1[29];              
+// 	options.potFactor = tmpOpt1[24];
+// 	options.samplesize = (int)tmpOpt1[25];
+// 	options.vortexnumber = (int)tmpOpt1[26];
+// 	options.vortexspacing = (int)tmpOpt1[27];
+// 	options.Ag = tmpOpt1[28];
+// 	options.OmegaG = tmpOpt1[29];              
 
-	H5Aclose(h5a_options);
+// 	H5Aclose(h5a_options);
 
-	hid_t h5a_meta;
-	h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
-	H5Aread(h5a_meta, H5T_IEEE_F64LE, meta.data());
-	H5Aclose(h5a_meta);
-	meta.arrayToData();  
+// 	hid_t h5a_meta;
+// 	h5a_meta = H5Aopen(h5_timegroup, "Meta", H5P_DEFAULT);
+// 	H5Aread(h5a_meta, H5T_IEEE_F64LE, meta.data());
+// 	H5Aclose(h5a_meta);
+// 	meta.arrayToData();  
 			  
-	hsize_t vecsize;
-	H5Gget_num_objs(test_id, &vecsize);
-	data.resize(vecsize);
+// 	hsize_t vecsize;
+// 	H5Gget_num_objs(test_id, &vecsize);
+// 	data.resize(vecsize);
 
-	for(int i = 0; i < vecsize; i++){
-	  data[i] = ComplexGrid(options.grid[0],options.grid[1],options.grid[2],options.grid[3]);
-	  stringstream comp;
-	  comp << i;
+// 	for(int i = 0; i < vecsize; i++){
+// 	  data[i] = ComplexGrid(options.grid[0],options.grid[1],options.grid[2],options.grid[3]);
+// 	  stringstream comp;
+// 	  comp << i;
 
-	  hid_t dataset = H5Dopen(test_id, (comp.str()).c_str(), H5P_DEFAULT);
-	  hid_t dataspace = H5Dget_space(dataset);
+// 	  hid_t dataset = H5Dopen(test_id, (comp.str()).c_str(), H5P_DEFAULT);
+// 	  hid_t dataspace = H5Dget_space(dataset);
 
-	  hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
-	  hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
-	  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
+// 	  hsize_t rank = H5Sget_simple_extent_ndims(dataspace);
+// 	  hsize_t *dimf = (hsize_t *)malloc(rank*sizeof(hsize_t));
+// 	  H5Sget_simple_extent_dims(dataspace, dimf, NULL);
 
-	  H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)data[i].get_address());
+// 	  H5Dread(dataset,  H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (double *)data[i].get_address());
 
-	  free(dimf);
-	  H5Dclose(dataset);
-	}
-	H5Gclose(test_id);
-  }
-  H5Gclose(h5_timegroup);
+// 	  free(dimf);
+// 	  H5Dclose(dataset);
+// 	}
+// 	H5Gclose(test_id);
+//   }
+//   H5Gclose(h5_timegroup);
 
-  return true;
-}
+//   return true;
+// }

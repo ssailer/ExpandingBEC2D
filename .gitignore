@@ -1,7 +1,9 @@
 CMake*
 cmake*
+*.sublime*
 Makefile
 .directory
+*.sublime*
 build/
 *~
 *.dat

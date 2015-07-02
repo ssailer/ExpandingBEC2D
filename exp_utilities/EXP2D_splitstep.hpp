@@ -15,6 +15,7 @@
 #include <EXP2D_tools.h>
 #include <EXP2D_evaluation.h>
 #include <EXP2D_binaryfile.h>
+#include <EXP2D_constants.h>
 #include <plot_with_mgl.h>
 #include <EXP2D_MatrixData.h>
 #include <eigen3/Eigen/Dense>
@@ -22,16 +23,17 @@
 using namespace std;
 using namespace Eigen;
 
-typedef struct {
-        int absoluteSteps;
-        int lambdaSteps;
-        int initialSteps;
-    } stepCounter;
-
 class SplitStep
 {
   public:
-    SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
+    SplitStep(Options &o);
+    void assignMatrixData(MatrixData* &d);
+    void setVariables();
+    virtual void timeStep(double delta_t) = 0;
+
+
+    // SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
+
 
     void setOptions(const Options &externaloptions);
     void RunSetup();
@@ -45,12 +47,6 @@ class SplitStep
     // MatrixData* pData;
     vector<ComplexGrid> wavefctVec;
 
-    
-    // Coordinates
-    vector<double> x_axis,y_axis, z_axis;
-    VectorXcd X,Y,Z;
-
-
     int samplesize;
 
     // Plotting and progress functions 
@@ -59,12 +55,17 @@ class SplitStep
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(const string name);
     
+    MatrixData* w;
 
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;
     vector<int> snapshot_times;
 
-  private:
+  protected:
+
+    vector<vector<double>> kspace;
+    vector<double> x_axis,y_axis;
+    MatrixXcd kprop, kprop_x, kprop_y, Vgrid, PotentialGrid, kprop_x_strang, kprop_y_strang;
 
     MatrixData::MetaData meta;
 
@@ -74,9 +75,6 @@ class SplitStep
 
     // Variables
     complex<double> h_x, h_y,h_z;
-    ComplexGrid PotentialGrid;
-
-    stepCounter keeperOfTime;
 
     int SLICE_NUMBER;
     
@@ -84,11 +82,36 @@ class SplitStep
     // some used constants
     
     double pi;
-    complex<double>  zero,half,one,two,four,six,i_unit;
     complex<double> t_RTE;
 
     // little helper functions for stuff
 };
+
+class SplitRot : public SplitStep {
+public:
+    SplitRot(Options &o) : SplitStep(o) {}
+    virtual void timeStep(double delta_t);
+};
+
+class SplitTrap : public SplitStep {
+public:
+    SplitTrap(Options &o) : SplitStep(o) {}
+    virtual void timeStep(double delta_t);
+};
+
+class SplitFree : public SplitStep {
+public:
+    SplitFree(Options &o) : SplitStep(o) {}
+    virtual void timeStep(double delta_t);
+};
+
+class SplitRotStrang : public SplitStep {
+public:
+    SplitRotStrang(Options &o) : SplitStep(o) {}
+    virtual void timeStep(double delta_t);
+};
+
+
 
 
 #endif // EXP2D_SPLITSTEP_H__

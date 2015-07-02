@@ -45,7 +45,7 @@ int main( int argc, char** argv)
 {	
 try{
 	cout << "EigenThreads: " << Eigen::nbThreads() << endl;
-	StartUp startUp(argc,argv);	
+	InitMain initMain(argc,argv);	
 
 	#if DEBUG_LOG
  		std::ofstream logstream("run.log");
@@ -54,18 +54,18 @@ try{
  		// redirecter redirectcerr(errorstream,std::cerr);
  	#endif
 
- 	startUp.printInitVar();
- 	Options tmpOpt = startUp.getOptions();
+ 	initMain.printInitVar();
+ 	Options tmpOpt = initMain.getOptions();
  	MatrixData* startGrid = new MatrixData(1,tmpOpt.grid[1],tmpOpt.grid[2],0,0,tmpOpt.min_x,tmpOpt.min_y);
 
  	// omp_set_num_threads(12);/
-	if(!startUp.restart()){
-		// MatrixData* startGrid = new MatrixData(startUp.getMeta());
+	if(!initMain.restart()){
+		// MatrixData* startGrid = new MatrixData(initMain.getMeta());
 			
-		setGridToTF(startGrid,startUp.getOptions());
-		// // setGridToGaussian(startGrid,startUp.getOptions());
+		setGridToTF(startGrid,initMain.getOptions());
+		// // setGridToGaussian(startGrid,initMain.getOptions());
 	
-		ITP* groundStateITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		ITP* groundStateITP = new ITP(startGrid->wavefunction[0],initMain.getOptions());
 		string groundStateName = "ITP-Groundstate";
 		groundStateITP->propagateToGroundState(groundStateName);
 		startGrid->wavefunction[0] = groundStateITP->result();
@@ -77,21 +77,21 @@ try{
 		delete bF;
 	}
 
-	if(startUp.restart()){	
+	if(initMain.restart()){	
 		string startName = "StartGrid_2048_2048_NV_groundstate.h5";
 		binaryFile* startFile = new binaryFile(startName,binaryFile::in);
 		startFile->getSnapshot("StartGrid",0,startGrid,tmpOpt);
 		delete startFile;
-		tmpOpt = startUp.getOptions();
+		tmpOpt = initMain.getOptions();
 
 		int vnumber = 0;
-		addVorticesAlternating(startGrid,startUp.getOptions(),vnumber);
+		addVorticesAlternating(startGrid,initMain.getOptions(),vnumber);
 		
-		startUp.setVortexnumber(vnumber);
+		initMain.setVortexnumber(vnumber);
 		cout << endl << "Set Vortices #: " << vnumber << endl;
 	
 		string itpname = "ITP-Vortices"+to_string(tmpOpt.vortexspacing);
-		ITP* vorticesITP = new ITP(startGrid->wavefunction[0],startUp.getOptions());
+		ITP* vorticesITP = new ITP(startGrid->wavefunction[0],initMain.getOptions());
 		// vorticesITP->propagateToGroundState(itpname);
 		vorticesITP->formVortices(itpname);
 		// vorticesITP->findVortices(itpname);

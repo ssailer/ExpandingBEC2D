@@ -2,11 +2,6 @@
 	"folders":
 	[
 		{
-			"follow_symlinks": true,
-			"path": "/home/nhrjr/projects/expandingvortexgas2d"
-		},
-		{
-			"follow_symlinks": true,
 			"path": "."
 		}
 	]

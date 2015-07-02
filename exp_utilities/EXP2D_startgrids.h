@@ -97,6 +97,23 @@ void setGridToTF(MatrixData* &data, Options opt){
     }
 };
 
+void setGridToSinus(MatrixData* &data, Options opt){
+
+    double h_x = 2.*opt.min_x/opt.grid[1];
+    double h_y = 2.*opt.min_y/opt.grid[2];
+    vector<double> x(opt.grid[1]);
+    vector<double> y(opt.grid[2]);
+    for(int i=0;i<opt.grid[1];i++){x[i]=-opt.min_x+i*h_x;}
+    for(int j=0;j<opt.grid[2];j++){y[j]=-opt.min_y+j*h_y;}
+
+    #pragma omp parallel for
+    for(int i=0; i < opt.grid[1]; i++){
+        for(int j=0; j < opt.grid[2]; j++){
+            data->wavefunction[0](i,j) = complex<double>(i/*sin(2 * M_PI * i/opt.grid[1])*/,0.0);
+        }
+    }
+};
+
 void addDrivingForce(MatrixData* &data, Options &opt){
     #pragma omp parallel for
     for(int i = 0; i < opt.grid[1]; i++){

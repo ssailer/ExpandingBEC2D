@@ -148,91 +148,91 @@ void plotRadialDensity(string name,string title, Observables &ares){
 	gr.WritePNG(name.c_str(),"Radial Density",false);
 }
 
-void plotPairDistance(string name,string title,PathResults pres){
+// void plotPairDistance(string name,string title,list<VortexData> vlist){
 
-	ofstream plotfile;
-    vector<double> histogram;
-	vector<double> distance;
+// 	ofstream plotfile;
+//     vector<double> histogram;
+// 	vector<double> distance;
 	
-	plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
-    for (int r = 0; r < pres.distance.size(); r++)             
-	{	
-		if(pres.histogram[r] != 0.0){
-			plotfile << r <<"\t"<< pres.histogram[r] <<"\t" << pres.distance[r] <<"\t";
-			plotfile << endl;
+// 	plotfile.open(("runData/" + name + ".dat").c_str(), ios::out | ios::trunc);
+//     for (int r = 0; r < pres.distance.size(); r++)             
+// 	{	
+// 		if(pres.histogram[r] != 0.0){
+// 			plotfile << r <<"\t"<< pres.histogram[r] <<"\t" << pres.distance[r] <<"\t";
+// 			plotfile << endl;
 
-			histogram.push_back(pres.histogram[r]);
-			distance.push_back(pres.distance[r]);
+// 			histogram.push_back(pres.histogram[r]);
+// 			distance.push_back(pres.distance[r]);
 			
-        }
-	}
-	plotfile << endl << endl;	
-	plotfile.close();
+//         }
+// 	}
+// 	plotfile << endl << endl;	
+// 	plotfile.close();
 
 
-	int n = histogram.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
-	mglData m_histogram(n);
-	mglData m_distance(n);
+// 	int n = histogram.size();//-1; // don't plot the zero mode! (why? because it looks like shit)
+// 	mglData m_histogram(n);
+// 	mglData m_distance(n);
 
 
-	for(int i = 0; i < n; i++){
-		m_histogram.a[i] = histogram[i];
-		m_distance.a[i] = distance[i];
-		// cout << "Histogram: " << m_histogram.a[i] << endl;
-		// cout << "Distance: " << m_distance.a[i] << endl;
-	}
+// 	for(int i = 0; i < n; i++){
+// 		m_histogram.a[i] = histogram[i];
+// 		m_distance.a[i] = distance[i];
+// 		// cout << "Histogram: " << m_histogram.a[i] << endl;
+// 		// cout << "Distance: " << m_distance.a[i] << endl;
+// 	}
 
-	// cout << "copied" << endl;
+// 	// cout << "copied" << endl;
 
-	mglGraph gr;
+// 	mglGraph gr;
 
-	double maxrange = 10 * sqrt(2); // This is bad, but I have no access to opt.min_x etc.
+// 	double maxrange = 10 * sqrt(2); // This is bad, but I have no access to opt.min_x etc.
 
-	gr.SetMarkSize(0.7);
-	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
-	gr.SetFontSize(3.0);
-	gr.SetQuality(3);
-	gr.Title(title.c_str());
-	gr.SetRange('x',0.0,maxrange);
-	gr.SetRange('y',0.0,2);
-	// gr.SetCoor(11); // log-log-coordinates
+// 	gr.SetMarkSize(0.7);
+// 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+// 	gr.SetFontSize(3.0);
+// 	gr.SetQuality(3);
+// 	gr.Title(title.c_str());
+// 	gr.SetRange('x',0.0,maxrange);
+// 	gr.SetRange('y',0.0,2);
+// 	// gr.SetCoor(11); // log-log-coordinates
 
-	// gr.SubPlot(2,1,0);
-	// gr.Axis();
-	// gr.Plot(k,m_distance);
-	// gr.SubPlot(2,1,1);
+// 	// gr.SubPlot(2,1,0);
+// 	// gr.Axis();
+// 	// gr.Plot(k,m_distance);
+// 	// gr.SubPlot(2,1,1);
 
-	gr.Axis();
+// 	gr.Axis();
 
-	// gr.SetFunc("lg(x)","lg(y)");
-	// gr.FPlot("x^(-2)");
-	// gr.FPlot("x^(-4.666)");
-	// gr.FPlot("x^(-5)");
+// 	// gr.SetFunc("lg(x)","lg(y)");
+// 	// gr.FPlot("x^(-2)");
+// 	// gr.FPlot("x^(-4.666)");
+// 	// gr.FPlot("x^(-5)");
 
-	// gr.Stem(healing_length);
-	gr.Plot(m_distance,m_histogram," .");
+// 	// gr.Stem(healing_length);
+// 	gr.Plot(m_distance,m_histogram," .");
 
-	name = name + ".png";
+// 	name = name + ".png";
 
-	gr.WritePNG(name.c_str(),"Spectrum",false);
-}
+// 	gr.WritePNG(name.c_str(),"Spectrum",false);
+// }
 
-void plotVortexList(string name,string title,const RealGrid &phase,PathResults &pres,Options &opt){
+void plotVortexList(string name,string title,const RealGrid &phase,list<VortexData> &vlist,Options &opt){
 
 	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
 	int n = opt.grid[1]/factor;
 	int m = opt.grid[2]/factor;
 
-	int size = pres.vlist.size();
+	int size = vlist.size();
 
 	mglData phaseData(n,m);
 	mglData v_x(size);
 	mglData v_y(size);
 
 	int l = 0;
-	for(list<VortexData>::const_iterator it = pres.vlist.begin(); it != pres.vlist.end(); ++it){
-		v_x.a[l] = it->x.x()/factor;
-		v_y.a[l] = it->x.y()/factor;
+	for(list<VortexData>::const_iterator it = vlist.begin(); it != vlist.end(); ++it){
+		v_x.a[l] = it->c.x()/factor;
+		v_y.a[l] = it->c.y()/factor;
 		l++;
 	}
 
@@ -268,11 +268,10 @@ void plotVortexList(string name,string title,const RealGrid &phase,PathResults &
 	gr.WritePNG(name.c_str(),"Vortices",false);
 }
 
-void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
+void plotContour(string name,  MatrixXcd &data, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
 
-	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
-	int n = opt.grid[1]/factor;
-	int m = opt.grid[2]/factor;
+	int n = data.rows();
+	int m = data.cols();
 	int size = contour.size();
 
 	mglData densData(n,m);
@@ -281,8 +280,8 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 
 	int l = 0;
 	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){
-		v_x.a[l] = it->x()/factor;
-		v_y.a[l] = it->y()/factor;
+		v_x.a[l] = it->x();
+		v_y.a[l] = it->y();
 		l++;
 	}
 
@@ -291,7 +290,7 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 	for(i=0;i<n;i++) for(j=0;j<m;j++)
 	{	
 		k = i+n*j;
-		densData.a[k] = abs2(Psi(0,factor*i,factor*j,0));
+		densData.a[k] = abs2(data(i,j));
 	}
 
 	mglGraph gr;
@@ -299,14 +298,14 @@ void plotContour(string name,string title,  ComplexGrid &Psi, std::unordered_set
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(title.c_str());
+	// gr.Title(title.c_str());
 
 	// gr.SetRange('x',-opt.min_x,opt.min_x);
 	// gr.SetRange('y',-opt.min_y,opt.min_y);
 	// gr.SetRange('z',densData);
 	gr.SetRange('c',densData);
-	gr.SetRange('x',0,opt.grid[1]/factor);
-	gr.SetRange('y',0,opt.grid[2]/factor);
+	gr.SetRange('x',0,data.rows());
+	gr.SetRange('y',0,data.rows());
 
 	gr.Axis();
 	gr.Colorbar();
@@ -389,6 +388,68 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 
 	gr.WritePNG(name.c_str(),"ExpandingVortexGas2D",false);
 
+}
+
+void plotDataToPng(string filename,MatrixXi &g,Options &opt){
+
+
+	int n = opt.grid[1];
+	int m = opt.grid[2];
+
+	// mglComplex data(n,m);
+	mglData density(n,m);
+
+	int i,j,k;
+
+	// data.Create(n,m);
+
+	// complex<double> data1;
+
+	for(i=0;i<n;i++) for(j=0;j<m;j++)
+	{	
+		k = i+n*j;
+		density.a[k] = g(i,j);
+		// if(density.a[k] > 1){
+		// 	cout << "PLOTTER" << density.a[k] << " " << i << " " << j << endl;
+		// }
+
+		// data.a[k] = abs2(g(0,i,j,0));
+	}
+
+	mglGraph gr;
+
+		
+		// gr.Light(0,true);
+		// gr.Alpha(true);
+
+	filename = filename + ".png";
+
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
+	gr.SetQuality(3);
+	// gr.Title(title.c_str());
+	// gr.Alpha(true);
+
+	gr.SetRange('x',0,opt.grid[1]);
+	gr.SetRange('y',0,opt.grid[2]);
+	gr.SetRange('z',density);
+	gr.SetRange('c',density);
+
+	gr.SubPlot(2,2,1);
+
+	// gr.Light(true);
+	gr.Rotate(40,40);
+	gr.Box();
+	gr.Axis();
+
+	gr.Surf(density);
+
+	gr.SubPlot(2,2,3);
+	gr.Axis();
+	gr.Colorbar("_");
+	gr.Dens(density);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 }
 
 void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt)
@@ -719,9 +780,9 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 {
 
-	int32_t factor = (opt.grid[1] > 2048) ? opt.grid[1]/2048 : 1;
-	int n = opt.grid[1]/factor;
-	int m = opt.grid[2]/factor;
+	int32_t factor = (wavefct.cols() > 2048) ? wavefct.cols()/2048 : 1;
+	int n = wavefct.rows()/factor;
+	int m = wavefct.cols()/factor;
 
 	// mglComplex data(n,m);
 	mglData density(n,m);
@@ -760,8 +821,8 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 	double xrange = opt.min_x*opt.stateInformation[0];
 	double yrange = opt.min_y*opt.stateInformation[1];
 	// data.use_abs=false;
-	gr.SetRange('x',-xrange,xrange);
-	gr.SetRange('y',-yrange,yrange);
+	gr.SetRange('x',0,wavefct.rows());
+	gr.SetRange('y',0,wavefct.cols());
 	gr.SetRange('z',phase);
 	gr.SetRange('c',phase);
 
@@ -780,8 +841,8 @@ void plotDataToPngEigen(string filename, Eigen::MatrixXcd& wavefct,Options opt)
 
 
 	// data.use_abs=true;
-	gr.SetRange('x',-xrange,xrange);
-	gr.SetRange('y',-yrange,yrange);
+	gr.SetRange('x',0,wavefct.rows());
+	gr.SetRange('y',0,wavefct.cols());
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
 
@@ -983,7 +1044,7 @@ void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<
 }
 
 
-void plotVector(string filename,string title,vector<double> v,vector<double> w,Options &opt){
+void plotVector(string filename,vector<double> v,vector<double> w,Options &opt){
 
 	int x = v.size();
 	int y = w.size();
@@ -1005,7 +1066,7 @@ void plotVector(string filename,string title,vector<double> v,vector<double> w,O
 	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
 	gr.SetFontSize(3.0);
 	gr.SetQuality(3);
-	gr.Title(title.c_str());
+	// gr.Title(title.c_str());
 	// gr.Alpha(true);
 
 	gr.SubPlot(2,1,0);

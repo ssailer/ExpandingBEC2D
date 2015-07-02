@@ -16,13 +16,6 @@ ITP::ITP()
   	// some constants used in computations to shorten stuff
 	pi = M_PI;
 	scaleFactor = 1;
- 	zero=complex<double>(0,0);
- 	half=complex<double>(0.5,0);
- 	one=complex<double>(1,0);
- 	two=complex<double>(2,0);
- 	four=complex<double>(4,0);
- 	six=complex<double>(6,0);
- 	i_unit=complex<double>(0,1);
 }
 
 ITP::ITP(MatrixXcd &wavedata,const Options &externaloptions)

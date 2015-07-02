@@ -18,17 +18,14 @@
 using namespace std;
 using namespace Eigen;
 
-typedef struct Options {
-
-    
+typedef struct Options {    
 
     double N; // Number of particles    
-    double klength[3];
     vector<double> stateInformation; // passing information about the state at the absolut time to the observable, lambda(time) FIXME : this is bad, but I don't know how to do it better atm
-    complex<double> omega_x,omega_y,omega_z; // Frequency of the harmonic trap
-    complex<double> dispersion_x, dispersion_y; // dispersion relation for the expandion frame
-    double min_x,min_y,min_z; // Coordinate boundaries    
-    complex<double> t_abs; //Absolute time // remove from opt! put into the function, don't need it here
+    complex<double> omega_x,omega_y,omega_w; // Frequency of the harmonic trap
+    complex<double> dispersion_x, dispersion_y; // dispersion relation for the expanding frame
+    double min_x,min_y; // Coordinate boundaries    
+    // complex<double> t_abs; //Absolute time // remove from opt! put into the function, don't need it here
     complex<double> exp_factor; //Expansion factor
     double g; // coupling constant
     double ITP_step, RTE_step; // stepsize for the timeiteration
@@ -49,10 +46,14 @@ typedef struct Options {
     string config; // name of the config file 
     string workingdirectory;   // remove it from here, only needed in the program itself
     bool initialRun;
+    bool isDimensionless;
 
-    Options () : N(100000), stateInformation(2), t_abs(0,0), snapshots(100), vortexnumber(20), vortexspacing(50), potFactor(1), initialRun(true) {}
+    Options () : N(100000), stateInformation(2), snapshots(100), vortexnumber(0), vortexspacing(50), potFactor(1), initialRun(true), isDimensionless(false), config("sim.cfg") {}
     
 } Options;
+
+void toDimensionlessUnits(Options &opt);
+void toPhysicalUnits(Options &opt);
 
 
 class expException {
