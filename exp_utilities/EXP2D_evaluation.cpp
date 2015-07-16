@@ -429,7 +429,7 @@ void Eval::getDensity(){
 			}
 		}
 	}
-	double threshold = maximum * 0.05;
+	double threshold = maximum * 0.06;
 
 	for(int k = 0; k < data.wavefunction.size(); k++){		
 		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);	

@@ -407,16 +407,6 @@ bool binaryFile::getLatestSnapshot(const string &name, MatrixData* &pData, Optio
 
 }
 
-
-
-
-
-
-
-
-
-
-
 bool binaryFile::appendEval(Eval &results, Options const & options){
 	int snapShotTime = results.data.meta.steps;
 

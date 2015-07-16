@@ -10,6 +10,7 @@ Last Update: 22/07/13
 #include <unistd.h>
 #include <cstdlib>
 // #include <cstring>
+#include <cstdio>
 #include <string>
 #include <cmath>
 #include <complex>
@@ -50,23 +51,36 @@ int plotting(InitMain &initMain){
 	Options opt = initMain.getOptions();
 	MatrixData* data = new MatrixData();
 
-	string filename = "expdata.h5";
-
+	MainControl dgl = initMain.getDgl();
+	string filename;
+	if(dgl == ROT){
+		filename = "rotdata.h5";
+		if(remove("runObservables/ROT_Observables.dat")){ cout << "deleted ROT_Observables.dat" << endl;} else { cout << "could not delete ROT_Observables.dat" << endl;}
+	}
+	if(dgl == EXP){
+		filename = "expdata.h5"; 
+		if(remove("runObservables/EXP_Observables.dat")){ cout << "deleted EXP_Observables.dat" << endl;} else { cout << "could not delete EXP_Observables.dat" << endl;}
+	}
+	if(dgl == TRAP){
+		filename = "trapdata.h5"; 
+		if(remove("runObservables/TRAP_Observables.dat")){ cout << "deleted TRAP_Observables.dat" << endl;} else { cout << "could not delete TRAP_Observables.dat" << endl;}
+	}
 
 	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
-	Eval* initEval = new Eval(*data,opt);
-	dataFile->getEval(timeList[size-1],*initEval,opt);
-	double maxTime = initEval->data.meta.time;
-	dataFile->getEval(timeList[0],*initEval,opt);
+	// Eval* initEval = new Eval(*data,opt);
+	// dataFile->getEval(timeList[size-1],*initEval,opt);
+	// double maxTime = initEval->data.meta.time;
+	// dataFile->getEval(timeList[0],*initEval,opt);	
+	// cerr << endl << "hydro plotting" << endl;
+	// initEval->opt.vortexnumber = opt.vortexnumber;
+	// hydroSolver solver(initEval,maxTime);
+	// solver.integrate();
+	// solver.pyPlot();
+	// delete initEval;
 
-	cerr << endl << "hydro plotting" << endl;
-	hydroSolver solver(initEval,maxTime);
-	solver.integrate();
-	solver.pyPlot();
-	delete initEval;	
 
 	for(int k = 0; k < size; ++k){
 		cerr << "loading: " << k << " / " << size-1;
@@ -79,6 +93,7 @@ int plotting(InitMain &initMain){
 		Eval eval(*data,opt);
 		cerr << " processing ";
 		eval.process();
+		eval.save();
 
 		// dataFile->getEval(timeList[k],eval,opt);
 	
@@ -87,20 +102,26 @@ int plotting(InitMain &initMain){
 		plotter.plotEval();
 	}
 
+
+
 	chdir("..");
 	cerr << "[END]" << endl;
 
 }
 
 int hydro(InitMain &initMain){
-		initMain.printInitVar();
+	initMain.printInitVar();
 	Options opt = initMain.getOptions();
 	MatrixData* data = new MatrixData();
 
-	string filename = "expdata.h5";
+	MainControl dgl = initMain.getDgl();
+	string filename;
+	if(dgl == ROT) filename = "rotdata.h5";
+	if(dgl == EXP) filename = "expdata.h5";
+	if(dgl == TRAP) filename = "trapdata.h5";
 
 
-	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
@@ -108,10 +129,12 @@ int hydro(InitMain &initMain){
 	dataFile->getEval(timeList[size-1],*initEval,opt);
 	double maxTime = initEval->data.meta.time;
 	dataFile->getEval(timeList[0],*initEval,opt);
+	initEval->opt.vortexnumber = opt.vortexnumber;
 
 	cerr << endl << "hydro plotting" << endl;
 	hydroSolver solver(initEval,maxTime);
 	solver.integrate();
+	solver.integrate2();
 	solver.pyPlot();
 	delete initEval;
 

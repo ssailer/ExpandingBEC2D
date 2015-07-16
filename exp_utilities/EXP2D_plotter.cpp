@@ -378,6 +378,7 @@ void Plotter::combinedControl(){
 	// gr.Line(origin-minor_2,origin,"H2");
 
 	// gr.ShowImage("eog",true);
+	
 
 	gr.WritePNG(filename.c_str(),"Control",false);
 

@@ -264,7 +264,7 @@ inline int InitMain::readCli()
       ("directory,d",po::value<string>(&opt.workingdirectory), "Name of the directory this run saves its data.")
       // ("takeup,t","Start the run from last Grid, with time set to 0")
       // ("resume,r","Resume the run from the last saved Grid.")
-      ("restart",po::value<string>(&restartString), "NEW RESUME RESTART")      
+      ("restart",po::value<string>(&restartString), "NEW RESUME RESTART PLOT HYDRO")      
       ("dgl",po::value<string>(&dglString), "EXP ROT TRAP")
       ("algo",po::value<string>(&algorithmString), "SPLIT RK4")
       ("name,n",po::value<string>(&runName), "Name of the run.");
