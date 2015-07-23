@@ -215,6 +215,19 @@ void hydroSolver::pyPlot(){
     }
 
     pclose( f );
+
+    f = popen( "python ../ellipse.py", "r" );
+    if ( f == 0 ) {
+        fprintf( stderr, "Could not execute pyPlot()\n" );
+    } else {
+      const int BUFSIZE = 1000;
+      char buf[ BUFSIZE ];
+      while( fgets( buf, BUFSIZE,  f ) ) {
+          fprintf( stdout, "%s", buf  );
+      }
+    }
+
+    pclose( f );
     
 }
 

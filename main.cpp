@@ -49,7 +49,7 @@ using namespace std;
 int plotting(InitMain &initMain){
 	initMain.printInitVar();
 	Options opt = initMain.getOptions();
-	MatrixData* data = new MatrixData();
+	
 
 	MainControl dgl = initMain.getDgl();
 	string filename;
@@ -80,11 +80,16 @@ int plotting(InitMain &initMain){
 	// solver.integrate();
 	// solver.pyPlot();
 	// delete initEval;
+	MatrixData* data;
 
-
+	#pragma omp parallel for private(data) num_threads(4)
 	for(int k = 0; k < size; ++k){
 		cerr << "loading: " << k << " / " << size-1;
-		dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
+		data = new MatrixData();
+		#pragma omp critical
+		{
+			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
+		}
 		opt.isDimensionless = true;
 		data->meta.Ag = opt.Ag;
 		data->meta.OmegaG = opt.OmegaG;
@@ -100,6 +105,7 @@ int plotting(InitMain &initMain){
 		Plotter plotter(eval,opt);
 		cerr << "plotting" << endl;
 		plotter.plotEval();
+		delete data;
 	}
 
 

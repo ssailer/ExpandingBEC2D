@@ -91,7 +91,7 @@ private:
 	Options opt;
 	int argc;
 	char** argv;
-	string algorithmString = "Empty String";
+	string algorithmString = "SPLIT";
 	string dglString = "Empty String";
 	string restartString = "Empty String";
 	string runName = "default_runname";
