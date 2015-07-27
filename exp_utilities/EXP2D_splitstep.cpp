@@ -50,6 +50,7 @@ void SplitStep::setVariables(){
 	}
 
 	kprop = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
+	kpropITP = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
 	kprop_x = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
 	kprop_y = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
 	kprop_x_strang = MatrixXcd(w->meta.grid[0],w->meta.grid[1]);
@@ -88,6 +89,14 @@ void SplitStep::setVariables(){
 	    for(int y = 0; y < w->meta.grid[1]; y++){
 	      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * opt.RTE_step;
       		kprop(x,y) = complex<double>(cos(T),sin(T)) / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);	    
+	    }
+	}
+
+	#pragma omp parallel for
+	for(int x = 0; x < w->meta.grid[0]; x++){
+	    for(int y = 0; y < w->meta.grid[1]; y++){
+	      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * opt.RTE_step;
+      		kpropITP(x,y) = complex<double>(sin(T),-cos(T)) / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);	    
 	    }
 	}
 
@@ -174,7 +183,6 @@ void SplitRot::timeStep(double delta_t){
 	w->increment(delta_t, 1.0, 1.0);
 }
 
-
 void SplitTrap::timeStep(double delta_t){
 
 	w->fft.Forward();
@@ -189,6 +197,26 @@ void SplitTrap::timeStep(double delta_t){
     		// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
     		// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
     		w->wavefunction[0](x,y) *= complex<double>(cos(V),sin(V));
+		}
+	}
+
+	w->increment(delta_t, 1.0, 1.0);
+}
+
+void SplitITP::timeStep(double delta_t){
+
+	w->fft.Forward();
+	w->wavefunction[0].array() *=  kpropITP.array();
+	w->fft.Backward(); 
+
+	#pragma omp parallel for
+	for(int x = 0; x < w->meta.grid[0]; x++){
+		for(int y = 0; y < w->meta.grid[1]; y++){
+    		// complex<double> value = wavefctVec[i](0,x,y,z);
+    		double V = - ( PotentialGrid(x,y).real() + opt.g * abs2(w->wavefunction[0](x,y)) ) * delta_t;
+    		// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
+    		// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
+    		w->wavefunction[0](x,y) *= complex<double>(sin(V),-cos(V));
 		}
 	}
 

@@ -29,7 +29,7 @@ private:
 
 enum MainControl {
 	SPLIT,
-	// SPLITSTRANG,
+	EVAL,
 	RK4,
 	TRAP,
 	EXP,
@@ -38,7 +38,8 @@ enum MainControl {
 	RESTART,
 	NEW,
 	PLOT,
-	HYDRO
+	HYDRO,
+	ITP
 };
 
 
@@ -103,7 +104,7 @@ MainControl InitMain::toMainControl(const std::string& s)
 {	
 	// cerr << "to Maincontrol: " << s << endl;
     if (s == "SPLIT") return SPLIT;
-    // if (s == "SPLITSTRANG") return SPLITSTRANG;
+    if (s == "EVAL") return EVAL;
     if (s == "RK4") return RK4;
     if (s == "TRAP") return TRAP;
     if (s == "EXP") return EXP;
@@ -113,6 +114,7 @@ MainControl InitMain::toMainControl(const std::string& s)
     if (s == "NEW") return NEW;
     if (s == "PLOT") return PLOT;
     if (s == "HYDRO") return HYDRO;
+    if (s == "ITP") return ITP;
     throw std::runtime_error("Invalid conversion from string to MainControl.");
 }
 

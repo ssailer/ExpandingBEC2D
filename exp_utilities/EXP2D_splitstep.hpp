@@ -65,7 +65,7 @@ class SplitStep
 
     vector<vector<double>> kspace;
     vector<double> x_axis,y_axis;
-    MatrixXcd kprop, kprop_x, kprop_y, Vgrid, PotentialGrid, kprop_x_strang, kprop_y_strang;
+    MatrixXcd kprop, kpropITP, kprop_x, kprop_y, Vgrid, PotentialGrid, kprop_x_strang, kprop_y_strang;
 
     MatrixData::MetaData meta;
 
@@ -108,6 +108,12 @@ public:
 class SplitRotStrang : public SplitStep {
 public:
     SplitRotStrang(Options &o) : SplitStep(o) {}
+    virtual void timeStep(double delta_t);
+};
+
+class SplitITP : public SplitStep {
+public:
+    SplitITP(Options &o) : SplitStep(o) {}
     virtual void timeStep(double delta_t);
 };
 
