@@ -96,7 +96,7 @@ void SplitStep::setVariables(){
 	for(int x = 0; x < w->meta.grid[0]; x++){
 	    for(int y = 0; y < w->meta.grid[1]; y++){
 	      	double T = - 0.5 * (kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]) * opt.RTE_step;
-      		kpropITP(x,y) = complex<double>(sin(T),-cos(T)) / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);	    
+      		kpropITP(x,y) = complex<double>(exp(T),0.0) / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);	    
 	    }
 	}
 
@@ -216,7 +216,7 @@ void SplitITP::timeStep(double delta_t){
     		double V = - ( PotentialGrid(x,y).real() + opt.g * abs2(w->wavefunction[0](x,y)) ) * delta_t;
     		// potPlotGrid(0,x,y,0) = complex<double>(rotatingPotential(x,y,m) /*PotentialGrid(x,y).real()*/,0.0);
     		// potGrid(0,x,y,0) = complex<double>(cos(V),sin(V));
-    		w->wavefunction[0](x,y) *= complex<double>(sin(V),-cos(V));
+    		w->wavefunction[0](x,y) *= complex<double>(exp(V),0.0);
 		}
 	}
 

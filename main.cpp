@@ -107,6 +107,8 @@ int evaluate(InitMain &initMain){
 		delete data;
 	}
 
+	delete dataFile;
+
 
 
 	chdir("..");
@@ -131,7 +133,7 @@ int plotting(InitMain &initMain){
 		filename = "trapdata.h5"; 
 	}
 
-	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
@@ -154,12 +156,14 @@ int plotting(InitMain &initMain){
 		eval = new Eval(*data,opt);
 		#pragma omp critical
 		{
-			dataFile->getEval(timeList[0],*eval,opt);;
+			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
 		}
 		opt.isDimensionless = true;
 		data->meta.Ag = opt.Ag;
 		data->meta.OmegaG = opt.OmegaG;
 		cerr << " " << data->meta.steps << " step " << data->meta.time << " time";
+		eval = new Eval(*data,opt);
+		eval->process();
 
 		Plotter plotter(*eval,opt);
 		cerr << "plotting" << endl;
@@ -167,6 +171,8 @@ int plotting(InitMain &initMain){
 		delete data;
 		delete eval;
 	}
+
+	delete dataFile;
 
 
 
