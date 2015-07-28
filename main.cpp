@@ -55,15 +55,15 @@ int evaluate(InitMain &initMain){
 	string filename;
 	if(dgl == ROT){
 		filename = "rotdata.h5";
-		if(remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl;}
+		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl;}
 	}
 	if(dgl == EXP){
 		filename = "expdata.h5"; 
-		if(remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl;}
+		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl;}
 	}
 	if(dgl == TRAP){
 		filename = "trapdata.h5"; 
-		if(remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl;}
+		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl;}
 	}
 
 	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);

@@ -67,13 +67,17 @@ void hydroSolver::integrate()
 {   
     PchangingValue = new double;
     PchangingValueQ = new double;
-    bool xxx = true;
+    // bool xxx = true;
     // cout << "g = " << g << endl;
-    cerr << eval->opt.vortexnumber << endl;
+    // cerr << eval->opt.vortexnumber << endl;
     double Nv = eval->opt.vortexnumber;
+
     // int Nv = 0;
     double r[2] = {eval->totalResult.Rx,eval->totalResult.Ry};
     double v[2] = {0.0,0.0};
+
+    // double Nv = ( eval->opt.omega_w.real() * 2.0 * M_PI ) / ( hbar / ( m * r[0] * r[1]));
+    cerr << "VortexNumber: " << Nv << endl;
     
     double xi, vi, tf, xf, vf, dt;
     double energy;
@@ -86,7 +90,7 @@ void hydroSolver::integrate()
     file.setf(ios::fixed | ios::showpoint);
 
     beta = 4 * hbar * hbar * Nv * Nv / (m * m);
-    // zeta = 4 * hbar * Nv / m;
+    zeta = 4 * hbar * Nv / m;
 
     dt = 1.0e-6;             // step size for integration
 
@@ -99,6 +103,10 @@ void hydroSolver::integrate()
         tf = ti + dt;
         T.push_back(tf);
 
+        double tmp0,tmp1;
+        
+
+
         xxx = true;
         xi = r[0];
         vi = v[0];
@@ -110,6 +118,8 @@ void hydroSolver::integrate()
         X.push_back(xf);
         Xdot.push_back(vf);
 
+
+
         xxx = false;
         xi = r[1];
         vi = v[1];
@@ -120,6 +130,13 @@ void hydroSolver::integrate()
         v[1] = vf;
         Y.push_back(xf);
         Ydot.push_back(vf);
+
+        // tmp0 = v[0];
+        // tmp1 = v[1];
+        // v[1] = r[0] * tmp0 / r[1];
+
+        
+        // v[0] = r[1] * tmp1 / r[0];
 
         ti = tf;
     }
@@ -138,7 +155,7 @@ void hydroSolver::integrate2()
     ti = 0.0;
     PchangingValue = new double;
     PchangingValueQ = new double;
-    bool xxx = true;
+    // bool xxx = true;
     double Nv = 0;
     double r[2] = {eval->totalResult.Rx,eval->totalResult.Ry};
     double v[2] = {0.0,0.0};
@@ -238,6 +255,8 @@ void hydroSolver::pyPlot(){
 {
     double d1x;
     d1x = v;
+    // d1x = 0.0;
+    // d1x = (x / *PchangingValue) * *PchangingValueQ;
     return d1x;
 }
 /*
@@ -247,20 +266,18 @@ void hydroSolver::pyPlot(){
 {
     double d2x;
     double secondTerm;
-    d2x = g / (x * x * *PchangingValue) + beta * x / ((x * x + *PchangingValue * *PchangingValue ) * (x * x + *PchangingValue * *PchangingValue));
-    // secondTerm = /*zeta * */( x * *PchangingValue *  *PchangingValueQ - *PchangingValue * *PchangingValue * v ) / ((x * x + *PchangingValue * *PchangingValue ) * (x * x + *PchangingValue * *PchangingValue));
-    // cerr << "first " << d2x << " second " << secondTerm  << " * " << zeta << endl;
-    // if(xxx == false){
-    // // secondTerm = zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / ((x * x + *PchangingValue * *PchangingValue ) * (x * x + *PchangingValue * *PchangingValue));
-    //   result = d2x * cos(t) 
-    // } else {
+    double delta = ((x * x + *PchangingValue * *PchangingValue ) * (x * x + *PchangingValue * *PchangingValue));
+    d2x = g / (x * x * *PchangingValue) + beta * x / delta;
     
-    // }
-    // secondTerm = x * *PchangingValueQ - *PchangingValue * v;
-    // cerr << "secondTerm: " << secondTerm << endl;
-    // double result;
+    if(xxx == true){
+    secondTerm = - zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
+      // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) - (*PchangingValueQ / *PchangingValue) * v + (v * v) / x;
+    } else {
+    secondTerm = 2 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
+      // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) + (*PchangingValueQ / *PchangingValue) * v - (v * v) / x;
+    }
 
-    return d2x;
+    return d2x + secondTerm;
 }
 
 double hydroSolver::rk4_2nd(double ti, double xi, double vi, double tf, double& xf, double& vf)
