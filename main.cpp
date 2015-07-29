@@ -149,7 +149,7 @@ int plotting(InitMain &initMain){
 	// delete initEval;
 	Eval* eval;
 
-	#pragma omp parallel for ordered private(eval) num_threads(4) schedule(static,1)
+	#pragma omp parallel for ordered private(eval) num_threads(1) schedule(static,1)
 	for(int k = 0; k < size; ++k){
 		// cerr << "loading: " << k << " / " << size-1;
 		MatrixData* data = new MatrixData();

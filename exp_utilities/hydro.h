@@ -70,13 +70,13 @@ void hydroSolver::integrate()
     // bool xxx = true;
     // cout << "g = " << g << endl;
     // cerr << eval->opt.vortexnumber << endl;
-    double Nv = eval->opt.vortexnumber;
+    // double Nv = eval->opt.vortexnumber;
 
     // int Nv = 0;
     double r[2] = {eval->totalResult.Rx,eval->totalResult.Ry};
     double v[2] = {0.0,0.0};
 
-    // double Nv = ( eval->opt.omega_w.real() * 2.0 * M_PI ) / ( hbar / ( m * r[0] * r[1]));
+    double Nv = ( eval->opt.omega_w.real() * 2.0 * M_PI ) / ( hbar / ( m * r[0] * r[1]));
     cerr << "VortexNumber: " << Nv << endl;
     
     double xi, vi, tf, xf, vf, dt;
@@ -265,16 +265,16 @@ void hydroSolver::pyPlot(){
     double hydroSolver::f2(double t, double x, double v)
 {
     double d2x;
-    double secondTerm;
+    double secondTerm = 0;
     double delta = ((x * x + *PchangingValue * *PchangingValue ) * (x * x + *PchangingValue * *PchangingValue));
     d2x = g / (x * x * *PchangingValue) + beta * x / delta;
-    
+    // d2x = g / (*PchangingValue * *PchangingValue * *PchangingValue) + beta * x / delta + v * v / x - v * *PchangingValueQ / *PchangingValue;
     if(xxx == true){
-    secondTerm = - zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
-      // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) - (*PchangingValueQ / *PchangingValue) * v + (v * v) / x;
-    } else {
-    secondTerm = 2 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
+    secondTerm = 1.0 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
       // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) + (*PchangingValueQ / *PchangingValue) * v - (v * v) / x;
+    } else {
+    secondTerm = - 1.0 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
+      // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) - (*PchangingValueQ / *PchangingValue) * v + (v * v) / x;
     }
 
     return d2x + secondTerm;
