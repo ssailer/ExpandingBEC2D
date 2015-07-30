@@ -70,13 +70,13 @@ void hydroSolver::integrate()
     // bool xxx = true;
     // cout << "g = " << g << endl;
     // cerr << eval->opt.vortexnumber << endl;
-    // double Nv = eval->opt.vortexnumber;
+    double Nv = eval->opt.vortexnumber;
 
     // int Nv = 0;
     double r[2] = {eval->totalResult.Rx,eval->totalResult.Ry};
     double v[2] = {0.0,0.0};
 
-    double Nv = ( eval->opt.omega_w.real() * 2.0 * M_PI ) / ( hbar / ( m * r[0] * r[1]));
+    // double Nv = ( eval->opt.omega_w.real() * 2.0 * M_PI ) / ( hbar / ( m * r[0] * r[1]));
     cerr << "VortexNumber: " << Nv << endl;
     
     double xi, vi, tf, xf, vf, dt;
@@ -135,7 +135,6 @@ void hydroSolver::integrate()
         // tmp1 = v[1];
         // v[1] = r[0] * tmp0 / r[1];
 
-        
         // v[0] = r[1] * tmp1 / r[0];
 
         ti = tf;
@@ -143,7 +142,7 @@ void hydroSolver::integrate()
 
   ti = 0.0;
   for(int i = 0; i < X.size(); ++i){
-    file << setw(12) << ti << "," << setw(12) << X[i] << setw(12) << "," << Y[i]   << endl;
+    file << setw(12) << ti << "," << setw(12) << X[i] << setw(12) << "," << Y[i] << "," << Xdot[i] << "," << Ydot[i] << "," << X[i] * Ydot[i] - Y[i] * Xdot[i]  << endl;
     ti += dt;
   }
 
@@ -212,7 +211,7 @@ void hydroSolver::integrate2()
 
   ti = 0.0;
   for(int i = 0; i < X.size(); ++i){
-    file << setw(12) << ti << "," << setw(12) << X[i] << setw(12) << "," << Y[i]   << endl;
+    file << setw(12) << ti << "," << setw(12) << X[i] << setw(12) << "," << Y[i] << "," << Xdot[i] << "," << Ydot[i] << "," << X[i] * Ydot[i] - Y[i] * Xdot[i]  << endl;
     ti += dt;
   }
 
@@ -269,13 +268,15 @@ void hydroSolver::pyPlot(){
     double delta = ((x * x + *PchangingValue * *PchangingValue ) * (x * x + *PchangingValue * *PchangingValue));
     d2x = g / (x * x * *PchangingValue) + beta * x / delta;
     // d2x = g / (*PchangingValue * *PchangingValue * *PchangingValue) + beta * x / delta + v * v / x - v * *PchangingValueQ / *PchangingValue;
-    if(xxx == true){
-    secondTerm = 1.0 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
-      // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) + (*PchangingValueQ / *PchangingValue) * v - (v * v) / x;
-    } else {
-    secondTerm = - 1.0 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
-      // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) - (*PchangingValueQ / *PchangingValue) * v + (v * v) / x;
-    }
+    // if(xxx == true){
+    // secondTerm = 1.0 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
+    //   // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) + (*PchangingValueQ / *PchangingValue) * v - (v * v) / x;
+    // } else {
+    // secondTerm = - 1.0 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
+    //   // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) - (*PchangingValueQ / *PchangingValue) * v + (v * v) / x;
+    // }
+
+    // CHECK FOR DIFFERENT MODEL PDF
 
     return d2x + secondTerm;
 }
