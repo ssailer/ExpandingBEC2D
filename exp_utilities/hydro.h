@@ -265,17 +265,18 @@ void hydroSolver::pyPlot(){
 {
     double d2x;
     double secondTerm = 0;
+    double factor0 = *PchangingValue / x;
     double delta = ((x * x + *PchangingValue * *PchangingValue ) * (x * x + *PchangingValue * *PchangingValue));
     d2x = g / (x * x * *PchangingValue) + beta * x / delta;
     // d2x = g / (*PchangingValue * *PchangingValue * *PchangingValue) + beta * x / delta + v * v / x - v * *PchangingValueQ / *PchangingValue;
-    // if(xxx == true){
-    // secondTerm = 1.0 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
-    //   // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) + (*PchangingValueQ / *PchangingValue) * v - (v * v) / x;
-    // } else {
-    // secondTerm = - 1.0 * zeta * ( *PchangingValue * *PchangingValue * v - x * *PchangingValue * *PchangingValueQ) / delta;
+    if(xxx == true){
+    secondTerm = zeta * factor0 * ( *PchangingValue * v - x * *PchangingValueQ) / delta;
+         // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) + (*PchangingValueQ / *PchangingValue) * v - (v * v) / x;
+    } else {
+    secondTerm = + zeta * factor0 * (*PchangingValue * v - x * *PchangingValueQ) / delta;
     //   // d2x = g / ( *PchangingValue * *PchangingValue * *PchangingValue) + beta * (x / delta) - (*PchangingValueQ / *PchangingValue) * v + (v * v) / x;
-    // }
-
+    }
+    std::cerr << std::setprecision (24) << secondTerm << std::endl;
     // CHECK FOR DIFFERENT MODEL PDF
 
     return d2x + secondTerm;
