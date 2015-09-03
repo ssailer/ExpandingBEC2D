@@ -206,7 +206,7 @@ int hydro(InitMain &initMain){
 	cerr << endl << "hydro plotting" << endl;
 	hydroSolver solver(initEval,maxTime);
 	solver.integrate();
-	solver.integrate2();
+	// solver.integrate2();
 	solver.pyPlot();
 	delete initEval;
 
