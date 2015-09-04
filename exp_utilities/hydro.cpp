@@ -264,8 +264,8 @@ double hydroSolver::ode_n0(double x,const hydroParams& params)
 double hydroSolver::ode_a(double x,const hydroParams& params)
 {
     double result;
-    result = - ( 2.0 * ( params.alpha - params.omega)) / (params.sigma_x * params.sigma_x)
-             - ( 2.0 * ( params.alpha + params.omega)) / (params.sigma_y * params.sigma_y)
+    result = - ( /*2.0 **/ ( params.alpha - params.omega)) / (params.sigma_x * params.sigma_x)
+             - ( /*2.0 **/ ( params.alpha + params.omega)) / (params.sigma_y * params.sigma_y)
              - x * ( params.alpha_x + params.alpha_y);
     return result;
 }
