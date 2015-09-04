@@ -45,16 +45,18 @@ typedef struct {
     double alpha_x;
     double alpha_y;
     double phi;
+    double ratio;
 } hydroParams;
 
 class hydroSolver {
 public:
-  hydroSolver(Eval* &e, double &maxTime) : eval(e), hbar(1.054e-22), m(87 * 1.66e-27), ti(0), tmax(maxTime) {
-    g = eval->opt.g * (hbar * hbar / (m * m)) * (4.0) * eval->opt.N / M_PI;
+  hydroSolver(Eval* &e, double &maxTime) : eval(e), hbar(1.0545718e-22), m(86.9091835 *  1.660538921e-27), ti(0), tmax(maxTime) {
+    // g = eval->opt.g * (hbar * hbar / (m * m)) * (4.0) * eval->opt.N / M_PI;
+    g = eval->opt.g * (hbar * hbar ) / (m * m );
     // g = eval->opt.g * (hbar * hbar / (m * m)) * (15.0/8.0) * eval->opt.N / M_PI;
   }
 
-  hydroSolver() : hbar(1.054e-22), m(87 * 1.66e-27) {}
+  hydroSolver() : hbar(1.0545718e-22), m(86.9091835 *  1.660538921e-27) {}
   double rk4_2nd(double, double, double, double,double&, double&);
   void rk4_1st(double ti, double xi, double tf, const hydroParams& params, double& xf, double (hydroSolver::*func)(double, const hydroParams&));
   double f1(double, double, double);
@@ -70,6 +72,9 @@ public:
   double ode_a(double x,const hydroParams& params);
   double ode_omega(double x,const hydroParams& params);
   void calc_phi(const hydroParams& params, double& result);
+  void calc_ratio(const hydroParams& params, double& result);
+
+  void printParams(const hydroParams& params); // debugging
 
   void integrate();
   void integrate2();

@@ -5,8 +5,8 @@
 
 void toDimensionlessUnits(Options &opt){
     if(!opt.isDimensionless){
-        const double m = 87 * 1.66 * 1.0e-27;
-        const double hbar = 1.054 * 1.0e-22;    
+        const double m = 86.9091835 *  1.660538921 * 1.0e-27;
+        const double hbar = 1.0545718 * 1.0e-22;    
         opt.Ag = 2 * opt.min_x / opt.grid[1];
         opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
     
