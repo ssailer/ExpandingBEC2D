@@ -264,8 +264,8 @@ double hydroSolver::ode_n0(double x,const hydroParams& params)
 double hydroSolver::ode_a(double x,const hydroParams& params)
 {
     double result;
-    result = - ( /*2.0 **/ ( params.alpha - params.omega)) / (params.sigma_x * params.sigma_x)
-             - ( /*2.0 **/ ( params.alpha + params.omega)) / (params.sigma_y * params.sigma_y)
+    result = - ( 2.0 * ( params.alpha - params.omega)) / (params.sigma_x * params.sigma_x)
+             - ( 2.0 * ( params.alpha + params.omega)) / (params.sigma_y * params.sigma_y)
              - x * ( params.alpha_x + params.alpha_y);
     return result;
 }
@@ -398,14 +398,14 @@ void hydroSolver::integrate()
     hydroParams varnew;
     hydroParams varold;
 
-    varold.sigma_x = eval->totalResult.Rx +0.8;
-    varold.sigma_y = eval->totalResult.Ry +0.8;
+    varold.sigma_x = eval->totalResult.Rx;
+    varold.sigma_y = eval->totalResult.Ry;
     varold.phi = 0;
     varold.n0 = 2.0 * (eval->totalResult.particle_count / M_PI) / (varold.sigma_x * varold.sigma_y);
     varold.alpha_x = 0.0;
     varold.alpha_y = 0.0;
     varold.alpha = hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
-    // cerr << " alpha " << varold.alpha << " vs omega " << eval->opt.omega_w * 2.0 * M_PI << endl;
+    cerr << " alpha " << varold.alpha << " vs omega " << eval->opt.omega_w * 2.0 * M_PI << endl;
     varold.a = 0.0;
     varold.omega = 0.0; // 2.0 * M_PI * real(eval->opt.omega_w);
     varold.ratio = varold.sigma_x / varold.sigma_y;
