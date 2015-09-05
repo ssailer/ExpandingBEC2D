@@ -52,7 +52,8 @@ class hydroSolver {
 public:
   hydroSolver(Eval* &e, double &maxTime) : eval(e), hbar(1.0545718e-22), m(86.9091835 *  1.660538921e-27), ti(0), tmax(maxTime) {
     // g = eval->opt.g * (hbar * hbar / (m * m)) * (4.0) * eval->opt.N / M_PI;
-    g = eval->opt.g * (hbar * hbar ) / (m * m );
+    double kappa = eval->opt.vortexnumber / 7.0;
+    g = sqrt(1 + kappa) * eval->opt.g * (hbar * hbar ) / (m * m );
     // g = eval->opt.g * (hbar * hbar / (m * m)) * (15.0/8.0) * eval->opt.N / M_PI;
   }
 

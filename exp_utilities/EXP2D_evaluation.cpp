@@ -72,32 +72,33 @@ void Eval::save(){
     }
 
 	string filename = dirname + "/" + opt.runmode + "_Observables.dat";	
+
+	int setwidth = 15;
+	int setprec = 9;
 	
 	struct stat buffer;   
   	if(stat (filename.c_str(), &buffer) != 0){
   		ofstream datafile;
   		datafile.open(filename.c_str(), ios::out | ios::app);
-  		datafile << std::left << std::setw(15) << "Timestep" << ","
-  						 << std::setw(15) << "Time" << ","
-  						 << std::setw(15) << "X_max" << ","
-  						 << std::setw(15) << "Y_max" << ","
-					 	 << std::setw(15) << "Vortexnumber" << ","
-					 	 << std::setw(15) << "Alpha" << ","
-  						 // << std::setw(15) << "D_max" << ","
-  						 // << std::setw(15) << "D_min" << ","
-  						 << std::setw(15) << "Rx" << ","
-						 << std::setw(15) << "Ry" << ","
-						 << std::setw(15) << "Rx/Ry" << ","
-  						 << std::setw(15) << "E_Major" << ","
-  						 << std::setw(15) << "E_Minor" << ","
-  						 << std::setw(15) << "E_Major_Angle" << ","
-  						 << std::setw(15) << "E_Minor_Angle" << ","
-  						 << std::setw(15) << "E_Ratio" << ","
-  						 << std::setw(15) << "N" << ","
-  						 << std::setw(15) << "V" << ","
-  						 << std::setw(15) << "N/V" << ","
-  						 << std::setw(15) << "E_kin" << ","
-  						 << std::setw(15) << "n0"
+  		datafile << std::left << std::setw(setwidth) << std::setprecision(setprec) << "Timestep" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "Time" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "X_max" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "Y_max" << ","
+					 	 	  << std::setw(setwidth) << std::setprecision(setprec) << "Vortexnumber" << ","
+					 	 	  << std::setw(setwidth) << std::setprecision(setprec) << "Alpha" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "Rx" << ","
+						 	  << std::setw(setwidth) << std::setprecision(setprec) << "Ry" << ","
+						 	  << std::setw(setwidth) << std::setprecision(setprec) << "Rx/Ry" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "E_Major" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "E_Minor" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "E_Major_Angle" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "E_Minor_Angle" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "E_Ratio" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "N" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "V" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "N/V" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "E_kin" << ","
+  						 	  << std::setw(setwidth) << std::setprecision(setprec) << "n0"
   				 << endl;
   		datafile.close();
   	}
@@ -106,27 +107,25 @@ void Eval::save(){
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
-	datafile << std::left << std::setw(15) << data.meta.steps << ","
-					 << std::setw(15)  << data.meta.time << ","
-					 << std::setw(15)  << data.meta.coord[0] << ","
-					 << std::setw(15)  << data.meta.coord[1] << ","
-					 << std::setw(15)  << opt.vortexnumber << ","
-					 << std::setw(15)  << totalResult.alpha << ","
-					 // << std::setw(15)  << totalResult.r_max << ","
- 					//  << std::setw(15)  << totalResult.r_min << ","
- 					 << std::setw(15)  << totalResult.Rx << ","
- 					 << std::setw(15)  << totalResult.Ry << ","
- 					 << std::setw(15)  << totalResult.Rx / totalResult.Ry << ","
- 					 << std::setw(15)  << totalResult.r_max << ","
- 					 << std::setw(15)  << totalResult.r_min << ","
- 					 << std::setw(15)  << totalResult.r_max_phi << ","
- 					 << std::setw(15)  << totalResult.r_min_phi << ","
- 					 << std::setw(15)  << totalResult.aspectRatio  << ","
-					 << std::setw(15)  << totalResult.particle_count << ","
-					 << std::setw(15)  << totalResult.volume << ","
-					 << std::setw(15)  << totalResult.density << ","
-					 << std::setw(15)  << totalResult.Ekin << ","
-					 << std::setw(15)  << n0
+	datafile << std::left << std::setw(setwidth) << std::setprecision(setprec) << data.meta.steps << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << data.meta.time << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << data.meta.coord[0] << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << data.meta.coord[1] << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << opt.vortexnumber << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.alpha << ","
+ 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.Rx << ","
+ 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.Ry << ","
+ 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.Rx / totalResult.Ry << ","
+ 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.r_max << ","
+ 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.r_min << ","
+ 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.r_max_phi << ","
+ 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.r_min_phi << ","
+ 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.aspectRatio  << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.particle_count << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.volume << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.density << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.Ekin << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << n0
 			 << endl;
 	datafile.close();
 	cout << "save" << endl;
@@ -429,7 +428,7 @@ void Eval::getDensity(){
 			}
 		}
 	}
-	double threshold = maximum * 0.05;
+	double threshold = maximum * 0.01;
 
 	for(int k = 0; k < data.wavefunction.size(); k++){		
 		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);	

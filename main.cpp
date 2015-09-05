@@ -82,7 +82,7 @@ int evaluate(InitMain &initMain){
 	// delete initEval;
 	MatrixData* data;
 
-	#pragma omp parallel for ordered private(data) num_threads(4) schedule(static,1)
+	#pragma omp parallel for ordered private(data) num_threads(2) schedule(static,1)
 	for(int k = 0; k < size; ++k){
 		// cerr << "loading: " << k << " / " << size-1;
 		data = new MatrixData();
@@ -100,7 +100,10 @@ int evaluate(InitMain &initMain){
 		eval.process();
 		#pragma omp ordered
 		{	
-			cerr << " " << data->meta.steps << " step " << data->meta.time << " time" << endl;
+			if(k == 0){
+				 eval.data.meta.time = 0.0;
+			}
+			cerr << " " << data->meta.steps << " step " << eval.data.meta.time << " time" << endl;
 			eval.save();
 		}
 
