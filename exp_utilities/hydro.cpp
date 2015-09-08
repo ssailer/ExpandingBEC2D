@@ -394,9 +394,9 @@ void hydroSolver::integrate()
     hydroParams varnew;
     hydroParams varold;
 
-    varold.sigma_x = eval->totalResult.Rx;
-    varold.sigma_y = eval->totalResult.Ry;
-    varold.phi = 0;
+    varold.sigma_x = eval->totalResult.r_max;
+    varold.sigma_y = eval->totalResult.r_min;
+    varold.phi = eval->totalResult.r_max_phi;
     varold.n0 = 2.0 * (/*eval->opt.N*/ eval->totalResult.particle_count / M_PI) / (varold.sigma_x * varold.sigma_y);
     varold.alpha_x = 0.0;
     varold.alpha_y = 0.0;
@@ -408,7 +408,7 @@ void hydroSolver::integrate()
 
     cerr << " alpha " << varold.alpha << " vs omega " << eval->opt.omega_w * 2.0 * M_PI << endl;
     
-    varold.omega = 0.0; // 2.0 * M_PI * real(eval->opt.omega_w);
+    varold.omega = 2.0 * M_PI * real(eval->opt.omega_w);
     // varold.omega = hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
 
     varold.ratio = varold.sigma_x / varold.sigma_y;
@@ -483,7 +483,7 @@ void hydroSolver::integrate()
              << setw(12) << varold.sigma_y << ","
              << setw(12) << majorAxis << ","
              << setw(12) << minorAxis << ","
-             << setw(12) << varold.phi     << ","
+             << setw(12) << eval->totalResult.r_max_phi + varold.phi     << ","
              << setw(12) << varold.n0      << ","
              << setw(12) << varold.alpha_x << ","
              << setw(12) << varold.alpha_y << ","

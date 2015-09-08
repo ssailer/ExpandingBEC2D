@@ -53,20 +53,24 @@ int evaluate(InitMain &initMain){
 
 	MainControl dgl = initMain.getDgl();
 	string filename;
+	string resultfilename;
 	if(dgl == ROT){
 		filename = "rotdata.h5";
+		resultfilename = "rotobs.h5";
 		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl;}
 	}
 	if(dgl == EXP){
 		filename = "expdata.h5"; 
+		resultfilename = "expobs.h5"; 
 		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl;}
 	}
 	if(dgl == TRAP){
 		filename = "trapdata.h5"; 
+		resultfilename = "trapobs.h5"; 
 		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl;}
 	}
 
-	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
@@ -81,6 +85,8 @@ int evaluate(InitMain &initMain){
 	// solver.pyPlot();
 	// delete initEval;
 	MatrixData* data;
+
+	binaryFile* obsFile = new binaryFile(resultfilename,binaryFile::out);
 
 	#pragma omp parallel for ordered private(data) num_threads(2) schedule(static,1)
 	for(int k = 0; k < size; ++k){
@@ -105,12 +111,99 @@ int evaluate(InitMain &initMain){
 			}
 			cerr << " " << data->meta.steps << " step " << eval.data.meta.time << " time" << endl;
 			eval.save();
+			obsFile->appendEval(eval,opt);
 		}
+		
 
 		delete data;
 	}
 
 	delete dataFile;
+	delete obsFile;
+
+
+
+	chdir("..");
+	cerr << "[END]" << endl;
+
+}
+
+int resave(InitMain &initMain){
+	initMain.printInitVar();
+	Options opt = initMain.getOptions();
+	
+
+	MainControl dgl = initMain.getDgl();
+	string filename;
+	if(dgl == ROT){
+		filename = "rotdata.h5";
+		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl;}
+	}
+	if(dgl == EXP){
+		filename = "expdata.h5"; 
+		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl;}
+	}
+	if(dgl == TRAP){
+		filename = "trapdata.h5"; 
+		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl;}
+	}
+
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
+	vector<int> timeList = dataFile->getTimeList();
+	int size = timeList.size();
+
+	// Eval* initEval = new Eval(*data,opt);
+	// dataFile->getEval(timeList[size-1],*initEval,opt);
+	// double maxTime = initEval->data.meta.time;
+	// dataFile->getEval(timeList[0],*initEval,opt);	
+	// cerr << endl << "hydro plotting" << endl;
+	// initEval->opt.vortexnumber = opt.vortexnumber;
+	// hydroSolver solver(initEval,maxTime);
+	// solver.integrate();
+	// solver.pyPlot();
+	// delete initEval;
+	MatrixData* data;
+
+	string dataname = "exp2data.h5";
+	binaryFile* bFile = new binaryFile(dataname,binaryFile::out);
+	cerr << "opened new datafile" << endl;
+
+	// #pragma omp parallel for ordered private(data) num_threads(2) schedule(static,1)
+	for(int k = 0; k < size; ++k){
+		// cerr << "loading: " << k << " / " << size-1;
+		data = new MatrixData();
+		// #pragma omp critical
+		// {
+			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
+		// }
+		opt.isDimensionless = true;
+		data->meta.Ag = opt.Ag;
+		data->meta.OmegaG = opt.OmegaG;
+
+		bFile->appendSnapshot("MatrixData",data,opt);
+			// if(opt.runmode != "EXP"){
+		// bFile->appendEval(*eval, opt);
+			// }
+
+		// cerr << "saved step " << timeList[k] << endl;
+	
+		// Eval eval(*data,opt);
+		// // cerr << " processing ";
+		// eval.process();
+		// #pragma omp ordered
+		// {	
+		// 	if(k == 0){
+		// 		 eval.data.meta.time = 0.0;
+		// 	}
+			// cerr << " " << data->meta.steps << " step " << eval.data.meta.time << " time" << endl;
+		// 	eval.save();
+		// }
+
+		delete data;
+	}
+
+	delete dataFile;
+	delete bFile;
 
 
 
@@ -191,9 +284,9 @@ int hydro(InitMain &initMain){
 
 	MainControl dgl = initMain.getDgl();
 	string filename;
-	if(dgl == ROT) filename = "rotdata.h5";
-	if(dgl == EXP) filename = "expdata.h5";
-	if(dgl == TRAP) filename = "trapdata.h5";
+	if(dgl == ROT) filename = "rotobs.h5";
+	if(dgl == EXP) filename = "expobs.h5";
+	if(dgl == TRAP) filename = "trapobs.h5";
 
 
 	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);

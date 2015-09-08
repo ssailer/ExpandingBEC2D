@@ -103,7 +103,7 @@ void Eval::save(){
   		datafile.close();
   	}
 
-  	double n0 = 2 * (opt.N / M_PI) * (1 / (totalResult.Rx * totalResult.Ry)); 
+  	double n0 = 2.0 * (opt.N / totalResult.particle_count) * (1 / (totalResult.r_max * totalResult.r_min)); 
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
@@ -429,6 +429,7 @@ void Eval::getDensity(){
 		}
 	}
 	double threshold = maximum * 0.01;
+	// double threshold = 1;
 
 	for(int k = 0; k < data.wavefunction.size(); k++){		
 		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);	

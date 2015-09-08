@@ -284,11 +284,13 @@ void Runner<T>::runToTime(string runName)
 		opt.initialRun = false;
 
 		string filename = runName + "data.h5";
+		string obsname  = runName + "obs.h5";
 
 		binaryFile* bFile = new binaryFile(filename,binaryFile::out);
 		bFile->appendSnapshot("MatrixData",pData,opt);
-		bFile->appendEval(*initEval,opt);		
-		delete bFile;
+		binaryFile* obsFile = new binaryFile(obsname,binaryFile::out);
+		obsFile->appendEval(*initEval,opt);		
+		delete bFile,obsFile;
 	}
 	delete initEval;
 
@@ -343,12 +345,15 @@ void Runner<T>::runToTime(string runName)
 			}
 
 			string dataname = runName + "data.h5";
+			string obsname = runName + "obs.h5";
 			binaryFile* bFile = new binaryFile(dataname,binaryFile::append);
 			bFile->appendSnapshot("MatrixData",pData,opt);
 			// if(opt.runmode != "EXP"){
-			bFile->appendEval(*eval, opt);
-			// }
 			delete bFile;
+			binaryFile* obsFile = new binaryFile(obsname,binaryFile::append);
+			obsFile->appendEval(*eval, opt);
+			// }
+			delete obsFile;
 		}
 		catch(const std::exception& e) { 
 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 
