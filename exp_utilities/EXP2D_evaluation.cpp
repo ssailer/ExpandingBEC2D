@@ -103,7 +103,7 @@ void Eval::save(){
   		datafile.close();
   	}
 
-  	double n0 = 2.0 * (opt.N / totalResult.particle_count) * (1 / (totalResult.r_max * totalResult.r_min)); 
+  	double n0 = 2.0 * (totalResult.particle_count / M_PI) * (1 / (totalResult.r_max * totalResult.r_min)); 
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
@@ -428,7 +428,7 @@ void Eval::getDensity(){
 			}
 		}
 	}
-	double threshold = maximum * 0.01;
+	double threshold = maximum * 0.05;
 	// double threshold = 1;
 
 	for(int k = 0; k < data.wavefunction.size(); k++){		
@@ -660,7 +660,9 @@ Ellipse Eval::fitEllipse(c_set &c_data){
     // double term = (f(0) - f(2)) / f(1);
     double y = /*fabs*/(f(1));
     double x = /*fabs*/(f(0) - f(2));
-    double angle = atan2( y , x ) / 2 + M_PI/2;
+
+    // double angle = atan2( y , x ) / 2 + M_PI/2;
+    double angle = atan(y/x)/2.0;
     // cerr << "                                 ";
     // cerr << " cond = " << cond;
     // cerr << " y = " << y << " x = " << x;

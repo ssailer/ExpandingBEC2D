@@ -264,8 +264,8 @@ double hydroSolver::ode_n0(double x,const hydroParams& params)
 double hydroSolver::ode_a(double x,const hydroParams& params)
 {
     double result;
-    result = - ( 2.0 * ( params.alpha - params.omega)) / (params.sigma_x * params.sigma_x)
-             - ( 2.0 * ( params.alpha + params.omega)) / (params.sigma_y * params.sigma_y)
+    result = - (  ( params.alpha - params.omega)) / (params.sigma_x * params.sigma_x)
+             - (  ( params.alpha + params.omega)) / (params.sigma_y * params.sigma_y)
              - x * ( params.alpha_x + params.alpha_y);
     return result;
 }
@@ -273,14 +273,14 @@ double hydroSolver::ode_a(double x,const hydroParams& params)
 double hydroSolver::ode_sigma_x(double x,const hydroParams& params)
 {
     double result;
-    result = x * params.alpha_x + 0.5 * x * x * x * params.a * (params.alpha + params.omega);
+    result = x * params.alpha_x +  x * x * x * params.a * (params.alpha + params.omega);
     return result;
 }
 
 double hydroSolver::ode_sigma_y(double x,const hydroParams& params)
 {
     double result;
-    result = x * params.alpha_y + 0.5 * x * x * x * params.a * (params.alpha - params.omega);
+    result = x * params.alpha_y + x * x * x * params.a * (params.alpha - params.omega);
     return result;
 }
 
@@ -294,21 +294,21 @@ double hydroSolver::ode_omega(double x,const hydroParams& params)
 double hydroSolver::ode_alpha(double x,const hydroParams& params)
 {
     double result;
-    result = - x * (params.alpha_x + params.alpha_y) + 2.0 * params.n0 * g * params.a;
+    result = - x * (params.alpha_x + params.alpha_y) + 2.1 * params.n0 * g * params.a;
     return result;
 }
 
 double hydroSolver::ode_alpha_x(double x,const hydroParams& params)
 {
     double result;
-    result = - x * x - params.alpha * params.alpha + params.omega + params.omega + 2.0 * params.n0 * g / (params.sigma_x * params.sigma_x);
+    result = - x * x - params.alpha * params.alpha + params.omega + params.omega + 2.1 * params.n0 * g / (params.sigma_x * params.sigma_x);
     return result;
 }
 
 double hydroSolver::ode_alpha_y(double x,const hydroParams& params)
 {
     double result;
-    result = - x * x - params.alpha * params.alpha + params.omega + params.omega + 2.0 * params.n0 * g  / (params.sigma_y * params.sigma_y);
+    result = - x * x - params.alpha * params.alpha + params.omega + params.omega + 2.1 * params.n0 * g  / (params.sigma_y * params.sigma_y);
     return result;
 }
 
@@ -323,7 +323,8 @@ void hydroSolver::calc_phi(const hydroParams& params, double& result)
     // result /= 2.0;
     double tmp1 = - params.a * params.sigma_x * params.sigma_x * params.sigma_y * params.sigma_y;
     double tmp2 = (params.sigma_x * params.sigma_x - params.sigma_y * params.sigma_y);
-    double at = atan2(tmp1,tmp2);
+    // double at = atan2(tmp1,tmp2);
+    double at = atan(tmp1/tmp2);
     // double at = atan(tmp1/tmp2);
     at *= ( 180 / M_PI ) / 2.0;
     // if(at < 0.0){
@@ -389,7 +390,7 @@ void hydroSolver::integrate()
     double tf, dt;
 
     ti = 0.0;
-    dt = 1.0e-6;
+    dt = 1.0e-5;
 
     hydroParams varnew;
     hydroParams varold;
@@ -403,12 +404,12 @@ void hydroSolver::integrate()
     varold.a = 0.0;
 
     // varold.alpha = 0.0;
-    varold.alpha = hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
-    // varold.alpha = 2.0 * M_PI * real(eval->opt.omega_w);
+    // varold.alpha = hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
+    varold.alpha = 2.0 * M_PI * real(eval->opt.omega_w);
 
     cerr << " alpha " << varold.alpha << " vs omega " << eval->opt.omega_w * 2.0 * M_PI << endl;
     
-    varold.omega = 2.0 * M_PI * real(eval->opt.omega_w);
+    varold.omega = 0.0; // 2.0 * M_PI * real(eval->opt.omega_w);
     // varold.omega = hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
 
     varold.ratio = varold.sigma_x / varold.sigma_y;
