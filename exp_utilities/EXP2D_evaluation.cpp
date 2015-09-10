@@ -414,53 +414,52 @@ void Eval::fillHoles(MatrixXi &dens/*, MatrixXi &mask*/){
 	}
 }
 
+void Eval::smooth(MatrixXd &dens){
+	MatrixXd tmp = dens;
+	for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+		for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+			tmp(i,j) = dens(i-1,j) + dens(i+1,j) + dens(i,j-1) + dens(i,j+1) + dens(i,j);
+			tmp(i,j) += dens(i-2,j) + dens(i+2,j) + dens(i,j-2) + dens(i,j+2);
+			tmp(i,j) += dens(i-1,j-1) + dens(i+1,j+1) + dens(i+1,j-1) + dens(i-1,j+1);
+		}
+	}
+	dens = tmp / 13.0;
+}
+
+
+
 
 void Eval::getDensity(){
 
-
+	smooth(density);
 
 	double maximum = 0;
 	for(int k = 0; k < data.wavefunction.size(); k++){
 		for(int i = 0; i < data.meta.grid[0]; i++){
 			for(int j = 0; j < data.meta.grid[1]; j++){
-				double value = abs2(data.wavefunction[k](i,j));
+				double value = density(i,j);
 				maximum = ( value > maximum) ? value : maximum;
 			}
 		}
 	}
-	double threshold = maximum * 0.05;
-	// double threshold = 1;
+	double threshold = maximum * 0.01;
+	// double threshold = 0.1;
 
-	for(int k = 0; k < data.wavefunction.size(); k++){		
+	for(int k = 0; k < data.wavefunction.size(); k++){
+
+		
 		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);	
 		densityCounter[k] = 0;
 		densityCoordinates[k].clear();
 		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
 			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
-			    if((abs2(data.wavefunction[k](i,j)) > threshold)){
+			    if(density(i,j) > threshold){
 	   				densityLocationMap[k](i,j) = 1;
-	   				// Coordinate<int32_t> tmpCoord = Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1);
-					// densityCoordinates[k].push_back(tmpCoord);
-					// densityCounter[k]++;
 				}
 			}
 		}
-
+						// if(densMapGrad(i,j) < 0.9 && densMapGrad(i,j) > 0.1){
 		
-		// MatrixXf densMapGrad = MatrixXf::Zero(data.meta.grid[0],data.meta.grid[1]);
-		// for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
-		// 	for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
-		// 		// smoothing(densityLocationMap[k],i,j);
-		// 		for(int m = i - DENSITY_CHECK_DISTANCE; m < i + DENSITY_CHECK_DISTANCE; m++){
-		// 			for(int n = j - DENSITY_CHECK_DISTANCE; n < j + DENSITY_CHECK_DISTANCE; n++){
-		// 				densMapGrad(i,j) += densityLocationMap[k](m,n);
-		// 			}		
-		// 		}
-		// 		densMapGrad(i,j) /= (DENSITY_CHECK_DISTANCE * DENSITY_CHECK_DISTANCE * 4);
-		// 	}
-		// }
-
-				// if(densMapGrad(i,j) < 0.9 && densMapGrad(i,j) > 0.1){
 		// plotDataToPng("1before", densityLocationMap[k], opt);
 		floodFill(densityLocationMap[k]);
 		// plotDataToPng("2floodFill", densityLocationMap[k], opt);
@@ -469,14 +468,6 @@ void Eval::getDensity(){
 		erosion(densityLocationMap[k]);
 		// plotDataToPng("4erosion", densityLocationMap[k], opt);
 		dilation(densityLocationMap[k]);
-
-		// dilation(densityLocationMap[k]);
-		// dilation(densityLocationMap[k]);
-		// erosion(densityLocationMap[k]);
-		// erosion(densityLocationMap[k]);
-		// plotDataToPng("5dilation", densityLocationMap[k], opt);
-
-
 
 		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
 			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
@@ -487,6 +478,16 @@ void Eval::getDensity(){
 				}
 			}
 		}
+
+		ArrayXd querschnitt(data.meta.grid[0]);
+		for(int i = 0; i < data.meta.grid[0]; ++i){
+			double value =  density(i,data.meta.grid[1]/2);
+			if(value <= 1.0)
+				querschnitt(i) = value;
+			else 
+				querschnitt(i) = 1.0;
+		}
+		plotVector("Querschnitt" + to_string(data.meta.steps),"Querschnitt",querschnitt,densityLocationMap[k].row(data.meta.grid[1]/2));
 	}
 }
 

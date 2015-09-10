@@ -84,7 +84,7 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vector<double> &ranges,vector<double> &Xexpanding,vector<double> &Yexpanding,Options &opt);
 void plotVector(string filename,string title,vector<double> v,Options &opt);
 void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
-void plotVector(string filename,string title,ArrayXd v,Options &opt);
+void plotVector(string filename,string title,ArrayXd v,ArrayXi w);
 
 void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
 void plotAngularDensity(string filename,vector<double> phi,vector<double> density,Options &opt);

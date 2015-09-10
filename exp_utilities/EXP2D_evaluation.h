@@ -113,6 +113,7 @@ private:
 	// void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	void getDensity();
 
+	void smooth(MatrixXd &dens);
 	int checkSum(MatrixXi &d,int &i, int &j);
 	void erosion(MatrixXi &d);
 	void dilation(MatrixXi &d);

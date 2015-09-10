@@ -1113,14 +1113,16 @@ void plotVector(string filename,string title,vector<double> v,Options &opt){
 
 }
 
-void plotVector(string filename,string title,ArrayXd v,Options &opt){
+void plotVector(string filename,string title,ArrayXd v,ArrayXi w){
 
 	int x = v.size();
 
 	mglData data(x);
+	mglData dens(x);
 
 	for(int i=0;i < x;i++){	
 		data.a[i] = v[i];
+		dens.a[i] = w[i];
 	}
 
 	mglGraph gr;
@@ -1133,8 +1135,10 @@ void plotVector(string filename,string title,ArrayXd v,Options &opt){
 	gr.Title(title.c_str());
 
 	gr.SetRange('x',0,v.size());
-	gr.SetRange('y',data);
+	gr.SetRange('y',dens);
 	gr.Axis();
+	
+	gr.Plot(dens);
 	gr.Plot(data);
 
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
