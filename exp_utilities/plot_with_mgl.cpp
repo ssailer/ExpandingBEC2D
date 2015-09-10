@@ -268,7 +268,7 @@ void plotVortexList(string name,string title,const RealGrid &phase,list<VortexDa
 	gr.WritePNG(name.c_str(),"Vortices",false);
 }
 
-void plotContour(string name,  MatrixXcd &data, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
+void plotContour(string name,  MatrixXcd &data, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt){
 
 	int n = data.rows();
 	int m = data.cols();
@@ -279,7 +279,7 @@ void plotContour(string name,  MatrixXcd &data, std::unordered_set<Coordinate<in
 	mglData v_y(size);
 
 	int l = 0;
-	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){
+	for(std::unordered_set<Coordinate<int32_t>>::const_iterator it = contour.begin(); it != contour.end(); ++it){
 		v_x.a[l] = it->x();
 		v_y.a[l] = it->y();
 		l++;
@@ -318,7 +318,7 @@ void plotContour(string name,  MatrixXcd &data, std::unordered_set<Coordinate<in
 
 }
 
-void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){
+void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt){
 
 	int size = contour.size();
 
@@ -330,7 +330,7 @@ void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordina
 	int y_max = 0;
 	int x_min = opt.grid[1];
 	int y_min = opt.grid[2];
-	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){
+	for(std::unordered_set<Coordinate<int32_t>>::const_iterator it = contour.begin(); it != contour.end(); ++it){
 		v_x.a[l] = it->x();
 		v_y.a[l] = it->y();
 		l++;

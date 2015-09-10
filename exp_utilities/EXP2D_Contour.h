@@ -15,7 +15,7 @@
 
 using namespace std;
 
-typedef std::unordered_set<Coordinate<int32_t>,Hash> c_set;
+typedef std::unordered_set<Coordinate<int32_t>> c_set;
 
 class Contour{
 public:

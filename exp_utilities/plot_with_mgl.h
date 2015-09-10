@@ -74,7 +74,7 @@ void plotSpectrum(string name,string title,Observables& eval);
 void plotRadialDensity(string name,string title, Observables &ares);
 void plotPairDistance(string name,string title,list<VortexData> vlist);
 void plotVortexList(string name,string title,const RealGrid &phase,list<VortexData> &vlist,Options &opt);
-void plotContour(string filename, MatrixXcd &data, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
+void plotContour(string filename, MatrixXcd &data, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt);
 
 void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt);
 void plotDataToPng(string filename,string title,ComplexGrid &g,Options &opt);
@@ -86,7 +86,7 @@ void plotVector(string filename,string title,vector<double> v,Options &opt);
 void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
 void plotVector(string filename,string title,ArrayXd v,ArrayXi w);
 
-void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);
+void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt);
 void plotAngularDensity(string filename,vector<double> phi,vector<double> density,Options &opt);
 void plotDataToPngEigen(string filename, Eigen::MatrixXcd& mPsi,Options opt);
 void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options opt);

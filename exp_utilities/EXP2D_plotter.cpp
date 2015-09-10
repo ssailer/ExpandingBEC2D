@@ -96,7 +96,7 @@ void Plotter::prepareData(){
 	contour_y = mglData(contour_size);
 
 	index = 0;
-	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = eval.contour[0].begin(); it != eval.contour[0].end(); ++it){
+	for(std::unordered_set<Coordinate<int32_t>>::const_iterator it = eval.contour[0].begin(); it != eval.contour[0].end(); ++it){
 		contour_x.a[index] = it->x();
 		contour_y.a[index] = it->y();
 		index++;

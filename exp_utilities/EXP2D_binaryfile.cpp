@@ -585,7 +585,7 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
   int l = 1 + samples;
   for(int k = 0; k < samples; k++){
 	vec2[k+1] = vec2Ranks[k];    
-	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = results.contour[k].begin(); it != results.contour[k].end(); ++it){
+	for(std::unordered_set<Coordinate<int32_t>>::const_iterator it = results.contour[k].begin(); it != results.contour[k].end(); ++it){
 	  vec2[l] = it->x();
 	  vec2[l+1] = it->y();
 	  l+=2;

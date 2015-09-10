@@ -402,14 +402,17 @@ inline void read(istream &i, Vector<T> &v)
 	}
 }
 
-struct Hash{
-	size_t operator() (const Coordinate<int32_t> &c) const{
-		string tmp = to_string(c.x()) + to_string(c.y()); // + to_string(c.z()); // OBVIOUS 2D ONLY
-		std::istringstream istr(tmp);
-		size_t hash;
-		istr >> hash;
-		return hash;
-	}
-};
+namespace std {
+	template <>
+	struct hash<Coordinate<int32_t>>{
+		size_t operator() (const Coordinate<int32_t> &c) const{
+			string tmp = to_string(c.x()) + to_string(c.y()); // + to_string(c.z()); // OBVIOUS 2D ONLY
+			std::istringstream istr(tmp);
+			size_t hash;
+			istr >> hash;
+			return hash;
+		}
+	};
+}
 
 #endif
