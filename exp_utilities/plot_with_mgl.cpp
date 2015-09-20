@@ -1177,3 +1177,93 @@ void plotAngularDensity(string filename,vector<double> phi,vector<double> densit
 	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
 
 }
+
+void plotPair(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples)
+{
+	int n = data_samples.size();
+	mglData x(n), y(n), z(n);
+	for(int i=0;i<n;i++)
+  	{
+    x.a[i] = data_samples[i].first(0);
+    y.a[i] = data_samples[i].first(1);
+    z.a[i] = data_samples[i].second;
+  }
+  	mglGraph gr;
+    gr.SubPlot(1,1,0);
+    gr.Title("Dots sample");
+    gr.SetRange('x',x);
+	gr.SetRange('y',y);
+    gr.Rotate(50,60);
+  	gr.Box();
+	gr.Dots(x,y,z);
+	gr.WritePNG("plotInitialGaussian.png","ExpandingVortexGas2D",false);
+}
+
+void plotGauss(dlib::matrix<double,3,1> params,int n, double coordinate_axis)
+{	
+	double delta_x = 2 * coordinate_axis / n;
+	mglData z(n,n);
+	cerr << "NNN " << n << endl;
+	int k = 0;
+	int test = n * n;
+	int counter = 0;
+	for(int i = 0; i < n; ++i){
+		for(int j = 0; j < n; ++j){
+			k = i+n*j;
+  			double i0 = - coordinate_axis + delta_x * i;
+  			double i1 = - coordinate_axis + delta_x * j;
+    		z.a[k] = params(0) * exp(- i0*i0 / params(1) - i1 * i1 / params(2));
+    		
+    		if(counter >= test){
+    			 cerr << "ACHTUNG" << endl;
+    			 cerr << "counter " << counter << endl;
+    		}
+    		counter++;
+    	}
+    }
+    mglGraph gr;
+    gr.SubPlot(1,1,0);
+    gr.Title("Dots sample");
+    gr.SetRange('x',-coordinate_axis,coordinate_axis);
+	gr.SetRange('y',-coordinate_axis,coordinate_axis);
+	gr.SetRange('z',z);
+    gr.Rotate(50,60);
+  	gr.Surf(z);
+  	gr.WritePNG("plotFittedGaussian.png","ExpandingVortexGas2D",false);
+}
+
+void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples, dlib::matrix<double,3,1> params,int n, double coordinate_axis){
+	int m = data_samples.size();
+	mglData x(m), y(m), z(m);
+	for(int i=0;i<m;i++)
+  	{
+    	x.a[i] = data_samples[i].first(0);
+    	y.a[i] = data_samples[i].first(1);
+    	z.a[i] = data_samples[i].second;
+  	}
+
+  	double delta_x = 2 * coordinate_axis / n;
+	mglData data(n,n);
+	int k = 0;
+	for(int i = 0; i < n; ++i){
+		for(int j = 0; j < n; ++j){
+			k = i+n*j;
+  			double i0 = - coordinate_axis + delta_x * i;
+  			double i1 = - coordinate_axis + delta_x * j;
+    		data.a[k] = params(0) * exp(- i0*i0 / params(1) - i1 * i1 / params(2));
+    		
+    	}
+    }
+    mglGraph gr;
+    gr.Light(true);    gr.Alpha(true);
+    gr.SubPlot(1,1,0);
+    gr.Title("Dots sample");
+    gr.SetRange('x',-coordinate_axis,coordinate_axis);
+	gr.SetRange('y',-coordinate_axis,coordinate_axis);
+	gr.SetRange('z',z);
+    gr.Rotate(50,60);
+    gr.Surf(data);
+    gr.Dots(x,y,z);
+  	
+  	gr.WritePNG("plotCombinedGaussian.png","ExpandingVortexGas2D",false);
+}

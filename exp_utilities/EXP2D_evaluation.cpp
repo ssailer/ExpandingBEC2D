@@ -431,9 +431,8 @@ void Eval::smooth(MatrixXd &dens){
 
 void Eval::getDensity(){
 
-	fitter* fit = new fitter(density);
-	fit->fit2();
-	delete fit;
+	fitter fit(density);
+	fit.optimize();
 
 	smooth(density);
 

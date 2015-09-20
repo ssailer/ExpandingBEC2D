@@ -17,6 +17,8 @@
 #include <EXP2D_tools.h>
 #include <EXP2D_observables.h>
 
+#include <dlib/optimization.h>
+
 
 
 
@@ -86,11 +88,16 @@ void plotVector(string filename,string title,vector<double> v,Options &opt);
 void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
 void plotVector(string filename,string title,ArrayXd v,ArrayXi w);
 
+
 void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt);
 void plotAngularDensity(string filename,vector<double> phi,vector<double> density,Options &opt);
 void plotDataToPngEigen(string filename, Eigen::MatrixXcd& mPsi,Options opt);
 void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<double> &ranges,Eigen::VectorXd &Xexpanding,Eigen::VectorXd &Yexpanding,Options opt);
 
+
+void plotPair(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples);
+void plotGauss(dlib::matrix<double,3,1> params,int n,double coordinate_axis);
+void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples, dlib::matrix<double,3,1> params,int n, double coordinate_axis);
 
 
 #endif // PLOT_WITH_MGL_H__
