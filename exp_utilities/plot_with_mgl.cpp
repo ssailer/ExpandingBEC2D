@@ -1113,7 +1113,7 @@ void plotVector(string filename,string title,vector<double> v,Options &opt){
 
 }
 
-void plotVector(string filename,string title,ArrayXd v,ArrayXi w){
+void plotVector(string filename,string title,ArrayXd v,ArrayXd w){
 
 	int x = v.size();
 
@@ -1199,7 +1199,7 @@ void plotPair(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_sam
 	gr.WritePNG("plotInitialGaussian.png","ExpandingVortexGas2D",false);
 }
 
-void plotGauss(dlib::matrix<double,3,1> params,int n, double coordinate_axis)
+void plotGauss(dlib::matrix<double,4,1> params,int n, double coordinate_axis)
 {	
 	double delta_x = 2 * coordinate_axis / n;
 	mglData z(n,n);
@@ -1212,7 +1212,7 @@ void plotGauss(dlib::matrix<double,3,1> params,int n, double coordinate_axis)
 			k = i+n*j;
   			double i0 = - coordinate_axis + delta_x * i;
   			double i1 = - coordinate_axis + delta_x * j;
-    		z.a[k] = params(0) * exp(- i0*i0 / params(1) - i1 * i1 / params(2));
+    		z.a[k] = params(0) * exp(- params(1) * i0 * i0 - params(2) * i0 * i1 - params(3) * i1 * i1);
     		
     		if(counter >= test){
     			 cerr << "ACHTUNG" << endl;
@@ -1232,14 +1232,19 @@ void plotGauss(dlib::matrix<double,3,1> params,int n, double coordinate_axis)
   	gr.WritePNG("plotFittedGaussian.png","ExpandingVortexGas2D",false);
 }
 
-void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples, dlib::matrix<double,3,1> params,int n, double coordinate_axis){
+void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples, dlib::matrix<double,4,1> params,int n, double coordinate_axis){
 	int m = data_samples.size();
 	mglData x(m), y(m), z(m);
+	mglData diff(m);
 	for(int i=0;i<m;i++)
   	{
     	x.a[i] = data_samples[i].first(0);
     	y.a[i] = data_samples[i].first(1);
     	z.a[i] = data_samples[i].second;
+    	// diff.a[i] = params(0) * exp(- params(1) * x.a[i] * x.a[i] - params(2) * x.a[i] * y.a[i] - params(3) * y.a[i] * y.a[i]) - z.a[i];
+    	double temp = 2 * (params(0) / M_PI) * (1 / (params(1) * params(3))) * (1 - (x.a[i]*x.a[i])/(params(1)*params(1)) - (y.a[i]*y.a[i])/(params(3)*params(3)) - params(2) * x.a[i] * y.a[i]);
+    	if(temp < 0) temp = 0;
+    	diff.a[i] = temp - z.a[i];
   	}
 
   	double delta_x = 2 * coordinate_axis / n;
@@ -1250,20 +1255,46 @@ void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > 
 			k = i+n*j;
   			double i0 = - coordinate_axis + delta_x * i;
   			double i1 = - coordinate_axis + delta_x * j;
-    		data.a[k] = params(0) * exp(- i0*i0 / params(1) - i1 * i1 / params(2));
+    		// data.a[k] = params(0) * exp(- params(1) * i0 * i0 - params(2) * i0 * i1 - params(3) * i1 * i1);
+    		double temp = 2 * (params(0) / M_PI) * (1 / (params(1) * params(3))) * (1 - (i0*i0)/(params(1)*params(1)) - (i1*i1)/(params(3)*params(3)) - params(2) * i0 * i1);
+    		if(temp < 0) temp = 0;
+    		data.a[k] = temp;
     		
     	}
     }
     mglGraph gr;
+
+    gr.SetSize(IMAGE_SIZE*2,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
+	gr.SetQuality(3);
     gr.Light(true);    gr.Alpha(true);
-    gr.SubPlot(1,1,0);
+    
     gr.Title("Dots sample");
+
+    gr.SubPlot(3,1,0);
     gr.SetRange('x',-coordinate_axis,coordinate_axis);
 	gr.SetRange('y',-coordinate_axis,coordinate_axis);
-	gr.SetRange('z',z);
+	gr.SetRange('z',z);	
     gr.Rotate(50,60);
+    gr.Axis();
+    gr.Dots(x,y,z);    
+
+    gr.SubPlot(3,1,1);
+    gr.SetRange('x',-coordinate_axis,coordinate_axis);
+	gr.SetRange('y',-coordinate_axis,coordinate_axis);
+	gr.SetRange('z',data);
+    gr.Rotate(50,60);
+    gr.Axis();
     gr.Surf(data);
-    gr.Dots(x,y,z);
+
+    gr.SubPlot(3,1,2);
+    gr.SetRange('x',-coordinate_axis,coordinate_axis);
+	gr.SetRange('y',-coordinate_axis,coordinate_axis);
+	gr.SetRange('z',data);
+    gr.Rotate(50,60);
+    gr.Axis();
+    gr.Dots(x,y,diff);
+    
   	
   	gr.WritePNG("plotCombinedGaussian.png","ExpandingVortexGas2D",false);
 }

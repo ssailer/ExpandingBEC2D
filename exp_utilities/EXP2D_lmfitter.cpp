@@ -1,3 +1,6 @@
+#include <EXP2D_lmfitter.h>
+
+
 // The contents of this file are in the public domain. See LICENSE_FOR_EXAMPLE_PROGRAMS.txt
 /*
 
@@ -10,37 +13,19 @@
 */
 
 
-#include <dlib/optimization.h>
-#include <iostream>
-#include <vector>
-#include <plot_with_mgl.h>
+
+// ----------------------------------------------------------------------------------------
 
 
-using namespace std;
 // using namespace dlib;
 
-// ----------------------------------------------------------------------------------------
-
-typedef dlib::matrix<double,2,1> input_vector;
-typedef dlib::matrix<double,4,1> parameter_vector;
 
 // ----------------------------------------------------------------------------------------
-
-class testClass {
-public:
-	int optimize();
-static double model ( const input_vector& input, const parameter_vector& params );
-static double residual ( const std::pair<input_vector, double>& data, const parameter_vector& params);
-static parameter_vector residual_derivative ( const std::pair<input_vector, double>& data, const parameter_vector& params );
-};
 
 // We will use this function to generate data.  It represents a function of 2 variables
 // and 3 parameters.   The least squares procedure will be used to infer the values of 
 // the 3 parameters based on a set of input/output pairs.
-double testClass::model (
-    const input_vector& input,
-    const parameter_vector& params
-)
+double lmfitter::model ( const input_vector& input, const parameter_vector& params )
 {
     const double p0 = params(0);
     const double p1 = params(1);
@@ -52,7 +37,14 @@ double testClass::model (
 
     // const double temp = p0*i0 + p1*i1 + p2;
     // const double temp = p0 * exp(- i0*i0 / p1 - i1 * i1 / p2);
-    const double temp = p0 * exp(- p1 * i0 * i0 - p2 * i0 * i1 - p3 * i1 * i1);
+    // const double temp = p0 * exp(- p1 * i0 * i0 - p2 * i0 * i1 - p3 * i1 * i1);
+    // const double temp = p0 - (p1 * i0 * i0 + p2 * i0 * i1 + p3 * i1 * i1);
+    double temp = 0;
+
+    double value = 2 * (p0 / M_PI) * (1 / (p1 * p3)) * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1) ;
+    if(value > 0){
+        temp = sqrt(value);
+    }
 
     // return temp*temp;
     return temp;
@@ -63,10 +55,7 @@ double testClass::model (
 // This function is the "residual" for a least squares problem.   It takes an input/output
 // pair and compares it to the output of our model and returns the amount of error.  The idea
 // is to find the set of parameters which makes the residual small on all the data pairs.
-double testClass::residual (
-    const std::pair<input_vector, double>& data,
-    const parameter_vector& params
-)
+double lmfitter::residual ( const std::pair<input_vector, double>& data, const parameter_vector& params )
 {
     return model(data.first, params) - data.second;
 }
@@ -74,10 +63,7 @@ double testClass::residual (
 // ----------------------------------------------------------------------------------------
 
 // This function is the derivative of the residual() function with respect to the parameters.
-parameter_vector testClass::residual_derivative (
-    const std::pair<input_vector, double>& data,
-    const parameter_vector& params
-)
+parameter_vector lmfitter::residual_derivative ( const std::pair<input_vector, double>& data, const parameter_vector& params )
 {
     parameter_vector der;
 
@@ -107,24 +93,17 @@ parameter_vector testClass::residual_derivative (
 
 // ----------------------------------------------------------------------------------------
 
-
-
-int testClass::optimize()
+vector<double> lmfitter::optimize()
 {
     try
     {
         // randomly pick a set of parameters to use in this example
-    	parameter_vector params;
+    	// parameter_vector params;
     	// params(0) = 1;
-        // params(1) = 1*randm(4,2);
-        // params(2) = 1*randm(4,2);
-        // params(3) = 1*randm(4,2);
-
-        params(0) = 41;
-        params(1) = 19;
-        params(2) = 34;
-        params(3) = 20;
-        cout << "params: " << dlib::trans(params) << endl;
+     //    params(1) = 10*randm(3,1);
+     //    params(2) = 10*randm(3,1);
+     //    params(3) = 10*randm(3,1);
+     //    cout << "params: " << trans(params) << endl;
 
 
         // Now let's generate a bunch of input/output pairs according to our model.
@@ -138,30 +117,59 @@ int testClass::optimize()
         //     // save the pair
         //     data_samples.push_back(make_pair(input, output));
         // }
-        int n = 400;
-        double coordinate_axis = 10.0;
-        double delta_x = 2 * coordinate_axis / n;
+        int n = density.cols();
+        // int m = density.rows();
+        double coordinate_axis = meta.coord[0];
+        // double delta_x = 2 * coordinate_axis / n;
+        double a,b,c;
+        double peak = density(meta.grid[0]/2,meta.grid[1]/2);
+
+        for(int i = 0; i < meta.grid[0]/2; ++i){
+        	if( density(i,meta.grid[1]/2) >= peak * 0.01){
+        		double tmp = ((meta.grid[0]/2) - i ) * meta.spacing[0];
+        		// a = 0.5 * 2.35 / (tmp * tmp);
+        		a = tmp;
+        		cerr << "FWHM x: " << tmp << endl;
+        		break;
+        	}
+        }
+
+        for(int i = 0; i < meta.grid[1]/2; ++i){
+        	if( density(i,meta.grid[0]/2) >= peak * 0.01){
+        		double tmp = ((meta.grid[1]/2) - i ) * meta.spacing[0];
+        		// c = 0.5 * 2.35 / (tmp * tmp);
+        		c = tmp;
+        		cerr << "FWHM y: " << tmp << endl;
+        		break;
+        	}
+        }
+
+        // b = (a + c) /2.0;
+        b = 0.0;
+
         
 
-        for(int i = 0; i < n; ++i){
-        	for(int j = 0; j < n; ++j){
-        		input(0) = - coordinate_axis + delta_x * i;
-        		input(1) = - coordinate_axis + delta_x * j;
+        for(int i = 0; i < meta.grid[0]; ++i){
+        	for(int j = 0; j < meta.grid[1]; ++j){
+        		if(density(i,j) > 0){
+        			input(0) = - meta.coord[0] + meta.spacing[0] * i;
+        			input(1) = - meta.coord[1] + meta.spacing[1] * j;
 
-        		const double output = model(input,params) /*+ 0.1 * randm(1,1)*/;
+        			// const double output = model(input,params) + 0.1 * randm(1,1);
+        			const double output = density(i,j);
 
-        		data_samples.push_back(make_pair(input, output));
+        			data_samples.push_back(make_pair(input, output));
+        		}
 
         	}
         }
 
-        plotPair(data_samples);
+        // plotPair(data_samples);
 
         // Before we do anything, let's make sure that our derivative function defined above matches
         // the approximate derivative computed using central differences (via derivative()).  
         // If this value is big then it means we probably typed the derivative function incorrectly.
-        cout << "derivative error: " << dlib::length(residual_derivative(data_samples[0], params) - 
-                                               derivative(residual)(data_samples[0], params) ) << endl;
+        // cout << "derivative error: " << dlib::length(lmfitter::residual_derivative(data_samples[0], params) - dlib::derivative(lmfitter::residual)(data_samples[0], params) ) << endl;
 
 
 
@@ -170,27 +178,28 @@ int testClass::optimize()
         // Now let's use the solve_least_squares_lm() routine to figure out what the
         // parameters are based on just the data_samples.
         parameter_vector x;
-        x(0) = 1;
-        x(1) = 0.2;
-        x(2) = 0.2;
-        x(3) = 0.2;
+        x(0) = 10000;
+        x(1) = a;
+        x(2) = b;
+        x(3) = c;
+        parameter_vector params = x;
 
-        cout << "Use Levenberg-Marquardt" << endl;
+        cerr << "Use Levenberg-Marquardt" << endl;
         // Use the Levenberg-Marquardt method to determine the parameters which
         // minimize the sum of all squared residuals.
-        solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-15).be_verbose(), 
-                               residual,
-                               residual_derivative,
-                               data_samples,
-                               x);
+        // solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-40).be_verbose(), residual, residual_derivative, data_samples, x);
+        solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-1).be_verbose(), residual, derivative(residual), data_samples, x);
 
         // Now x contains the solution.  If everything worked it will be equal to params.
-        cout << "inferred parameters: "<< trans(x) << endl;
-        cout << "solution error:      "<< length(x - params) << endl;
-        cout << endl;
+        cerr << "initial parameters: " << trans(params) << endl;
+        cerr << "inferred parameters: "<< trans(x) << endl;
+        // cerr << "solution error:      "<< dlib::length(x - params) << endl;
+        cerr << endl;
+
+        vector<double> paramter_results {x(0),x(1),x(2),x(3)};
 
 
-        plotGauss(x,n,coordinate_axis);
+        // plotGauss(params,n,coordinate_axis);
         plotPairAndGauss(data_samples,x,n,coordinate_axis);
 
 
@@ -199,50 +208,45 @@ int testClass::optimize()
 
 
         // x = 1;
-        // cout << "Use Levenberg-Marquardt, approximate derivatives" << endl;
-        // // If we didn't create the residual_derivative function then we could
-        // // have used this method which numerically approximates the derivatives for you.
-        // solve_least_squares_lm(objective_delta_stop_strategy(1e-15).be_verbose(), 
-        //                        residual,
-        //                        derivative(residual),
-        //                        data_samples,
-        //                        x);
+        // // cout << "Use Levenberg-Marquardt, approximate derivatives" << endl;
+        // // // If we didn't create the residual_derivative function then we could
+        // // // have used this method which numerically approximates the derivatives for you.
+        // 
 
-        // // Now x contains the solution.  If everything worked it will be equal to params.
-        // cout << "inferred parameters: "<< trans(x) << endl;
-        // cout << "solution error:      "<< length(x - params) << endl;
+        // // // Now x contains the solution.  If everything worked it will be equal to params.
+        // cout << "inferred parameters: "<< dlib::trans(x) << endl;
+        // // // cout << "solution error:      "<< dlib::length(x - params) << endl;
         // cout << endl;
 
 
 
 
         // x = 1;
-        // cout << "Use Levenberg-Marquardt/quasi-newton hybrid" << endl;
+        // cerr << "Use Levenberg-Marquardt/quasi-newton hybrid" << endl;
         // // This version of the solver uses a method which is appropriate for problems
         // // where the residuals don't go to zero at the solution.  So in these cases
         // // it may provide a better answer.
-        // solve_least_squares(objective_delta_stop_strategy(1e-15).be_verbose(), 
+        // dlib::solve_least_squares(dlib::objective_delta_stop_strategy(1e-20).be_verbose(), 
         //                     residual,
         //                     residual_derivative,
         //                     data_samples,
         //                     x);
 
-        // // Now x contains the solution.  If everything worked it will be equal to params.
-        // cout << "inferred parameters: "<< trans(x) << endl;
-        // cout << "solution error:      "<< length(x - params) << endl;
+        // // // Now x contains the solution.  If everything worked it will be equal to params.
+        // cerr << "inferred parameters: "<< dlib::trans(x) << endl;
+        // // cout << "solution error:      "<< dlib::length(x - params) << endl;
+
+
+        // cerr << "press [Enter] to continue.." << endl;
+        // std::cin.get();
+
+        return paramter_results;
 
     }
     catch (std::exception& e)
     {
         cout << e.what() << endl;
     }
-}
-
-int main()
-{
-	testClass test;
-	test.optimize();
-	return 0;
 }
 
 // Example output:

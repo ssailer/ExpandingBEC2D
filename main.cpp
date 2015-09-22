@@ -19,7 +19,7 @@ Last Update: 22/07/13
 #include <dirent.h>
 
 // #include <complexgrid.h>
-#include <bh3defaultgrid.h>
+// #include <bh3defaultgrid.h>
 // #include <averageclass.h>
 // #include <bh3observables.h>
 
@@ -42,7 +42,7 @@ Last Update: 22/07/13
 #define ERROR_IN_COMMAND_LINE 1
 #define ERROR_IN_CONFIG_FILE 2
 #define ERROR_UNHANDLED_EXCEPTION 3
-#define DEBUG_LOG 1
+#define DEBUG_LOG 0
 
 using namespace std;
 

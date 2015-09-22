@@ -24,7 +24,7 @@
 #include <EXP2D_tools.h>
 #include <EXP2D_MatrixData.h>
 #include <EXP2D_observables.h>
-#include <EXP2D_rootFitter.h>
+#include <EXP2D_lmfitter.h>
 #include <eigen3/Eigen/Dense>
 
 #include <gsl/gsl_sf_zeta.h>

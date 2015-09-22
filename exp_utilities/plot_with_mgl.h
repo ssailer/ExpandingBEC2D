@@ -86,7 +86,7 @@ void plotDataToPngExpanding(string filename,string title,ComplexGrid &g,Options 
 void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vector<double> &ranges,vector<double> &Xexpanding,vector<double> &Yexpanding,Options &opt);
 void plotVector(string filename,string title,vector<double> v,Options &opt);
 void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
-void plotVector(string filename,string title,ArrayXd v,ArrayXi w);
+void plotVector(string filename,string title,ArrayXd v,ArrayXd w);
 
 
 void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt);
@@ -96,8 +96,8 @@ void plotDataToPngEigenExpanding(string filename, Eigen::MatrixXcd& mPsi,vector<
 
 
 void plotPair(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples);
-void plotGauss(dlib::matrix<double,3,1> params,int n,double coordinate_axis);
-void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples, dlib::matrix<double,3,1> params,int n, double coordinate_axis);
+void plotGauss(dlib::matrix<double,4,1> params,int n,double coordinate_axis);
+void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > data_samples, dlib::matrix<double,4,1> params,int n, double coordinate_axis);
 
 
 #endif // PLOT_WITH_MGL_H__

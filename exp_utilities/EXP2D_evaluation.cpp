@@ -431,10 +431,10 @@ void Eval::smooth(MatrixXd &dens){
 
 void Eval::getDensity(){
 
-	fitter fit(density);
-	fit.optimize();
+	lmfitter fit(density,data.meta);
+	vector<double> fit_params = fit.optimize();
 
-	smooth(density);
+	// smooth(density);
 
 	double maximum = 0;
 	for(int k = 0; k < data.wavefunction.size(); k++){
@@ -485,12 +485,27 @@ void Eval::getDensity(){
 		ArrayXd querschnitt(data.meta.grid[0]);
 		for(int i = 0; i < data.meta.grid[0]; ++i){
 			double value =  density(i,data.meta.grid[1]/2);
-			if(value <= 1.0)
+			if(value <= 100.0)
 				querschnitt(i) = value;
 			else 
-				querschnitt(i) = 1.0;
+				querschnitt(i) = 100.0;
 		}
-		plotVector("Querschnitt" + to_string(data.meta.steps),"Querschnitt",querschnitt,densityLocationMap[k].row(data.meta.grid[1]/2));
+
+		ArrayXd fitschnitt(data.meta.grid[0]);
+		for(int i = 0; i < data.meta.grid[0]; ++i){
+			double i0 = - data.meta.coord[0] + data.meta.spacing[0] * i;
+			double i1 = 0.0;
+			double value = 2 * (fit_params[0] / M_PI) * (1 / (fit_params[1] * fit_params[3])) * (1 - (i0*i0)/(fit_params[1]*fit_params[1]) - (i1*i1)/(fit_params[3]*fit_params[3]) - fit_params[2] * i0 * i1) ;
+			if(value < 0) value = 0.0;
+			if(value <= 100.0)
+				fitschnitt(i) = value;
+			else 
+				fitschnitt(i) = 100.0;
+			
+
+		}
+		// plotVector("Querschnitt" + to_string(data.meta.steps),"Querschnitt",querschnitt,densityLocationMap[k].row(data.meta.grid[1]/2));
+		plotVector("Querschnitt" + to_string(data.meta.steps),"Querschnitt",querschnitt,fitschnitt);
 	}
 }
 

@@ -3,7 +3,7 @@
 
 #include <EXP2D_MatrixData.h>
 #include <EXP2D_tools.h>
-#include <complexgrid.h>
+// #include <complexgrid.h>
 #include <plot_with_mgl.h>
 
 // int mypow2(int x, int y); // Computes x^y
@@ -135,96 +135,96 @@ void addDrivingForce(MatrixData* &data, Options &opt){
 //     }
 // };
 
-void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
+// void addVorticesAlternating(MatrixData* &data, Options opt, int &vnumber){
 
-double maximum = 0;
-for(int i = 0; i < opt.grid[1]; ++i){
-    for(int j = 0; j < opt.grid[2]; ++j){
-        double value = abs2(data->wavefunction[0](i,j));
-        maximum = ( value > maximum) ? value : maximum;
-    }
-}
+// double maximum = 0;
+// for(int i = 0; i < opt.grid[1]; ++i){
+//     for(int j = 0; j < opt.grid[2]; ++j){
+//         double value = abs2(data->wavefunction[0](i,j));
+//         maximum = ( value > maximum) ? value : maximum;
+//     }
+// }
 
-double LOWER_THRESHOLD = maximum * 0.35; // opt.N / (4. * opt.min_x  * opt.min_y );
+// double LOWER_THRESHOLD = maximum * 0.35; // opt.N / (4. * opt.min_x  * opt.min_y );
 
-int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
-int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
-int windingnumber = 1;
+// int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
+// int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
+// int windingnumber = 1;
 
-ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+// // ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
 
-vector<Coordinate<int32_t>> c;
+// vector<Coordinate<int32_t>> c;
 
-for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){
-    for(int x = x_jump; x < opt.grid[1]; x += x_jump){
-        if(abs2(data->wavefunction[0](x,y)) >= LOWER_THRESHOLD){
-            c.push_back(grid.make_coord(x,y,0));
-        }
-    }
-}
-for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
-    for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){
-        if(abs2(data->wavefunction[0](x,y)) >= LOWER_THRESHOLD){
-            c.push_back(grid.make_coord(x,y,0));
-        }
-    }
-}
-
-MatrixData test(1,opt.grid[1],opt.grid[2],0,0,opt.min_x,opt.min_y);
-for(int i = 0; i < c.size(); i++){
-    #pragma omp parallel for
-    for(int y = 0; y < opt.grid[2]; y++){
-        for(int x = 0; x < opt.grid[1]; x++){   
-            data->wavefunction[0](x,y) *= polar(1.0, (windingnumber  /** mypow2(-1,i+1)*/ ) * vortex( y,c[i].y(),x,c[i].x() )) ;
-        }
-    }
-    // g->wavefunction[0](c) complex<double>(0.0,0.0);
-}
-vnumber += c.size() * windingnumber;
-    // return opt.vortexnumber;
-}
-
-void addVorticesRegular(MatrixData* &data, Options opt, int &vnumber){
-
-cout << "Adding Vortices with a spacing of " << opt.vortexspacing << "." << endl;
-
-int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
-int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
-int windingnumber = 1;
-
-ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
-
-vector<Coordinate<int32_t>> c;
-
-for(int y = y_jump; y < opt.grid[2]; y += y_jump){
-    for(int x = x_jump; x < opt.grid[1]; x += x_jump){
-        if(abs2(data->wavefunction[0](x,y)) >= 10){
-            c.push_back(grid.make_coord(x,y,0));
-        }
-    }
-}
+// for(int y = y_jump; y < opt.grid[2]; y += y_jump*2){
+//     for(int x = x_jump; x < opt.grid[1]; x += x_jump){
+//         if(abs2(data->wavefunction[0](x,y)) >= LOWER_THRESHOLD){
+//             c.push_back(grid.make_coord(x,y,0));
+//         }
+//     }
+// }
 // for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
 //     for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){
+//         if(abs2(data->wavefunction[0](x,y)) >= LOWER_THRESHOLD){
+//             c.push_back(grid.make_coord(x,y,0));
+//         }
+//     }
+// }
+
+// MatrixData test(1,opt.grid[1],opt.grid[2],0,0,opt.min_x,opt.min_y);
+// for(int i = 0; i < c.size(); i++){
+//     #pragma omp parallel for
+//     for(int y = 0; y < opt.grid[2]; y++){
+//         for(int x = 0; x < opt.grid[1]; x++){   
+//             data->wavefunction[0](x,y) *= polar(1.0, (windingnumber  /** mypow2(-1,i+1)*/ ) * vortex( y,c[i].y(),x,c[i].x() )) ;
+//         }
+//     }
+//     // g->wavefunction[0](c) complex<double>(0.0,0.0);
+// }
+// vnumber += c.size() * windingnumber;
+//     // return opt.vortexnumber;
+// }
+
+// void addVorticesRegular(MatrixData* &data, Options opt, int &vnumber){
+
+// cout << "Adding Vortices with a spacing of " << opt.vortexspacing << "." << endl;
+
+// int x_jump = opt.vortexspacing; // opt.grid[1] / 5;
+// int y_jump = opt.vortexspacing; // opt.grid[2] / 5;
+// int windingnumber = 1;
+
+// // ComplexGrid grid(opt.grid[0],opt.grid[1],opt.grid[2],opt.grid[3]);
+
+// vector<Coordinate<int32_t>> c;
+
+// for(int y = y_jump; y < opt.grid[2]; y += y_jump){
+//     for(int x = x_jump; x < opt.grid[1]; x += x_jump){
 //         if(abs2(data->wavefunction[0](x,y)) >= 10){
 //             c.push_back(grid.make_coord(x,y,0));
 //         }
 //     }
 // }
-for(int i = 0; i < c.size(); i++){
-    #pragma omp parallel for
-    for(int y = 0; y < opt.grid[2]; y++){
-        for(int x = 0; x < opt.grid[1]; x++){   
-            data->wavefunction[0](x,y) *= polar(1.0, (windingnumber  /* * mypow2(-1,i+1) */) *vortex( y,c[i].y(),x,c[i].x() )) ;
-        }
-    }
-    // g->wavefunction[0](c) complex<double>(0.0,0.0);
-}
+// // for(int y = y_jump*2; y < opt.grid[2]; y += y_jump*2){
+// //     for(int x = x_jump/2; x < opt.grid[1]; x += x_jump){
+// //         if(abs2(data->wavefunction[0](x,y)) >= 10){
+// //             c.push_back(grid.make_coord(x,y,0));
+// //         }
+// //     }
+// // }
+// for(int i = 0; i < c.size(); i++){
+//     #pragma omp parallel for
+//     for(int y = 0; y < opt.grid[2]; y++){
+//         for(int x = 0; x < opt.grid[1]; x++){   
+//             data->wavefunction[0](x,y) *= polar(1.0, (windingnumber  /* * mypow2(-1,i+1) */) *vortex( y,c[i].y(),x,c[i].x() )) ;
+//         }
+//     }
+//     // g->wavefunction[0](c) complex<double>(0.0,0.0);
+// }
 
 
 
 
-vnumber += c.size() * windingnumber;
-    // return opt.vortexnumber;
-}
+// vnumber += c.size() * windingnumber;
+//     // return opt.vortexnumber;
+// }
 
 #endif // EXP2D_STARTGRIDS_H__
