@@ -73,6 +73,8 @@ private:
 	MatrixXd density;
 	MatrixData::MetaData meta;
 
+	parameter_vector set_initial_parameters();
+
 
 	static double model ( const input_vector& input, const parameter_vector& params );
 	static double residual ( const std::pair<input_vector, double>& data, const parameter_vector& params );

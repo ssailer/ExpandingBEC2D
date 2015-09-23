@@ -42,7 +42,7 @@ Last Update: 22/07/13
 #define ERROR_IN_COMMAND_LINE 1
 #define ERROR_IN_CONFIG_FILE 2
 #define ERROR_UNHANDLED_EXCEPTION 3
-#define DEBUG_LOG 0
+#define DEBUG_LOG 1
 
 using namespace std;
 
@@ -88,7 +88,7 @@ int evaluate(InitMain &initMain){
 
 	binaryFile* obsFile = new binaryFile(resultfilename,binaryFile::out);
 
-	#pragma omp parallel for ordered private(data) num_threads(2) schedule(static,1)
+	#pragma omp parallel for ordered private(data) num_threads(1) schedule(static,1)
 	for(int k = 0; k < size; ++k){
 		// cerr << "loading: " << k << " / " << size-1;
 		data = new MatrixData();
@@ -127,7 +127,7 @@ int evaluate(InitMain &initMain){
 	cerr << "[END]" << endl;
 
 }
-
+/*
 int resave(InitMain &initMain){
 	initMain.printInitVar();
 	Options opt = initMain.getOptions();
@@ -211,6 +211,7 @@ int resave(InitMain &initMain){
 	cerr << "[END]" << endl;
 
 }
+*/
 
 int plotting(InitMain &initMain){
 	initMain.printInitVar();

@@ -126,6 +126,8 @@ private:
 	vector<int> findMajorMinor();
 	Ellipse fitEllipse(c_set &Data);
 	c_set generateContour(Ellipse &ellipse);
+
+	vector<double> fitTF();
 	
 
 	int get_phase_jump(const Coordinate<int32_t> &c, const Vector<int32_t> &v);

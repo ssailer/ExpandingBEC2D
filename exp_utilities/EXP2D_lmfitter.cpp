@@ -41,7 +41,8 @@ double lmfitter::model ( const input_vector& input, const parameter_vector& para
     // const double temp = p0 - (p1 * i0 * i0 + p2 * i0 * i1 + p3 * i1 * i1);
     double temp = 0;
 
-    double value = 2 * (p0 / M_PI) * (1 / (p1 * p3)) * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1) ;
+    double value = 2.0 * 10000 / (M_PI * p1 * p3) * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1);
+    // double value = p0 * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1) ;
     if(value > 0){
         temp = sqrt(value);
     }
@@ -76,12 +77,18 @@ parameter_vector lmfitter::residual_derivative ( const std::pair<input_vector, d
     const double i1 = data.first(1);
 
     // const double temp = p0*i0 + p1*i1 + p2;
-    const double temp = exp(- p1 * i0 * i0 - p2 * i0 * i1 - p3 * i1 * i1);
+    // const double temp = exp(- p1 * i0 * i0 - p2 * i0 * i1 - p3 * i1 * i1);
+    const double temp = (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1);
+
+	// der(0) = temp;
+	// der(1) = - p0 * temp * ( i0*i0);
+	// der(2) = - p0 * temp * ( i1*i0);
+	// der(3) = - p0 * temp * ( i1*i1);
 
 	der(0) = temp;
-	der(1) = - p0 * temp * ( i0*i0);
-	der(2) = - p0 * temp * ( i1*i0);
-	der(3) = - p0 * temp * ( i1*i1);
+	der(1) = p0 * 2.0 * ( i0*i0) / (p1 * p1 * p1);
+	der(2) = - p0 * ( i1*i0);
+	der(3) = p0 * 2.0 * ( i1*i1) / (p3 * p3 * p3);
 
 
     // der(0) = i0*2*temp;
@@ -89,6 +96,46 @@ parameter_vector lmfitter::residual_derivative ( const std::pair<input_vector, d
     // der(2) = 2*temp;
 
     return der;
+}
+
+parameter_vector lmfitter::set_initial_parameters()
+{
+		parameter_vector params;
+	    int n = density.cols();
+        // int m = density.rows();
+        double coordinate_axis = meta.coord[0];
+        // double delta_x = 2 * coordinate_axis / n;
+        // double a,b,c;
+        double peak = density(meta.grid[0]/2,meta.grid[1]/2);
+
+
+        for(int i = 0; i < meta.grid[0]/2; ++i){
+        	if( density(i,meta.grid[1]/2) >= peak * 0.005){
+        		double tmp = ((meta.grid[0]/2) - i ) * meta.spacing[0];
+        		// a = 0.5 * 2.35 / (tmp * tmp);
+        		params(1) = tmp;
+        		// cerr << "Rx: " << tmp << endl;
+        		break;
+        	}
+        }
+
+        for(int i = 0; i < meta.grid[1]/2; ++i){
+        	if( density(i,meta.grid[0]/2) >= peak * 0.005){
+        		double tmp = ((meta.grid[1]/2) - i ) * meta.spacing[0];
+        		// c = 0.5 * 2.35 / (tmp * tmp);
+        		params(3) = tmp;
+        		// cerr << "Ry: " << tmp << endl;
+        		break;
+        	}
+        }
+
+        // double n0 = 2 * (10000.0 / M_PI) * (1 / (a * c));
+        params(0) = 10000;
+        // double n0 = peak;
+
+        // b = (a + c) /2.0;
+        params(2) = 0.0;
+        return params;
 }
 
 // ----------------------------------------------------------------------------------------
@@ -117,35 +164,7 @@ vector<double> lmfitter::optimize()
         //     // save the pair
         //     data_samples.push_back(make_pair(input, output));
         // }
-        int n = density.cols();
-        // int m = density.rows();
-        double coordinate_axis = meta.coord[0];
-        // double delta_x = 2 * coordinate_axis / n;
-        double a,b,c;
-        double peak = density(meta.grid[0]/2,meta.grid[1]/2);
 
-        for(int i = 0; i < meta.grid[0]/2; ++i){
-        	if( density(i,meta.grid[1]/2) >= peak * 0.01){
-        		double tmp = ((meta.grid[0]/2) - i ) * meta.spacing[0];
-        		// a = 0.5 * 2.35 / (tmp * tmp);
-        		a = tmp;
-        		cerr << "FWHM x: " << tmp << endl;
-        		break;
-        	}
-        }
-
-        for(int i = 0; i < meta.grid[1]/2; ++i){
-        	if( density(i,meta.grid[0]/2) >= peak * 0.01){
-        		double tmp = ((meta.grid[1]/2) - i ) * meta.spacing[0];
-        		// c = 0.5 * 2.35 / (tmp * tmp);
-        		c = tmp;
-        		cerr << "FWHM y: " << tmp << endl;
-        		break;
-        	}
-        }
-
-        // b = (a + c) /2.0;
-        b = 0.0;
 
         
 
@@ -177,18 +196,14 @@ vector<double> lmfitter::optimize()
 
         // Now let's use the solve_least_squares_lm() routine to figure out what the
         // parameters are based on just the data_samples.
-        parameter_vector x;
-        x(0) = 10000;
-        x(1) = a;
-        x(2) = b;
-        x(3) = c;
+        parameter_vector x = set_initial_parameters();
         parameter_vector params = x;
 
-        cerr << "Use Levenberg-Marquardt" << endl;
+        // cerr << "Use Levenberg-Marquardt" << endl;
         // Use the Levenberg-Marquardt method to determine the parameters which
         // minimize the sum of all squared residuals.
-        // solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-40).be_verbose(), residual, residual_derivative, data_samples, x);
-        solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-1).be_verbose(), residual, derivative(residual), data_samples, x);
+        // solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-4,2e3).be_verbose(), residual, residual_derivative, data_samples, x);
+        solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-7,5e2)/*.be_verbose()*/, residual, derivative(residual), data_samples, x);
 
         // Now x contains the solution.  If everything worked it will be equal to params.
         cerr << "initial parameters: " << trans(params) << endl;
@@ -200,7 +215,7 @@ vector<double> lmfitter::optimize()
 
 
         // plotGauss(params,n,coordinate_axis);
-        plotPairAndGauss(data_samples,x,n,coordinate_axis);
+        plotPairAndGauss(data_samples,x,density.cols(),meta.coord[0]);
 
 
 
