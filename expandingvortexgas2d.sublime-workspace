@@ -5,7 +5,23 @@
 		[
 			[
 				"para",
+				"params_tf"
+			],
+			[
+				"set",
+				"set_initial_parameters"
+			],
+			[
+				"pra",
+				"paramter_results"
+			],
+			[
+				"param",
 				"parameter_vector"
+			],
+			[
+				"MAtri",
+				"MatrixData"
 			],
 			[
 				"data",
@@ -174,10 +190,6 @@
 			[
 				"h5fil",
 				"h5fileName"
-			],
-			[
-				"set",
-				"set_xscale"
 			],
 			[
 				"del",
@@ -502,18 +514,6 @@
 			[
 				"ru",
 				"runMode"
-			],
-			[
-				"fft",
-				"fftForward"
-			],
-			[
-				"ff",
-				"fftBackward"
-			],
-			[
-				"fftFo",
-				"fftForward_X"
 			]
 		]
 	},
@@ -523,7 +523,7 @@
 			"file": "main.cpp",
 			"settings":
 			{
-				"buffer_size": 12838,
+				"buffer_size": 12846,
 				"line_ending": "Unix"
 			}
 		},
@@ -547,7 +547,7 @@
 			"file": "exp_utilities/hydro.cpp",
 			"settings":
 			{
-				"buffer_size": 14767,
+				"buffer_size": 14788,
 				"line_ending": "Unix"
 			}
 		},
@@ -579,7 +579,7 @@
 			"file": "exp_utilities/EXP2D_evaluation.cpp",
 			"settings":
 			{
-				"buffer_size": 41200,
+				"buffer_size": 43892,
 				"line_ending": "Unix"
 			}
 		},
@@ -587,47 +587,47 @@
 			"file": "tester.cpp",
 			"settings":
 			{
-				"buffer_size": 8738,
+				"buffer_size": 9704,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "exp_utilities/EXP2D_rootFitter.h",
+			"file": "exp_utilities/EXP2D_lmfitter.h",
 			"settings":
 			{
-				"buffer_size": 2185,
+				"buffer_size": 1884,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/nhrjr/Downloads/eigen-eigen-bdd17ee3b1b3/unsupported/test/NonLinearOptimization.cpp",
+			"file": "exp_utilities/EXP2D_lmfitter.cpp",
 			"settings":
 			{
-				"buffer_size": 65239,
+				"buffer_size": 10845,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/nhrjr/Downloads/eigen-eigen-bdd17ee3b1b3/unsupported/test/levenberg_marquardt.cpp",
+			"file": "exp_utilities/EXP2D_startgrids.h",
 			"settings":
 			{
-				"buffer_size": 54542,
+				"buffer_size": 8064,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "exp_utilities/EXP2D_rootFitter.cpp",
+			"file": "exp_utilities/EXP2D_MatrixData.h",
 			"settings":
 			{
-				"buffer_size": 649,
+				"buffer_size": 17805,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Searching 34 files for \"Hash\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_Contour.h:\n   16  using namespace std;\n   17  \n   18: typedef std::unordered_set<Coordinate<int32_t>,Hash> c_set;\n   19  \n   20  class Contour{\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_binaryfile.cpp:\n  586    for(int k = 0; k < samples; k++){\n  587  	vec2[k+1] = vec2Ranks[k];    \n  588: 	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = results.contour[k].begin(); it != results.contour[k].end(); ++it){\n  589  	  vec2[l] = it->x();\n  590  	  vec2[l+1] = it->y();\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_plotter.cpp:\n   97  \n   98  	index = 0;\n   99: 	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = eval.contour[0].begin(); it != eval.contour[0].end(); ++it){\n  100  		contour_x.a[index] = it->x();\n  101  		contour_y.a[index] = it->y();\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.cpp:\n  269  }\n  270  \n  271: void plotContour(string name,  MatrixXcd &data, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){\n  272  \n  273  	int n = data.rows();\n  ...\n  280  \n  281  	int l = 0;\n  282: 	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){\n  283  		v_x.a[l] = it->x();\n  284  		v_y.a[l] = it->y();\n  ...\n  319  }\n  320  \n  321: void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt){\n  322  \n  323  	int size = contour.size();\n  ...\n  331  	int x_min = opt.grid[1];\n  332  	int y_min = opt.grid[2];\n  333: 	for(std::unordered_set<Coordinate<int32_t>,Hash>::const_iterator it = contour.begin(); it != contour.end(); ++it){\n  334  		v_x.a[l] = it->x();\n  335  		v_y.a[l] = it->y();\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/plot_with_mgl.h:\n   75  void plotPairDistance(string name,string title,list<VortexData> vlist);\n   76  void plotVortexList(string name,string title,const RealGrid &phase,list<VortexData> &vlist,Options &opt);\n   77: void plotContour(string filename, MatrixXcd &data, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);\n   78  \n   79  void plotDataToPng(string filename,string title,ComplexGrid* &g,Options &opt);\n   ..\n   87  void plotVector(string filename,string title,ArrayXd v,ArrayXi w);\n   88  \n   89: void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>,Hash> &contour, Options &opt);\n   90  void plotAngularDensity(string filename,vector<double> phi,vector<double> density,Options &opt);\n   91  void plotDataToPngEigen(string filename, Eigen::MatrixXcd& mPsi,Options opt);\n\n9 matches across 5 files\n",
+			"contents": "Searching 35 files for \"convertToPhysicalUnits\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_MatrixData.h:\n   94      inline void updateTo(const double &extTime, const int &extSteps,const vector<double> &coordFactor);\n   95      inline void convertToDimensionlessUnits();\n   96:     inline void convertToPhysicalUnits();\n   97      inline void setMatrix(const vector<MatrixXcd> &extWavefct);\n   98      inline void setTime(const double &extTime);\n   ..\n  288  }\n  289  \n  290: inline void MatrixData::convertToPhysicalUnits(){\n  291      if (meta.Ag != 0.0 && meta.OmegaG != 0.0){\n  292          meta.convertFromDimensionless();\n\n/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.cpp:\n   17  	cout << data.meta.Ag << \"  \" << data.meta.OmegaG << endl;\n   18  	toPhysicalUnits(opt);\n   19: 	data.convertToPhysicalUnits();\n   20  };\n   21  \n\n3 matches across 2 files\n",
 			"settings":
 			{
-				"buffer_size": 2778,
+				"buffer_size": 922,
 				"line_ending": "Unix",
 				"name": "Find Results",
 				"scratch": true
@@ -669,7 +669,7 @@
 			"file": "CMakeLists.txt",
 			"settings":
 			{
-				"buffer_size": 3528,
+				"buffer_size": 3491,
 				"line_ending": "Unix"
 			}
 		},
@@ -685,7 +685,15 @@
 			"file": "exp_utilities/EXP2D_evaluation.h",
 			"settings":
 			{
-				"buffer_size": 4537,
+				"buffer_size": 4612,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "exp_utilities/EXP2D_observables.h",
+			"settings":
+			{
+				"buffer_size": 7477,
 				"line_ending": "Unix"
 			}
 		},
@@ -693,7 +701,7 @@
 			"file": "exp_utilities/plot_with_mgl.cpp",
 			"settings":
 			{
-				"buffer_size": 25456,
+				"buffer_size": 26655,
 				"line_ending": "Unix"
 			}
 		},
@@ -910,10 +918,20 @@
 	],
 	"file_history":
 	[
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_14.0/runObservables/EXP_Observables.dat",
+		"/mnt/movies/+unsorted/Walt Disney/Walt.Disneys.Geschichten.die.verzaubern.Die.Schoene.und.das.Biest.German.2004.DVDRiP.XviD-Clitori4/clitori4_sudb_xvid.nfo",
+		"/usr/include/dlib/optimization/optimization_least_squares_abstract.h",
+		"/usr/include/dlib/optimization/optimization_least_squares.h",
+		"/usr/include/dlib/optimization.h",
+		"/home/nhrjr/Downloads/eigen-eigen-bdd17ee3b1b3/unsupported/test/levenberg_marquardt.cpp",
+		"/home/nhrjr/Downloads/eigen-eigen-bdd17ee3b1b3/unsupported/test/NonLinearOptimization.cpp",
+		"/usr/include/dlib/optimization/optimization.h",
+		"/usr/include/dlib/optimization/optimization_abstract.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rootFitter.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rootFitter.cpp",
 		"/home/nhrjr/Downloads/lmfit-5.1/lib/lmcurve.c",
 		"/home/nhrjr/Downloads/lmfit-5.1/lib/lmmin.c",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/fit2dgaussian.c",
-		"/home/nhrjr/Downloads/eigen-eigen-bdd17ee3b1b3/unsupported/test/NonLinearOptimization.cpp",
 		"/usr/include/root/TObject.h",
 		"/usr/include/root/TF1.h",
 		"/usr/share/doc/root/tutorials/fit/fit2d.C",
@@ -921,7 +939,6 @@
 		"/usr/include/root/TF2.h",
 		"/usr/include/root/TNamed.h",
 		"/usr/include/eigen3/unsupported/Eigen/NonLinearOptimization",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_14.0/runObservables/EXP_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_0.0/runObservables/EXP_Observables.dat",
 		"/mnt/truecrypt3/remote_runs/100k/ellipse.py",
 		"/mnt/truecrypt3/remote_runs/100k/plot.py",
@@ -1028,16 +1045,7 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/tests/findVortex/runObservables/ROT_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/tests/10000_200x200_0.145_13.0/runObservables/ROT_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/tests/10000_400x400_0.145_17.0/runObservables/ROT_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/AveragesPlot.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/tests/1000000_600x600_0.145_15.0/runObservables/ROT_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/tests/100000_300x300_0.145_13.0/runObservables/ROT_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/testRot_remote/100000_400x400_0.145_15.0/runObservables/ROT_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/tests/100000_400x400_0.145_18.0/runObservables/ROT_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/tests/10000_400x400_0.145_15.0/runObservables/ROT_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/tests/10000_400x400_0.145_20.0/runObservables/ROT_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/tests/testRot_remote/100000_400x400_0.145_17.0/runObservables/ROT_Observables.dat",
-		"/home/nhrjr/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
-		"/home/nhrjr/projects/expandingvortexgas2d/tests/testRot_remote/100000_400x400_0.145_18.0/runObservables/ROT_Observables.dat"
+		"/home/nhrjr/projects/expandingvortexgas2d/andre_results/AveragesPlot.py"
 	],
 	"find":
 	{
@@ -1059,6 +1067,46 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"fit_params",
+			"getDens",
+			"ellipse.center[0]",
+			"ellipse.angle",
+			"ellipse.minor",
+			"ellipse.major",
+			"ellipse",
+			"convertToPhysicalUnits",
+			"convertFromDimensionlessUnits",
+			"convertToDimensionlessUnits",
+			"Cannot convert MatrixData",
+			"Cannot convert",
+			"p0",
+			"params",
+			"params.sigma_y",
+			"params.sigma_x",
+			"fitschnitt",
+			"fitschnitt_y",
+			"querschnitt",
+			"fitschnitt",
+			"querschnitt",
+			"plotVector",
+			"quer",
+			"plotschnitt",
+			"p",
+			"100000",
+			"i1",
+			"i0",
+			"p2",
+			"p1",
+			"Rx",
+			"i1",
+			"i0",
+			"cout",
+			"lmfitter",
+			"cout",
+			"testClass",
+			"1e-7",
+			"using",
+			"ROOTFITTER",
 			"n",
 			"400",
 			"lsqfit",
@@ -1146,47 +1194,7 @@
 			"getRestart",
 			"SPLIT",
 			"ROT",
-			"EXP",
-			"create",
-			"H5Lcreate",
-			"getDens",
-			"4",
-			"step",
-			"i",
-			"500",
-			"rand(3)",
-			"rand()",
-			"e",
-			"int",
-			"step",
-			"20",
-			"50",
-			"2ndterm",
-			"vortexnumber",
-			"25",
-			"400",
-			"40",
-			"Hydro",
-			"Rx",
-			"Log",
-			"[]",
-			"0",
-			"borders.append(",
-			"max()",
-			"exp",
-			".array",
-			"Snapshots",
-			"running_median",
-			"kLog",
-			"initMain.getRestart()",
-			"math",
-			"83",
-			"63",
-			"67",
-			"50",
-			"34",
-			"18",
-			"24"
+			"EXP"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1204,7 +1212,7 @@
 	"groups":
 	[
 		{
-			"selected": 8,
+			"selected": 10,
 			"sheets":
 			[
 				{
@@ -1213,15 +1221,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12838,
+						"buffer_size": 12846,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12191,
-								12191
+								1208,
+								1208
 							]
 						],
 						"settings":
@@ -1230,10 +1238,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2278.0,
+						"translation.y": 79.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -1258,10 +1266,10 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 4800.0,
+						"translation.y": 4160.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
@@ -1288,10 +1296,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 523.0,
+						"translation.y": 370.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
@@ -1300,15 +1308,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 14767,
+						"buffer_size": 14788,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7379,
-								7379
+								7473,
+								7473
 							]
 						],
 						"settings":
@@ -1318,10 +1326,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3841.0,
+						"translation.y": 3432.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1337,8 +1345,8 @@
 						"selection":
 						[
 							[
-								1253,
-								1253
+								1091,
+								1091
 							]
 						],
 						"settings":
@@ -1347,10 +1355,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 495.0,
+						"translation.y": 78.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1366,8 +1374,8 @@
 						"selection":
 						[
 							[
-								812,
-								812
+								1382,
+								1382
 							]
 						],
 						"settings":
@@ -1376,10 +1384,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 180.0,
+						"translation.y": 351.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -1404,10 +1412,10 @@
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 75030.0,
+						"translation.y": 65026.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
@@ -1416,15 +1424,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 41200,
+						"buffer_size": 43892,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								14670,
-								14670
+								25323,
+								25323
 							]
 						],
 						"settings":
@@ -1433,10 +1441,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 6113.0,
+						"translation.y": 10102.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -1445,15 +1453,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8738,
+						"buffer_size": 9704,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								545,
-								545
+								4928,
+								4928
 							]
 						],
 						"settings":
@@ -1461,126 +1469,127 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1833.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "exp_utilities/EXP2D_lmfitter.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1884,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1403,
+								1403
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 284.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "exp_utilities/EXP2D_lmfitter.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10845,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4267,
+								4267
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1014.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "exp_utilities/EXP2D_rootFitter.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2185,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2114,
-								2114
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 883.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "/home/nhrjr/Downloads/eigen-eigen-bdd17ee3b1b3/unsupported/test/NonLinearOptimization.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 65239,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								41973,
-								41973
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 26068.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
 					"buffer": 11,
-					"file": "/home/nhrjr/Downloads/eigen-eigen-bdd17ee3b1b3/unsupported/test/levenberg_marquardt.cpp",
+					"file": "exp_utilities/EXP2D_startgrids.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 54542,
+						"buffer_size": 8064,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								564,
-								564
+								2368,
+								2368
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 2,
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": -0.0,
-						"translation.y": 0.0,
+						"translation.x": 0.0,
+						"translation.y": 585.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
 					"buffer": 12,
-					"file": "exp_utilities/EXP2D_rootFitter.cpp",
+					"file": "exp_utilities/EXP2D_MatrixData.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 649,
+						"buffer_size": 17805,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								61,
-								61
+								9948,
+								9948
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.tmLanguage"
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3223.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
@@ -1588,7 +1597,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2778,
+						"buffer_size": 922,
 						"regions":
 						{
 							"match":
@@ -1597,40 +1606,16 @@
 								"regions":
 								[
 									[
-										211,
-										215
+										330,
+										352
 									],
 									[
-										465,
-										469
+										536,
+										558
 									],
 									[
-										773,
-										777
-									],
-									[
-										1126,
-										1130
-									],
-									[
-										1278,
-										1282
-									],
-									[
-										1530,
-										1534
-									],
-									[
-										1727,
-										1731
-									],
-									[
-										2220,
-										2224
-									],
-									[
-										2532,
-										2536
+										852,
+										874
 									]
 								],
 								"scope": ""
@@ -1639,8 +1624,8 @@
 						"selection":
 						[
 							[
-								775,
-								775
+								866,
+								866
 							]
 						],
 						"settings":
@@ -1658,7 +1643,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
@@ -1684,10 +1669,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 997.0,
+						"translation.y": 865.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
@@ -1713,10 +1698,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 8341.0,
+						"translation.y": 7229.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -1742,10 +1727,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5762.0,
+						"translation.y": 4994.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
@@ -1770,11 +1755,11 @@
 							"syntax": "Packages/C++/C++.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
-						"translation.x": -0.0,
-						"translation.y": 90.0,
+						"translation.x": 0.0,
+						"translation.y": 78.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
@@ -1783,15 +1768,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3528,
+						"buffer_size": 3491,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1344,
-								1344
+								1369,
+								1369
 							]
 						],
 						"settings":
@@ -1800,10 +1785,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 225.0,
+						"translation.y": 117.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
@@ -1830,10 +1815,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 180.0,
+						"translation.y": 156.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
@@ -1842,15 +1827,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4537,
+						"buffer_size": 4612,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								586,
-								586
+								3452,
+								3452
 							]
 						],
 						"settings":
@@ -1859,43 +1844,73 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 465.0,
+						"translation.y": 1144.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "exp_utilities/EXP2D_observables.h",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 7477,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 195.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "exp_utilities/plot_with_mgl.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 26655,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								21941,
+								21941
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 15981.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
-					"file": "exp_utilities/plot_with_mgl.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 25456,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								25124,
-								25124
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 18313.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 22,
+					"buffer": 23,
 					"file": "exp_utilities/plot_with_mgl.h",
 					"semi_transient": false,
 					"settings":
@@ -1907,8 +1922,8 @@
 						"selection":
 						[
 							[
-								4416,
-								4416
+								3631,
+								3631
 							]
 						],
 						"settings":
@@ -1918,14 +1933,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1033.0,
+						"translation.y": 794.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 24,
 					"file": "remote/rot_new/exp.cfg",
 					"semi_transient": false,
 					"settings":
@@ -1947,14 +1962,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 323.0,
+						"translation.y": 112.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 25,
 					"file": "remote/rot_new/Ratios.py",
 					"semi_transient": false,
 					"settings":
@@ -1976,10 +1991,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3502.0,
+						"translation.y": 3036.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 25,
 					"type": "text"
 				}
 			]
@@ -1987,7 +2002,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 21.0
 	},
 	"input":
 	{
@@ -2018,7 +2033,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 295.0
+		"height": 186.0
 	},
 	"output.find_results":
 	{
@@ -2027,7 +2042,7 @@
 	"project": "expandingvortexgas2d.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 38.0
 	},
 	"save_all_on_build": true,
 	"select_file":

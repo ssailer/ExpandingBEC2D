@@ -491,56 +491,7 @@ void Eval::getDensity(){
 			}
 		}
 
-		// ArrayXd querschnitt_x(data.meta.grid[0]);
-		// for(int i = 0; i < data.meta.grid[0]; ++i){
-		// 	double value =  density(i,data.meta.grid[1]/2);
-		// 	if(value <= 100.0)
-		// 		querschnitt_x(i) = value;
-		// 	else 
-		// 		querschnitt_x(i) = 100.0;
-		// }
 
-		// ArrayXd fitschnitt_x(data.meta.grid[0]);
-		// for(int i = 0; i < data.meta.grid[0]; ++i){
-		// 	double i0 = - data.meta.coord[0] + data.meta.spacing[0] * i;
-		// 	double i1 = 0.0;
-		// 	double value = 2 * (fit_params[0] / M_PI) * (1 / (fit_params[1] * fit_params[3])) * (1 - (i0*i0)/(fit_params[1]*fit_params[1]) - (i1*i1)/(fit_params[3]*fit_params[3]) - fit_params[2] * i0 * i1) ;
-		// 	if(value < 0) value = 0.0;
-		// 	if(value <= 100.0)
-		// 		fitschnitt_x(i) = value;
-		// 	else 
-		// 		fitschnitt_x(i) = 100.0;
-			
-
-		// }
-		// // plotVector("Querschnitt" + to_string(data.meta.steps),"Querschnitt",querschnitt,densityLocationMap[k].row(data.meta.grid[1]/2));
-		
-
-		// ArrayXd querschnitt_y(data.meta.grid[0]);
-		// for(int i = 0; i < data.meta.grid[0]; ++i){
-		// 	double value =  density(data.meta.grid[0]/2,i);
-		// 	if(value <= 100.0)
-		// 		querschnitt_y(i) = value;
-		// 	else 
-		// 		querschnitt_y(i) = 100.0;
-		// }
-
-		// ArrayXd fitschnitt_y(data.meta.grid[0]);
-		// for(int i = 0; i < data.meta.grid[0]; ++i){
-		// 	double i1 = - data.meta.coord[0] + data.meta.spacing[0] * i;
-		// 	double i0 = 0.0;
-		// 	double value = 2 * (fit_params[0] / M_PI) * (1 / (fit_params[1] * fit_params[3])) * (1 - (i0*i0)/(fit_params[1]*fit_params[1]) - (i1*i1)/(fit_params[3]*fit_params[3]) - fit_params[2] * i0 * i1) ;
-		// 	if(value < 0) value = 0.0;
-		// 	if(value <= 100.0)
-		// 		fitschnitt_y(i) = value;
-		// 	else 
-		// 		fitschnitt_y(i) = 100.0;
-			
-
-		// }
-		// // plotVector("Querschnitt" + to_string(data.meta.steps),"Querschnitt",querschnitt,densityLocationMap[k].row(data.meta.grid[1]/2));
-		// plotVector("Querschnitt_" + to_string(data.meta.steps) + "_X","Querschnitt X",querschnitt_x,fitschnitt_x);
-		// plotVector("Querschnitt_" + to_string(data.meta.steps) + "_Y","Querschnitt Y",querschnitt_y,fitschnitt_y);
 	}
 }
 
@@ -777,6 +728,24 @@ c_set Eval::generateContour(Ellipse &ellipse){
 	return tmp;
 }
 
+c_set Eval::generateContour(vector<double>& params_tf){
+	c_set tmp;
+	double t = 0;
+	double delta = 0.0001;
+	while(t < 2 * M_PI){
+		int32_t x = data.meta.grid[0]/ + params_tf[1] * cos(t) * cos(params_tf[2]) - params_tf[3] * sin(t) * sin(params_tf[2]);
+		int32_t y = data.meta.grid[1]/ + params_tf[1] * cos(t) * sin(params_tf[2]) + params_tf[3] * sin(t) * cos(params_tf[2]);	
+		Coordinate<int32_t> c = Coordinate<int32_t>(x,y,0,data.meta.grid[0],data.meta.grid[1],1);
+		pair<c_set::iterator,bool> test = tmp.insert(c);
+		if(test.second == false){
+			t += delta;
+		} else {
+			t += delta;
+		}
+	}
+	return tmp;
+}
+
 void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	double h_x = data.meta.spacing[0];
 	double h_y = data.meta.spacing[1];
@@ -793,8 +762,8 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 		// cerr << "x = " << x << " y = " << y << " => " << " phi = " << tmp.phi << " r = " << tmp.r << " conv back: x = " << tmp.r * cos((tmp.phi - 180) * M_PI / 180) << " y = " << tmp.r * sin((tmp.phi - 180 ) * M_PI / 180) << endl;
 	}
 
-	ellipse = fitEllipse(contour[sampleindex]);
-	c_set cEllipse = generateContour(ellipse);
+	// ellipse = fitEllipse(contour[sampleindex]);
+	// c_set cEllipse = generateContour(ellipse);
 
 	// FROM ELLIPSE FIT 
 	// obs.r_max = ellipse.major * h_x;
@@ -810,6 +779,8 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	// FROM THOMAS FERMI FIT
 
 	vector<double> params_tf = fitTF();
+
+	c_set cEllipse = generateContour(params_tf);
 	obs.r_max = params_tf[1];
 	obs.r_min = params_tf[3];
 
@@ -823,7 +794,59 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	obs.r_min_phi = at + 90;
 	obs.aspectRatio = obs.r_max / obs.r_min;
 
+
 	// END TF FIT
+
+			ArrayXd querschnitt_x(data.meta.grid[0]);
+		for(int i = 0; i < data.meta.grid[0]; ++i){
+			double value =  density(i,data.meta.grid[1]/2);
+			if(value <= 100.0)
+				querschnitt_x(i) = value;
+			else 
+				querschnitt_x(i) = 100.0;
+		}
+
+		ArrayXd fitschnitt_x(data.meta.grid[0]);
+		for(int i = 0; i < data.meta.grid[0]; ++i){
+			double i0 = - data.meta.coord[0] + data.meta.spacing[0] * i;
+			double i1 = 0.0;
+			double value = 2 * (params_tf[0] / M_PI) * (1 / (params_tf[1] * params_tf[3])) * (1 - (i0*i0)/(params_tf[1]*params_tf[1]) - (i1*i1)/(params_tf[3]*params_tf[3]) - params_tf[2] * i0 * i1) ;
+			if(value < 0) value = 0.0;
+			if(value <= 100.0)
+				fitschnitt_x(i) = value;
+			else 
+				fitschnitt_x(i) = 100.0;
+			
+
+		}
+		
+
+		ArrayXd querschnitt_y(data.meta.grid[0]);
+		for(int i = 0; i < data.meta.grid[0]; ++i){
+			double value =  density(data.meta.grid[0]/2,i);
+			if(value <= 100.0)
+				querschnitt_y(i) = value;
+			else 
+				querschnitt_y(i) = 100.0;
+		}
+
+		ArrayXd fitschnitt_y(data.meta.grid[0]);
+		for(int i = 0; i < data.meta.grid[0]; ++i){
+			double i1 = - data.meta.coord[0] + data.meta.spacing[0] * i;
+			double i0 = 0.0;
+			double value = 2 * (params_tf[0] / M_PI) * (1 / (params_tf[1] * params_tf[3])) * (1 - (i0*i0)/(params_tf[1]*params_tf[1]) - (i1*i1)/(params_tf[3]*params_tf[3]) - params_tf[2] * i0 * i1) ;
+			if(value < 0) value = 0.0;
+			if(value <= 100.0)
+				fitschnitt_y(i) = value;
+			else 
+				fitschnitt_y(i) = 100.0;
+			
+
+		}
+		plotVector("Querschnitt_" + to_string(data.meta.steps) + "_X","Querschnitt X",querschnitt_x,fitschnitt_x);
+		plotVector("Querschnitt_" + to_string(data.meta.steps) + "_Y","Querschnitt Y",querschnitt_y,fitschnitt_y);
+
+		
 
 
 	contour[sampleindex] = cEllipse;

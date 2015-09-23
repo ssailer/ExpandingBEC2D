@@ -110,7 +110,7 @@ parameter_vector lmfitter::set_initial_parameters()
 
 
         for(int i = 0; i < meta.grid[0]/2; ++i){
-        	if( density(i,meta.grid[1]/2) >= peak * 0.005){
+        	if( density(i,meta.grid[1]/2) >= peak * 0.001){
         		double tmp = ((meta.grid[0]/2) - i ) * meta.spacing[0];
         		// a = 0.5 * 2.35 / (tmp * tmp);
         		params(1) = tmp;
@@ -120,7 +120,7 @@ parameter_vector lmfitter::set_initial_parameters()
         }
 
         for(int i = 0; i < meta.grid[1]/2; ++i){
-        	if( density(i,meta.grid[0]/2) >= peak * 0.005){
+        	if( density(i,meta.grid[0]/2) >= peak * 0.001){
         		double tmp = ((meta.grid[1]/2) - i ) * meta.spacing[0];
         		// c = 0.5 * 2.35 / (tmp * tmp);
         		params(3) = tmp;
@@ -203,7 +203,7 @@ vector<double> lmfitter::optimize()
         // Use the Levenberg-Marquardt method to determine the parameters which
         // minimize the sum of all squared residuals.
         // solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-4,2e3).be_verbose(), residual, residual_derivative, data_samples, x);
-        solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-7,5e2)/*.be_verbose()*/, residual, derivative(residual), data_samples, x);
+        solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-7,5e2).be_verbose(), residual, derivative(residual), data_samples, x);
 
         // Now x contains the solution.  If everything worked it will be equal to params.
         cerr << "initial parameters: " << trans(params) << endl;
