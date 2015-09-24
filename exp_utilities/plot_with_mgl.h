@@ -87,6 +87,7 @@ void plotWithExpandingFrame(string filename,string title, ComplexGrid &Psi,vecto
 void plotVector(string filename,string title,vector<double> v,Options &opt);
 void plotVector(string filename,vector<double> v,vector<double> w,Options &opt);
 void plotVector(string filename,string title,ArrayXd v,ArrayXd w);
+void plotTwoVectors(string filename,string title,ArrayXd v_x,ArrayXd w_x,ArrayXd v_y,ArrayXd w_y);
 
 
 void plotContourSurround(string name, RealGrid &Psi, std::unordered_set<Coordinate<int32_t>> &contour, Options &opt);

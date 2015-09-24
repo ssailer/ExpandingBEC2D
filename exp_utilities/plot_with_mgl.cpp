@@ -1135,9 +1135,55 @@ void plotVector(string filename,string title,ArrayXd v,ArrayXd w){
 	gr.Title(title.c_str());
 
 	gr.SetRange('x',0,v.size());
-	gr.SetRange('y',dens);
+	gr.SetRange('y',data);
 	gr.Axis();
 	
+	gr.Plot(dens);
+	gr.Plot(data);
+
+	gr.WritePNG(filename.c_str(),"ExpandingVortexGas2D",false);
+
+}
+
+void plotTwoVectors(string filename,string title,ArrayXd v_x,ArrayXd w_x,ArrayXd v_y,ArrayXd w_y){
+
+	int x = v_x.size();
+
+	mglData data(x);
+	mglData dens(x);
+
+	for(int i=0;i < x;i++){	
+		data.a[i] = v_x[i];
+		dens.a[i] = w_x[i];
+	}
+
+	mglGraph gr;
+		
+	filename = filename + ".png";
+
+	gr.SetSize(IMAGE_SIZE,IMAGE_SIZE);
+	gr.SetFontSize(3.0);
+	gr.SetQuality(3);
+	gr.Title(title.c_str());
+
+	gr.SubPlot(2,1,0);
+
+	gr.SetRange('x',0,v_x.size());
+	gr.SetRange('y',data);
+	gr.Axis();	
+	gr.Plot(dens);
+	gr.Plot(data);
+
+	gr.SubPlot(2,1,1);
+
+	for(int i=0;i < x;i++){	
+		data.a[i] = v_y[i];
+		dens.a[i] = w_y[i];
+	}
+
+	gr.SetRange('x',0,v_y.size());
+	gr.SetRange('y',data);
+	gr.Axis();	
 	gr.Plot(dens);
 	gr.Plot(data);
 
@@ -1242,7 +1288,7 @@ void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > 
     	y.a[i] = data_samples[i].first(1);
     	z.a[i] = data_samples[i].second;
     	// diff.a[i] = params(0) * exp(- params(1) * x.a[i] * x.a[i] - params(2) * x.a[i] * y.a[i] - params(3) * y.a[i] * y.a[i]) - z.a[i];
-    	double temp = 2 * (params(0) / M_PI) * (1 / (params(1) * params(3))) * (1 - (x.a[i]*x.a[i])/(params(1)*params(1)) - (y.a[i]*y.a[i])/(params(3)*params(3)) - params(2) * x.a[i] * y.a[i]);
+    	double temp = /*2 * (params(0) / M_PI) * (1 / (params(1) * params(3)))*/ params(0) * (1 - (x.a[i]*x.a[i])/(params(1)*params(1)) - (y.a[i]*y.a[i])/(params(3)*params(3)) - params(2) * x.a[i] * y.a[i]);
     	if(temp < 0) temp = 0;
     	diff.a[i] = temp - z.a[i];
   	}
@@ -1256,7 +1302,7 @@ void plotPairAndGauss(std::vector<std::pair<dlib::matrix<double,2,1>, double> > 
   			double i0 = - coordinate_axis + delta_x * i;
   			double i1 = - coordinate_axis + delta_x * j;
     		// data.a[k] = params(0) * exp(- params(1) * i0 * i0 - params(2) * i0 * i1 - params(3) * i1 * i1);
-    		double temp = 2 * (params(0) / M_PI) * (1 / (params(1) * params(3))) * (1 - (i0*i0)/(params(1)*params(1)) - (i1*i1)/(params(3)*params(3)) - params(2) * i0 * i1);
+    		double temp = /*2 * (params(0) / M_PI) * (1 / (params(1) * params(3)))*/ params(0) * (1 - (i0*i0)/(params(1)*params(1)) - (i1*i1)/(params(3)*params(3)) - params(2) * i0 * i1);
     		if(temp < 0) temp = 0;
     		data.a[k] = temp;
     		

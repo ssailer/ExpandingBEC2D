@@ -42,7 +42,7 @@ Last Update: 22/07/13
 #define ERROR_IN_COMMAND_LINE 1
 #define ERROR_IN_CONFIG_FILE 2
 #define ERROR_UNHANDLED_EXCEPTION 3
-#define DEBUG_LOG 1
+#define DEBUG_LOG 0
 
 using namespace std;
 
@@ -109,7 +109,7 @@ int evaluate(InitMain &initMain){
 			if(k == 0){
 				 eval.data.meta.time = 0.0;
 			}
-			cerr << " " << data->meta.steps << " step " << eval.data.meta.time << " time" << endl;
+			// cerr << " " << data->meta.steps << " step " << eval.data.meta.time << " time" << endl;
 			eval.save();
 			obsFile->appendEval(eval,opt);
 		}

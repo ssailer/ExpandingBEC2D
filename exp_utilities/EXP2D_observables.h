@@ -17,7 +17,7 @@ using namespace Eigen;
 class Observables {
         public:
         
-        double Ekin, particle_count, healing_length, volume, density, aspectRatio, alpha, r_max, r_min, r_max_phi, r_min_phi, Rx, Ry;
+        double Ekin, particle_count, healing_length, volume, density, aspectRatio, alpha, r_max, r_min, r_max_phi, r_min_phi, Rx, Ry, n0;
         ArrayXd number;
         ArrayXd k,r;
         ArrayXd angularDensity,radialDensity;
@@ -93,7 +93,7 @@ inline Observables::Observables(int avgrid) :
         angularDensity(360),
         fixedAspectRatio(360)
 {
-    Ekin = particle_count = healing_length = volume = density = aspectRatio = alpha = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = 0.0;
+    Ekin = particle_count = healing_length = volume = density = aspectRatio = alpha = r_max = r_min = r_max_phi = r_min_phi = Rx = Ry = n0 = 0.0;
     number.setZero();
     k.setZero();
      r.setZero();
@@ -122,6 +122,7 @@ inline Observables Observables::operator+ (const Observables &a) const
     ret.volume = volume + a.volume;
     ret.angularDensity = angularDensity + a.angularDensity;
     ret.radialDensity = radialDensity + a.radialDensity;
+    ret.n0 = n0 + a.n0;
 
 
     ret.number = number + a.number; 
@@ -151,6 +152,7 @@ inline Observables Observables::operator- (const Observables &a) const
     ret.volume = volume - a.volume;
     ret.angularDensity = angularDensity - a.angularDensity;
     ret.radialDensity = radialDensity - a.radialDensity;
+    ret.n0 = n0 - a.n0;
 
     ret.number = number - a.number; 
     ret.k = k - a.k;
@@ -179,6 +181,7 @@ inline Observables Observables::operator* (const Observables &a) const
     ret.volume = volume * a.volume;
     ret.angularDensity = angularDensity * a.angularDensity;
     ret.radialDensity = radialDensity * a.radialDensity;
+    ret.n0 = n0 * a.n0;
 
     ret.number = number * a.number; 
     ret.k = k * a.k;
@@ -207,6 +210,7 @@ inline Observables Observables::operator* (double d) const
     ret.volume = volume * d;
     ret.angularDensity = angularDensity * d;
     ret.radialDensity = radialDensity * d;
+    ret.n0 = n0 * d;
 
     ret.number = number * d;    
     ret.k = k * d;
@@ -235,6 +239,7 @@ inline Observables Observables::operator/ (double d) const
     ret.volume = volume / d;
     ret.angularDensity = angularDensity / d;
     ret.radialDensity = radialDensity / d;
+    ret.n0 = n0 / d;
 
     ret.number = number / d;    
     ret.k = k / d;

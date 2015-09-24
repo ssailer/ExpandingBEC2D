@@ -13,8 +13,8 @@ using namespace Eigen;
 Eval::Eval(MatrixData d,Options o) : data(d),  opt(o) {
 	// data = d;
 	// opt = o;
-	cout << opt.Ag << "  " << opt.OmegaG << endl;
-	cout << data.meta.Ag << "  " << data.meta.OmegaG << endl;
+	// cout << opt.Ag << "  " << opt.OmegaG << endl;
+	// cout << data.meta.Ag << "  " << data.meta.OmegaG << endl;
 	toPhysicalUnits(opt);
 	data.convertToPhysicalUnits();
 };
@@ -41,21 +41,21 @@ void Eval::process(){
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 
-	cout << currentTime() <<  " Step: " << data.meta.steps << " Time : " << data.meta.time << " s ";		 
+	cout << currentTime() <<  " Step: " << data.meta.steps << " Time : " << data.meta.time << " s " << endl;		 
 
 	calc_fields(data.wavefunction[0],opt);
 	getDensity();
-	cout << "dens " ;
+	// cout << "dens " ;
 	// cout  << "Evaluating sample #: ";
 	for(int k = 0; k < data.wavefunction.size(); k++){
 
 
-		contour[k] = tracker.trackContour(densityLocationMap[k]);
-		cout << "con " ;
+		// contour[k] = tracker.trackContour(densityLocationMap[k]);
+		// cout << "con " ;
 		totalResult += calculator(data.wavefunction[k],k);
-		cout << "calc " ;
+		// cout << "calc " ;
 		getVortices(data.wavefunction[k],densityCoordinates[k],vlist[k]);
-		cout << "vort " ;
+		// cout << "vort " ;
 		// getVortexDistance(pres[k]);
 		// cout << "-getVortexDistance" ;
 	}	
@@ -103,7 +103,33 @@ void Eval::save(){
   		datafile.close();
   	}
 
-  	double n0 = 2.0 * (totalResult.particle_count / M_PI) * (1 / (totalResult.r_max * totalResult.r_min)); 
+  	// Find n0 different from fit
+
+  	double last_largest_element = 0;
+    std::queue<double> largest_elements;
+    for(int i = 0; i < data.meta.grid[0]; ++i){
+    	for(int j = 0; j < data.meta.grid[1]; ++j){
+    		const double val = density(i,j);
+    		if(val > last_largest_element){
+    			largest_elements.push(val);
+    			last_largest_element = val;
+    		}
+    		if(largest_elements.size() > /*meta.grid[0]*meta.grid[1]*0.001*/ 10){
+    			largest_elements.pop();
+    		}
+    	}
+    }
+    double n0 = 0;
+    int le_size = largest_elements.size();
+    while(!largest_elements.empty()){
+    	n0 += largest_elements.front();
+    	largest_elements.pop();
+    }
+    totalResult.n0 = n0 / le_size;
+
+    // END find n0
+
+  	// double n0 = 2.0 * (totalResult.particle_count / M_PI) * (1 / (totalResult.r_max * totalResult.r_min)); 
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
@@ -125,10 +151,10 @@ void Eval::save(){
 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.volume << ","
 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.density << ","
 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.Ekin << ","
-					  	  << std::setw(setwidth) << std::setprecision(setprec) << n0
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.n0
 			 << endl;
 	datafile.close();
-	cout << "save" << endl;
+	cout << "Saved results to file." << endl;
 }
 
 
@@ -438,10 +464,6 @@ vector<double> Eval::fitTF()
 
 
 void Eval::getDensity(){
-
-
-
-
 
 	// smooth(density);
 
@@ -781,6 +803,8 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	vector<double> params_tf = fitTF();
 
 	c_set cEllipse = generateContour(params_tf);
+
+
 	obs.r_max = params_tf[1];
 	obs.r_min = params_tf[3];
 
@@ -797,59 +821,9 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 	// END TF FIT
 
-			ArrayXd querschnitt_x(data.meta.grid[0]);
-		for(int i = 0; i < data.meta.grid[0]; ++i){
-			double value =  density(i,data.meta.grid[1]/2);
-			if(value <= 100.0)
-				querschnitt_x(i) = value;
-			else 
-				querschnitt_x(i) = 100.0;
-		}
-
-		ArrayXd fitschnitt_x(data.meta.grid[0]);
-		for(int i = 0; i < data.meta.grid[0]; ++i){
-			double i0 = - data.meta.coord[0] + data.meta.spacing[0] * i;
-			double i1 = 0.0;
-			double value = 2 * (params_tf[0] / M_PI) * (1 / (params_tf[1] * params_tf[3])) * (1 - (i0*i0)/(params_tf[1]*params_tf[1]) - (i1*i1)/(params_tf[3]*params_tf[3]) - params_tf[2] * i0 * i1) ;
-			if(value < 0) value = 0.0;
-			if(value <= 100.0)
-				fitschnitt_x(i) = value;
-			else 
-				fitschnitt_x(i) = 100.0;
-			
-
-		}
-		
-
-		ArrayXd querschnitt_y(data.meta.grid[0]);
-		for(int i = 0; i < data.meta.grid[0]; ++i){
-			double value =  density(data.meta.grid[0]/2,i);
-			if(value <= 100.0)
-				querschnitt_y(i) = value;
-			else 
-				querschnitt_y(i) = 100.0;
-		}
-
-		ArrayXd fitschnitt_y(data.meta.grid[0]);
-		for(int i = 0; i < data.meta.grid[0]; ++i){
-			double i1 = - data.meta.coord[0] + data.meta.spacing[0] * i;
-			double i0 = 0.0;
-			double value = 2 * (params_tf[0] / M_PI) * (1 / (params_tf[1] * params_tf[3])) * (1 - (i0*i0)/(params_tf[1]*params_tf[1]) - (i1*i1)/(params_tf[3]*params_tf[3]) - params_tf[2] * i0 * i1) ;
-			if(value < 0) value = 0.0;
-			if(value <= 100.0)
-				fitschnitt_y(i) = value;
-			else 
-				fitschnitt_y(i) = 100.0;
-			
-
-		}
-		plotVector("Querschnitt_" + to_string(data.meta.steps) + "_X","Querschnitt X",querschnitt_x,fitschnitt_x);
-		plotVector("Querschnitt_" + to_string(data.meta.steps) + "_Y","Querschnitt Y",querschnitt_y,fitschnitt_y);
-
-		
-
-
 	contour[sampleindex] = cEllipse;
+
+
 	cData.clear();
 	for(c_set::iterator it =  contour[sampleindex].begin(); it !=  contour[sampleindex].end(); ++it){
 		contourData tmp;

@@ -398,16 +398,17 @@ void hydroSolver::integrate()
     varold.sigma_x = eval->totalResult.r_max;
     varold.sigma_y = eval->totalResult.r_min;
     varold.phi = eval->totalResult.r_max_phi;
-    varold.n0 = 2.0 * (/*eval->opt.N*/ eval->totalResult.particle_count / M_PI) / (varold.sigma_x * varold.sigma_y);
+    // varold.n0 = 2.0 * (/*eval->opt.N*/ eval->totalResult.particle_count / M_PI) / (varold.sigma_x * varold.sigma_y);
+    varold.n0 = eval->totalResult.n0;
     varold.alpha_x = 0.0;
     varold.alpha_y = 0.0;
     varold.a = 0.0;
 
     // varold.alpha = 0.0;
-    // varold.alpha = hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
-    varold.alpha = 2.0 * M_PI * real(eval->opt.omega_w);
+    varold.alpha = hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
+    // varold.alpha = 2.0 * M_PI * real(eval->opt.omega_w);
 
-    cerr << " alpha " << varold.alpha << " vs omega " << eval->opt.omega_w * 2.0 * M_PI << endl;
+    // cerr << " alpha " << varold.alpha << " vs omega " << eval->opt.omega_w * 2.0 * M_PI << endl;
     
     varold.omega = 0.0; // 2.0 * M_PI * real(eval->opt.omega_w);
     // varold.omega = hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);

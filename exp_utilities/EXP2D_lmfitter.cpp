@@ -41,10 +41,11 @@ double lmfitter::model ( const input_vector& input, const parameter_vector& para
     // const double temp = p0 - (p1 * i0 * i0 + p2 * i0 * i1 + p3 * i1 * i1);
     double temp = 0;
 
-    double value = 2.0 * 10000 / (M_PI * p1 * p3) * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1);
-    // double value = p0 * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1) ;
+    // double value = 2.0 * p0 / (M_PI * p1 * p3) * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1);
+    double value = p0 * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1) ;
     if(value > 0){
-        temp = sqrt(value);
+        // temp = sqrt(value);
+        temp = value;
     }
 
     // return temp*temp;
@@ -85,10 +86,15 @@ parameter_vector lmfitter::residual_derivative ( const std::pair<input_vector, d
 	// der(2) = - p0 * temp * ( i1*i0);
 	// der(3) = - p0 * temp * ( i1*i1);
 
-	der(0) = temp;
-	der(1) = p0 * 2.0 * ( i0*i0) / (p1 * p1 * p1);
-	der(2) = - p0 * ( i1*i0);
-	der(3) = p0 * 2.0 * ( i1*i1) / (p3 * p3 * p3);
+	if(temp > 0){
+
+		der(0) = temp;
+		der(1) = p0 * 2.0 * ( i0*i0) / (p1 * p1 * p1);
+		der(2) = - p0 * ( i1*i0);
+		der(3) = p0 * 2.0 * ( i1*i1) / (p3 * p3 * p3);
+	} else {
+		der = 0;
+	}
 
 
     // der(0) = i0*2*temp;
@@ -106,11 +112,34 @@ parameter_vector lmfitter::set_initial_parameters()
         double coordinate_axis = meta.coord[0];
         // double delta_x = 2 * coordinate_axis / n;
         // double a,b,c;
-        double peak = density(meta.grid[0]/2,meta.grid[1]/2);
+        // double peak = density(meta.grid[0]/2,meta.grid[1]/2);
+
+        double last_largest_element = 0;
+        std::queue<double> largest_elements;
+        for(int i = 0; i < meta.grid[0]; ++i){
+        	for(int j = 0; j < meta.grid[1]; ++j){
+        		const double val = density(i,j);
+        		if(val > last_largest_element){
+        			largest_elements.push(val);
+        			last_largest_element = val;
+        		}
+        		if(largest_elements.size() > /*meta.grid[0]*meta.grid[1]*0.001*/ 10){
+        			largest_elements.pop();
+        		}
+        	}
+        }
+        double n0 = 0;
+        int le_size = largest_elements.size();
+        while(!largest_elements.empty()){
+        	n0 += largest_elements.front();
+        	largest_elements.pop();
+        }
+        n0 /= le_size;
+
 
 
         for(int i = 0; i < meta.grid[0]/2; ++i){
-        	if( density(i,meta.grid[1]/2) >= peak * 0.001){
+        	if( density(i,meta.grid[1]/2) >= n0 * 0.05){
         		double tmp = ((meta.grid[0]/2) - i ) * meta.spacing[0];
         		// a = 0.5 * 2.35 / (tmp * tmp);
         		params(1) = tmp;
@@ -120,7 +149,7 @@ parameter_vector lmfitter::set_initial_parameters()
         }
 
         for(int i = 0; i < meta.grid[1]/2; ++i){
-        	if( density(i,meta.grid[0]/2) >= peak * 0.001){
+        	if( density(i,meta.grid[0]/2) >= n0 * 0.05){
         		double tmp = ((meta.grid[1]/2) - i ) * meta.spacing[0];
         		// c = 0.5 * 2.35 / (tmp * tmp);
         		params(3) = tmp;
@@ -129,13 +158,70 @@ parameter_vector lmfitter::set_initial_parameters()
         	}
         }
 
-        // double n0 = 2 * (10000.0 / M_PI) * (1 / (a * c));
-        params(0) = 10000;
+
+
+
+        // double n0 = 2 * (10000.0 / M_PI) * (1 / (params(1) * params(3)));
+        params(0) = n0;
         // double n0 = peak;
 
         // b = (a + c) /2.0;
         params(2) = 0.0;
         return params;
+}
+
+
+void lmfitter::plotQuerschnitte(const string& str, const parameter_vector& params_tf)
+{
+	    ArrayXd querschnitt_x(meta.grid[0]);
+		for(int i = 0; i < meta.grid[0]; ++i){
+			double value =  density(i,meta.grid[1]/2);
+			if(value <= 100.0)
+				querschnitt_x(i) = value;
+			else 
+				querschnitt_x(i) = 100.0;
+		}
+
+		ArrayXd fitschnitt_x(meta.grid[0]);
+		for(int i = 0; i < meta.grid[0]; ++i){
+			double i0 = - meta.coord[0] + meta.spacing[0] * i;
+			double i1 = 0.0;
+			double value = /*2 * (params_tf(0) / M_PI) * (1 / (params_tf(1) * params_tf(3)))*/ params_tf(0) * (1 - (i0*i0)/(params_tf(1)*params_tf(1)) - (i1*i1)/(params_tf(3)*params_tf(3)) - params_tf(2) * i0 * i1) ;
+			if(value < 0) value = 0.0;
+			if(value <= 100.0)
+				fitschnitt_x(i) = value;
+			else 
+				fitschnitt_x(i) = 100.0;
+			
+
+		}
+		
+
+		ArrayXd querschnitt_y(meta.grid[0]);
+		for(int i = 0; i < meta.grid[0]; ++i){
+			double value =  density(meta.grid[0]/2,i);
+			if(value <= 100.0)
+				querschnitt_y(i) = value;
+			else 
+				querschnitt_y(i) = 100.0;
+		}
+
+		ArrayXd fitschnitt_y(meta.grid[0]);
+		for(int i = 0; i < meta.grid[0]; ++i){
+			double i1 = - meta.coord[0] + meta.spacing[0] * i;
+			double i0 = 0.0;
+			double value = /*2 * (params_tf(0) / M_PI) * (1 / (params_tf(1) * params_tf(3)))*/ params_tf(0) * (1 - (i0*i0)/(params_tf(1)*params_tf(1)) - (i1*i1)/(params_tf(3)*params_tf(3)) - params_tf(2) * i0 * i1) ;
+			if(value < 0) value = 0.0;
+			if(value <= 100.0)
+				fitschnitt_y(i) = value;
+			else 
+				fitschnitt_y(i) = 100.0;
+			
+
+		}
+		// plotVector("Querschnitt_" + to_string(meta.steps) + str + "_X","Querschnitt X",querschnitt_x,fitschnitt_x);
+		// plotVector("Querschnitt_" + to_string(meta.steps) + str + "_Y","Querschnitt Y",querschnitt_y,fitschnitt_y);
+		plotTwoVectors("Querschnitt_" + to_string(meta.steps) + str,"Querschnitt " +str,querschnitt_x,fitschnitt_x,querschnitt_y,fitschnitt_y);
 }
 
 // ----------------------------------------------------------------------------------------
@@ -165,12 +251,13 @@ vector<double> lmfitter::optimize()
         //     data_samples.push_back(make_pair(input, output));
         // }
 
-
+        parameter_vector x = set_initial_parameters();
+        parameter_vector params = x;
         
 
         for(int i = 0; i < meta.grid[0]; ++i){
         	for(int j = 0; j < meta.grid[1]; ++j){
-        		if(density(i,j) > 0){
+        		// if(density(i,j) < 0.5 * params(0)){
         			input(0) = - meta.coord[0] + meta.spacing[0] * i;
         			input(1) = - meta.coord[1] + meta.spacing[1] * j;
 
@@ -178,7 +265,7 @@ vector<double> lmfitter::optimize()
         			const double output = density(i,j);
 
         			data_samples.push_back(make_pair(input, output));
-        		}
+        		// }
 
         	}
         }
@@ -196,26 +283,34 @@ vector<double> lmfitter::optimize()
 
         // Now let's use the solve_least_squares_lm() routine to figure out what the
         // parameters are based on just the data_samples.
-        parameter_vector x = set_initial_parameters();
-        parameter_vector params = x;
 
-        // cerr << "Use Levenberg-Marquardt" << endl;
+
+        plotQuerschnitte("_A",x);
+
+        cerr << "Use Levenberg-Marquardt to fit densityprofil:" << endl;
         // Use the Levenberg-Marquardt method to determine the parameters which
         // minimize the sum of all squared residuals.
-        // solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-4,2e3).be_verbose(), residual, residual_derivative, data_samples, x);
-        solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-7,5e2).be_verbose(), residual, derivative(residual), data_samples, x);
+        solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-20,5e2)/*.be_verbose()*/, residual, residual_derivative, data_samples, x);
+        // solve_least_squares_lm(dlib::gradient_norm_stop_strategy(1e-7,5e2)/*dlib::objective_delta_stop_strategy(1e-7,5e2)*//*.be_verbose()*/, residual, residual_derivative, data_samples, x);
+        // solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-7,5e2)/*.be_verbose()*/, residual, derivative(residual), data_samples, x);
 
         // Now x contains the solution.  If everything worked it will be equal to params.
-        cerr << "initial parameters: " << trans(params) << endl;
-        cerr << "inferred parameters: "<< trans(x) << endl;
+        cout << "initial parameters: " << trans(params)/* << endl*/;
+        cout << "inferred parameters: "<< trans(x)/* << endl*/;
         // cerr << "solution error:      "<< dlib::length(x - params) << endl;
-        cerr << endl;
+        // cerr << endl;
+
+        plotQuerschnitte("_B",x);
 
         vector<double> paramter_results {x(0),x(1),x(2),x(3)};
 
 
         // plotGauss(params,n,coordinate_axis);
         plotPairAndGauss(data_samples,x,density.cols(),meta.coord[0]);
+
+
+
+
 
 
 

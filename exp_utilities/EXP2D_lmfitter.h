@@ -74,6 +74,7 @@ private:
 	MatrixData::MetaData meta;
 
 	parameter_vector set_initial_parameters();
+	void plotQuerschnitte(const string& str, const parameter_vector& params_tf);
 
 
 	static double model ( const input_vector& input, const parameter_vector& params );
