@@ -8,7 +8,7 @@
 #include <vector>
 #include <omp.h>
 #include <string>
-#include <EXP2D_tools.h>
+#include <tools.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;

@@ -1,5 +1,5 @@
 
-#include <EXP2D_splitstep.hpp>
+#include <splitstep.hpp>
 #include <omp.h>
 
 #define EIGEN_DONT_VECTORIZE

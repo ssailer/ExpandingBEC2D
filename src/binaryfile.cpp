@@ -1,16 +1,4 @@
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <cstdlib>
-#include <unistd.h>
-#include <dirent.h>
-#include <string.h>
-
-#include <EXP2D_binaryfile.h>
-// #include <complexgrid.h>
-// #include <realgrid.h>
-#include <hdf5.h>
-#include <eigen3/Eigen/Dense>
-// #include <libconfig.h>
+#include <binaryfile.h>
 
 // Class implementation
 binaryFile::binaryFile(const string &file, mode nm)

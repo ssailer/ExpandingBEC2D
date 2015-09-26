@@ -1,4 +1,4 @@
-#include <EXP2D_Contour.h>
+#include <contour.h>
 
 using namespace std;
 

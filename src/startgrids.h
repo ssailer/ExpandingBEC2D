@@ -1,8 +1,8 @@
 #ifndef EXP2D_STARTGRIDS_H__
 #define EXP2D_STARTGRIDS_H__
 
-#include <EXP2D_MatrixData.h>
-#include <EXP2D_tools.h>
+#include <matrixdata.h>
+#include <tools.h>
 // #include <complexgrid.h>
 #include <plot_with_mgl.h>
 

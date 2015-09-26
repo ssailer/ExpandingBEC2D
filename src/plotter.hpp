@@ -9,14 +9,17 @@
 // #include <complexgrid.h>
 // #include <realgrid.h>
 // #include <bh3binaryfile.h>
-#include <EXP2D_coordinate.h>
+
 #include <vector>
 #include <unordered_set>
 #include <omp.h>
 #include <cstring>
-#include <EXP2D_tools.h>
-#include <EXP2D_observables.h>
-#include <EXP2D_evaluation.h>
+
+
+#include <coordinate.h>
+#include <tools.h>
+#include <observables.h>
+#include <evaluation.h>
 
 using namespace std;
 

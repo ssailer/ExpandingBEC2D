@@ -10,21 +10,19 @@
 #include <numeric>
 #include <stack>
 #include <algorithm>
-// #include <complexgrid.h>
-// #include <realgrid.h>
-// #include <bh3binaryfile.h>
-#include <EXP2D_coordinate.h>
 #include <vector>
 #include <unordered_set>
 #include <omp.h>
 #include <string>
 #include <sstream>
-#include <EXP2D_Contour.h>
+
+#include <coordinate.h>
+#include <contour.h>
 #include <plot_with_mgl.h>
-#include <EXP2D_tools.h>
-#include <EXP2D_MatrixData.h>
-#include <EXP2D_observables.h>
-#include <EXP2D_lmfitter.h>
+#include <tools.h>
+#include <matrixdata.h>
+#include <observables.h>
+#include <lmfitter.h>
 #include <eigen3/Eigen/Dense>
 
 #include <gsl/gsl_sf_zeta.h>

@@ -1,4 +1,4 @@
-#include <EXP2D_plotter.hpp>
+#include <plotter.hpp>
 
 #include <typeinfo>
 

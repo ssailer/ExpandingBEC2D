@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <complex>
-#include <EXP2D_tools.h>
+#include <tools.h>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/unsupported/Eigen/FFT>
 

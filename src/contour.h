@@ -6,10 +6,10 @@
 #include <unordered_set>
 
 // #include <realgrid.h>
-#include <EXP2D_coordinate.h>
-#include <EXP2D_tools.h>
+#include <coordinate.h>
+#include <tools.h>
 #include <plot_with_mgl.h>
-#include <EXP2D_MatrixData.h>
+#include <matrixdata.h>
 #include <eigen3/Eigen/Dense>
 
 

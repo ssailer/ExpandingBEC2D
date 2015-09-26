@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include <EXP2D_MatrixData.h>
+#include <matrixdata.h>
 
 #define SUCCESS 0 
 #define ERROR_IN_COMMAND_LINE 1

@@ -20,7 +20,7 @@
 // #include <EXP2D_Contour.h>
 // #include <plot_with_mgl.h>
 // #include <EXP2D_tools.h>
-#include <EXP2D_MatrixData.h>
+#include <matrixdata.h>
 // #include <EXP2D_observables.h>
 
 // #include <vector>

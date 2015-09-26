@@ -9,7 +9,6 @@ Last Update: 22/07/13
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>
-// #include <cstring>
 #include <cstdio>
 #include <string>
 #include <cmath>
@@ -18,23 +17,15 @@ Last Update: 22/07/13
 #include <sys/stat.h>
 #include <dirent.h>
 
-// #include <complexgrid.h>
-// #include <bh3defaultgrid.h>
-// #include <averageclass.h>
-// #include <bh3observables.h>
-
-#include <EXP2D_MatrixData.h>
+#include <matrixdata.h>
 #include <main.h>
-#include <EXP2D_tools.h>
-// #include <EXP2D_itp.hpp>
-#include <EXP2D_binaryfile.h>
-#include <EXP2D_rk4.hpp>
-// #include <hydro.h>
-// #include <EXP2D_rte.hpp>
-#include <EXP2D_runner.hpp>
-#include <EXP2D_evaluation.h>
+#include <tools.h>
+#include <binaryfile.h>
+#include <rk4.hpp>
+#include <runner.hpp>
+#include <evaluation.h>
 #include <plot_with_mgl.h>
-#include <EXP2D_startgrids.h>
+#include <startgrids.h>
 
 // #include <typeinfo>
 

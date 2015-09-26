@@ -9,13 +9,16 @@
 // #include <complexgrid.h>
 // #include <realgrid.h>
 // #include <bh3binaryfile.h>
-#include <EXP2D_coordinate.h>
+
 #include <vector>
 #include <unordered_set>
 #include <omp.h>
 #include <cstring>
-#include <EXP2D_tools.h>
-#include <EXP2D_observables.h>
+
+
+#include <coordinate.h>
+#include <tools.h>
+#include <observables.h>
 
 #include <dlib/optimization.h>
 

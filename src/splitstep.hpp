@@ -11,12 +11,12 @@
 #include <string>
 #include <iomanip>
 // #include <.archive/utilities/gauss_random.h>
-#include <EXP2D_tools.h>
-#include <EXP2D_evaluation.h>
-#include <EXP2D_binaryfile.h>
-#include <EXP2D_constants.h>
+#include <tools.h>
+#include <evaluation.h>
+#include <binaryfile.h>
+#include <constants.h>
 #include <plot_with_mgl.h>
-#include <EXP2D_MatrixData.h>
+#include <matrixdata.h>
 #include <eigen3/Eigen/Dense>
 
 using namespace std;

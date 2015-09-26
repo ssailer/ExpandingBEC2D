@@ -26,10 +26,10 @@
 #include <cmath>
 #include <string>
 #include <cstdlib>
-#include <EXP2D_tools.h>
-#include <EXP2D_MatrixData.h>
+#include <tools.h>
+#include <matrixdata.h>
 #include <python2.7/Python.h>
-#include <EXP2D_evaluation.h>
+#include <evaluation.h>
 // #include "gnuplot-iostream.h"
 // #include <../exp_utilities/plot_with_mgl.h>
 

@@ -16,15 +16,15 @@
 
 #include <.archive/utilities/gauss_random.h>
 
-#include <EXP2D_tools.h>
-#include <EXP2D_evaluation.h>
-#include <EXP2D_binaryfile.h>
-#include <EXP2D_rk4.hpp>
-#include <EXP2D_splitstep.hpp>
-#include <EXP2D_constants.h>
+#include <tools.h>
+#include <evaluation.h>
+#include <binaryfile.h>
+#include <rk4.hpp>
+#include <splitstep.hpp>
+#include <constants.h>
 #include <plot_with_mgl.h>
-#include <EXP2D_MatrixData.h>
-#include <EXP2D_plotter.hpp>
+#include <matrixdata.h>
+#include <plotter.hpp>
 #include <hydro.h>
 #include <eigen3/Eigen/Dense>
 

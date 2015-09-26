@@ -1,4 +1,4 @@
-#include <EXP2D_rk4.hpp>
+#include <rk4.hpp>
 
 RungeKutta::RungeKutta(/*MatrixData* &d,*/ Options &extOpt) : /*w(d),*/ opt(extOpt),
 											laplacian_coefficient_x(3),
