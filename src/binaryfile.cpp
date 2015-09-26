@@ -896,7 +896,7 @@ bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 		for(int k = 0; k < samples; k++){
 			results.contour[k].clear();
 			for(int j = 0; j < vec2Ranks[k]; j++){
-				Coordinate<int32_t> c(vec2[l],vec2[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
+				Coordinate<int32_t> c(vec2[l],vec2[l+1],0,options.grid[1],options.grid[2],1);
 				l+=2;
 				results.contour[k].insert(c);
 			}
@@ -962,7 +962,7 @@ bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 			results.vlist[k].clear();
 			for(int j = 0; j < vec3Ranks[k]; j++){
 				VortexData c;
-				Coordinate<int32_t> x(vec3[l],vec3[l+1],0,options.grid[1],options.grid[2],options.grid[3]);
+				Coordinate<int32_t> x(vec3[l],vec3[l+1],0,options.grid[1],options.grid[2],1);
 				c.c = x;
 				c.n = (int) vec7[j];
 				// c.x.x() = vec3[l];

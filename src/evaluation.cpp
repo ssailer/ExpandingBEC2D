@@ -25,13 +25,11 @@ void Eval::process(){
 
 	vlist.resize(data.wavefunction.size());
 
-	densityCoordinates.clear();
-
 	contour.resize(data.wavefunction.size());
 
 	densityCounter.resize(data.wavefunction.size());
 
-	densityLocationMap.resize(data.wavefunction.size());
+	// densityLocationMap.resize(data.wavefunction.size());
 	densityCoordinates.resize(data.wavefunction.size());
 
 	phase = MatrixXd::Zero(data.meta.grid[0],data.meta.grid[1]);
@@ -43,20 +41,13 @@ void Eval::process(){
 
 	cout << currentTime() <<  " Step: " << data.meta.steps << " Time : " << data.meta.time << " s " << endl;		 
 
-	calc_fields(data.wavefunction[0],opt);
-	getDensity();
-	// cout << "dens " ;
-	// cout  << "Evaluating sample #: ";
+
+	// getDensity();
 	for(int k = 0; k < data.wavefunction.size(); k++){
-
-
+		calc_fields(data.wavefunction[k],opt);
 		// contour[k] = tracker.trackContour(densityLocationMap[k]);
-		// cout << "con " ;
 		totalResult += calculator(data.wavefunction[k],k);
-		// cout << "calc " ;
 		getVortices(data.wavefunction[k],densityCoordinates[k],vlist[k]);
-		// cout << "vort " ;
-		// getVortexDistance(pres[k]);
 		// cout << "-getVortexDistance" ;
 	}	
 	totalResult /= data.wavefunction.size();
@@ -168,6 +159,8 @@ void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoor
 
 	// CHECK DENSITY AROUND VORTEX
 
+
+	// erase vortices to close together
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		list<VortexData>::iterator it1 = it;
 		
@@ -179,9 +172,9 @@ void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoor
 				++it1;
 			}
 		}
-
 	}
 
+	
 	for(list<VortexData>::iterator it = vlist.begin(); it != vlist.end(); ++it){
 		vector<double> polarDensity;
 		vector<double> radius;	
@@ -252,7 +245,7 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 
 		if(phase_winding != 0){
 			vortex.n = phase_winding;
-			vortex.c = c +right; // /*+ rightdown*/;
+			vortex.c = c;
 			vlist.push_back(vortex);
 		}
 	}
@@ -342,25 +335,20 @@ int Eval::checkSum(MatrixXi &d,int &i, int &j){
 
 	int sum = 0;
 	int counter = 0;
-	// cerr << endl;
-	// cerr << "radius " << radius << endl;
 	for(int x = 0; x <= 2 * radius; x++){
 		for(int y = 0; y <= 2 * radius; y++){
 			int k = x - radius;
 			int l = y - radius;
 			int distance = sqrt(k*k + l*l);
-			// cerr << "k = " << k << " l = " << l << " distance = " << distance << endl;
 			if(distance < radius){
 				int m = i + k;
 				int n = j + l;
-				// cerr << " m = " << m << " n = " << n << endl;
 				sum += d(m,n);
 				counter++;				
 			}
 
 		}
 	}
-	// cerr << "counter " << counter << endl;
 	if(sum != 0){				
 		if(counter == sum){
 			return 1;
@@ -424,12 +412,10 @@ void Eval::floodFill(MatrixXi &dens){
 	}
 }
 
-void Eval::fillHoles(MatrixXi &dens/*, MatrixXi &mask*/){
+void Eval::fillHoles(MatrixXi &dens){
 	for(int i = 0; i < data.meta.grid[0]; i++){
 		for(int j = 0; j < data.meta.grid[1]; j++){
-			// if(mask(i,j) != 1){
-			// 	dens(i,j) = 1;
-			// }
+
 			if(dens(i,j) != 2){
 				dens(i,j) = 1;
 			} else {
@@ -456,7 +442,6 @@ void Eval::smooth(MatrixXd &dens){
 vector<double> Eval::fitTF()
 {
 	lmfitter fit(density,data.meta);
-	// vector<double> fit_params = fit.optimize();
 	return fit.optimize();
 }
 
@@ -477,7 +462,6 @@ void Eval::getDensity(){
 		}
 	}
 	double threshold = maximum * 0.01;
-	// double threshold = 0.1;
 
 	for(int k = 0; k < data.wavefunction.size(); k++){
 
@@ -492,15 +476,10 @@ void Eval::getDensity(){
 				}
 			}
 		}
-						// if(densMapGrad(i,j) < 0.9 && densMapGrad(i,j) > 0.1){
 		
-		// plotDataToPng("1before", densityLocationMap[k], opt);
 		floodFill(densityLocationMap[k]);
-		// plotDataToPng("2floodFill", densityLocationMap[k], opt);
 		fillHoles(densityLocationMap[k]);
-		// plotDataToPng("3fillHoles", densityLocationMap[k], opt);
 		erosion(densityLocationMap[k]);
-		// plotDataToPng("4erosion", densityLocationMap[k], opt);
 		dilation(densityLocationMap[k]);
 
 		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
@@ -558,7 +537,6 @@ vector<double> Eval::polarDensity(){
 			if(x_shift != 0 && y_shift != 0)
 				i = round(atan2(y_shift,x_shift) * 180 / M_PI);
 			i = (i >= 0 ) ? i % 360 : ( 360 - abs ( i%360 ) ) % 360;
-			// pDensity[i]	+= density(x,y);	
 			pDensity[i]	+= densityLocationMap[0](x,y);
 		}
 	}
@@ -718,20 +696,6 @@ Ellipse Eval::fitEllipse(c_set &c_data){
 
 }
 
-
-
-// void Eval::trafoEllipse(Matrix<double, 6, 1> old){
-// 	double A = old(0);
-// 	double B = old(1);
-// 	double C = old(2);
-// 	double D = old(3);
-// 	double E = old(4);
-// 	double F = old(5);
-
-// 	F = -F;
-
-// }
-
 c_set Eval::generateContour(Ellipse &ellipse){
 	c_set tmp;
 	double t = 0;
@@ -755,8 +719,8 @@ c_set Eval::generateContour(vector<double>& params_tf){
 	double t = 0;
 	double delta = 0.0001;
 	while(t < 2 * M_PI){
-		int32_t x = data.meta.grid[0]/ + params_tf[1] * cos(t) * cos(params_tf[2]) - params_tf[3] * sin(t) * sin(params_tf[2]);
-		int32_t y = data.meta.grid[1]/ + params_tf[1] * cos(t) * sin(params_tf[2]) + params_tf[3] * sin(t) * cos(params_tf[2]);	
+		int32_t x = data.meta.grid[0]/2 + params_tf[1]/data.meta.spacing[0] * cos(t) * cos(params_tf[2]) - params_tf[3]/data.meta.spacing[0] * sin(t) * sin(params_tf[2]);
+		int32_t y = data.meta.grid[1]/2 + params_tf[1]/data.meta.spacing[1] * cos(t) * sin(params_tf[2]) + params_tf[3]/data.meta.spacing[1] * sin(t) * cos(params_tf[2]);	
 		Coordinate<int32_t> c = Coordinate<int32_t>(x,y,0,data.meta.grid[0],data.meta.grid[1],1);
 		pair<c_set::iterator,bool> test = tmp.insert(c);
 		if(test.second == false){
@@ -768,21 +732,28 @@ c_set Eval::generateContour(vector<double>& params_tf){
 	return tmp;
 }
 
+vector<Coordinate<int32_t>> Eval::generate_density_coordinates(vector<double>& params_tf)
+{	
+	std::vector<Coordinate<int32_t>> v;
+	for(int i = 0; i < data.meta.grid[0]; i++){
+		for(int j = 0; j < data.meta.grid[1]; j++){
+			double i0 = -data.meta.coord[0] + data.meta.spacing[0] * i;
+			double i1 = -data.meta.coord[1] + data.meta.spacing[1] * j;
+			double value = params_tf[0] * (1 - (i0*i0)/(params_tf[1]*params_tf[1]) - (i1*i1)/(params_tf[3]*params_tf[3]) - params_tf[2] * i0 * i1);
+			if(value >= 0.0){
+				v.push_back(Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1));				
+			}
+		}
+	}
+	return v;
+}
+
 void Eval::aspectRatio(Observables &obs, int &sampleindex){
+
 	double h_x = data.meta.spacing[0];
 	double h_y = data.meta.spacing[1];
 
-	vector<contourData> cData;
-	for(c_set::iterator it = contour[sampleindex].begin(); it != contour[sampleindex].end(); ++it){
-		contourData tmp;
-		tmp.c = *it;
-		double x = (tmp.c.x() - data.meta.grid[0]/2) * h_x;
-		double y = (tmp.c.y() - data.meta.grid[1]/2) * h_y;
-		tmp.phi = atan2(y,x) * 180 / M_PI + 180;
-		tmp.r = sqrt(x*x  + y*y);
-		cData.push_back(tmp);
-		// cerr << "x = " << x << " y = " << y << " => " << " phi = " << tmp.phi << " r = " << tmp.r << " conv back: x = " << tmp.r * cos((tmp.phi - 180) * M_PI / 180) << " y = " << tmp.r * sin((tmp.phi - 180 ) * M_PI / 180) << endl;
-	}
+
 
 	// ellipse = fitEllipse(contour[sampleindex]);
 	// c_set cEllipse = generateContour(ellipse);
@@ -802,7 +773,10 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 	vector<double> params_tf = fitTF();
 
-	c_set cEllipse = generateContour(params_tf);
+	// c_set cEllipse = 
+	contour[sampleindex] = generateContour(params_tf);
+	densityCoordinates[sampleindex] = generate_density_coordinates(params_tf);
+	densityCounter[sampleindex] = densityCoordinates[sampleindex].size();
 
 
 	obs.r_max = params_tf[1];
@@ -819,12 +793,13 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	obs.aspectRatio = obs.r_max / obs.r_min;
 
 
+
 	// END TF FIT
 
-	contour[sampleindex] = cEllipse;
+	// contour[sampleindex] = cEllipse;
 
 
-	cData.clear();
+	vector<contourData> cData;
 	for(c_set::iterator it =  contour[sampleindex].begin(); it !=  contour[sampleindex].end(); ++it){
 		contourData tmp;
 		tmp.c = *it;
@@ -833,7 +808,6 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 		tmp.phi = atan2(y,x) * 180 / M_PI + 180;
 		tmp.r = sqrt(x*x  + y*y);
 		cData.push_back(tmp);
-		// cerr << "x = " << x << " y = " << y << " => " << " phi = " << tmp.phi << " r = " << tmp.r << " conv back: x = " << tmp.r * cos((tmp.phi - 180) * M_PI / 180) << " y = " << tmp.r * sin((tmp.phi - 180 ) * M_PI / 180) << endl;
 	}
 
 	std::sort(cData.begin(),cData.end(),[](const contourData &lhs, const contourData &rhs) -> bool {return (lhs.phi < rhs.phi);});
@@ -900,52 +874,29 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 			cout << "WARNING: Aspect-Ratio: Calculated Distance smaller than zero!" << endl;
 		}
 	}
-	// vector<double>::iterator maxElement = std::max_element(tmp_ratio.begin(),tmp_ratio.end());
-	// int maxAspectRatioIndex = std::distance(tmp_ratio.begin(), maxElement);
-	// obs.aspectRatioAngle = maxAspectRatioIndex;
-	// obs.aspectRatio = *maxElement; // zwischen 0 und 180 grad, obere Halbebene
-	// FIXME replace this with a check for the max and min values, save the corresponding angles and check if they change (= overall rotation in the gas!)
-	// cerr << endl;
-	// cerr << "obs.aspectRatioAngle \t" << "obs.r_max_phi \t" << "obs.aspectRatio \t" << "stuff \t" << endl;
-	// cerr << obs.aspectRatioAngle << "\t" << obs.r_max_phi << "\t" << obs.aspectRatio << "\t" << endl;
 }
-
-// void Eval::findEllipse(){}
 
 Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	
 	Observables obs = Observables(OBSERVABLES_DATA_POINTS_SIZE);
-	// R-Space
-	double h_x = data.meta.spacing[0];
-	double h_y = data.meta.spacing[1];
-	double h[2];
-	double x_max = data.meta.coord[0];
-	double y_max = data.meta.coord[1];
-	vector<double> rmax(2);
-	rmax[0] = data.meta.coord[0];
-	rmax[1] = data.meta.coord[1];
-	h[0] = data.meta.spacing[0];
-	h[1] = data.meta.spacing[1]; 
-	// double raw_volume = h_x * opt.grid[1] * h_y * opt.grid[2];
-	
-	// double threshold = abs2(DATA(0,opt.grid[1]/2,opt.grid[2]/2,0))*0.9;
 
-	// cout << "DensityCounter " << sampleindex << " : " << densityCounter[sampleindex] << endl;
+	aspectRatio(obs,sampleindex);
 
 	obs.volume = data.meta.spacing[0] * data.meta.spacing[1] * densityCounter[sampleindex];
+
 	double sum = 0;
 	#pragma omp parallel for reduction(+:sum)
 	for(int i = 0; i < data.meta.grid[0]; i++){
 	    for(int j = 0; j < data.meta.grid[1]; j++){	    	    		
 	      	sum += abs2(DATA(i,j));
-
 	    }
 	}
+
 	obs.particle_count = sum;
 	obs.particle_count *= data.meta.spacing[0] * data.meta.spacing[1];
 	obs.density = obs.particle_count / obs.volume;
 
-	aspectRatio(obs,sampleindex);
+	
 
 	// == Angular Density
 	// vector<double> angularDensity;
@@ -984,9 +935,7 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 		}
 	}
 	obs.r /= divisor2;
-	obs.radialDensity /= divisor2;
-
-	
+	obs.radialDensity /= divisor2;	
 
 	vector<vector<int>> index(361);
 	for(int j = 0; j < phi.size(); j++){
@@ -1009,38 +958,9 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
 
-
-
-	// vector<int> edges;
-	// checkResizeCondition(edges);
-
-	// MatrixXcd smallData = DATA.block(edges[0],edges[1],edges[2],edges[3]); // MatrixXcd((int)*x_minmax.second - (int)*x_minmax.first,(int)*y_minmax.second - (int)*y_minmax.first);
-
-	// plotDataToPngEigen("smallData",smallData,opt);
-
-	// K-Space
-	// ComplexGrid::fft(DATA, DATA);
-	// data.fft.Forward(smallData);
 	data.fft.Forward(DATA);
 
 	DATA /= sqrt(DATA.cols() * DATA.rows());
-	// smallData /= sqrt(smallData.cols() * smallData.rows());
-
-	// plotDataToPngEigen("smallData_kspace",smallData,opt);
-
-	// DATA = MatrixXcd::Zero(data.meta.grid[0],data.meta.grid[1]);
-	// DATA.block((int)*x_minmax.first,(int)*y_minmax.first,diff_x,diff_y) = smallData;
-
-	// double sum2 = 0;
-	// #pragma omp parallel for reduction(+:sum2)
-	// for(int i = 0; i < data.meta.grid[0]; i++){
-	//     for(int j = 0; j < data.meta.grid[1]; j++){	    	    		
-	//       	sum2 += abs2(DATA(i,j));
-	
-
-	//     }
-	// }
-	// cout << "kSUM : " << sum2 << endl;
 	
 	ArrayXd divisor(obs.number.size());
 	divisor.setZero();
@@ -1083,8 +1003,6 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	
 	double index_factor = (obs.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
 
-
-
 	for(int x = 0; x < data.meta.grid[0]; x++){
 		for (int y = 0; y < data.meta.grid[1]; y++){
 				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
@@ -1095,212 +1013,17 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 				obs.number(index) += number;
 				obs.Ekin += number * k * k;
 		}
-	}
-	
+	}	
 	
 	#pragma omp parallel for schedule(guided,1)
 	for(int l = 0; l < obs.number.size(); l++){
 		if(divisor[l] == 0){
 			divisor[l] = 1;
 		}
-	}
-	
+	}	
 
 	obs.number /= divisor;
-	obs.k /= divisor;
-
-
-	// spectrum
-	// vector<double> kval;
-	// vector<double> numberval;
-	// map<double,double> spectrum;
-	// pair<map<double,double>::iterator,bool> ret;    
- //    vector<double> tmpKval;
-		
- //    for (int r = 0; r < obs.number.size(); r++){
-	// 	if(obs.k(r) != 0.0){
-	// 		if(obs.number(r) != 0.0){
-	// 			ret = spectrum.insert(map<double,double>::value_type(obs.k(r),obs.number(r)));
-	// 			tmpKval.push_back(obs.k(r));
-	// 			if(ret.second==false){
-	// 				cout << "Binning of spectrum failed, double value inserted." << endl;
-	// 			}
-
-	// 			// kval.push_back(k_int);
-	// 			// numberval.push_back(eval.totalResult.number(r));
-	// 		}
- //        }
-	// }
-
-	// auto tmpMinMax_binning = std::minmax_element(tmpKval.begin(),tmpKval.end());
-
-	// int c = 1;
-	// double nsum = 0;	
-	// double min_value = *tmpMinMax_binning.first;
-	// double max_value = *tmpMinMax_binning.second;
-	// double min_log = log(min_value);
-	// double max_log = log(max_value);
-	// double binSize = ((M_PI ) / data.meta.spacing[0]) / (  data.meta.grid[0] / 2.0);
-	// double log_increment = binSize;
-
-	// double log_value = min_log + log_increment;
-	// double value = exp(log_value);
-	
-	// vector<double> median;
-	// for(map<double,double>::const_iterator it = spectrum.begin(); it != spectrum.end(); ++it){
-	// 	// kval.push_back(it->first);
-	// 	// numberval.push_back(it->second);
-
-	// 	if(it->first <= value){
-	// 		// nsum += it->second;
-	// 		// c++;
-	// 		median.push_back(it->second);
-	// 	} else {
-	// 		sort(median.begin(),median.end());
-	// 		int size = median.size();
-			
-	// 			if(size%2 == 0){
-	// 				nsum = median[size/2];
-	// 			} else {
-	// 				nsum = (median[size/2] + median[size/2 +1]) /2;
-	// 			}
-	// 			// nsum /= c;
-				
-	// 			double tmp_log = log_value;
-	// 			log_value += log_increment;
-	// 			double k = exp((tmp_log + log_value)/2);
-				
-	// 			value = exp(log_value);
-	// 			c = 1;
-	// 			median.clear();
-	// 			if(size > 0){
-	// 				numberval.push_back(nsum);
-	// 				kval.push_back(k);
-	// 			}
-			
-	// 	}
-	// }
-
-	// kval.erase(kval.begin());
-	// numberval.erase(numberval.begin());
-
-	// // // estimate powerlaw
-	// // double gamma = 3.0;
-	// double k_max = 7.0;
-	// double k_min = 2.0;
-
-	// vector<double> klog;
-	// vector<double> nlog;
-	// for(int i = 0; i < kval.size(); ++i){
-	// 	if(kval[i] != 0.0 && numberval[i]){
-	// 		if(kval[i] <= k_max && k_min <= kval[i]){
-	// 			klog.push_back(log(kval[i]));
-	// 			nlog.push_back(log(numberval[i]));
-	// 		}
-	// 	}
-	// }
-	
-
-	// auto tmpMinMax = std::minmax_element(klog.begin(),klog.end());
-
-	// double linksX = *tmpMinMax.first;
-	// double rechtsX = *tmpMinMax.second;
-
- //   double SUMx = 0;     //sum of x values
- //   double SUMy = 0;     //sum of y values
- //   double SUMxy = 0;    //sum of x * y
- //   double SUMxx = 0;    //sum of x^2
- //   double SUMres = 0;   //sum of squared residue
- //   double res = 0;      //residue squared
- //   double slope = 0;    //slope of regression line
- //   double y_intercept = 0; //y intercept of regression line
- //   double SUM_Yres = 0; //sum of squared of the discrepancies
- //   double AVGy = 0;     //mean of y
- //   double AVGx = 0;     //mean of x
- //   double Yres = 0;     //squared of the discrepancies
- //   double Rsqr = 0;     //coefficient of determination
- //   int dataSize = nlog.size();
- //   //calculate various sums 
- //   for (int i = 0; i < dataSize; i++)
- //   {
- //      //sum of x
- //      SUMx = SUMx + klog[i];
- //      //sum of y
- //      SUMy = SUMy + nlog[i];
- //      //sum of squared x*y
- //      SUMxy = SUMxy + klog[i] * nlog[i];
- //      //sum of squared x
- //      SUMxx = SUMxx + klog[i] * klog[i];
- //   }
-
- //   //calculate the means of x and y
- //   AVGy = SUMy / dataSize;
- //   AVGx = SUMx / dataSize;
-
- //   //slope or a1
- //   slope = (dataSize * SUMxy - SUMx * SUMy) / (dataSize * SUMxx - SUMx*SUMx);
-
- //   //y intercept or a0
- //   y_intercept = AVGy - slope * AVGx;
-
- //   obs.alpha = slope;
-
-
- //   steigung = slope;
- //   double abschnitt = y_intercept;
- //   double linksY = slope * linksX + y_intercept;
- //   double rechtsY = slope * rechtsX + y_intercept;
-
- //   punkte.push_back(exp(linksX));
- //   punkte.push_back(exp(linksY));
- //   punkte.push_back(exp(rechtsX));
- //   punkte.push_back(exp(rechtsY));
-
-
- //   // printf("x mean(AVGx) = %0.5E\n", AVGx);
-
- //   // printf("y mean(AVGy) = %0.5E\n", AVGy);
-
- //   // printf ("\n");
- //   // printf ("The linear equation that best fits the given data:\n");
- //   // printf ("       y = %2.8lfx + %2.8f\n", slope, y_intercept);
- //   // printf ("------------------------------------------------------------\n");
- //   // printf ("   Original (x,y)   (y_i - y_avg)^2     (y_i - a_o - a_1*x_i)^2\n");
- //   // printf ("------------------------------------------------------------\n");
-
- //   // //calculate squared residues, their sum etc.
- //   for (int i = 0; i < dataSize; i++) 
- //   {
- //      //current (y_i - a0 - a1 * x_i)^2
- //      Yres = pow(nlog[i] - y_intercept - (slope * (klog[i])), 2);
-
- //      //sum of (y_i - a0 - a1 * x_i)^2
- //      SUM_Yres += Yres;
-
- //      //current residue squared (y_i - AVGy)^2
- //      res = pow(nlog[i] - AVGy, 2);
-
- //      //sum of squared residues
- //      SUMres += res;
-      
- //      // printf ("   (%0.2f %0.2f)      %0.5E         %0.5E\n", 
- //      //  klog[i], nlog[i], res, Yres);
- //   }
-
- //   fehler = sqrt(SUM_Yres / (dataSize - 2));
-
- //   //calculate r^2 coefficient of determination
- //   // Rsqr = (SUMres - SUM_Yres) / SUMres;
-   
- //   // printf("--------------------------------------------------\n");
- //   // printf("Sum of (y_i - y_avg)^2 = %0.5E\t\n", SUMres);
- //   // printf("Sum of (y_i - a_o - a_1*x_i)^2 = %0.5E\t\n", SUM_Yres);
- //   // printf("Standard deviation(St) = %0.5E\n", sqrt(SUMres / (dataSize - 1)));
- //   // printf("Standard error of the estimate(Sr) = %0.5E\t\n", sqrt(SUM_Yres / (dataSize-2)));
- //   // printf("Coefficent of determination(r^2) = %0.5E\t\n", (SUMres - SUM_Yres)/SUMres);
- //   // printf("Correlation coefficient(r) = %0.5E\t\n", sqrt(Rsqr));
-
-	
+	obs.k /= divisor;	
 	
 	return obs;
 }

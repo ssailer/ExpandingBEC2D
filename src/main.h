@@ -370,14 +370,9 @@ inline int InitMain::readConfig()
 	opt.N                    = root["RunOptions"]["N"];
 	opt.min_x                = root["RunOptions"]["min_x"]; 					
 	opt.min_y                = root["RunOptions"]["min_y"];
-	// opt.min_z				 = root["RunOptions"]["min_z"];
-	// opt.klength[0] 			 = root["RunOptions"]["klength0"];
-	// opt.klength[1] 			 = root["RunOptions"]["klength1"];
-	// opt.klength[2] 			 = root["RunOptions"]["klength2"];
-	// opt.grid[0]              = root["RunOptions"]["grid0"];				
+		
 	opt.grid[1]              = root["RunOptions"]["grid_x"];				
 	opt.grid[2]              = root["RunOptions"]["grid_y"];	   			
-	// opt.grid[3]              = root["RunOptions"]["grid3"];
 	opt.g                    = root["RunOptions"]["g"]; 						
 	opt.n_it_RTE             = root["RunOptions"]["sizeOfSnapshots"]; 				
 	opt.snapshots            = root["RunOptions"]["numberOfSnapshots"];
@@ -386,21 +381,12 @@ inline int InitMain::readConfig()
 	opt.samplesize			 = root["RunOptions"]["samplesize"];
 	opt.potFactor			 = root["RunOptions"]["potentialFactor"];
 	opt.vortexspacing		 = root["RunOptions"]["vortexspacing"];
-	// cfg.lookupValue("RunOptions.runmode",opt.runmode);
-	// cfg.lookupValue("RunOptions.startingGridName",startingGridName);
 	opt.runmode = dglString;
 
 	double exp_factor        = root["RunOptions"]["exp_factor"];
 	double omega_x_realValue = root["RunOptions"]["omega_x"];  // cfg.lookup("RunOptions.omega_x");
 	double omega_y_realValue = root["RunOptions"]["omega_y"];  // cfg.lookup("RunOptions.omega_y");
-	// double omega_w_realValue = root["RunOptions"]["omega_w"];
-	// double omega_w_realValue_1 = root["RunOptions"]["omega_w"][1];
-	
-	// double omega_w_array;
-	// cerr << endl << "before setting" << endl;
-	// libconfig::Setting & ow = cfg.lookup("RunOptions.omega_w");
-	// cerr << endl << "setting" << endl;
-	// cout << endl <" w1 = " << omega_w_realValue_0 << " w2 = " << omega_w_realValue_1 << endl;
+
 	omega_w_vector.resize(root["RunOptions"]["omega_w"].getLength());
 	for(int i = 0; i < root["RunOptions"]["omega_w"].getLength(); ++i){
 		omega_w_vector[i] = root["RunOptions"]["omega_w"][i];
@@ -414,7 +400,6 @@ inline int InitMain::readConfig()
 	opt.exp_factor           = complex<double>(exp_factor,0); //Expansion factor
 	opt.omega_x              = complex<double>(omega_x_realValue,0);
 	opt.omega_y              = complex<double>(omega_y_realValue,0);
-	// opt.omega_w 			 = complex<double>(omega_w_realValue,0);
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
@@ -459,13 +444,8 @@ inline void InitMain::writeConfig(string filename){
 				 << "g = " << opt.g << "\n"
 				 << "min_x = " << opt.min_x << "\n"
 				 << "min_y = " << opt.min_y << "\n"
-				 // << "klength0 = " << opt.klength[0] << "\n"
-				 // << "klength1 = " << opt.klength[1] << "\n"
-				 // << "klength2 = " << opt.klength[2] << "\n"
-				 // << "grid0 = " << opt.grid[0] << "\n"
 				 << "grid_x = " << opt.grid[1] << "\n"
 				 << "grid_y = " << opt.grid[2] << "\n"
-				 // << "grid3 = " << opt.grid[3] << "\n"
 				 << "sizeOfSnapshots = " << opt.n_it_RTE << "\n"
 				 << "numberOfSnapshots = " << opt.snapshots << "\n"
 				 << "ITP_step = " << opt.ITP_step << "\n"
@@ -477,8 +457,6 @@ inline void InitMain::writeConfig(string filename){
 				 << "omega_y = " << opt.omega_y.real() << "\n"
 				 << "dispersion_x = " << opt.dispersion_x.real() << "\n"
 				 << "dispersion_y = " << opt.dispersion_y.real() << "\n"
-				 << "runmode = \"" << opt.runmode << "\"\n"
-				 << "startingGridName = \"" << startingGridName << "\"\n"
 				 << "samplesize = " << opt.samplesize << "\n"
 				 << "}";
 	datafile.close();

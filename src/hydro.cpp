@@ -399,7 +399,7 @@ void hydroSolver::integrate()
     varold.sigma_y = eval->totalResult.r_min;
     varold.phi = eval->totalResult.r_max_phi;
     // varold.n0 = 2.0 * (/*eval->opt.N*/ eval->totalResult.particle_count / M_PI) / (varold.sigma_x * varold.sigma_y);
-    varold.n0 = eval->totalResult.n0 * 1.25;
+    varold.n0 = eval->totalResult.n0 * 2.0;
     varold.alpha_x = 0.0;
     varold.alpha_y = 0.0;
     varold.a = 0.0;

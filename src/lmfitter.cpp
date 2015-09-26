@@ -119,7 +119,7 @@ double lmfitter::tf_dist ( const input_vector& input, const parameter_vector& pa
     double temp = 0;
 
     // double value = 2.0 * p0 / (M_PI * p1 * p3) * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1);
-    double value = p0 * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1) ;
+    double value = p0 * (1 - (i0*i0)/(p1*p1) - (i1*i1)/(p3*p3) - p2 * i0 * i1);
     if(value > 0){
         // temp = sqrt(value);
         temp = value;
@@ -363,7 +363,7 @@ vector<double> lmfitter::optimize()
         // parameters are based on just the data_samples.
 
 
-        plotQuerschnitte("_Anfang",x);
+        // plotQuerschnitte("_Anfang",x);
 
         cerr << "\t Use Levenberg-Marquardt to fit densityprofile:" << endl;
         // Use the Levenberg-Marquardt method to determine the parameters which
@@ -378,7 +378,7 @@ vector<double> lmfitter::optimize()
         // cerr << "solution error:      "<< dlib::length(x - params) << endl;
         // cerr << endl;
 
-        plotQuerschnitte("_Ende",x);
+        // plotQuerschnitte("_Ende",x);
 
         vector<double> paramter_results {x(0),x(1),x(2),x(3)};
 

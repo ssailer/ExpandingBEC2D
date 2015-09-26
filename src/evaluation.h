@@ -123,8 +123,10 @@ private:
 	vector<double> polarDensity();
 	vector<int> findMajorMinor();
 	Ellipse fitEllipse(c_set &Data);
+
 	c_set generateContour(Ellipse &ellipse);
 	c_set generateContour(vector<double>& params_tf);
+	vector<Coordinate<int32_t>> generate_density_coordinates(vector<double>& params_tf);
 
 	vector<double> fitTF();
 	
