@@ -54,7 +54,8 @@ public:
     // g = eval->opt.g * (hbar * hbar / (m * m)) * (4.0) * eval->opt.N / M_PI;
     // double kappa = eval->opt.vortexnumber / 10.0;
     // g = sqrt(1 + kappa) * eval->opt.g * (hbar * hbar ) / (m * m );
-    g = eval->opt.g * (hbar * hbar ) / (m * m );
+    g = eval->opt.g * (hbar * hbar ) / (m * m);
+
     // g = eval->opt.g * (hbar * hbar / (m * m)) * (15.0/8.0) * eval->opt.N / M_PI;
   }
 
@@ -91,6 +92,7 @@ public:
   double hbar;
   double m;
   double g;
+  double omega_average;
 
   bool xxx;
 

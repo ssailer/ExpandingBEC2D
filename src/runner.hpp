@@ -256,7 +256,7 @@ void Runner<T>::runToTime(string runName)
 {	
 	double start;  // starttime of the run
 
-	Eval* initEval = new Eval(*pData,opt);
+	Eval* initEval = new Eval(pData,opt);
 	initEval->process();
 	initEval->save();
 
@@ -322,10 +322,20 @@ void Runner<T>::runToTime(string runName)
 
 		try{
 			// if(opt.runmode != "EXP"){
-				Eval* eval = new Eval(*pData,opt);
+				Eval* eval = new Eval(pData,opt);
 				eval->process();
 				eval->save();
 			// }
+
+			string dataname = runName + "data.h5";
+			string obsname = runName + "obs.h5";
+			binaryFile* bFile = new binaryFile(dataname,binaryFile::append);
+			bFile->appendSnapshot("MatrixData",pData,opt);
+			delete bFile;
+
+			binaryFile* obsFile = new binaryFile(obsname,binaryFile::append);
+			obsFile->appendEval(*eval, opt);
+			delete obsFile;
 
 			if(opt.runmode == "EXP"){
 				vector<int> edges;
@@ -343,16 +353,10 @@ void Runner<T>::runToTime(string runName)
 				delete plotter;
 			}
 
-			string dataname = runName + "data.h5";
-			string obsname = runName + "obs.h5";
-			binaryFile* bFile = new binaryFile(dataname,binaryFile::append);
-			bFile->appendSnapshot("MatrixData",pData,opt);
-			// if(opt.runmode != "EXP"){
-			delete bFile;
-			binaryFile* obsFile = new binaryFile(obsname,binaryFile::append);
-			obsFile->appendEval(*eval, opt);
-			// }
-			delete obsFile;
+			delete eval;
+
+
+
 		}
 		catch(const std::exception& e) { 
 			std::cerr 	<< "Unhandled Exception after dataFile.appendSnapshot() in rteToTime: " << std::endl; 

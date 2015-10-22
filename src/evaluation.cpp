@@ -1,6 +1,6 @@
 #include <evaluation.h>
 
-#define OBSERVABLES_DATA_POINTS_SIZE data.meta.grid[0]*data.meta.grid[1]
+#define OBSERVABLES_DATA_POINTS_SIZE data->meta.grid[0]*data->meta.grid[1]
 #define ANGULAR_AVERAGING_LENGTH 12
 #define NUMBER_OF_VORTICES 100
 #define DENSITY_CHECK_DISTANCE 2
@@ -10,47 +10,47 @@ using namespace std;
 using namespace Eigen;
 
 
-Eval::Eval(MatrixData d,Options o) : data(d),  opt(o) {
-	// data = d;
+Eval::Eval(MatrixData* d,Options o) : data(d),  opt(o) {
+	data = d;
 	// opt = o;
 	// cout << opt.Ag << "  " << opt.OmegaG << endl;
-	// cout << data.meta.Ag << "  " << data.meta.OmegaG << endl;
+	// cout << data->meta.Ag << "  " << data->meta.OmegaG << endl;
 	toPhysicalUnits(opt);
-	data.convertToPhysicalUnits();
+	data->convertToPhysicalUnits();
 };
 
 void Eval::process(){
 
-	// pres.resize(data.wavefunction.size());
+	// pres.resize(data->wavefunction.size());
 
-	vlist.resize(data.wavefunction.size());
+	vlist.resize(data->wavefunction.size());
 
-	contour.resize(data.wavefunction.size());
+	contour.resize(data->wavefunction.size());
 
-	densityCounter.resize(data.wavefunction.size());
+	densityCounter.resize(data->wavefunction.size());
 
-	// densityLocationMap.resize(data.wavefunction.size());
-	densityCoordinates.resize(data.wavefunction.size());
+	// densityLocationMap.resize(data->wavefunction.size());
+	densityCoordinates.resize(data->wavefunction.size());
 
-	phase = MatrixXd::Zero(data.meta.grid[0],data.meta.grid[1]);
-	density = MatrixXd::Zero(data.meta.grid[0],data.meta.grid[1]);
+	phase = MatrixXd::Zero(data->meta.grid[0],data->meta.grid[1]);
+	density = MatrixXd::Zero(data->meta.grid[0],data->meta.grid[1]);
 
-	Contour tracker(data.meta);
+	Contour tracker(data->meta);
 
 	totalResult = Observables(OBSERVABLES_DATA_POINTS_SIZE);
 
-	cout << currentTime() <<  " Step: " << data.meta.steps << " Time : " << data.meta.time << " s " << endl;		 
+	cout << currentTime() <<  " Step: " << data->meta.steps << " Time : " << data->meta.time << " s " << endl;		 
 
 
 	// getDensity();
-	for(int k = 0; k < data.wavefunction.size(); k++){
-		calc_fields(data.wavefunction[k],opt);
+	for(int k = 0; k < data->wavefunction.size(); k++){
+		calc_fields(data->wavefunction[k],opt);
 		// contour[k] = tracker.trackContour(densityLocationMap[k]);
-		totalResult += calculator(data.wavefunction[k],k);
-		getVortices(data.wavefunction[k],densityCoordinates[k],vlist[k]);
+		totalResult += calculator(data->wavefunction[k],k);
+		getVortices(data->wavefunction[k],densityCoordinates[k],vlist[k]);
 		// cout << "-getVortexDistance" ;
 	}	
-	totalResult /= data.wavefunction.size();
+	totalResult /= data->wavefunction.size();
 
 }
 
@@ -98,8 +98,8 @@ void Eval::save(){
 
   	double last_largest_element = 0;
     std::queue<double> largest_elements;
-    for(int i = 0; i < data.meta.grid[0]; ++i){
-    	for(int j = 0; j < data.meta.grid[1]; ++j){
+    for(int i = 0; i < data->meta.grid[0]; ++i){
+    	for(int j = 0; j < data->meta.grid[1]; ++j){
     		const double val = density(i,j);
     		if(val > last_largest_element){
     			largest_elements.push(val);
@@ -124,10 +124,10 @@ void Eval::save(){
 
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
 	// datafile.open;
-	datafile << std::left << std::setw(setwidth) << std::setprecision(setprec) << data.meta.steps << ","
-					  	  << std::setw(setwidth) << std::setprecision(setprec) << data.meta.time << ","
-					  	  << std::setw(setwidth) << std::setprecision(setprec) << data.meta.coord[0] << ","
-					  	  << std::setw(setwidth) << std::setprecision(setprec) << data.meta.coord[1] << ","
+	datafile << std::left << std::setw(setwidth) << std::setprecision(setprec) << data->meta.steps << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << data->meta.time << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << data->meta.coord[0] << ","
+					  	  << std::setw(setwidth) << std::setprecision(setprec) << data->meta.coord[1] << ","
 					  	  << std::setw(setwidth) << std::setprecision(setprec) << opt.vortexnumber << ","
 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.alpha << ","
  					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.Rx << ","
@@ -182,8 +182,8 @@ void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoor
 		    for(int y_shift = - DENSITY_CHECK_DISTANCE; y_shift < DENSITY_CHECK_DISTANCE; y_shift++){
 		    	int x = it->c.x() + x_shift;
 				int y = it->c.y() + y_shift;
-				radius.push_back(sqrt(x_shift*x_shift * data.meta.spacing[0]*data.meta.spacing[0] + y_shift*y_shift *data.meta.spacing[1]*data.meta.spacing[1]));
-				polarDensity.push_back(abs2(data.wavefunction[0](x,y)));
+				radius.push_back(sqrt(x_shift*x_shift * data->meta.spacing[0]*data->meta.spacing[0] + y_shift*y_shift *data->meta.spacing[1]*data->meta.spacing[1]));
+				polarDensity.push_back(abs2(data->wavefunction[0](x,y)));
 			}
 		}
 		double sum = 0;
@@ -229,11 +229,11 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 
 	VortexData vortex;
 
-	Vector<int32_t> down = Vector<int32_t>(0,-1,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> right = Vector<int32_t>(1,0,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> up = Vector<int32_t>(0,1,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> left = Vector<int32_t>(-1,0,0,data.meta.grid[0],data.meta.grid[1],1);
-	Vector<int32_t> rightdown = Vector<int32_t>(0.5, -0.5, 0,data.meta.grid[0],data.meta.grid[1],1);
+	Vector<int32_t> down = Vector<int32_t>(0,-1,0,data->meta.grid[0],data->meta.grid[1],1);
+	Vector<int32_t> right = Vector<int32_t>(1,0,0,data->meta.grid[0],data->meta.grid[1],1);
+	Vector<int32_t> up = Vector<int32_t>(0,1,0,data->meta.grid[0],data->meta.grid[1],1);
+	Vector<int32_t> left = Vector<int32_t>(-1,0,0,data->meta.grid[0],data->meta.grid[1],1);
+	Vector<int32_t> rightdown = Vector<int32_t>(0.5, -0.5, 0,data->meta.grid[0],data->meta.grid[1],1);
 
 	// #pragma omp parallel for
 	for(int i = 0; i < densityCoordinates.size(); i++){
@@ -320,9 +320,9 @@ int Eval::getVortexNumber(){
 
 void Eval::calc_fields(MatrixXcd &DATA, Options &opt){
 	#pragma omp parallel for
-	for(int x = 0; x < data.meta.grid[0]; x++)
+	for(int x = 0; x < data->meta.grid[0]; x++)
 	{
-		for(int y = 0; y < data.meta.grid[1]; y++)
+		for(int y = 0; y < data->meta.grid[1]; y++)
 		{
 			phase(x,y) = arg(DATA(x,y));
 			density(x,y) = abs2(DATA(x,y));
@@ -359,10 +359,10 @@ int Eval::checkSum(MatrixXi &d,int &i, int &j){
 }
 
 void Eval::erosion(MatrixXi &d){
-	MatrixXi tmp_map = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
+	MatrixXi tmp_map = MatrixXi::Zero(data->meta.grid[0],data->meta.grid[1]);
 
-	for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
-	 	for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+	for(int i = DENSITY_CHECK_DISTANCE; i < data->meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+	 	for(int j = DENSITY_CHECK_DISTANCE; j < data->meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
 			if(checkSum(d,i,j) == 1){
 				tmp_map(i,j) = 1;
 			} 
@@ -373,10 +373,10 @@ void Eval::erosion(MatrixXi &d){
 }
 
 void Eval::dilation(MatrixXi &d){
-	MatrixXi tmp_map = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);
+	MatrixXi tmp_map = MatrixXi::Zero(data->meta.grid[0],data->meta.grid[1]);
 
-	for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
-	 	for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+	for(int i = DENSITY_CHECK_DISTANCE; i < data->meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+	 	for(int j = DENSITY_CHECK_DISTANCE; j < data->meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
 			if(checkSum(d,i,j) >= 1){
 				tmp_map(i,j) = 1;
 			} 
@@ -398,7 +398,7 @@ void Eval::floodFill(MatrixXi &dens){
 	cStack.push(Coord{0,0});
 	while(!cStack.empty()){
 		Coord now = cStack.top();
-		if(now.x < 0 || now.x >= data.meta.grid[0] || now.y < 0 || now.y >= data.meta.grid[1])
+		if(now.x < 0 || now.x >= data->meta.grid[0] || now.y < 0 || now.y >= data->meta.grid[1])
 			cStack.pop();
 		else if(dens(now.x,now.y) != 0)
 			cStack.pop();
@@ -413,8 +413,8 @@ void Eval::floodFill(MatrixXi &dens){
 }
 
 void Eval::fillHoles(MatrixXi &dens){
-	for(int i = 0; i < data.meta.grid[0]; i++){
-		for(int j = 0; j < data.meta.grid[1]; j++){
+	for(int i = 0; i < data->meta.grid[0]; i++){
+		for(int j = 0; j < data->meta.grid[1]; j++){
 
 			if(dens(i,j) != 2){
 				dens(i,j) = 1;
@@ -428,8 +428,8 @@ void Eval::fillHoles(MatrixXi &dens){
 
 void Eval::smooth(MatrixXd &dens){
 	MatrixXd tmp = dens;
-	for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
-		for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+	for(int i = DENSITY_CHECK_DISTANCE; i < data->meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+		for(int j = DENSITY_CHECK_DISTANCE; j < data->meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
 			tmp(i,j) = dens(i-1,j) + dens(i+1,j) + dens(i,j-1) + dens(i,j+1) + dens(i,j);
 			tmp(i,j) += dens(i-2,j) + dens(i+2,j) + dens(i,j-2) + dens(i,j+2);
 			tmp(i,j) += dens(i-1,j-1) + dens(i+1,j+1) + dens(i+1,j-1) + dens(i-1,j+1);
@@ -441,7 +441,7 @@ void Eval::smooth(MatrixXd &dens){
 
 vector<double> Eval::fitTF()
 {
-	lmfitter fit(density,data.meta);
+	lmfitter fit(density,data->meta);
 	return fit.optimize();
 }
 
@@ -453,9 +453,9 @@ void Eval::getDensity(){
 	// smooth(density);
 
 	double maximum = 0;
-	for(int k = 0; k < data.wavefunction.size(); k++){
-		for(int i = 0; i < data.meta.grid[0]; i++){
-			for(int j = 0; j < data.meta.grid[1]; j++){
+	for(int k = 0; k < data->wavefunction.size(); k++){
+		for(int i = 0; i < data->meta.grid[0]; i++){
+			for(int j = 0; j < data->meta.grid[1]; j++){
 				double value = density(i,j);
 				maximum = ( value > maximum) ? value : maximum;
 			}
@@ -463,14 +463,14 @@ void Eval::getDensity(){
 	}
 	double threshold = maximum * 0.01;
 
-	for(int k = 0; k < data.wavefunction.size(); k++){
+	for(int k = 0; k < data->wavefunction.size(); k++){
 
 		
-		densityLocationMap[k] = MatrixXi::Zero(data.meta.grid[0],data.meta.grid[1]);	
+		densityLocationMap[k] = MatrixXi::Zero(data->meta.grid[0],data->meta.grid[1]);	
 		densityCounter[k] = 0;
 		densityCoordinates[k].clear();
-		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
-			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+		for(int i = DENSITY_CHECK_DISTANCE; i < data->meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+			for(int j = DENSITY_CHECK_DISTANCE; j < data->meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
 			    if(density(i,j) > threshold){
 	   				densityLocationMap[k](i,j) = 1;
 				}
@@ -482,10 +482,10 @@ void Eval::getDensity(){
 		erosion(densityLocationMap[k]);
 		dilation(densityLocationMap[k]);
 
-		for(int i = DENSITY_CHECK_DISTANCE; i < data.meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
-			for(int j = DENSITY_CHECK_DISTANCE; j < data.meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
+		for(int i = DENSITY_CHECK_DISTANCE; i < data->meta.grid[0] - DENSITY_CHECK_DISTANCE; i++){
+			for(int j = DENSITY_CHECK_DISTANCE; j < data->meta.grid[1] - DENSITY_CHECK_DISTANCE; j++){
 			    if(densityLocationMap[k](i,j) == 1){
-	   				Coordinate<int32_t> tmpCoord = Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1);
+	   				Coordinate<int32_t> tmpCoord = Coordinate<int32_t>(i,j,0,data->meta.grid[0],data->meta.grid[1],1);
 					densityCoordinates[k].push_back(tmpCoord);
 					densityCounter[k]++;
 				}
@@ -529,10 +529,10 @@ vector<int> Eval::findMajorMinor(){
 vector<double> Eval::polarDensity(){
 	vector<double> pDensity(360);
 	
-	for(int x = 0; x < data.meta.grid[0]; ++x){
-		for(int y = 0; y < data.meta.grid[1]; ++y){
-			int x_shift = x - data.meta.grid[0]/2;
-			int y_shift = y - data.meta.grid[1]/2;
+	for(int x = 0; x < data->meta.grid[0]; ++x){
+		for(int y = 0; y < data->meta.grid[1]; ++y){
+			int x_shift = x - data->meta.grid[0]/2;
+			int y_shift = y - data->meta.grid[1]/2;
 			int i;
 			if(x_shift != 0 && y_shift != 0)
 				i = round(atan2(y_shift,x_shift) * 180 / M_PI);
@@ -703,7 +703,7 @@ c_set Eval::generateContour(Ellipse &ellipse){
 	while(t < 2 * M_PI){
 		int32_t x = ellipse.center[0] + ellipse.major * cos(t) * cos(ellipse.angle) - ellipse.minor * sin(t) * sin(ellipse.angle);
 		int32_t y = ellipse.center[0] + ellipse.major * cos(t) * sin(ellipse.angle) + ellipse.minor * sin(t) * cos(ellipse.angle);	
-		Coordinate<int32_t> c = Coordinate<int32_t>(x,y,0,data.meta.grid[0],data.meta.grid[1],1);
+		Coordinate<int32_t> c = Coordinate<int32_t>(x,y,0,data->meta.grid[0],data->meta.grid[1],1);
 		pair<c_set::iterator,bool> test = tmp.insert(c);
 		if(test.second == false){
 			t += delta;
@@ -719,9 +719,9 @@ c_set Eval::generateContour(vector<double>& params_tf){
 	double t = 0;
 	double delta = 0.0001;
 	while(t < 2 * M_PI){
-		int32_t x = data.meta.grid[0]/2 + params_tf[1]/data.meta.spacing[0] * cos(t) * cos(params_tf[2]) - params_tf[3]/data.meta.spacing[0] * sin(t) * sin(params_tf[2]);
-		int32_t y = data.meta.grid[1]/2 + params_tf[1]/data.meta.spacing[1] * cos(t) * sin(params_tf[2]) + params_tf[3]/data.meta.spacing[1] * sin(t) * cos(params_tf[2]);	
-		Coordinate<int32_t> c = Coordinate<int32_t>(x,y,0,data.meta.grid[0],data.meta.grid[1],1);
+		int32_t x = data->meta.grid[0]/2 + params_tf[1]/data->meta.spacing[0] * cos(t) * cos(params_tf[2]) - params_tf[3]/data->meta.spacing[0] * sin(t) * sin(params_tf[2]);
+		int32_t y = data->meta.grid[1]/2 + params_tf[1]/data->meta.spacing[1] * cos(t) * sin(params_tf[2]) + params_tf[3]/data->meta.spacing[1] * sin(t) * cos(params_tf[2]);	
+		Coordinate<int32_t> c = Coordinate<int32_t>(x,y,0,data->meta.grid[0],data->meta.grid[1],1);
 		pair<c_set::iterator,bool> test = tmp.insert(c);
 		if(test.second == false){
 			t += delta;
@@ -735,13 +735,13 @@ c_set Eval::generateContour(vector<double>& params_tf){
 vector<Coordinate<int32_t>> Eval::generate_density_coordinates(vector<double>& params_tf)
 {	
 	std::vector<Coordinate<int32_t>> v;
-	for(int i = 0; i < data.meta.grid[0]; i++){
-		for(int j = 0; j < data.meta.grid[1]; j++){
-			double i0 = -data.meta.coord[0] + data.meta.spacing[0] * i;
-			double i1 = -data.meta.coord[1] + data.meta.spacing[1] * j;
+	for(int i = 0; i < data->meta.grid[0]; i++){
+		for(int j = 0; j < data->meta.grid[1]; j++){
+			double i0 = -data->meta.coord[0] + data->meta.spacing[0] * i;
+			double i1 = -data->meta.coord[1] + data->meta.spacing[1] * j;
 			double value = params_tf[0] * (1 - (i0*i0)/(params_tf[1]*params_tf[1]) - (i1*i1)/(params_tf[3]*params_tf[3]) - params_tf[2] * i0 * i1);
 			if(value >= 0.0){
-				v.push_back(Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1));				
+				v.push_back(Coordinate<int32_t>(i,j,0,data->meta.grid[0],data->meta.grid[1],1));				
 			}
 		}
 	}
@@ -750,8 +750,8 @@ vector<Coordinate<int32_t>> Eval::generate_density_coordinates(vector<double>& p
 
 void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
-	double h_x = data.meta.spacing[0];
-	double h_y = data.meta.spacing[1];
+	double h_x = data->meta.spacing[0];
+	double h_y = data->meta.spacing[1];
 
 
 
@@ -803,8 +803,8 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	for(c_set::iterator it =  contour[sampleindex].begin(); it !=  contour[sampleindex].end(); ++it){
 		contourData tmp;
 		tmp.c = *it;
-		double x = (tmp.c.x() - data.meta.grid[0]/2) * h_x;
-		double y = (tmp.c.y() - data.meta.grid[1]/2) * h_y;
+		double x = (tmp.c.x() - data->meta.grid[0]/2) * h_x;
+		double y = (tmp.c.y() - data->meta.grid[1]/2) * h_y;
 		tmp.phi = atan2(y,x) * 180 / M_PI + 180;
 		tmp.r = sqrt(x*x  + y*y);
 		cData.push_back(tmp);
@@ -882,18 +882,18 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 
 	aspectRatio(obs,sampleindex);
 
-	obs.volume = data.meta.spacing[0] * data.meta.spacing[1] * densityCounter[sampleindex];
+	obs.volume = data->meta.spacing[0] * data->meta.spacing[1] * densityCounter[sampleindex];
 
 	double sum = 0;
 	#pragma omp parallel for reduction(+:sum)
-	for(int i = 0; i < data.meta.grid[0]; i++){
-	    for(int j = 0; j < data.meta.grid[1]; j++){	    	    		
+	for(int i = 0; i < data->meta.grid[0]; i++){
+	    for(int j = 0; j < data->meta.grid[1]; j++){	    	    		
 	      	sum += abs2(DATA(i,j));
 	    }
 	}
 
 	obs.particle_count = sum;
-	obs.particle_count *= data.meta.spacing[0] * data.meta.spacing[1];
+	obs.particle_count *= data->meta.spacing[0] * data->meta.spacing[1];
 	obs.density = obs.particle_count / obs.volume;
 
 	
@@ -907,27 +907,27 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 
 	ArrayXd divisor2(obs.number.size());
 
-	double r_index_factor = (obs.radialDensity.size() -1) / sqrt(data.meta.coord[0] * data.meta.coord[0] + data.meta.coord[1] * data.meta.coord[1]);
+	double r_index_factor = (obs.radialDensity.size() -1) / sqrt(data->meta.coord[0] * data->meta.coord[0] + data->meta.coord[1] * data->meta.coord[1]);
 	// cout << "INDEX_FACTOR " << r_index_factor << endl;
-	for(int i = 0; i < data.meta.grid[0]; i++){
-	    for(int j = 0; j < data.meta.grid[1]; j++){
-				int x_shift = i - data.meta.grid[0]/2;
-				int y_shift = j - data.meta.grid[1]/2;
-				phi.push_back( atan2(x_shift * data.meta.spacing[0] ,y_shift * data.meta.spacing[1]) * 180 / M_PI + 180);
-				double r_tmp = sqrt(x_shift*x_shift * data.meta.spacing[0]*data.meta.spacing[0] + y_shift*y_shift *data.meta.spacing[1]*data.meta.spacing[1]);
+	for(int i = 0; i < data->meta.grid[0]; i++){
+	    for(int j = 0; j < data->meta.grid[1]; j++){
+				int x_shift = i - data->meta.grid[0]/2;
+				int y_shift = j - data->meta.grid[1]/2;
+				phi.push_back( atan2(x_shift * data->meta.spacing[0] ,y_shift * data->meta.spacing[1]) * 180 / M_PI + 180);
+				double r_tmp = sqrt(x_shift*x_shift * data->meta.spacing[0]*data->meta.spacing[0] + y_shift*y_shift *data->meta.spacing[1]*data->meta.spacing[1]);
 
 				
 
 				radius.push_back(r_tmp);
 				double dens_tmp = abs2(DATA(i,j));
 				polarDensity.push_back(dens_tmp);
-				Coordinate<int32_t> tmpCoord =  Coordinate<int32_t>(i,j,0,data.meta.grid[0],data.meta.grid[1],1);
+				Coordinate<int32_t> tmpCoord =  Coordinate<int32_t>(i,j,0,data->meta.grid[0],data->meta.grid[1],1);
 				cartesianCoordinates.push_back(tmpCoord);
 
 				int index = r_index_factor * r_tmp;
-				// cout << " radius " << r_tmp << " / " << data.meta.coord[0] << " index " << index << " / " << obs.radialDensity.size() << endl;
+				// cout << " radius " << r_tmp << " / " << data->meta.coord[0] << " index " << index << " / " << obs.radialDensity.size() << endl;
 				// if(index >= obs.number.size()){
-				// 	cout << "index " << index << " r_tmp " << r_tmp << " " << data.meta.spacing[0] << " " << endl;
+				// 	cout << "index " << index << " r_tmp " << r_tmp << " " << data->meta.spacing[0] << " " << endl;
 				// }
 				divisor2(index) += 1.0;
 				obs.r(index) += r_tmp;
@@ -958,7 +958,7 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	}
 	obs.angularDensity /= (ANGULAR_AVERAGING_LENGTH*2 + 1);
 
-	data.fft.Forward(DATA);
+	data->fft.Forward(DATA);
 
 	DATA /= sqrt(DATA.cols() * DATA.rows());
 	
@@ -967,24 +967,24 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	
 	vector<vector<double>> kspace;
 	vector<double> Kmax(2);
-	Kmax[0] = M_PI / data.meta.spacing[0];
-	Kmax[1] = M_PI / data.meta.spacing[1];
+	Kmax[0] = M_PI / data->meta.spacing[0];
+	Kmax[1] = M_PI / data->meta.spacing[1];
 	vector<double> deltaK(2);
-	deltaK[0] = Kmax[0] / (data.meta.grid[0] / 2.0);
-	deltaK[1] = Kmax[1] / (data.meta.grid[1] / 2.0);
+	deltaK[0] = Kmax[0] / (data->meta.grid[0] / 2.0);
+	deltaK[1] = Kmax[1] / (data->meta.grid[1] / 2.0);
 
 
 	kspace.resize(2);
 	for(int d = 0; d < 2; d++){
 		// set k-space
-		kspace[d].resize(data.meta.grid[d]);
-		for(int i = 0; i <= data.meta.grid[d]/2; i++){
+		kspace[d].resize(data->meta.grid[d]);
+		for(int i = 0; i <= data->meta.grid[d]/2; i++){
 			// kspace[d][i] = (M_PI / rmax[d]) * (double)i;
 			kspace[d][i] = deltaK[d] * (double)i;
 		}
-		for(int i = (data.meta.grid[d]/2)+1; i < data.meta.grid[d]; i++){
-			// kspace[d][i] = -(M_PI / rmax[d]) * (double)(data.meta.grid[d] - i);
-			kspace[d][i] = - deltaK[d] * (double)(data.meta.grid[d] - i);
+		for(int i = (data->meta.grid[d]/2)+1; i < data->meta.grid[d]; i++){
+			// kspace[d][i] = -(M_PI / rmax[d]) * (double)(data->meta.grid[d] - i);
+			kspace[d][i] = - deltaK[d] * (double)(data->meta.grid[d] - i);
 		}
 	}
 
@@ -999,12 +999,12 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	double kwidth2[2];
 
 	for(int i = 0; i < 2; i++)
-		kwidth2[i] = (data.meta.grid[i] == 1) ? 0 : kspace[i][data.meta.grid[i]/2] * kspace[i][data.meta.grid[i]/2];
+		kwidth2[i] = (data->meta.grid[i] == 1) ? 0 : kspace[i][data->meta.grid[i]/2] * kspace[i][data->meta.grid[i]/2];
 	
 	double index_factor = (obs.number.size() - 1) / sqrt(kwidth2[0] + kwidth2[1]);
 
-	for(int x = 0; x < data.meta.grid[0]; x++){
-		for (int y = 0; y < data.meta.grid[1]; y++){
+	for(int x = 0; x < data->meta.grid[0]; x++){
+		for (int y = 0; y < data->meta.grid[1]; y++){
 				double k = sqrt(kspace[0][x]*kspace[0][x] + kspace[1][y]*kspace[1][y]);
 				int index = index_factor * k;
 				obs.k(index) += k;
@@ -1048,7 +1048,7 @@ bool Eval::checkResizeCondition(vector<int> &edges){
 	edges[2] = (int)*x_minmax.second - (int)*x_minmax.first;
 	edges[3] = (int)*y_minmax.second - (int)*y_minmax.first;
 
-	return (edges[2] >= (data.meta.grid[0] * EDGE_RANGE_CHECK) || edges[3] >= (data.meta.grid[1] * EDGE_RANGE_CHECK));
+	return (edges[2] >= (data->meta.grid[0] * EDGE_RANGE_CHECK) || edges[3] >= (data->meta.grid[1] * EDGE_RANGE_CHECK));
 }		
 
 void Eval::checkNextAngles(vector<double> &r, int &i){

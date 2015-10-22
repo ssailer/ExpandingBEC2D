@@ -38,7 +38,7 @@ Last Update: 22/07/13
 using namespace std;
 
 int evaluate(InitMain &initMain){
-	initMain.printInitVar();
+	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
 	
 
@@ -48,17 +48,17 @@ int evaluate(InitMain &initMain){
 	if(dgl == ROT){
 		filename = "rotdata.h5";
 		resultfilename = "rotobs.h5";
-		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl;}
+		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl << endl;}
 	}
 	if(dgl == EXP){
 		filename = "expdata.h5"; 
 		resultfilename = "expobs.h5"; 
-		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl;}
+		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl << endl;}
 	}
 	if(dgl == TRAP){
 		filename = "trapdata.h5"; 
 		resultfilename = "trapobs.h5"; 
-		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl;}
+		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl << endl;}
 	}
 
 	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
@@ -77,11 +77,12 @@ int evaluate(InitMain &initMain){
 	// delete initEval;
 	MatrixData* data;
 
-	binaryFile* obsFile = new binaryFile(resultfilename,binaryFile::out);
+	// Initialize empty h5 file, if old file exists, it will be overwritten!
+	binaryFile* initObsFile = new binaryFile(resultfilename,binaryFile::out);
+	delete initObsFile;
 
-	#pragma omp parallel for ordered private(data) num_threads(1) schedule(static,1)
+	// #pragma omp parallel for ordered private(data) num_threads(1) schedule(static,1)
 	for(int k = 0; k < size; ++k){
-		// cerr << "loading: " << k << " / " << size-1;
 		data = new MatrixData();
 		#pragma omp critical
 		{
@@ -92,17 +93,17 @@ int evaluate(InitMain &initMain){
 		data->meta.OmegaG = opt.OmegaG;
 		
 	
-		Eval eval(*data,opt);
-		// cerr << " processing ";
+		Eval eval(data,opt);
 		eval.process();
 		#pragma omp ordered
 		{	
 			if(k == 0){
-				 eval.data.meta.time = 0.0;
+				 eval.data->meta.time = 0.0;
 			}
-			// cerr << " " << data->meta.steps << " step " << eval.data.meta.time << " time" << endl;
 			eval.save();
+			binaryFile* obsFile = new binaryFile(resultfilename,binaryFile::append);
 			obsFile->appendEval(eval,opt);
+			delete obsFile;
 		}
 		
 
@@ -110,17 +111,14 @@ int evaluate(InitMain &initMain){
 	}
 
 	delete dataFile;
-	delete obsFile;
-
-
 
 	chdir("..");
 	cerr << "[END]" << endl;
 
 }
-/*
+
 int resave(InitMain &initMain){
-	initMain.printInitVar();
+	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
 	
 
@@ -128,15 +126,15 @@ int resave(InitMain &initMain){
 	string filename;
 	if(dgl == ROT){
 		filename = "rotdata.h5";
-		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl;}
+		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl << endl;}
 	}
 	if(dgl == EXP){
 		filename = "expdata.h5"; 
-		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl;}
+		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl << endl;}
 	}
 	if(dgl == TRAP){
 		filename = "trapdata.h5"; 
-		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl;}
+		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl << endl;}
 	}
 
 	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
@@ -202,10 +200,10 @@ int resave(InitMain &initMain){
 	cerr << "[END]" << endl;
 
 }
-*/
+
 
 int plotting(InitMain &initMain){
-	initMain.printInitVar();
+	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
 	
 
@@ -241,7 +239,7 @@ int plotting(InitMain &initMain){
 	for(int k = 0; k < size; ++k){
 		// cerr << "loading: " << k << " / " << size-1;
 		MatrixData* data = new MatrixData();
-		eval = new Eval(*data,opt);
+		// eval = new Eval(*data,opt);
 		#pragma omp critical
 		{
 			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
@@ -250,14 +248,14 @@ int plotting(InitMain &initMain){
 		data->meta.Ag = opt.Ag;
 		data->meta.OmegaG = opt.OmegaG;
 		cerr << " " << data->meta.steps << " step " << data->meta.time << " time";
-		eval = new Eval(*data,opt);
+		eval = new Eval(data,opt);
 		eval->process();
 
 		Plotter plotter(*eval,opt);
 		cerr << "plotting" << endl;
 		plotter.plotEval();
-		delete data;
 		delete eval;
+		delete data;		
 	}
 
 	delete dataFile;
@@ -270,7 +268,7 @@ int plotting(InitMain &initMain){
 }
 
 int hydro(InitMain &initMain){
-	initMain.printInitVar();
+	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
 	MatrixData* data = new MatrixData();
 
@@ -285,9 +283,9 @@ int hydro(InitMain &initMain){
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
-	Eval* initEval = new Eval(*data,opt);
+	Eval* initEval = new Eval(data,opt);
 	dataFile->getEval(timeList[size-1],*initEval,opt);
-	double maxTime = initEval->data.meta.time;
+	double maxTime = initEval->data->meta.time;
 	dataFile->getEval(timeList[0],*initEval,opt);
 	initEval->opt.vortexnumber = opt.vortexnumber;
 
@@ -414,7 +412,7 @@ int simulation(InitMain &initMain){
 	delete data;
 
 	chdir("..");
-	cerr << "[END]" << endl;
+	cerr << "Ended application successfully, bye bye and thanks for the fish. :)" << endl;
 }
 
 int main( int argc, char** argv){	
@@ -424,6 +422,7 @@ try{
 	InitMain initMain(argc,argv);	
 
 	#if DEBUG_LOG
+		cout << "DEBUG_LOG actived, cout will be found in simulation.log" << endl;
  		std::ofstream logstream("simulation.log");
  		redirecter redirectcout(logstream,std::cout);
  	#endif

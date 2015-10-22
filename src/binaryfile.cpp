@@ -15,7 +15,7 @@ binaryFile::binaryFile(const string &file, mode nm)
 		  if(H5Fis_hdf5(filename.c_str())){
 		  	if(m == in)
 				h5_file = H5Fopen(filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-			  	else if(m == append)
+			else if(m == append)
 				h5_file = H5Fopen(filename.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
 	
 			  	if(H5Aexists(h5_file, "SnapshotTimes") > 0){
@@ -30,7 +30,8 @@ binaryFile::binaryFile(const string &file, mode nm)
 					}
 				  	else
 					{
-					  cout << "WARNING for I/O operation on file: "<< filename << " occurred: No valid SnapshotTimes attribute found in file." << endl;
+					  cout << "WARNING for I/O operation on file: "<< filename << " occurred: No valid SnapshotTimes attribute found in file." << endl
+					  	   << "h5 file will be created without SnapshotTimes attribute." << endl;
 				}
 			}
 			else {
@@ -396,7 +397,7 @@ bool binaryFile::getLatestSnapshot(const string &name, MatrixData* &pData, Optio
 }
 
 bool binaryFile::appendEval(Eval &results, Options const & options){
-	int snapShotTime = results.data.meta.steps;
+	int snapShotTime = results.data->meta.steps;
 
   if(m == in){
 	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
@@ -418,7 +419,7 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 	h5_observables = H5Gcreate(h5_timegroup, "Observables", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   	writeOptions(h5_observables, options);
-  	writeMeta(h5_observables, results.data.meta);  
+  	writeMeta(h5_observables, results.data->meta);  
 
 	/// PREPARE THE DOUBLE ARRAYS
 	string vec1Name = "Averages";
@@ -718,7 +719,7 @@ bool binaryFile::getEval(int snapShotTime, Eval &results, Options &options){
 	}
 
 	readOptions(h5_observables, options);
-	readMeta(h5_observables, results.data.meta);
+	readMeta(h5_observables, results.data->meta);
 
 	hid_t dataset, dataspace ;
 	hsize_t *dimf;

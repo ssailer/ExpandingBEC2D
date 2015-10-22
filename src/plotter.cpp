@@ -12,17 +12,17 @@ Plotter::Plotter(Eval &e,Options &o) : eval(e), opt(o) {
 
 	prepareData();
 
-	stepsString = to_string(eval.data.meta.steps);
+	stepsString = to_string(eval.data->meta.steps);
 
-	xrange = eval.data.meta.coord[0];
-	yrange = eval.data.meta.coord[1];
+	xrange = eval.data->meta.coord[0];
+	yrange = eval.data->meta.coord[1];
 
 	dirname = "runPlots";
     struct stat st;
     	if(stat(dirname.c_str(),&st) != 0){
         mkdir(dirname.c_str(),0755);
     }
-    double currentTime = eval.data.meta.time;
+    double currentTime = eval.data->meta.time;
 	std::ostringstream out;
 	if(currentTime <= 0.1){
 		currentTime *= 1000;
@@ -36,8 +36,8 @@ Plotter::Plotter(Eval &e,Options &o) : eval(e), opt(o) {
 
 void Plotter::prepareData(){
 
-	const int n = eval.data.meta.grid[0];
-	const int m = eval.data.meta.grid[1];
+	const int n = eval.data->meta.grid[0];
+	const int m = eval.data->meta.grid[1];
 	const int contour_size = eval.contour[0].size();
 	const int vortex_size = eval.vlist[0].size();
 	int index;
@@ -51,8 +51,8 @@ void Plotter::prepareData(){
 	// vector<int> c_x;
 	// vector<int> c_y;
 	// 
-	// for(int i = 0; i < eval.data.meta.grid[0]; i++ ){
-	// 	for(int j = 0; j < eval.data.meta.grid[1]; j++ ){
+	// for(int i = 0; i < eval.data->meta.grid[0]; i++ ){
+	// 	for(int j = 0; j < eval.data->meta.grid[1]; j++ ){
 	// 		int x = i ;
 	// 		int y = j ;
 	// 		float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
@@ -81,9 +81,9 @@ void Plotter::prepareData(){
 		for(int y = 0; y < m; y++){
 			index = x + n * y;
 			float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
-			density.a[index] = abs2(eval.data.wavefunction[0](x,y));
+			density.a[index] = abs2(eval.data->wavefunction[0](x,y));
 			if(cond <= 0.0){
-				phase.a[index] = arg(eval.data.wavefunction[0](x,y));
+				phase.a[index] = arg(eval.data->wavefunction[0](x,y));
 			} else {
 				phase.a[index] = 0.0;
 			}
@@ -146,7 +146,7 @@ void Plotter::prepareData(){
 	double max_value = *tmpMinMax.second;
 	double min_log = log(min_value);
 	double max_log = log(max_value);
-	double binSize = ((M_PI ) / eval.data.meta.spacing[0]) / (  eval.data.meta.grid[0] / 2.0);
+	double binSize = ((M_PI ) / eval.data->meta.spacing[0]) / (  eval.data->meta.grid[0] / 2.0);
 	double log_increment = binSize;
 
 	double log_value = min_log + log_increment;
@@ -326,8 +326,8 @@ void Plotter::combinedControl(){
 	// PHASE + VORTICES
 	gr.SubPlot(2,2,2);
 	// gr.Title("Phase and Vortices");
-	gr.SetRange('x',0,eval.data.meta.grid[0]);
-	gr.SetRange('y',0,eval.data.meta.grid[1]);
+	gr.SetRange('x',0,eval.data->meta.grid[0]);
+	gr.SetRange('y',0,eval.data->meta.grid[1]);
 	gr.SetRange('z',phase);
 	gr.SetRange('c',phase);
 
@@ -363,8 +363,8 @@ void Plotter::combinedControl(){
 	// DENSITY + CONTOUR
 	gr.SubPlot(2,2,3);
 	// gr.Title("Density and Contour");
-	gr.SetRange('x',0,eval.data.meta.grid[0]);
-	gr.SetRange('y',0,eval.data.meta.grid[1]);
+	gr.SetRange('x',0,eval.data->meta.grid[0]);
+	gr.SetRange('y',0,eval.data->meta.grid[1]);
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
 	gr.Axis();
@@ -543,8 +543,8 @@ void Plotter::contour(){
 
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
-	gr.SetRange('x',0,eval.data.meta.grid[0]);
-	gr.SetRange('y',0,eval.data.meta.grid[1]);
+	gr.SetRange('x',0,eval.data->meta.grid[0]);
+	gr.SetRange('y',0,eval.data->meta.grid[1]);
 
 	gr.Axis();
 	gr.Label('x',"x [points]",0); gr.Label('y',"y [points]",0);
@@ -560,8 +560,8 @@ void Plotter::contour(){
 
 void Plotter::densityMap(){
 
-	const int n = eval.data.meta.grid[0];
-	const int m = eval.data.meta.grid[1];
+	const int n = eval.data->meta.grid[0];
+	const int m = eval.data->meta.grid[1];
 
 	densitymap = mglData(n,m);
 
@@ -583,8 +583,8 @@ void Plotter::densityMap(){
 	gr.SubPlot(1,1,0,"_");
 	gr.Title(title.c_str());
 
-	gr.SetRange('x',0,eval.data.meta.grid[0]);
-	gr.SetRange('y',0,eval.data.meta.grid[1]);
+	gr.SetRange('x',0,eval.data->meta.grid[0]);
+	gr.SetRange('y',0,eval.data->meta.grid[1]);
 	gr.SetRange('z',densitymap);
 	gr.SetRange('c',densitymap);
 
@@ -605,8 +605,8 @@ void Plotter::vortices(){
 	gr.SubPlot(1,1,0,"<_");
 	gr.Title(title.c_str());
 
-	gr.SetRange('x',0,eval.data.meta.grid[0]);
-	gr.SetRange('y',0,eval.data.meta.grid[1]);
+	gr.SetRange('x',0,eval.data->meta.grid[0]);
+	gr.SetRange('y',0,eval.data->meta.grid[1]);
 	gr.SetRange('c',phase);
 
 	gr.Axis();

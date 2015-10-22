@@ -237,19 +237,17 @@ inline void InitMain::setDirectory()
 	struct stat wd_stat;
 	if(stat(opt.workingdirectory.c_str(),&wd_stat) == 0){
 		if(chdir(opt.workingdirectory.c_str()) == 0){
+			cerr << endl;
 			cerr << "Using existing directory: " << "\"" << opt.workingdirectory << "\"." << endl;
-			cerr << "Check \"run.log\" for output of this run." << endl;
 		}
 	}else{
-
 		mkdir(opt.workingdirectory.c_str(),0755);
-		cerr << "Creating directory: " << "\"" << opt.workingdirectory << "\"" << endl;
+		cerr << "mkdir: " << "\"" << opt.workingdirectory << "\"" << endl;
 
 		if(chdir(opt.workingdirectory.c_str()) == 0){
-			cerr << "Switching to " << "\"" << opt.workingdirectory << "\"" << endl;
+			cerr << "chdir:" << "\"" << opt.workingdirectory << "\"" << endl;
 		}
 		cerr << endl;
-		cerr << "Check \"run.log\" for information about this run." << endl;			
 	}
 }
 

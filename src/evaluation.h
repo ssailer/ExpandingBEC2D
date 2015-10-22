@@ -34,7 +34,7 @@ using namespace Eigen;
 
 class Eval{
 public:
-	Eval(MatrixData d,Options o);
+	Eval(MatrixData* d,Options o);
 	// Eval();
 	// ~Eval();
 
@@ -61,7 +61,7 @@ public:
 
 	Ellipse ellipse;
 
-	MatrixData data;
+	MatrixData* data;
 	Options opt;
 
 	vector<double> punkte;
