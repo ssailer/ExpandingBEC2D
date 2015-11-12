@@ -26,7 +26,7 @@ class SplitStep
 {
   public:
     SplitStep(Options &o);
-    void assignMatrixData(MatrixData* &d);
+    void assignMatrixData(shared_ptr<MatrixData> d);
     void setVariables();
     virtual void timeStep(double delta_t) = 0;
 
@@ -54,7 +54,7 @@ class SplitStep
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(const string name);
     
-    MatrixData* w;
+    shared_ptr<MatrixData> w;
 
     // internal RunOptions, use setOptions(Options) to update from the outside
     Options opt;

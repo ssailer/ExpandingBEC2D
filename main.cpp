@@ -50,15 +50,18 @@ int evaluate(InitMain &initMain){
 		resultfilename = "rotobs.h5";
 		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl << endl;}
 	}
-	if(dgl == EXP){
+	else if(dgl == EXP){
 		filename = "expdata.h5"; 
 		resultfilename = "expobs.h5"; 
 		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl << endl;}
 	}
-	if(dgl == TRAP){
+	else if(dgl == TRAP){
 		filename = "trapdata.h5"; 
 		resultfilename = "trapobs.h5"; 
 		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl << endl;}
+	}
+	else {
+		cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
 	}
 
 	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
@@ -75,7 +78,7 @@ int evaluate(InitMain &initMain){
 	// solver.integrate();
 	// solver.pyPlot();
 	// delete initEval;
-	MatrixData* data;
+	shared_ptr<MatrixData> data;
 
 	// Initialize empty h5 file, if old file exists, it will be overwritten!
 	binaryFile* initObsFile = new binaryFile(resultfilename,binaryFile::out);
@@ -83,7 +86,7 @@ int evaluate(InitMain &initMain){
 
 	// #pragma omp parallel for ordered private(data) num_threads(1) schedule(static,1)
 	for(int k = 0; k < size; ++k){
-		data = new MatrixData();
+		data = make_shared<MatrixData>(new MatrixData());
 		#pragma omp critical
 		{
 			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
@@ -93,21 +96,18 @@ int evaluate(InitMain &initMain){
 		data->meta.OmegaG = opt.OmegaG;
 		
 	
-		Eval eval(data,opt);
-		eval.process();
+		auto eval = std::make_shared<Eval>(data,opt);
+		eval->process();
 		#pragma omp ordered
 		{	
 			if(k == 0){
-				 eval.data->meta.time = 0.0;
+				 eval->data->meta.time = 0.0;
 			}
-			eval.save();
+			eval->save();
 			binaryFile* obsFile = new binaryFile(resultfilename,binaryFile::append);
 			obsFile->appendEval(eval,opt);
 			delete obsFile;
 		}
-		
-
-		delete data;
 	}
 
 	delete dataFile;
@@ -128,13 +128,16 @@ int resave(InitMain &initMain){
 		filename = "rotdata.h5";
 		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl << endl;}
 	}
-	if(dgl == EXP){
+	else if(dgl == EXP){
 		filename = "expdata.h5"; 
 		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl << endl;}
 	}
-	if(dgl == TRAP){
+	else if(dgl == TRAP){
 		filename = "trapdata.h5"; 
 		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl << endl;}
+	}
+	else {
+		cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
 	}
 
 	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
@@ -151,7 +154,7 @@ int resave(InitMain &initMain){
 	// solver.integrate();
 	// solver.pyPlot();
 	// delete initEval;
-	MatrixData* data;
+	shared_ptr<MatrixData> data;
 
 	string dataname = "exp2data.h5";
 	binaryFile* bFile = new binaryFile(dataname,binaryFile::out);
@@ -160,7 +163,7 @@ int resave(InitMain &initMain){
 	// #pragma omp parallel for ordered private(data) num_threads(2) schedule(static,1)
 	for(int k = 0; k < size; ++k){
 		// cerr << "loading: " << k << " / " << size-1;
-		data = new MatrixData();
+		data = make_shared<MatrixData>(new MatrixData());
 		// #pragma omp critical
 		// {
 			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
@@ -188,7 +191,6 @@ int resave(InitMain &initMain){
 		// 	eval.save();
 		// }
 
-		delete data;
 	}
 
 	delete dataFile;
@@ -212,11 +214,14 @@ int plotting(InitMain &initMain){
 	if(dgl == ROT){
 		filename = "rotdata.h5";
 	}
-	if(dgl == EXP){
+	else if(dgl == EXP){
 		filename = "expdata.h5"; 
 	}
-	if(dgl == TRAP){
+	else if(dgl == TRAP){
 		filename = "trapdata.h5"; 
+	}
+	else {
+		cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
 	}
 
 	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
@@ -233,12 +238,13 @@ int plotting(InitMain &initMain){
 	// solver.integrate();
 	// solver.pyPlot();
 	// delete initEval;
-	Eval* eval;
+	// shared_ptr<Eval> eval;
 
-	#pragma omp parallel for ordered private(eval) num_threads(1) schedule(static,1)
+	// #pragma omp parallel for ordered private(eval) num_threads(1) schedule(static,1)
 	for(int k = 0; k < size; ++k){
 		// cerr << "loading: " << k << " / " << size-1;
-		MatrixData* data = new MatrixData();
+		// MatrixData* data = new MatrixData();
+		auto data = make_shared<MatrixData>(new MatrixData());
 		// eval = new Eval(*data,opt);
 		#pragma omp critical
 		{
@@ -248,14 +254,12 @@ int plotting(InitMain &initMain){
 		data->meta.Ag = opt.Ag;
 		data->meta.OmegaG = opt.OmegaG;
 		cerr << " " << data->meta.steps << " step " << data->meta.time << " time";
-		eval = new Eval(data,opt);
+		auto eval = make_shared<Eval>(data,opt);
 		eval->process();
 
-		Plotter plotter(*eval,opt);
+		Plotter plotter(eval,opt);
 		cerr << "plotting" << endl;
 		plotter.plotEval();
-		delete eval;
-		delete data;		
 	}
 
 	delete dataFile;
@@ -270,20 +274,23 @@ int plotting(InitMain &initMain){
 int hydro(InitMain &initMain){
 	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
-	MatrixData* data = new MatrixData();
+	auto data = make_shared<MatrixData>(new MatrixData());
+	// MatrixData* data = new MatrixData();
 
 	MainControl dgl = initMain.getDgl();
 	string filename;
 	if(dgl == ROT) filename = "rotobs.h5";
-	if(dgl == EXP) filename = "expobs.h5";
-	if(dgl == TRAP) filename = "trapobs.h5";
+	else if(dgl == EXP) filename = "expobs.h5";
+	else if(dgl == TRAP) filename = "trapobs.h5";
+	else cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
 
-
+	cout << "Filename: " << filename << endl;
 	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
-	Eval* initEval = new Eval(data,opt);
+	// Eval* initEval = new Eval(data,opt);
+	auto initEval = make_shared<Eval>(data,opt);
 	dataFile->getEval(timeList[size-1],*initEval,opt);
 	double maxTime = initEval->data->meta.time;
 	dataFile->getEval(timeList[0],*initEval,opt);
@@ -294,13 +301,14 @@ int hydro(InitMain &initMain){
 	solver.integrate();
 	// solver.integrate2();
 	solver.pyPlot();
-	delete initEval;
+	// delete initEval;
 
 	chdir("..");
 	cerr << "[END]" << endl;
 }
 
 int simulation(InitMain &initMain){
+
 
 	initMain.printInitVar();
 
@@ -311,7 +319,8 @@ int simulation(InitMain &initMain){
 
 	string filename;
 
-	MatrixData* data = new MatrixData(initMain.getMeta());
+	// MatrixData* data = new MatrixData(initMain.getMeta());
+	auto data = make_shared<MatrixData>(initMain.getMeta());
 
 	if(start == RESUME){
 		// Options loadedOptions;		
@@ -409,7 +418,6 @@ int simulation(InitMain &initMain){
 				break;
 		}
 	}  
-	delete data;
 
 	chdir("..");
 	cerr << "Ended application successfully, bye bye and thanks for the fish. :)" << endl;

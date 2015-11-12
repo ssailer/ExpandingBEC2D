@@ -216,8 +216,8 @@ inline void InitMain::printInitVar()
 {
 	std::cout.setf(std::ios::boolalpha);
 	std::cout 	<< "Configfile: \"" << opt.config << "\"" << endl
-				<< "Gridpoints in x-direction: " << meta.grid[0] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
-				<< "Gridpoints in y-direction: " << meta.grid[1] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
+				<< "Gridpoints in x-direction: " << opt.grid[1] << "\t" << "omega_x = " << opt.omega_x.real() << " dispersion_x = " << opt.dispersion_x.real() << endl
+				<< "Gridpoints in y-direction: " << opt.grid[2] << "\t" << "omega_y = " << opt.omega_y.real() << " dispersion_y = " << opt.dispersion_y.real() << endl
 				<< "omega_w = " << opt.omega_w.real() << endl
 				// << "Coordinates in x-direction: " << meta.initCoord[0] << endl
 				// << "Coordinates in y-direction: " << meta.initCoord[1] << endl

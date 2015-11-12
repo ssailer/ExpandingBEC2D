@@ -10,14 +10,21 @@ using namespace std;
 using namespace Eigen;
 
 
-Eval::Eval(MatrixData* d,Options o) : data(d),  opt(o) {
+Eval::Eval(shared_ptr<MatrixData> d,Options o) : data(d),  opt(o) {
 	data = d;
 	// opt = o;
 	// cout << opt.Ag << "  " << opt.OmegaG << endl;
 	// cout << data->meta.Ag << "  " << data->meta.OmegaG << endl;
 	toPhysicalUnits(opt);
 	data->convertToPhysicalUnits();
-};
+	// cout << "convertToPhysicalUnits()" << endl;
+
+}
+
+Eval::~Eval() {
+	data->convertToDimensionlessUnits();
+	// cout << "convertToDimensionlessUnits()" << endl;
+}
 
 void Eval::process(){
 
@@ -240,14 +247,20 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	// for(vector<Coordinate<int32_t>>::const_iterator it = densityCoordinates.begin(); it != densityCoordinates.end(); ++it){
 
 		Coordinate<int32_t> c = densityCoordinates[i];
-			
-		int phase_winding = get_phase_jump(c, down) + get_phase_jump(c+down, right) + get_phase_jump(c+down+right, up) + get_phase_jump(c+right, left);
 
-		if(phase_winding != 0){
-			vortex.n = phase_winding;
-			vortex.c = c;
-			vlist.push_back(vortex);
+		if(c.x() > 1 && c.x() < data->meta.grid[0]-1){
+			if(c.y() > 1 && c.y() < data->meta.grid[1]-1){
+				int phase_winding = get_phase_jump(c, down) + get_phase_jump(c+down, right) + get_phase_jump(c+down+right, up) + get_phase_jump(c+right, left);
+
+				if(phase_winding != 0){
+					vortex.n = phase_winding;
+					vortex.c = c;
+					vlist.push_back(vortex);
+				}
+			}
 		}
+			
+
 	}
 
 	// cout << "Vortexnumber before surround dens check: " << vlist.size() << endl;
@@ -755,7 +768,7 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 
 
-	// ellipse = fitEllipse(contour[sampleindex]);
+	ellipse = fitEllipse(contour[sampleindex]);
 	// c_set cEllipse = generateContour(ellipse);
 
 	// FROM ELLIPSE FIT 
@@ -1032,23 +1045,31 @@ bool Eval::checkResizeCondition(vector<int> &edges){
 
 	edges.resize(4);
 
-	vector<double> x_tmp(densityCoordinates[0].size());
-	vector<double> y_tmp(densityCoordinates[0].size());
+	// vector<double> x_tmp(densityCoordinates[0].size());
+	// vector<double> y_tmp(densityCoordinates[0].size());
+	int upperVal = data->meta.grid[0]*0.85;
+	int lowerVal = data->meta.grid[0]*0.15;
+
 
 	for(int i = 0; i < densityCoordinates[0].size(); i++){
-		x_tmp[i] = densityCoordinates[0][i].x();
-		y_tmp[i] = densityCoordinates[0][i].y();
+		// x_tmp[i] = densityCoordinates[0][i].x();
+		// y_tmp[i] = densityCoordinates[0][i].y();
+		if(densityCoordinates[0][i].x() > upperVal || densityCoordinates[0][i].x() < lowerVal)
+			return true;
+		if(densityCoordinates[0][i].y() > upperVal || densityCoordinates[0][i].y() < lowerVal)
+			return true;
 	}
-	auto x_minmax = std::minmax_element (x_tmp.begin(),x_tmp.end());
-	auto y_minmax = std::minmax_element (y_tmp.begin(),y_tmp.end());
+	return false;
+	// auto x_minmax = std::minmax_element (x_tmp.begin(),x_tmp.end());
+	// auto y_minmax = std::minmax_element (y_tmp.begin(),y_tmp.end());
 
-	edges[0] = (int)*x_minmax.first;
-	edges[1] = (int)*y_minmax.first;
+	// edges[0] = (int)*x_minmax.first;
+	// edges[1] = (int)*y_minmax.first;
 
-	edges[2] = (int)*x_minmax.second - (int)*x_minmax.first;
-	edges[3] = (int)*y_minmax.second - (int)*y_minmax.first;
+	// edges[2] = (int)*x_minmax.second - (int)*x_minmax.first;
+	// edges[3] = (int)*y_minmax.second - (int)*y_minmax.first;
 
-	return (edges[2] >= (data->meta.grid[0] * EDGE_RANGE_CHECK) || edges[3] >= (data->meta.grid[1] * EDGE_RANGE_CHECK));
+	// return (edges[2] >= (data->meta.grid[0] * EDGE_RANGE_CHECK) || edges[3] >= (data->meta.grid[1] * EDGE_RANGE_CHECK));
 }		
 
 void Eval::checkNextAngles(vector<double> &r, int &i){

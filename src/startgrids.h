@@ -69,7 +69,7 @@ double density(double &x, double &y, double &Rx, double &Ry, double &N){
     }
 };
 
-void setGridToTF(MatrixData* &data, Options opt){
+void setGridToTF(shared_ptr<MatrixData> data, Options opt){
 
     double m = 87.0 * 1.66e-27;
     double hbar = 1.054e-34;

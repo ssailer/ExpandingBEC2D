@@ -4,6 +4,7 @@
 #include <iostream>
 #include <complex>
 #include <omp.h>
+#include <memory>
 
 #include <tools.h>
 #include <matrixdata.h>
@@ -17,11 +18,11 @@ class RungeKutta
 {
 public:
 	RungeKutta(/*MatrixData* &d,*/ Options &extOpt);
-    void assignMatrixData(MatrixData* &d);
+    void assignMatrixData(shared_ptr<MatrixData> d);
     void setVariables();
 	void timeStep(double delta_T);
 // private:
-	MatrixData* w;
+	shared_ptr<MatrixData> w;
 	MatrixXcd wavefctcp, k0, k1, k2, k3;
 	Options opt;
 	double absTime;

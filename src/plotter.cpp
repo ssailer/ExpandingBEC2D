@@ -6,23 +6,23 @@
 #define IMAGE_SIZE 2500
 #define FONT_SIZE 2.0
 
-Plotter::Plotter(Eval &e,Options &o) : eval(e), opt(o) {
+Plotter::Plotter(shared_ptr<Eval> e,Options &o) : eval(e), opt(o) {
 	// eval = e;
 	// opt = o;
 
 	prepareData();
 
-	stepsString = to_string(eval.data->meta.steps);
+	stepsString = to_string(eval->data->meta.steps);
 
-	xrange = eval.data->meta.coord[0];
-	yrange = eval.data->meta.coord[1];
+	xrange = eval->data->meta.coord[0];
+	yrange = eval->data->meta.coord[1];
 
 	dirname = "runPlots";
     struct stat st;
     	if(stat(dirname.c_str(),&st) != 0){
         mkdir(dirname.c_str(),0755);
     }
-    double currentTime = eval.data->meta.time;
+    double currentTime = eval->data->meta.time;
 	std::ostringstream out;
 	if(currentTime <= 0.1){
 		currentTime *= 1000;
@@ -36,10 +36,10 @@ Plotter::Plotter(Eval &e,Options &o) : eval(e), opt(o) {
 
 void Plotter::prepareData(){
 
-	const int n = eval.data->meta.grid[0];
-	const int m = eval.data->meta.grid[1];
-	const int contour_size = eval.contour[0].size();
-	const int vortex_size = eval.vlist[0].size();
+	const int n = eval->data->meta.grid[0];
+	const int m = eval->data->meta.grid[1];
+	const int contour_size = eval->contour[0].size();
+	const int vortex_size = eval->vlist[0].size();
 	int index;
 
 
@@ -51,11 +51,11 @@ void Plotter::prepareData(){
 	// vector<int> c_x;
 	// vector<int> c_y;
 	// 
-	// for(int i = 0; i < eval.data->meta.grid[0]; i++ ){
-	// 	for(int j = 0; j < eval.data->meta.grid[1]; j++ ){
+	// for(int i = 0; i < eval->data->meta.grid[0]; i++ ){
+	// 	for(int j = 0; j < eval->data->meta.grid[1]; j++ ){
 	// 		int x = i ;
 	// 		int y = j ;
-	// 		float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
+	// 		float cond = eval->ellipse.coef(0) * x * x + eval->ellipse.coef(1) * x * y + eval->ellipse.coef(2) * y * y + eval->ellipse.coef(3) * x + eval->ellipse.coef(4) * y + eval->ellipse.coef(5);
 			
 	// 		if(cond >= thresh /*&& cond >= -thresh*/){
 	// 			// cerr << "x " << x << " y " << endl;
@@ -80,14 +80,14 @@ void Plotter::prepareData(){
 	for(int x = 0; x < n; x++){
 		for(int y = 0; y < m; y++){
 			index = x + n * y;
-			float cond = eval.ellipse.coef(0) * x * x + eval.ellipse.coef(1) * x * y + eval.ellipse.coef(2) * y * y + eval.ellipse.coef(3) * x + eval.ellipse.coef(4) * y + eval.ellipse.coef(5);
-			density.a[index] = abs2(eval.data->wavefunction[0](x,y));
+			float cond = eval->ellipse.coef(0) * x * x + eval->ellipse.coef(1) * x * y + eval->ellipse.coef(2) * y * y + eval->ellipse.coef(3) * x + eval->ellipse.coef(4) * y + eval->ellipse.coef(5);
+			density.a[index] = abs2(eval->data->wavefunction[0](x,y));
 			if(cond <= 0.0){
-				phase.a[index] = arg(eval.data->wavefunction[0](x,y));
+				phase.a[index] = arg(eval->data->wavefunction[0](x,y));
 			} else {
 				phase.a[index] = 0.0;
 			}
-			// densitymap.a[index] = eval.densityLocationMap[0](x,y);
+			// densitymap.a[index] = eval->densityLocationMap[0](x,y);
 		}
 	}
 
@@ -96,7 +96,7 @@ void Plotter::prepareData(){
 	contour_y = mglData(contour_size);
 
 	index = 0;
-	for(std::unordered_set<Coordinate<int32_t>>::const_iterator it = eval.contour[0].begin(); it != eval.contour[0].end(); ++it){
+	for(std::unordered_set<Coordinate<int32_t>>::const_iterator it = eval->contour[0].begin(); it != eval->contour[0].end(); ++it){
 		contour_x.a[index] = it->x();
 		contour_y.a[index] = it->y();
 		index++;
@@ -107,7 +107,7 @@ void Plotter::prepareData(){
 	vortex_y = mglData(vortex_size);
 
 	index = 0;
-	for(list<VortexData>::const_iterator it = eval.vlist[0].begin(); it != eval.vlist[0].end(); ++it){
+	for(list<VortexData>::const_iterator it = eval->vlist[0].begin(); it != eval->vlist[0].end(); ++it){
 		vortex_x.a[index] = it->c.x();
 		vortex_y.a[index] = it->c.y();
 		index++;
@@ -121,17 +121,17 @@ void Plotter::prepareData(){
     pair<map<double,double>::iterator,bool> ret;
     vector<double> tmpKval;
 		
-    for (int r = 0; r < eval.totalResult.number.size(); r++){
-		if(eval.totalResult.k(r) != 0.0){
-			// if(eval.totalResult.number(r) != 0.0){
-				ret = spectrum.insert(map<double,double>::value_type(eval.totalResult.k(r),eval.totalResult.number(r)));
-				tmpKval.push_back(eval.totalResult.k(r));
+    for (int r = 0; r < eval->totalResult.number.size(); r++){
+		if(eval->totalResult.k(r) != 0.0){
+			// if(eval->totalResult.number(r) != 0.0){
+				ret = spectrum.insert(map<double,double>::value_type(eval->totalResult.k(r),eval->totalResult.number(r)));
+				tmpKval.push_back(eval->totalResult.k(r));
 				if(ret.second==false){
 					cout << "Binning of spectrum failed, double value inserted." << endl;
 				}
 
 				// kval.push_back(k_int);
-				// numberval.push_back(eval.totalResult.number(r));
+				// numberval.push_back(eval->totalResult.number(r));
 			// }
         }
 	}
@@ -146,7 +146,7 @@ void Plotter::prepareData(){
 	double max_value = *tmpMinMax.second;
 	double min_log = log(min_value);
 	double max_log = log(max_value);
-	double binSize = ((M_PI ) / eval.data->meta.spacing[0]) / (  eval.data->meta.grid[0] / 2.0);
+	double binSize = ((M_PI ) / eval->data->meta.spacing[0]) / (  eval->data->meta.grid[0] / 2.0);
 	double log_increment = binSize;
 
 	double log_value = min_log + log_increment;
@@ -219,9 +219,9 @@ void Plotter::prepareData(){
 	kmax = *k_minmax.second;
 	numbermin = *number_minmax.first;
 	numbermax = *number_minmax.second;
-	cout << "nmax " << numbermax << " " << "nmin " << numbermin << endl;
-	cout << "kval size " << kval.size() << endl;
-	cout << "numberval size " << numberval.size() << endl;
+	// cout << "nmax " << numbermax << " " << "nmin " << numbermin << endl;
+	// cout << "kval size " << kval.size() << endl;
+	// cout << "numberval size " << numberval.size() << endl;
 
 	k = mglData(kval.size());
 	number = mglData(kval.size());
@@ -252,7 +252,7 @@ void Plotter::prepareData(){
 	// ellipse axis
 
 
-	// cerr << endl << eval.punkte[0] << " " << eval.punkte[1] << " " << eval.punkte[2] << " " << eval.punkte[3] << endl;
+	// cerr << endl << eval->punkte[0] << " " << eval->punkte[1] << " " << eval->punkte[2] << " " << eval->punkte[3] << endl;
 
 }
 
@@ -280,12 +280,12 @@ void Plotter::writeTexData(string filename,vector<double> x, vector<double> y){
 void Plotter::combinedControl(){
 
 
-	origin = mglPoint(eval.ellipse.center[0],eval.ellipse.center[1]);
-	major_1 = mglPoint(eval.ellipse.center[0] + eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.major * sin(eval.ellipse.angle));
-	minor_1 = mglPoint(eval.ellipse.center[0] - eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] + eval.ellipse.minor * cos(eval.ellipse.angle));
+	origin = mglPoint(eval->ellipse.center[0],eval->ellipse.center[1]);
+	major_1 = mglPoint(eval->ellipse.center[0] + eval->ellipse.major * cos(eval->ellipse.angle),eval->ellipse.center[1] + eval->ellipse.major * sin(eval->ellipse.angle));
+	minor_1 = mglPoint(eval->ellipse.center[0] - eval->ellipse.minor * sin(eval->ellipse.angle),eval->ellipse.center[1] + eval->ellipse.minor * cos(eval->ellipse.angle));
 
-	major_2 = mglPoint(eval.ellipse.center[0] - eval.ellipse.major * cos(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.major * sin(eval.ellipse.angle));
-	minor_2 = mglPoint(eval.ellipse.center[0] + eval.ellipse.minor * sin(eval.ellipse.angle),eval.ellipse.center[1] - eval.ellipse.minor * cos(eval.ellipse.angle));
+	major_2 = mglPoint(eval->ellipse.center[0] - eval->ellipse.major * cos(eval->ellipse.angle),eval->ellipse.center[1] - eval->ellipse.major * sin(eval->ellipse.angle));
+	minor_2 = mglPoint(eval->ellipse.center[0] + eval->ellipse.minor * sin(eval->ellipse.angle),eval->ellipse.center[1] - eval->ellipse.minor * cos(eval->ellipse.angle));
 
 	// https://groups.google.com/forum/#!topic/mathgl/68VMLblLd7U
 	// check this for plot margins, set by hand
@@ -315,7 +315,7 @@ void Plotter::combinedControl(){
 	// gr.FPlot("x^(-4.66)","r");
 	// gr.AddLegend("k^(-4.66)","r");
 
-	string leg_s = "\\alpha = " + to_string(eval.steigung) + " \\pm " + to_string(eval.fehler);
+	string leg_s = "\\alpha = " + to_string(eval->steigung) + " \\pm " + to_string(eval->fehler);
 	gr.Plot(k,number," .2b");
 	// gr.Line(reg_1,reg_2,"r2");
 	gr.AddLegend(leg_s.c_str(),"r");
@@ -326,8 +326,8 @@ void Plotter::combinedControl(){
 	// PHASE + VORTICES
 	gr.SubPlot(2,2,2);
 	// gr.Title("Phase and Vortices");
-	gr.SetRange('x',0,eval.data->meta.grid[0]);
-	gr.SetRange('y',0,eval.data->meta.grid[1]);
+	gr.SetRange('x',0,eval->data->meta.grid[0]);
+	gr.SetRange('y',0,eval->data->meta.grid[1]);
 	gr.SetRange('z',phase);
 	gr.SetRange('c',phase);
 
@@ -363,8 +363,8 @@ void Plotter::combinedControl(){
 	// DENSITY + CONTOUR
 	gr.SubPlot(2,2,3);
 	// gr.Title("Density and Contour");
-	gr.SetRange('x',0,eval.data->meta.grid[0]);
-	gr.SetRange('y',0,eval.data->meta.grid[1]);
+	gr.SetRange('x',0,eval->data->meta.grid[0]);
+	gr.SetRange('y',0,eval->data->meta.grid[1]);
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
 	gr.Axis();
@@ -372,8 +372,10 @@ void Plotter::combinedControl(){
 	gr.Colorbar(">");
 	gr.Dens(density);
 	gr.Plot(contour_x,contour_y," .w");
+	
 	gr.Line(major_2,major_1,"W2");
 	gr.Line(minor_2,minor_1,"H2");
+
 	// gr.Line(origin-major_2,origin,"W2");
 	// gr.Line(origin-minor_2,origin,"H2");
 
@@ -453,8 +455,8 @@ void Plotter::control(){
 
 void Plotter::spectrum(){
 
-	reg_1 = mglPoint(eval.punkte[0],eval.punkte[1]);
-	reg_2 = mglPoint(eval.punkte[2],eval.punkte[3]);
+	reg_1 = mglPoint(eval->punkte[0],eval->punkte[1]);
+	reg_2 = mglPoint(eval->punkte[2],eval->punkte[3]);
 
 	mglGraph gr;
 
@@ -479,7 +481,7 @@ void Plotter::spectrum(){
 	// gr.FPlot("x^(-4.66)","r");
 	// gr.AddLegend("k^(-4.66)","r");
 
-	string leg_s = "\\alpha = " + to_string(eval.steigung) + " \\pm " + to_string(eval.fehler);
+	string leg_s = "\\alpha = " + to_string(eval->steigung) + " \\pm " + to_string(eval->fehler);
 	gr.Plot(k,number," .2b");
 	gr.Line(reg_1,reg_2,"r2");
 	gr.AddLegend(leg_s.c_str(),"r");
@@ -518,7 +520,7 @@ void Plotter::alphas(){
 	// gr.FPlot("x^(-4.66)","r");
 	// gr.AddLegend("k^(-4.66)","r");
 
-	// string leg_s = "\\alpha = " + to_string(eval.steigung) + " \\pm " + to_string(eval.fehler);
+	// string leg_s = "\\alpha = " + to_string(eval->steigung) + " \\pm " + to_string(eval->fehler);
 	gr.Plot(k,ableitung," .2b");
 	// gr.Line(reg_1,reg_2,"r2");
 	// gr.AddLegend(leg_s.c_str(),"r");
@@ -543,8 +545,8 @@ void Plotter::contour(){
 
 	gr.SetRange('z',density);
 	gr.SetRange('c',density);
-	gr.SetRange('x',0,eval.data->meta.grid[0]);
-	gr.SetRange('y',0,eval.data->meta.grid[1]);
+	gr.SetRange('x',0,eval->data->meta.grid[0]);
+	gr.SetRange('y',0,eval->data->meta.grid[1]);
 
 	gr.Axis();
 	gr.Label('x',"x [points]",0); gr.Label('y',"y [points]",0);
@@ -560,8 +562,8 @@ void Plotter::contour(){
 
 void Plotter::densityMap(){
 
-	const int n = eval.data->meta.grid[0];
-	const int m = eval.data->meta.grid[1];
+	const int n = eval->data->meta.grid[0];
+	const int m = eval->data->meta.grid[1];
 
 	densitymap = mglData(n,m);
 
@@ -569,7 +571,7 @@ void Plotter::densityMap(){
 	for(int x = 0; x < n; x++){
 		for(int y = 0; y < m; y++){
 			index = x + n * y;
-			densitymap.a[index] = eval.densityLocationMap[0](x,y);
+			densitymap.a[index] = eval->densityLocationMap[0](x,y);
 		}
 	}
 
@@ -583,8 +585,8 @@ void Plotter::densityMap(){
 	gr.SubPlot(1,1,0,"_");
 	gr.Title(title.c_str());
 
-	gr.SetRange('x',0,eval.data->meta.grid[0]);
-	gr.SetRange('y',0,eval.data->meta.grid[1]);
+	gr.SetRange('x',0,eval->data->meta.grid[0]);
+	gr.SetRange('y',0,eval->data->meta.grid[1]);
 	gr.SetRange('z',densitymap);
 	gr.SetRange('c',densitymap);
 
@@ -605,8 +607,8 @@ void Plotter::vortices(){
 	gr.SubPlot(1,1,0,"<_");
 	gr.Title(title.c_str());
 
-	gr.SetRange('x',0,eval.data->meta.grid[0]);
-	gr.SetRange('y',0,eval.data->meta.grid[1]);
+	gr.SetRange('x',0,eval->data->meta.grid[0]);
+	gr.SetRange('y',0,eval->data->meta.grid[1]);
 	gr.SetRange('c',phase);
 
 	gr.Axis();

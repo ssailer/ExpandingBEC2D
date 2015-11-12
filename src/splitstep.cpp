@@ -13,7 +13,7 @@ using namespace Eigen;
 
 SplitStep::SplitStep(Options &o) : opt(o) {}
 
-void SplitStep::assignMatrixData(MatrixData* &d){
+void SplitStep::assignMatrixData(shared_ptr<MatrixData> d){
 	w = d;
 	setVariables();
 }

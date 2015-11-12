@@ -87,6 +87,9 @@ void binaryFile::close()
 	  H5Aclose(h5a);
 	  // cerr << "Reached ERROR location #6" << endl;
 	}
+	else {
+		cout << "SnapshotTimes is empty, what?" << endl;
+	}
 
 
   H5Fclose(h5_file);
@@ -116,7 +119,7 @@ bool binaryFile::checkTime(int snapShotTime){
 
 
 
-void binaryFile::writeMatrixData(const string &name, MatrixData * const &pData, Options const &options ){
+void binaryFile::writeMatrixData(const string &name, shared_ptr<MatrixData> pData, Options const &options ){
 
 	hid_t h5_EMGroup_vecsub = H5Gcreate(h5_timegroup, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); //create dataset with full space selection
 
@@ -276,7 +279,7 @@ void binaryFile::readMeta(hid_t &h5_group, MatrixData::MetaData &meta){
 	meta.arrayToData(); 
 }
 
-void binaryFile::readMatrixData(string const &name, MatrixData* &pData, Options &options){
+void binaryFile::readMatrixData(string const &name, shared_ptr<MatrixData> pData, Options &options){
 
   stringstream set_name;
   set_name << name;
@@ -317,7 +320,7 @@ void binaryFile::readMatrixData(string const &name, MatrixData* &pData, Options 
 
 
 
-bool binaryFile::appendSnapshot(const string &name, MatrixData * const &pData, Options const &options){
+bool binaryFile::appendSnapshot(const string &name, shared_ptr<MatrixData> pData, Options const &options){
 	int snapShotTime = pData->meta.steps;
   if(m == in){
 	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
@@ -340,7 +343,7 @@ bool binaryFile::appendSnapshot(const string &name, MatrixData * const &pData, O
 }
 
 
-bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &pData, Options &options)
+bool binaryFile::getSnapshot(const string &name, int snapShotTime, shared_ptr<MatrixData> pData, Options &options)
 {
   if(m == out)
 	{
@@ -370,7 +373,7 @@ bool binaryFile::getSnapshot(const string &name, int snapShotTime, MatrixData* &
   return true;
 }
 
-bool binaryFile::getLatestSnapshot(const string &name, MatrixData* &pData, Options &options){
+bool binaryFile::getLatestSnapshot(const string &name, shared_ptr<MatrixData> pData, Options &options){
 	if(m == out){
 		cout << "file " << filename.c_str() << " is not in read mode" << endl;
 		return false;
@@ -396,8 +399,8 @@ bool binaryFile::getLatestSnapshot(const string &name, MatrixData* &pData, Optio
 
 }
 
-bool binaryFile::appendEval(Eval &results, Options const & options){
-	int snapShotTime = results.data->meta.steps;
+bool binaryFile::appendEval(shared_ptr<Eval> results, Options const & options){
+	int snapShotTime = results->data->meta.steps;
 
   if(m == in){
 	cout << "file "<< filename.c_str() << "is not in write mode" << endl;
@@ -419,26 +422,26 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 	h5_observables = H5Gcreate(h5_timegroup, "Observables", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   	writeOptions(h5_observables, options);
-  	writeMeta(h5_observables, results.data->meta);  
+  	writeMeta(h5_observables, results->data->meta);  
 
 	/// PREPARE THE DOUBLE ARRAYS
 	string vec1Name = "Averages";
 	int vec1Rank = 14;
 	double vec1[vec1Rank];
-	vec1[0] = results.totalResult.Ekin;
-	vec1[1] = results.totalResult.particle_count;
-	vec1[2] = results.totalResult.healing_length;
-	vec1[3] = results.totalResult.volume;
-	vec1[4] = results.totalResult.density;
-	vec1[5] = results.totalResult.aspectRatio;
-	vec1[6] = results.totalResult.alpha;
-	vec1[7] = results.totalResult.r_max;
-	vec1[8] = results.totalResult.r_min;
-	vec1[9] = results.totalResult.r_max_phi;
-	vec1[10] = results.totalResult.r_min_phi;
-	vec1[11] = results.totalResult.Rx;
-	vec1[12] = results.totalResult.Ry;
-	vec1[13] = results.totalResult.n0;
+	vec1[0] = results->totalResult.Ekin;
+	vec1[1] = results->totalResult.particle_count;
+	vec1[2] = results->totalResult.healing_length;
+	vec1[3] = results->totalResult.volume;
+	vec1[4] = results->totalResult.density;
+	vec1[5] = results->totalResult.aspectRatio;
+	vec1[6] = results->totalResult.alpha;
+	vec1[7] = results->totalResult.r_max;
+	vec1[8] = results->totalResult.r_min;
+	vec1[9] = results->totalResult.r_max_phi;
+	vec1[10] = results->totalResult.r_min_phi;
+	vec1[11] = results->totalResult.Rx;
+	vec1[12] = results->totalResult.Ry;
+	vec1[13] = results->totalResult.n0;
 
   if(H5Lexists(h5_observables, vec1Name.c_str(), H5P_DEFAULT))
 	{
@@ -470,9 +473,9 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 	string vec4Name = "KVector";
 	string vec5Name = "OccupationNumber";
 	string vec6Name = "AspectRatios";
-	int vec4Rank = results.totalResult.k.size();
-	int vec5Rank = results.totalResult.number.size();
-	int vec6Rank = results.totalResult.fixedAspectRatio.size();
+	int vec4Rank = results->totalResult.k.size();
+	int vec5Rank = results->totalResult.number.size();
+	int vec6Rank = results->totalResult.fixedAspectRatio.size();
 	vector<double> vec4;
 	vector<double> vec5;
 	vector<double> vec6;
@@ -486,13 +489,13 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 	}
 
 	for(int i = 0; i < sharedRank; i++){
-		if(results.totalResult.number(i) != 0.0){
-			vec4.push_back(results.totalResult.k(i));
-			vec5.push_back(results.totalResult.number(i));
+		if(results->totalResult.number(i) != 0.0){
+			vec4.push_back(results->totalResult.k(i));
+			vec5.push_back(results->totalResult.number(i));
 		}
 	}
 	for(int i = 0; i < vec6Rank; i++){
-		vec6.push_back(results.totalResult.fixedAspectRatio(i));
+		vec6.push_back(results->totalResult.fixedAspectRatio(i));
 	}
 	vec4Rank = vec4.size();
 	vec5Rank = vec5.size();
@@ -559,13 +562,13 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 
 
   string vec2Name = "Contour";
-  int samples = results.contour.size();
+  int samples = results->contour.size();
   int vec2Ranks[samples];
   int arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
   double *vec2;
 
   for(int k = 0; k < samples; k++){
-	vec2Ranks[k] = results.contour[k].size();
+	vec2Ranks[k] = results->contour[k].size();
 	arraysize += 2 * vec2Ranks[k]; // x and y coordinate of each contourpoint summed over all samples
   }
 
@@ -575,7 +578,7 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
   int l = 1 + samples;
   for(int k = 0; k < samples; k++){
 	vec2[k+1] = vec2Ranks[k];    
-	for(std::unordered_set<Coordinate<int32_t>>::const_iterator it = results.contour[k].begin(); it != results.contour[k].end(); ++it){
+	for(std::unordered_set<Coordinate<int32_t>>::const_iterator it = results->contour[k].begin(); it != results->contour[k].end(); ++it){
 	  vec2[l] = it->x();
 	  vec2[l+1] = it->y();
 	  l+=2;
@@ -602,13 +605,13 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
 
 
   string vec3Name = "Vortices";
-  samples = results.vlist.size();
+  samples = results->vlist.size();
   int vec3Ranks[samples];
   arraysize = 1 + samples; // first elements are the number of samples, and the size of each sample
   double *vec3;
 
   for(int k = 0; k < samples; k++){
-	vec3Ranks[k] = results.vlist[k].size();
+	vec3Ranks[k] = results->vlist[k].size();
 	arraysize += 2 * vec3Ranks[k]; // x and y coordinate of each vortex summed over all samples
   }
 
@@ -618,7 +621,7 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
   l = 1 + samples;
   for(int k = 0; k < samples; k++){
 	vec3[k+1] = vec3Ranks[k];    
-	for(std::list<VortexData>::const_iterator it = results.vlist[k].begin(); it != results.vlist[k].end(); ++it){
+	for(std::list<VortexData>::const_iterator it = results->vlist[k].begin(); it != results->vlist[k].end(); ++it){
 	  vec3[l] = it->c.x();
 	  vec3[l+1] = it->c.y();
 	  l+=2;
@@ -643,13 +646,13 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
   free(vec3);
 
   string vec7Name = "VortexWinding";
-  samples = results.vlist.size();
+  samples = results->vlist.size();
   int vec7Ranks[samples];
   arraysize = 1 + samples;
   double *vec7;
 
   for(int k = 0; k < samples; k++){
-  	vec7Ranks[k] = results.vlist[k].size();
+  	vec7Ranks[k] = results->vlist[k].size();
   	arraysize += vec7Ranks[k];
   }
 
@@ -659,7 +662,7 @@ bool binaryFile::appendEval(Eval &results, Options const & options){
   l = 1 + samples;
   for(int k = 0; k < samples; k++){
 	vec7[k+1] = vec7Ranks[k];    
-	for(std::list<VortexData>::const_iterator it = results.vlist[k].begin(); it != results.vlist[k].end(); ++it){
+	for(std::list<VortexData>::const_iterator it = results->vlist[k].begin(); it != results->vlist[k].end(); ++it){
 	  vec7[l] = it->n;
 	  l++;
 	}

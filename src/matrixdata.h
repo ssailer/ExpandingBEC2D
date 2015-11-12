@@ -85,6 +85,9 @@ class MatrixData {
 
     MatrixData() : fft(&wavefunction,&meta) {}
     MatrixData(const MatrixData &cData) : wavefunction(cData.wavefunction), meta(cData.meta), fft(&wavefunction,&meta) {}
+
+    MatrixData(MatrixData* m) : meta(m->meta), wavefunction(m->wavefunction), fft(&wavefunction,&meta) {}
+
     // MatrixData(int size) : wavefunction(size), meta() {}
     // MatrixData(int x, int y) {for(int i = 0; wavefunction.size(); i++){ wavefunction[i] = MatrixXcd::Zero(x,y);}}
     // MatrixData(int size, int x, int y) : MatrixData(size), MatrixData(x,y) {}
@@ -111,6 +114,7 @@ class MatrixData {
     inline vector<MatrixXcd> getMatrix();    
     inline MetaData getMeta();
 };
+
 
 inline MatrixData::MatrixData(const MetaData &m) : meta(m), wavefunction(m.samplesize), fft(&wavefunction,&meta) {    
         for(int i = 0; i < wavefunction.size(); i++){

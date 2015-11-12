@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"ratio",
+				"ratio_y"
+			],
+			[
+				"rat",
+				"ratio_y"
+			],
+			[
 				"res",
 				"resultfilename"
 			],
@@ -506,56 +514,24 @@
 			[
 				"number_min",
 				"number_minmax"
-			],
-			[
-				"k_min",
-				"k_minmax"
-			],
-			[
-				"k_",
-				"k_minmax"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
+			"file": "CMakeLists.txt",
+			"settings":
+			{
+				"buffer_size": 2073,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "main.cpp",
 			"settings":
 			{
-				"buffer_size": 12840,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/mnt/veracrypt2/remote_runs/100k/plot.py",
-			"settings":
-			{
-				"buffer_size": 3613,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/mnt/veracrypt2/remote_runs/100k/ellipse.py",
-			"settings":
-			{
-				"buffer_size": 5357,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/plotter.cpp",
-			"settings":
-			{
-				"buffer_size": 15641,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/runner.hpp",
-			"settings":
-			{
-				"buffer_size": 10002,
+				"buffer_size": 13220,
 				"line_ending": "Unix"
 			}
 		},
@@ -563,16 +539,50 @@
 			"file": "src/binaryfile.cpp",
 			"settings":
 			{
-				"buffer_size": 36406,
+				"buffer_size": 36468,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "remote/rot_new/Ratios.py",
+			"file": "src/plotter.cpp",
 			"settings":
 			{
-				"buffer_size": 12092,
+				"buffer_size": 15674,
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/evaluation.cpp",
+			"settings":
+			{
+				"buffer_size": 34003,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/evaluation.h",
+			"settings":
+			{
+				"buffer_size": 4595,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/runner.hpp",
+			"settings":
+			{
+				"buffer_size": 10012,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 148 files for \"kval size\" (case sensitive)\n\n/home/nhrjr/projects/expandingvortexgas2d/src/plotter.cpp:\n  221  	numbermax = *number_minmax.second;\n  222  	cout << \"nmax \" << numbermax << \" \" << \"nmin \" << numbermin << endl;\n  223: 	cout << \"kval size \" << kval.size() << endl;\n  224  	cout << \"numberval size \" << numberval.size() << endl;\n  225  \n\n1 match in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 376,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
 			}
 		},
 		{
@@ -584,82 +594,34 @@
 			}
 		},
 		{
-			"file": "remote/rot_new/plot.py",
-			"settings":
-			{
-				"buffer_size": 3613,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "remote/rot_new/ellipse.py",
-			"settings":
-			{
-				"buffer_size": 5357,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/evaluation.cpp",
-			"settings":
-			{
-				"buffer_size": 33851,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/evaluation.h",
-			"settings":
-			{
-				"buffer_size": 4598,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/lmfitter.h",
-			"settings":
-			{
-				"buffer_size": 2302,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/lmfitter.cpp",
-			"settings":
-			{
-				"buffer_size": 16132,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "remote/rot_new/exp.cfg",
-			"settings":
-			{
-				"buffer_size": 1055,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "src/hydro.cpp",
 			"settings":
 			{
-				"buffer_size": 17115,
+				"buffer_size": 17124,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/mnt/veracrypt2/remote_runs/100k/exp.cfg",
+			"file": "remote/100k/ellipse.py",
 			"settings":
 			{
-				"buffer_size": 1257,
+				"buffer_size": 5525,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/hydro.h",
+			"file": "/home/nhrjr/disks/archive/remote_runs/10M/run.cfg",
 			"settings":
 			{
-				"buffer_size": 2865,
+				"buffer_size": 1063,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "remote/100k/plot.py",
+			"settings":
+			{
+				"buffer_size": 3613,
 				"line_ending": "Unix"
 			}
 		}
@@ -847,31 +809,52 @@
 	"expanded_folders":
 	[
 		"/home/nhrjr/projects/expandingvortexgas2d",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote",
 		"/home/nhrjr/projects/expandingvortexgas2d/src"
 	],
 	"file_history":
 	[
+		"/home/nhrjr/disks/archive/remote_runs/10M/10000000_1000x1000_0.145_105.0/runObservables/ROT_Observables.dat",
+		"/home/nhrjr/.config/awesome/rc.lua",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/100k/exp.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/100k/ellipse.py",
+		"/home/nhrjr/.config/awesome/zenburn.lua",
+		"/usr/share/awesome/lib/beautiful.lua",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/binaryfile.h",
+		"/home/nhrjr/.yaourtrc",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/100k/35.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/hydro.h",
+		"/mnt/veracrypt2/remote_runs/100k/exp.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/main.cpp",
+		"/mnt/veracrypt2/remote_runs/100k/plot.py",
+		"/mnt/veracrypt2/remote_runs/100k/ellipse.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/plotter.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/runner.hpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/binaryfile.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/Ratios.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/main.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/plot.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/ellipse.py",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/evaluation.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/evaluation.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/lmfitter.h",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/lmfitter.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/exp.cfg",
+		"/home/nhrjr/projects/expandingvortexgas2d/src/hydro.cpp",
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/plot.py",
 		"/mnt/veracrypt2/remote_runs/100k/100000_400x400_0.145_30.0/runObservables/EXP_Observables.dat",
 		"/mnt/veracrypt2/remote_runs/100k/100000_400x400_0.145_31.0/runObservables/EXP_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_21.0/runObservables/hydro.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_0.0/runObservables/EXP_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_14.0/runObservables/EXP_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/Ratios.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/src/main.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/src/hydro.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/coordinate.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/src/evaluation.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/contour.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/tools.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/splitstep.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/rk4.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/src/plotter.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/contour.cpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/src/binaryfile.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/src/binaryfile.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/startgrids.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/splitstep.hpp",
-		"/home/nhrjr/projects/expandingvortexgas2d/src/runner.hpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/rk4.hpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/plotter.hpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/src/observables.h",
@@ -899,7 +882,6 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_Contour.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/utilities/coordinate.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/2dexpan.h",
-		"/home/nhrjr/.config/awesome/rc.lua",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/hydro.h",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_0.0/runObservables/hydro.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_evaluation.cpp",
@@ -910,7 +892,6 @@
 		"/usr/share/doc/root/tutorials/fit/fit2.C",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_observables.h",
 		"/home/nhrjr/.config/awesome/rc.3.5.lua",
-		"/home/nhrjr/.config/awesome/zenburn.lua",
 		"/mnt/movies/+unsorted/Walt Disney/Walt.Disneys.Geschichten.die.verzaubern.Die.Schoene.und.das.Biest.German.2004.DVDRiP.XviD-Clitori4/clitori4_sudb_xvid.nfo",
 		"/usr/include/dlib/optimization/optimization_least_squares_abstract.h",
 		"/usr/include/dlib/optimization/optimization_least_squares.h",
@@ -934,7 +915,6 @@
 		"/mnt/truecrypt3/remote_runs/100k/ellipse.py",
 		"/mnt/truecrypt3/remote_runs/100k/plot.py",
 		"/mnt/truecrypt3/remote_runs/100k/exp.cfg",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/exp.cfg",
 		"/mnt/truecrypt3/remote_runs/100k/100000_400x400_0.145_30.0/runObservables/EXP_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_tools.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_constants.h",
@@ -961,24 +941,7 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_15.0/runObservables/EXP_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_15.0/runObservables/hydro.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_14.0/runObservables/hydro.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_16.0/runObservables/hydro.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_17.0/runObservables/hydro.dat",
-		"/mnt/truecrypt1/remote_runs/10k/10000_400x400_0.145_14.0/runObservables/EXP_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_14.0/runObservables/hydro2.dat",
-		"/mnt/truecrypt1/remote_runs/10k/angles.py",
-		"/home/nhrjr/Downloads/mathgl-2.3.3/Makefile",
-		"/home/nhrjr/Downloads/mathgl-2.3.3/include/mgl2/data.h",
-		"/mnt/truecrypt2/remote_runs/100k/exp.cfg",
-		"/mnt/truecrypt1/remote_runs/100k/exp.cfg",
-		"/mnt/truecrypt1/remote_runs/100k/100000_400x400_0.145_30.0/runObservables/EXP_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_0.0/runObservables/ITP_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/angles.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/ellipseplot.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_large/rot.cfg",
-		"/home/nhrjr/projects/expandingvortexgas2d/evaluator.cpp",
-		"/home/nhrjr/projects/simple-segment/README.md",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/segment.py",
-		"/home/nhrjr/projects/simple-segment/example.py"
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_16.0/runObservables/hydro.dat"
 	],
 	"find":
 	{
@@ -1001,6 +964,28 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"kval size",
+			"isDimensionless",
+			"getMeta",
+			"data",
+			"dimensionless",
+			"cannot convert",
+			"major_2",
+			"ellipse",
+			"fitTF",
+			"ellipse",
+			"400",
+			"x",
+			"Rx",
+			"x",
+			"sexec",
+			"awful.util.spawn_with_shell",
+			"chrom",
+			"border_focus",
+			"beautiful",
+			"border_color",
+			"connect_signal",
+			"300",
 			"r_max",
 			"endl;}",
 			"endl;",
@@ -1106,29 +1091,7 @@
 			"eval->",
 			"meta",
 			"peak",
-			"queue",
-			"params_tf",
-			"data.meta",
-			"cerr",
-			"2 * (params(0) / M_PI) * (1 / (params(1) * params(3)))",
-			"peak",
-			"eak",
-			"0.0",
-			"peak * 0.001",
-			"fit_params",
-			"getDens",
-			"ellipse.center[0]",
-			"ellipse.angle",
-			"ellipse.minor",
-			"ellipse.major",
-			"ellipse",
-			"convertToPhysicalUnits",
-			"convertFromDimensionlessUnits",
-			"convertToDimensionlessUnits",
-			"Cannot convert MatrixData",
-			"Cannot convert",
-			"p0",
-			"params"
+			"queue"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1146,24 +1109,53 @@
 	"groups":
 	[
 		{
-			"selected": 15,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "main.cpp",
+					"file": "CMakeLists.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12840,
+						"buffer_size": 2073,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11670,
-								11670
+								951,
+								951
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "main.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13220,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10774,
+								10774
 							]
 						],
 						"settings":
@@ -1172,15 +1164,321 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5665.0,
+						"translation.y": 4139.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/binaryfile.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 36468,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2542,
+								2542
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 546.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/plotter.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15674,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5802,
+								5802
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2420.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/evaluation.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34003,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								630,
+								630
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "src/evaluation.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4595,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								586,
+								586
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 39.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/runner.hpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10012,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8209,
+								8209
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 318.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 376,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										250,
+										259
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "/mnt/veracrypt2/remote_runs/100k/plot.py",
+					"buffer": 8,
+					"file": "src/main.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15084,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4980,
+								4980
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2180.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "src/hydro.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17124,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14182,
+								14182
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3361.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "remote/100k/ellipse.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5525,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2293,
+								2293
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 234.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/home/nhrjr/disks/archive/remote_runs/10M/run.cfg",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1063,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								784,
+								784
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "remote/100k/plot.py",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1200,476 +1498,11 @@
 							"syntax": "Packages/Python/Python.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/mnt/veracrypt2/remote_runs/100k/ellipse.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5357,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1189,
-								1189
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 156.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "src/plotter.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 15641,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								549,
-								549
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 13,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "src/runner.hpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10002,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								9765,
-								9765
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 4111.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "src/binaryfile.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 36406,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								994,
-								994
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "remote/rot_new/Ratios.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 12092,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								9706,
-								9706
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 3327.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 16,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "src/main.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 15084,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								13057,
-								13057
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 5054.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "remote/rot_new/plot.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3613,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1336,
-								1336
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.x": -0.0,
+						"translation.y": 429.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "remote/rot_new/ellipse.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5357,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1189,
-								1189
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 184.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "src/evaluation.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 33851,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								24767,
-								24767
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 9700.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "src/evaluation.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4598,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1542,
-								1542
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 338.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "src/lmfitter.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2302,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								517,
-								517
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 17,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "src/lmfitter.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16132,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								11688,
-								11688
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4288.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "remote/rot_new/exp.cfg",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1055,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								785,
-								785
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 15,
-					"file": "src/hydro.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 17115,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								12528,
-								12528
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5378.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 16,
-					"file": "/mnt/veracrypt2/remote_runs/100k/exp.cfg",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1257,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								751,
-								751
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": -0.0,
-						"translation.y": 78.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 17,
-					"file": "src/hydro.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2865,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1301,
-								1301
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 413.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 15,
 					"type": "text"
 				}
 			]
@@ -1708,7 +1541,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 345.0
+		"height": 168.0
 	},
 	"output.find_results":
 	{
@@ -1742,11 +1575,11 @@
 	},
 	"select_symbol":
 	{
-		"height": 392.0,
+		"height": 372.0,
 		"selected_items":
 		[
 		],
-		"width": 701.0
+		"width": 687.0
 	},
 	"selected_group": 0,
 	"settings":

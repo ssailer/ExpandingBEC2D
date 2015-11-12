@@ -42,7 +42,7 @@ class Runner{
 public:
     // Runner(MatrixData* &d, RungeKutta* r, Options &opt);  
     // Runner(MatrixData* &d, SplitStep* s, Options &externaloptions);
-    Runner(MatrixData* &d, Options &o);
+    Runner(shared_ptr<MatrixData> d, Options &o);
     ~Runner();
 
     void setOptions(const Options &externaloptions);
@@ -54,7 +54,7 @@ public:
     // void splitToTime(string runName);
    
     // StoragePointer to the wavefunction (MatrixData Object)
-    MatrixData* pData;
+    shared_ptr<MatrixData> pData;
 
     // Storage Variable for the runs
 
@@ -141,7 +141,7 @@ public:
 
 
 template<class T>
-Runner<T>::Runner(MatrixData* &d, Options &o) : wavefctVec(d->wavefunction), meta(d->meta), pData(d)
+Runner<T>::Runner(shared_ptr<MatrixData> d, Options &o) : wavefctVec(d->wavefunction), meta(d->meta), pData(d)
 {
 	algorithm = new T(o);
 	algorithm->assignMatrixData(pData);
@@ -256,42 +256,47 @@ void Runner<T>::runToTime(string runName)
 {	
 	double start;  // starttime of the run
 
-	Eval* initEval = new Eval(pData,opt);
-	initEval->process();
-	initEval->save();
+	// Eval* initEval = new Eval(pData,opt);
+	{
+		auto initEval = std::make_shared<Eval>(pData,opt);
+		initEval->process();
+		initEval->save();
+	
 
-	if(opt.runmode == "EXP"){
-		// hydroSolver solver(initEval);
-		// solver.integrate();
-		// solver.pyPlot();
+	
+		if(opt.initialRun == true){
+	
+			Plotter* initPlot = new Plotter(initEval,opt);
+			initPlot->plotEval();
+			delete initPlot;
+	
+			opt.vortexnumber = initEval->getVortexNumber();
+			opt.initialRun = false;
+	
+			string filename = runName + "data.h5";
+			string obsname  = runName + "obs.h5";
+	
+			binaryFile* bFile = new binaryFile(filename,binaryFile::out);
+			bFile->appendSnapshot("MatrixData",pData,opt);
+			binaryFile* obsFile = new binaryFile(obsname,binaryFile::out);
+			obsFile->appendEval(initEval,opt);
+			delete bFile;
+			delete obsFile;
+		}
 
-		vector<int> edges;
-		if(initEval->checkResizeCondition(edges)){
-			pData->resizeBy(400);
-			algorithm->setVariables();
-			cout << "Resizing" << endl;
+		if(opt.runmode == "EXP"){
+			// hydroSolver solver(initEval);
+			// solver.integrate();
+			// solver.pyPlot();
+	
+			vector<int> edges;
+			if(initEval->checkResizeCondition(edges)){
+				pData->resizeBy(400);
+				algorithm->setVariables();
+				cout << "Resizing" << endl;
+			}
 		}
 	}
-
-	if(opt.initialRun == true){
-
-		Plotter* initPlot = new Plotter(*initEval,opt);
-		initPlot->plotEval();
-		delete initPlot;
-
-		opt.vortexnumber = initEval->getVortexNumber();
-		opt.initialRun = false;
-
-		string filename = runName + "data.h5";
-		string obsname  = runName + "obs.h5";
-
-		binaryFile* bFile = new binaryFile(filename,binaryFile::out);
-		bFile->appendSnapshot("MatrixData",pData,opt);
-		binaryFile* obsFile = new binaryFile(obsname,binaryFile::out);
-		obsFile->appendEval(*initEval,opt);		
-		delete bFile,obsFile;
-	}
-	delete initEval;
 
 	start = omp_get_wtime();
 
@@ -321,8 +326,10 @@ void Runner<T>::runToTime(string runName)
 		// END REMOVE
 
 		try{
+
 			// if(opt.runmode != "EXP"){
-				Eval* eval = new Eval(pData,opt);
+				// Eval* eval = new Eval(pData,opt);
+			auto eval = std::make_shared<Eval>(pData,opt);
 				eval->process();
 				eval->save();
 			// }
@@ -334,27 +341,28 @@ void Runner<T>::runToTime(string runName)
 			delete bFile;
 
 			binaryFile* obsFile = new binaryFile(obsname,binaryFile::append);
-			obsFile->appendEval(*eval, opt);
+			obsFile->appendEval(eval, opt);
 			delete obsFile;
+
+			// if(opt.runmode != "EXP"){
+				Plotter* plotter = new Plotter(eval,opt);
+				plotter->plotEval();
+				delete plotter;
+			// }
 
 			if(opt.runmode == "EXP"){
 				vector<int> edges;
 				if(eval->checkResizeCondition(edges)){
-					pData->resizeBy(400);
+					pData->resizeBy(800);
 					algorithm->setVariables();
 					cout << "Resizing" << endl;
 				}
 				// hydroSolver solver;
 				// solver.pyPlot();
 			}
-			if(opt.runmode != "EXP"){
-				Plotter* plotter = new Plotter(*eval,opt);
-				plotter->plotEval();
-				delete plotter;
-			}
 
-			delete eval;
 
+			// delete eval;
 
 
 		}

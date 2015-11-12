@@ -26,7 +26,7 @@ using namespace std;
 class Plotter
 {
 public:
-	Plotter(Eval &e, Options &o);
+	Plotter(shared_ptr<Eval> e, Options &o);
 	// ~Plotter();
 
 	void plotEval();
@@ -43,7 +43,7 @@ public:
 private:
 
 
-	Eval eval;
+	shared_ptr<Eval> eval;
 	Options opt;
 
 	double xrange,yrange;

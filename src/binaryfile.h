@@ -47,15 +47,15 @@ public:
 
   void close();
 
-  bool appendSnapshot(const string &name, MatrixData * const &pData, Options const &options);
+  bool appendSnapshot(const string &name, shared_ptr<MatrixData> pData, Options const &options);
   // bool appendSnapshot(const string &name, double time, const vector<RealGrid> &k);
   // bool appendSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data, MatrixData::MetaData &meta, Options &options);
 
-  bool appendEval( Eval &results, Options const & opt );
+  bool appendEval( shared_ptr<Eval> results, Options const & opt );
   // bool appendDocString(const string &group, const string &docstring, double time);
 
-  bool getSnapshot(const string &name, int time, MatrixData* &pData, Options &options);
-  bool getLatestSnapshot(const string &name, MatrixData* &pData, Options &options);
+  bool getSnapshot(const string &name, int time, shared_ptr<MatrixData> pData, Options &options);
+  bool getLatestSnapshot(const string &name, shared_ptr<MatrixData> pData, Options &options);
   // bool getSnapshot(const string &name, double time, vector<RealGrid> &k);
   // bool getSnapshot(const string &name, int snapShotTime, vector<ComplexGrid> &data,MatrixData::MetaData &meta, Options &options);
 
@@ -70,8 +70,8 @@ protected:
   binaryFile() {}
   bool checkTime(int snapShotTime);
 
-  void writeMatrixData(const string &name, MatrixData * const &pData, Options const &options );
-  void readMatrixData(string const &name, MatrixData* &pData, Options &options);
+  void writeMatrixData(const string &name, shared_ptr<MatrixData> pData, Options const &options );
+  void readMatrixData(string const &name, shared_ptr<MatrixData> pData, Options &options);
 
   void writeMeta(hid_t &h5_group,MatrixData::MetaData &meta );
   void readMeta(hid_t &h5_group,MatrixData::MetaData &meta);

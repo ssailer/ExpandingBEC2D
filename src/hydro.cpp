@@ -258,11 +258,11 @@ double hydroSolver::ode_n0(double x,const hydroParams& params)
 {
     double result;
     result = - x * (params.alpha_x + params.alpha_y);
-    double factor = omega_average;
+    // double factor = omega_average;
     // double factor = sqrt(1.0 - /* hbar * hbar * eval->opt.vortexnumber * */ eval->opt.vortexnumber / sqrt( 2.0 * eval->opt.g * x * params.sigma_x * params.sigma_y));
     // if(factor != 1.0) cout << "YEP " << factor << endl;
-    cout << factor << "\r";
-    result *= factor;
+    // cout << factor << "\r";
+    // result *= factor;
     
     return result;
 }

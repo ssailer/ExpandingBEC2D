@@ -52,7 +52,7 @@ void RungeKutta::setVariables(){
 
 }
 
-void RungeKutta::assignMatrixData(MatrixData* &d) {
+void RungeKutta::assignMatrixData(shared_ptr<MatrixData> d) {
 	 w = d;
 	 setVariables();
 }
