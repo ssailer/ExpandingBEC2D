@@ -262,8 +262,6 @@ void Runner<T>::runToTime(string runName)
 		initEval->process();
 		initEval->save();
 	
-
-	
 		if(opt.initialRun == true){
 	
 			Plotter* initPlot = new Plotter(initEval,opt);
@@ -330,8 +328,8 @@ void Runner<T>::runToTime(string runName)
 			// if(opt.runmode != "EXP"){
 				// Eval* eval = new Eval(pData,opt);
 			auto eval = std::make_shared<Eval>(pData,opt);
-				eval->process();
-				eval->save();
+			eval->process();
+			eval->save();
 			// }
 
 			string dataname = runName + "data.h5";

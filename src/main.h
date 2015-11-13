@@ -268,7 +268,7 @@ inline int InitMain::readCli()
       // ("resume,r","Resume the run from the last saved Grid.")
       ("restart",po::value<string>(&restartString), "NEW RESUME RESTART PLOT HYDRO")      
       ("dgl",po::value<string>(&dglString), "EXP ROT TRAP")
-      ("algo",po::value<string>(&algorithmString), "SPLIT RK4")
+      ("algo",po::value<string>(&algorithmString)->default_value("SPLIT"), "SPLIT RK4")
       ("name,n",po::value<string>(&runName), "Name of the run.");
 
       // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
