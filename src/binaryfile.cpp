@@ -87,10 +87,6 @@ void binaryFile::close()
 	  H5Aclose(h5a);
 	  // cerr << "Reached ERROR location #6" << endl;
 	}
-	else {
-		cout << "SnapshotTimes is empty, what?" << endl;
-	}
-
 
   H5Fclose(h5_file);
   filename = "";

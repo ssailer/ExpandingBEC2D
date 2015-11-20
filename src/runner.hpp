@@ -28,6 +28,8 @@
 #include <hydro.h>
 #include <eigen3/Eigen/Dense>
 
+#define RESIZE 0
+
 using namespace std;
 using namespace Eigen;
 
@@ -255,6 +257,7 @@ template<class T>
 void Runner<T>::runToTime(string runName)
 {	
 	double start;  // starttime of the run
+	// int resizeByInt = 512;
 
 	// Eval* initEval = new Eval(pData,opt);
 	{
@@ -288,10 +291,11 @@ void Runner<T>::runToTime(string runName)
 			// solver.pyPlot();
 	
 			vector<int> edges;
+			
 			if(initEval->checkResizeCondition(edges)){
-				pData->resizeBy(400);
+				pData->resizeBy(RESIZE);
 				algorithm->setVariables();
-				cout << "Resizing" << endl;
+				cout << "Resizing by " << RESIZE << endl;
 			}
 		}
 	}
@@ -347,17 +351,26 @@ void Runner<T>::runToTime(string runName)
 				plotter->plotEval();
 				delete plotter;
 			// }
+			// cout << "opt.RTE_step " << opt.RTE_step << endl;
+			// cout << "spacing " << pData->meta.spacing[0] << endl;
+			// cout << "grid " << pData->meta.grid[0] << endl;
+			// cout << "size " << pData->meta.coord[0] << endl;
 
 			if(opt.runmode == "EXP"){
 				vector<int> edges;
 				if(eval->checkResizeCondition(edges)){
-					pData->resizeBy(800);
+					pData->resizeBy(RESIZE);
 					algorithm->setVariables();
-					cout << "Resizing" << endl;
+					cout << "Resizing by " << RESIZE << endl;
 				}
 				// hydroSolver solver;
 				// solver.pyPlot();
 			}
+
+			// cout << "opt.RTE_step " << opt.RTE_step << endl;
+			// cout << "spacing " << pData->meta.spacing[0] << endl;
+			// cout << "grid " << pData->meta.grid[0] << endl;
+			// cout << "size " << pData->meta.coord[0] << endl;
 
 
 			// delete eval;

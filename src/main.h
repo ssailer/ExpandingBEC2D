@@ -199,6 +199,14 @@ inline MatrixData::MetaData InitMain::getMeta(){
 	meta.isDimensionless = tmpOptions.isDimensionless;
 	meta.dataToArray();
 
+	cout << "DIMENSIONLESS UNITS: " << endl;
+	cout << "h = " << meta.initSpacing[0] << endl;
+	cout << "x_max = " << meta.initCoord[0] << endl; 
+	double k = 2 * meta.initSpacing[0] * meta.initSpacing[0] / (M_PI * M_PI);
+	cout << "Is delta T " << tmpOptions.RTE_step << " < k_threshold = " << k << " ";
+	if(tmpOptions.RTE_step < k) cout << "Yes." << endl; else cout << "No." << endl;
+	cout << endl;
+
 	return meta;
 }
 

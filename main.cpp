@@ -334,6 +334,7 @@ int simulation(InitMain &initMain){
 		delete dataFile;
 		// temp fix to change behaviour of sim object;
 		opt.initialRun = false;
+		data->convertToDimensionlessUnits();
 	}
 	if(start == RESTART){
 		Options loadedOptions;
@@ -350,6 +351,7 @@ int simulation(InitMain &initMain){
 		data->meta.time = 0.0;
 		// opt.n_it_RTE = initMain.getRunTime();
 		// opt.snapshots = initMain.getSnapShots();
+		data->convertToDimensionlessUnits();
 	}
 	if(start == NEW){
 		setGridToTF(data,initMain.getOptions());
@@ -388,6 +390,7 @@ int simulation(InitMain &initMain){
 		switch ( dgl ){
 			case ROT : {
 					Runner<SplitRotStrang>* run = new Runner<SplitRotStrang>(data,opt);
+					// Runner<SplitRot>* run = new Runner<SplitRot>(data,opt);
 					run->runToTime("rot");
 					delete run;
 				}
@@ -420,7 +423,7 @@ int simulation(InitMain &initMain){
 	}  
 
 	chdir("..");
-	cerr << "Ended application successfully, bye bye and thanks for the fish. :)" << endl;
+	cerr << endl << "Ended application successfully, bye bye and thanks for the fish. :)" << endl;
 }
 
 int main( int argc, char** argv){	

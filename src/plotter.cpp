@@ -251,8 +251,7 @@ void Plotter::prepareData(){
 
 	// ellipse axis
 
-
-	// cerr << endl << eval->punkte[0] << " " << eval->punkte[1] << " " << eval->punkte[2] << " " << eval->punkte[3] << endl;
+	
 
 }
 

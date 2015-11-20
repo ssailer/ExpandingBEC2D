@@ -22,6 +22,7 @@ Eval::Eval(shared_ptr<MatrixData> d,Options o) : data(d),  opt(o) {
 }
 
 Eval::~Eval() {
+	toDimensionlessUnits(opt);
 	data->convertToDimensionlessUnits();
 	// cout << "convertToDimensionlessUnits()" << endl;
 }
@@ -101,29 +102,30 @@ void Eval::save(){
   		datafile.close();
   	}
 
-  	// Find n0 different from fit
+  	// Find n0 from fit, legacy code 
 
-  	double last_largest_element = 0;
-    std::queue<double> largest_elements;
-    for(int i = 0; i < data->meta.grid[0]; ++i){
-    	for(int j = 0; j < data->meta.grid[1]; ++j){
-    		const double val = density(i,j);
-    		if(val > last_largest_element){
-    			largest_elements.push(val);
-    			last_largest_element = val;
-    		}
-    		if(largest_elements.size() > /*meta.grid[0]*meta.grid[1]*0.001*/ 10){
-    			largest_elements.pop();
-    		}
-    	}
-    }
-    double n0 = 0;
-    int le_size = largest_elements.size();
-    while(!largest_elements.empty()){
-    	n0 += largest_elements.front();
-    	largest_elements.pop();
-    }
-    totalResult.n0 = n0 / le_size;
+  	// double last_largest_element = 0;
+   //  std::queue<double> largest_elements;
+   //  for(int i = 0; i < data->meta.grid[0]; ++i){
+   //  	for(int j = 0; j < data->meta.grid[1]; ++j){
+   //  		const double val = density(i,j);
+   //  		if(val > last_largest_element){
+   //  			largest_elements.push(val);
+   //  			last_largest_element = val;
+   //  		}
+   //  		if(largest_elements.size() > /*meta.grid[0]*meta.grid[1]*0.001*/ 10){
+   //  			largest_elements.pop();
+   //  		}
+   //  	}
+   //  }
+   //  double n0 = 0;
+   //  int le_size = largest_elements.size();
+   //  while(!largest_elements.empty()){
+   //  	n0 += largest_elements.front();
+   //  	largest_elements.pop();
+   //  }
+    // cout << "n0 from totalresult = " << totalResult.n0 << endl;
+    // cout << "n0 from calcu = " << n0 / le_size << endl;
 
     // END find n0
 
@@ -791,7 +793,7 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	densityCoordinates[sampleindex] = generate_density_coordinates(params_tf);
 	densityCounter[sampleindex] = densityCoordinates[sampleindex].size();
 
-
+	obs.n0 = params_tf[0];
 	obs.r_max = params_tf[1];
 	obs.r_min = params_tf[3];
 
@@ -1047,8 +1049,8 @@ bool Eval::checkResizeCondition(vector<int> &edges){
 
 	// vector<double> x_tmp(densityCoordinates[0].size());
 	// vector<double> y_tmp(densityCoordinates[0].size());
-	int upperVal = data->meta.grid[0]*0.85;
-	int lowerVal = data->meta.grid[0]*0.15;
+	int upperVal = data->meta.grid[0]*0.80;
+	int lowerVal = data->meta.grid[0]*0.20;
 
 
 	for(int i = 0; i < densityCoordinates[0].size(); i++){

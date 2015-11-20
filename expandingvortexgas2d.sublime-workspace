@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"prin",
+				"printT"
+			],
+			[
+				"resi",
+				"resizeByInt"
+			],
+			[
 				"densit",
 				"densityCoordinates"
 			],
@@ -506,14 +514,6 @@
 			[
 				"number",
 				"numberval"
-			],
-			[
-				"deni",
-				"densityMap"
-			],
-			[
-				"mat",
-				"MatrixData"
 			]
 		]
 	},
@@ -531,7 +531,7 @@
 			"file": "main.cpp",
 			"settings":
 			{
-				"buffer_size": 13502,
+				"buffer_size": 13652,
 				"line_ending": "Unix"
 			}
 		},
@@ -547,7 +547,7 @@
 			"file": "src/binaryfile.cpp",
 			"settings":
 			{
-				"buffer_size": 36550,
+				"buffer_size": 36487,
 				"line_ending": "Unix"
 			}
 		},
@@ -579,7 +579,23 @@
 			"file": "src/evaluation.cpp",
 			"settings":
 			{
-				"buffer_size": 34480,
+				"buffer_size": 34508,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/mnt/veracrypt2/remote_runs/test/run.cfg",
+			"settings":
+			{
+				"buffer_size": 1055,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/mnt/veracrypt2/remote_runs/test/run2.cfg",
+			"settings":
+			{
+				"buffer_size": 1055,
 				"line_ending": "Unix"
 			}
 		},
@@ -595,7 +611,7 @@
 			"file": "src/runner.hpp",
 			"settings":
 			{
-				"buffer_size": 10177,
+				"buffer_size": 10259,
 				"line_ending": "Unix"
 			}
 		},
@@ -627,7 +643,7 @@
 			"file": "src/splitstep.cpp",
 			"settings":
 			{
-				"buffer_size": 9778,
+				"buffer_size": 10146,
 				"line_ending": "Unix"
 			}
 		},
@@ -640,18 +656,18 @@
 			}
 		},
 		{
-			"file": "/home/nhrjr/disks/archive/remote_runs/10M/run.cfg",
-			"settings":
-			{
-				"buffer_size": 1060,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "src/tools.h",
 			"settings":
 			{
 				"buffer_size": 4154,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/tools.cpp",
+			"settings":
+			{
+				"buffer_size": 1536,
 				"line_ending": "Unix"
 			}
 		},
@@ -867,14 +883,22 @@
 	},
 	"expanded_folders":
 	[
-		"/home/nhrjr/projects/expandingvortexgas2d"
+		"/home/nhrjr/projects/expandingvortexgas2d",
+		"/home/nhrjr/projects/expandingvortexgas2d/src"
 	],
 	"file_history":
 	[
+		"/mnt/veracrypt2/remote_runs/test/run1.cfg",
+		"/home/nhrjr/disks/archive/remote_runs/test/10000_200x200_0.145_41.0/runObservables/EXP_Observables.dat",
+		"/home/nhrjr/disks/archive/remote_runs/test/10000_1600x1600_0.145_42.0/runObservables/EXP_Observables.dat",
+		"/home/nhrjr/disks/archive/remote_runs/test/10000_800x800_0.145_42.0/runObservables/EXP_Observables.dat",
+		"/home/nhrjr/disks/archive/remote_runs/test/100000_400x400_0.145_42.0/runObservables/EXP_Observables.dat",
+		"/home/nhrjr/disks/archive/remote_runs/test/100000_400x400_0.145_42.0/runObservables/TRAP_Observables.dat",
+		"/home/nhrjr/disks/archive/remote_runs/test/run.cfg",
+		"/home/nhrjr/disks/archive/remote_runs/10M/run.cfg",
 		"/home/nhrjr/disks/archive/remote_runs/10k/10000_400x400_0.145_15.0/runObservables/ROT_Observables.dat",
 		"/home/nhrjr/disks/archive/remote_runs/10M/1000000_1600x1600_0.145_0.0/runObservables/EXP_Observables.dat",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/100k/plot.py",
-		"/home/nhrjr/disks/archive/remote_runs/10M/run.cfg",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/100k/ellipse.py",
 		"/home/nhrjr/disks/archive/remote_runs/10M/1000000_512x512_0.145_10.0/runObservables/EXP_Observables.dat",
 		"/home/nhrjr/disks/archive/remote_runs/10M/1000000_512x512_0.145_10.0/runObservables/ROT_Observables.dat",
@@ -991,14 +1015,7 @@
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_rk4.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/EXP2D_Contour.cpp",
 		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/vortices_trap.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/vortices_rot.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/tests/spektrum.tex",
-		"/home/nhrjr/projects/expandingvortexgas2d/exp_utilities/main.h",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/g_h_comp.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/fit.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/eval.py",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_20.0/runObservables/EXP_Observables.dat",
-		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/10000_400x400_0.145_21.0/runObservables/EXP_Observables.dat"
+		"/home/nhrjr/projects/expandingvortexgas2d/remote/rot_new/vortices_rot.py"
 	],
 	"find":
 	{
@@ -1021,6 +1038,13 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"200",
+			"printT",
+			"1600",
+			"60",
+			"Strang",
+			"resizeBy",
+			"resize",
 			"20",
 			"10",
 			"30",
@@ -1141,14 +1165,7 @@
 			"vortexspacing",
 			"samplesize",
 			"dglString",
-			"readConfig",
-			"EXP2D_",
-			"EXP2D",
-			"EXP2D_",
-			"exp_utilities",
-			"coordinate.h",
-			"abs",
-			"bh3binaryfile.h"
+			"readConfig"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1166,7 +1183,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 15,
 			"sheets":
 			[
 				{
@@ -1195,7 +1212,7 @@
 						"translation.y": 78.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
@@ -1204,15 +1221,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13502,
+						"buffer_size": 13652,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7014,
-								7014
+								11403,
+								11403
 							]
 						],
 						"settings":
@@ -1221,10 +1238,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4667.0,
+						"translation.y": 4979.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -1250,11 +1267,11 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": -0.0,
+						"translation.x": 0.0,
 						"translation.y": 780.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -1263,15 +1280,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 36550,
+						"buffer_size": 36487,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9301,
-								9301
+								2154,
+								2154
 							]
 						],
 						"settings":
@@ -1280,10 +1297,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3980.0,
+						"translation.y": 639.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -1310,10 +1327,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 468.0,
+						"translation.y": 390.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
@@ -1329,8 +1346,8 @@
 						"selection":
 						[
 							[
-								10510,
-								10510
+								1931,
+								1931
 							]
 						],
 						"settings":
@@ -1339,10 +1356,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4561.0,
+						"translation.y": 813.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -1371,7 +1388,7 @@
 						"translation.y": 117.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
@@ -1380,15 +1397,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 34480,
+						"buffer_size": 34508,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								32904,
-								32904
+								32738,
+								32738
 							]
 						],
 						"settings":
@@ -1397,14 +1414,76 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 13366.0,
+						"translation.y": 13340.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
 					"buffer": 8,
+					"file": "/mnt/veracrypt2/remote_runs/test/run.cfg",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1055,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								776,
+								776
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/mnt/veracrypt2/remote_runs/test/run2.cfg",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1055,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								340,
+								340
+							],
+							[
+								354,
+								354
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
 					"file": "src/evaluation.h",
 					"semi_transient": false,
 					"settings":
@@ -1433,20 +1512,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 11,
 					"file": "src/runner.hpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10177,
+						"buffer_size": 10259,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8299,
-								8299
+								7384,
+								7384
 							]
 						],
 						"settings":
@@ -1454,14 +1533,14 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 3808.0,
+						"translation.y": 3046.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 12,
 					"file": "src/rk4.hpp",
 					"semi_transient": false,
 					"settings":
@@ -1487,11 +1566,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 13,
 					"file": "src/rk4.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1516,11 +1595,11 @@
 						"translation.y": 468.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 14,
 					"file": "src/splitstep.hpp",
 					"semi_transient": false,
 					"settings":
@@ -1543,27 +1622,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 790.0,
+						"translation.y": 595.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 15,
 					"file": "src/splitstep.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9778,
+						"buffer_size": 10146,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1743,
-								1743
+								3125,
+								3125
 							]
 						],
 						"settings":
@@ -1571,14 +1650,14 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 357.0,
+						"translation.y": 2496.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 16,
 					"file": "src/main.h",
 					"semi_transient": false,
 					"settings":
@@ -1599,45 +1678,16 @@
 							"syntax": "Packages/C++/C++.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2199.0,
+						"translation.y": 1731.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
-					"file": "/home/nhrjr/disks/archive/remote_runs/10M/run.cfg",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1060,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								457,
-								457
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 39.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 16,
+					"buffer": 17,
 					"file": "src/tools.h",
-					"semi_transient": true,
+					"semi_transient": false,
 					"settings":
 					{
 						"buffer_size": 4154,
@@ -1647,8 +1697,38 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								2094,
+								2094
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 195.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "src/tools.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1536,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								271,
+								271
 							]
 						],
 						"settings":
@@ -1661,11 +1741,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 19,
 					"file": "src/hydro.cpp",
 					"semi_transient": false,
 					"settings":
@@ -1691,11 +1771,11 @@
 						"translation.y": 1092.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 20,
 					"file": "src/matrixdata.h",
 					"semi_transient": false,
 					"settings":
@@ -1707,8 +1787,8 @@
 						"selection":
 						[
 							[
-								6817,
-								6817
+								6747,
+								6747
 							]
 						],
 						"settings":
@@ -1718,14 +1798,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2290.0,
+						"translation.y": 3499.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 21,
 					"file": "src/hydro.h",
 					"semi_transient": false,
 					"settings":
@@ -1751,7 +1831,7 @@
 						"translation.y": 847.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 18,
 					"type": "text"
 				}
 			]
@@ -1790,7 +1870,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 405.0
+		"height": 220.0
 	},
 	"output.find_results":
 	{

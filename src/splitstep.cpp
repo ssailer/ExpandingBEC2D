@@ -27,10 +27,10 @@ void SplitStep::setVariables(){
   	x_axis.resize(w->meta.grid[0]);
   	y_axis.resize(w->meta.grid[1]);
   	for(int i=0;i<w->meta.grid[0];i++){
-  		x_axis[i]=-opt.min_x+i*real(w->meta.initSpacing[0]);
+  		x_axis[i]=-w->meta.initCoord[0]+i*real(w->meta.initSpacing[0]);
   	}
   	for(int j=0;j<w->meta.grid[1];j++){
-  		y_axis[j]=-opt.min_y+j*real(w->meta.initSpacing[1]);
+  		y_axis[j]=-w->meta.initCoord[1]+j*real(w->meta.initSpacing[1]);
   	}
 
   	VectorXcd X = VectorXcd(w->meta.grid[0]);
@@ -67,6 +67,14 @@ void SplitStep::setVariables(){
 	deltaK[0] = Kmax[0] / (w->meta.grid[0] / 2.0);
 	deltaK[1] = Kmax[1] / (w->meta.grid[1] / 2.0);
 
+	double Tprinted = ( Kmax[0] * Kmax[0] + Kmax[1] * Kmax[1] );
+	cout << "k squared = " << Tprinted << endl;
+	Tprinted *= - 0.5 * opt.RTE_step;
+	cout << "T = " << Tprinted << endl;
+
+	double Vprinted = - opt.g * abs2(w->wavefunction[0](w->meta.grid[0]/2,w->meta.grid[1]/2)) * opt.RTE_step;
+	cout << "V = " << Vprinted << endl;
+
 
 	kspace.resize(2);
 	for(int d = 0; d < 2; d++){
@@ -91,6 +99,8 @@ void SplitStep::setVariables(){
       		kprop(x,y) = complex<double>(cos(T),sin(T)) / complex<double>((double)(w->meta.grid[0]*w->meta.grid[1]),0.0);	    
 	    }
 	}
+
+	plotDataToPngEigen("kprop"+to_string(w->meta.steps), kprop, opt);
 
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
