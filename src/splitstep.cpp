@@ -100,6 +100,7 @@ void SplitStep::setVariables(){
 	    }
 	}
 
+	cout << "Is Dimensionless " << w->meta.isDimensionless << endl;
 	plotDataToPngEigen("kprop"+to_string(w->meta.steps), kprop, opt);
 
 	#pragma omp parallel for

@@ -210,12 +210,24 @@ inline void MatrixData::resizeBy(int edge){
     }
     wavefunction[0] = tmp_wavefunction;
 
+    cout << "RESIZE INFO BEFORE in MatrixData::resizeBy() " << endl;
+    cout << "init " << meta.initCoord[0] << endl;
+    cout << "coord " << meta.coord[0] << endl;
+    cout << "grid " << meta.grid[0] << endl;
+    cout << endl;
+
     meta.initCoord[0] *= ratio0;
     meta.initCoord[1] *= ratio1;
     meta.coord[0] *= ratio0;
     meta.coord[1] *= ratio1;
     meta.grid[0] = grid0;
     meta.grid[1] = grid1;
+
+    cout << "RESIZE INFO AFTER in MatrixData::resizeBy()" << endl;
+    cout << "init " << meta.initCoord[0] << endl;
+    cout << "coord " << meta.coord[0] << endl;
+    cout << "grid " << meta.grid[0] << endl;
+    cout << endl;
 
     meta.dataToArray();
 }

@@ -28,7 +28,7 @@
 #include <hydro.h>
 #include <eigen3/Eigen/Dense>
 
-#define RESIZE 0
+#define RESIZE 200
 
 using namespace std;
 using namespace Eigen;
@@ -334,6 +334,8 @@ void Runner<T>::runToTime(string runName)
 			auto eval = std::make_shared<Eval>(pData,opt);
 			eval->process();
 			eval->save();
+			vector<int> edges;
+			bool should_i_resize = eval->checkResizeCondition(edges);
 			// }
 
 			string dataname = runName + "data.h5";
@@ -356,9 +358,11 @@ void Runner<T>::runToTime(string runName)
 			// cout << "grid " << pData->meta.grid[0] << endl;
 			// cout << "size " << pData->meta.coord[0] << endl;
 
-			if(opt.runmode == "EXP"){
-				vector<int> edges;
-				if(eval->checkResizeCondition(edges)){
+			eval.reset();
+
+			if(opt.runmode == "EXP"){			
+
+				if(should_i_resize){
 					pData->resizeBy(RESIZE);
 					algorithm->setVariables();
 					cout << "Resizing by " << RESIZE << endl;
