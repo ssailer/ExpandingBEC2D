@@ -9,7 +9,7 @@ Last Update: 22/07/13
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>
-// #include <cstring>
+#include <cstdio>
 #include <string>
 #include <cmath>
 #include <complex>
@@ -17,23 +17,15 @@ Last Update: 22/07/13
 #include <sys/stat.h>
 #include <dirent.h>
 
-// #include <complexgrid.h>
-#include <bh3defaultgrid.h>
-// #include <averageclass.h>
-// #include <bh3observables.h>
-
-#include <EXP2D_MatrixData.h>
+#include <matrixdata.h>
 #include <main.h>
-#include <EXP2D_tools.h>
-// #include <EXP2D_itp.hpp>
-#include <EXP2D_binaryfile.h>
-#include <EXP2D_rk4.hpp>
-// #include <hydro.h>
-// #include <EXP2D_rte.hpp>
-#include <EXP2D_runner.hpp>
-#include <EXP2D_evaluation.h>
+#include <tools.h>
+#include <binaryfile.h>
+#include <rk4.hpp>
+#include <runner.hpp>
+#include <evaluation.h>
 #include <plot_with_mgl.h>
-#include <EXP2D_startgrids.h>
+#include <startgrids.h>
 
 // #include <typeinfo>
 
@@ -41,51 +33,238 @@ Last Update: 22/07/13
 #define ERROR_IN_COMMAND_LINE 1
 #define ERROR_IN_CONFIG_FILE 2
 #define ERROR_UNHANDLED_EXCEPTION 3
-#define DEBUG_LOG 1
+#define DEBUG_LOG 0
 
 using namespace std;
 
-int plotting(InitMain &initMain){
-	initMain.printInitVar();
+int evaluate(InitMain &initMain){
+	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
-	MatrixData* data = new MatrixData();
+	
 
-	string filename = "expdata.h5";
+	MainControl dgl = initMain.getDgl();
+	string filename;
+	string resultfilename;
+	if(dgl == ROT){
+		filename = "rotdata.h5";
+		resultfilename = "rotobs.h5";
+		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl << endl;}
+	}
+	else if(dgl == EXP){
+		filename = "expdata.h5"; 
+		resultfilename = "expobs.h5"; 
+		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl << endl;}
+	}
+	else if(dgl == TRAP){
+		filename = "trapdata.h5"; 
+		resultfilename = "trapobs.h5"; 
+		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl << endl;}
+	}
+	else {
+		cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
+	}
 
-
-	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
-	Eval* initEval = new Eval(*data,opt);
-	dataFile->getEval(timeList[size-1],*initEval,opt);
-	double maxTime = initEval->data.meta.time;
-	dataFile->getEval(timeList[0],*initEval,opt);
+	// Eval* initEval = new Eval(*data,opt);
+	// dataFile->getEval(timeList[size-1],*initEval,opt);
+	// double maxTime = initEval->data.meta.time;
+	// dataFile->getEval(timeList[0],*initEval,opt);	
+	// cerr << endl << "hydro plotting" << endl;
+	// initEval->opt.vortexnumber = opt.vortexnumber;
+	// hydroSolver solver(initEval,maxTime);
+	// solver.integrate();
+	// solver.pyPlot();
+	// delete initEval;
+	shared_ptr<MatrixData> data;
 
-	cerr << endl << "hydro plotting" << endl;
-	hydroSolver solver(initEval,maxTime);
-	solver.integrate();
-	solver.pyPlot();
-	delete initEval;	
+	// Initialize empty h5 file, if old file exists, it will be overwritten!
+	binaryFile* initObsFile = new binaryFile(resultfilename,binaryFile::out);
+	delete initObsFile;
 
+	// #pragma omp parallel for ordered private(data) num_threads(1) schedule(static,1)
 	for(int k = 0; k < size; ++k){
-		cerr << "loading: " << k << " / " << size-1;
-		dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
+		data = make_shared<MatrixData>(new MatrixData());
+		#pragma omp critical
+		{
+			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
+		}
+		opt.isDimensionless = true;
+		data->meta.Ag = opt.Ag;
+		data->meta.OmegaG = opt.OmegaG;
+		
+	
+		auto eval = std::make_shared<Eval>(data,opt);
+		eval->process();
+		#pragma omp ordered
+		{	
+			if(k == 0){
+				 eval->data->meta.time = 0.0;
+			}
+			eval->save();
+			binaryFile* obsFile = new binaryFile(resultfilename,binaryFile::append);
+			obsFile->appendEval(eval,opt);
+			delete obsFile;
+		}
+	}
+
+	delete dataFile;
+
+	chdir("..");
+	cerr << "[END]" << endl;
+
+}
+
+int resave(InitMain &initMain){
+	// initMain.printInitVar();
+	Options opt = initMain.getOptions();
+	
+
+	MainControl dgl = initMain.getDgl();
+	string filename;
+	if(dgl == ROT){
+		filename = "rotdata.h5";
+		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl << endl;}
+	}
+	else if(dgl == EXP){
+		filename = "expdata.h5"; 
+		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl << endl;}
+	}
+	else if(dgl == TRAP){
+		filename = "trapdata.h5"; 
+		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl << endl;}
+	}
+	else {
+		cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
+	}
+
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
+	vector<int> timeList = dataFile->getTimeList();
+	int size = timeList.size();
+
+	// Eval* initEval = new Eval(*data,opt);
+	// dataFile->getEval(timeList[size-1],*initEval,opt);
+	// double maxTime = initEval->data.meta.time;
+	// dataFile->getEval(timeList[0],*initEval,opt);	
+	// cerr << endl << "hydro plotting" << endl;
+	// initEval->opt.vortexnumber = opt.vortexnumber;
+	// hydroSolver solver(initEval,maxTime);
+	// solver.integrate();
+	// solver.pyPlot();
+	// delete initEval;
+	shared_ptr<MatrixData> data;
+
+	string dataname = "exp2data.h5";
+	binaryFile* bFile = new binaryFile(dataname,binaryFile::out);
+	cerr << "opened new datafile" << endl;
+
+	// #pragma omp parallel for ordered private(data) num_threads(2) schedule(static,1)
+	for(int k = 0; k < size; ++k){
+		// cerr << "loading: " << k << " / " << size-1;
+		data = make_shared<MatrixData>(new MatrixData());
+		// #pragma omp critical
+		// {
+			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
+		// }
+		opt.isDimensionless = true;
+		data->meta.Ag = opt.Ag;
+		data->meta.OmegaG = opt.OmegaG;
+
+		bFile->appendSnapshot("MatrixData",data,opt);
+			// if(opt.runmode != "EXP"){
+		// bFile->appendEval(*eval, opt);
+			// }
+
+		// cerr << "saved step " << timeList[k] << endl;
+	
+		// Eval eval(*data,opt);
+		// // cerr << " processing ";
+		// eval.process();
+		// #pragma omp ordered
+		// {	
+		// 	if(k == 0){
+		// 		 eval.data.meta.time = 0.0;
+		// 	}
+			// cerr << " " << data->meta.steps << " step " << eval.data.meta.time << " time" << endl;
+		// 	eval.save();
+		// }
+
+	}
+
+	delete dataFile;
+	delete bFile;
+
+
+
+	chdir("..");
+	cerr << "[END]" << endl;
+
+}
+
+
+int plotting(InitMain &initMain){
+	// initMain.printInitVar();
+	Options opt = initMain.getOptions();
+	
+
+	MainControl dgl = initMain.getDgl();
+	string filename;
+	if(dgl == ROT){
+		filename = "rotdata.h5";
+	}
+	else if(dgl == EXP){
+		filename = "expdata.h5"; 
+	}
+	else if(dgl == TRAP){
+		filename = "trapdata.h5"; 
+	}
+	else {
+		cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
+	}
+
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
+	vector<int> timeList = dataFile->getTimeList();
+	int size = timeList.size();
+
+	// Eval* initEval = new Eval(*data,opt);
+	// dataFile->getEval(timeList[size-1],*initEval,opt);
+	// double maxTime = initEval->data.meta.time;
+	// dataFile->getEval(timeList[0],*initEval,opt);	
+	// cerr << endl << "hydro plotting" << endl;
+	// initEval->opt.vortexnumber = opt.vortexnumber;
+	// hydroSolver solver(initEval,maxTime);
+	// solver.integrate();
+	// solver.pyPlot();
+	// delete initEval;
+	// shared_ptr<Eval> eval;
+
+	// #pragma omp parallel for ordered private(eval) num_threads(1) schedule(static,1)
+	for(int k = 0; k < size; ++k){
+		// cerr << "loading: " << k << " / " << size-1;
+		// MatrixData* data = new MatrixData();
+		auto data = make_shared<MatrixData>(new MatrixData());
+		// eval = new Eval(*data,opt);
+		#pragma omp critical
+		{
+			dataFile->getSnapshot("MatrixData", timeList[k], data, opt);
+		}
 		opt.isDimensionless = true;
 		data->meta.Ag = opt.Ag;
 		data->meta.OmegaG = opt.OmegaG;
 		cerr << " " << data->meta.steps << " step " << data->meta.time << " time";
-	
-		Eval eval(*data,opt);
-		cerr << " processing ";
-		eval.process();
+		auto eval = make_shared<Eval>(data,opt);
+		eval->process();
 
-		// dataFile->getEval(timeList[k],eval,opt);
-	
 		Plotter plotter(eval,opt);
 		cerr << "plotting" << endl;
 		plotter.plotEval();
 	}
+
+	delete dataFile;
+
+
 
 	chdir("..");
 	cerr << "[END]" << endl;
@@ -93,33 +272,43 @@ int plotting(InitMain &initMain){
 }
 
 int hydro(InitMain &initMain){
-		initMain.printInitVar();
+	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
-	MatrixData* data = new MatrixData();
+	auto data = make_shared<MatrixData>(new MatrixData());
+	// MatrixData* data = new MatrixData();
 
-	string filename = "expdata.h5";
+	MainControl dgl = initMain.getDgl();
+	string filename;
+	if(dgl == ROT) filename = "rotobs.h5";
+	else if(dgl == EXP) filename = "expobs.h5";
+	else if(dgl == TRAP) filename = "trapobs.h5";
+	else cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
 
-
-	binaryFile*dataFile = new binaryFile(filename,binaryFile::in);
+	cout << "Filename: " << filename << endl;
+	binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 	vector<int> timeList = dataFile->getTimeList();
 	int size = timeList.size();
 
-	Eval* initEval = new Eval(*data,opt);
+	// Eval* initEval = new Eval(data,opt);
+	auto initEval = make_shared<Eval>(data,opt);
 	dataFile->getEval(timeList[size-1],*initEval,opt);
-	double maxTime = initEval->data.meta.time;
+	double maxTime = initEval->data->meta.time;
 	dataFile->getEval(timeList[0],*initEval,opt);
+	initEval->opt.vortexnumber = opt.vortexnumber;
 
 	cerr << endl << "hydro plotting" << endl;
 	hydroSolver solver(initEval,maxTime);
 	solver.integrate();
+	// solver.integrate2();
 	solver.pyPlot();
-	delete initEval;
+	// delete initEval;
 
 	chdir("..");
 	cerr << "[END]" << endl;
 }
 
 int simulation(InitMain &initMain){
+
 
 	initMain.printInitVar();
 
@@ -130,7 +319,8 @@ int simulation(InitMain &initMain){
 
 	string filename;
 
-	MatrixData* data = new MatrixData(initMain.getMeta());
+	// MatrixData* data = new MatrixData(initMain.getMeta());
+	auto data = make_shared<MatrixData>(initMain.getMeta());
 
 	if(start == RESUME){
 		// Options loadedOptions;		
@@ -144,6 +334,7 @@ int simulation(InitMain &initMain){
 		delete dataFile;
 		// temp fix to change behaviour of sim object;
 		opt.initialRun = false;
+		data->convertToDimensionlessUnits();
 	}
 	if(start == RESTART){
 		Options loadedOptions;
@@ -160,6 +351,7 @@ int simulation(InitMain &initMain){
 		data->meta.time = 0.0;
 		// opt.n_it_RTE = initMain.getRunTime();
 		// opt.snapshots = initMain.getSnapShots();
+		data->convertToDimensionlessUnits();
 	}
 	if(start == NEW){
 		setGridToTF(data,initMain.getOptions());
@@ -198,6 +390,7 @@ int simulation(InitMain &initMain){
 		switch ( dgl ){
 			case ROT : {
 					Runner<SplitRotStrang>* run = new Runner<SplitRotStrang>(data,opt);
+					// Runner<SplitRot>* run = new Runner<SplitRot>(data,opt);
 					run->runToTime("rot");
 					delete run;
 				}
@@ -216,16 +409,21 @@ int simulation(InitMain &initMain){
 					delete run;
 				}
 				break;
+			case ITP : {
+					Runner<SplitITP>* run = new Runner<SplitITP>(data,opt);
+					run->runToTime("itp");
+					delete run;
+				}
+				break;
 
 			default :
 				cout << "No known runmode was recognized in main. Please revise." << endl;
 				break;
 		}
 	}  
-	delete data;
 
 	chdir("..");
-	cerr << "[END]" << endl;
+	cerr << endl << "Ended application successfully, bye bye and thanks for the fish. :)" << endl;
 }
 
 int main( int argc, char** argv){	
@@ -235,6 +433,7 @@ try{
 	InitMain initMain(argc,argv);	
 
 	#if DEBUG_LOG
+		cout << "DEBUG_LOG actived, cout will be found in simulation.log" << endl;
  		std::ofstream logstream("simulation.log");
  		redirecter redirectcout(logstream,std::cout);
  	#endif
@@ -250,6 +449,11 @@ try{
  		for(int i = 0; i < size; ++i){
  			initMain.setIteration(i);
  			hydro(initMain);
+ 		}
+ 	} else if(mode == EVAL){
+ 		for(int i = 0; i < size; ++i){
+ 			initMain.setIteration(i);
+ 			evaluate(initMain);
  		}
  	} else {
  		for(int i = 0; i < size; ++i){
