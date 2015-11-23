@@ -10,6 +10,24 @@
 using namespace std;
 
 
+    template <typename T>
+    std::string to_string(T value)
+    {
+      //create an output string stream
+      std::ostringstream os ;
+
+      //throw the value into the string stream
+      os << value ;
+
+      //convert the string stream into a string and return
+      return os.str() ;
+    }
+
+    //you can also do this
+    //std::string output;
+    //os >> output;  //throw whats in the string stream into the string
+
+
 
 template <typename T>
 class Vector;

@@ -9,7 +9,7 @@ binaryFile::binaryFile(const string &file, mode nm)
   if(m == in || m == append)
 	{
 	  struct stat buf;
-	  lstat(filename.c_str(), &buf);
+	  stat(filename.c_str(), &buf);
 	  if(S_ISREG(buf.st_mode)) // Nur normale Dateien ueberpruefen
 		{ 
 		  if(H5Fis_hdf5(filename.c_str())){

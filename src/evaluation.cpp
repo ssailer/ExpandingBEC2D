@@ -67,7 +67,8 @@ void Eval::save(){
 	string dirname = "runObservables";
     struct stat st;
     	if(stat(dirname.c_str(),&st) != 0){
-        mkdir(dirname.c_str(),0755);
+        // mkdir(dirname.c_str(),0755); // LINUX 
+        mkdir(dirname.c_str()); // WINDOWS
     }
 
 	string filename = dirname + "/" + opt.runmode + "_Observables.dat";	

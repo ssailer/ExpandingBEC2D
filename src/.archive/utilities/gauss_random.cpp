@@ -57,10 +57,12 @@ std::complex<double> GaussRandom::gauss_random(double mu, double sigma)
 
 void init_random()
 {
-	srandom(time(NULL));
+	// srandom(time(NULL)); // LINUX
+	srand(time(NULL)); //WINDOWS
 }
 
 unsigned long int get_seed()
 {
-	return (unsigned long int) random();
+	// return (unsigned long int) random(); // LINUX
+	return (unsigned long int) rand(); // WINDOWS
 }
