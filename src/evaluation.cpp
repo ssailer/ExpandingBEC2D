@@ -66,10 +66,21 @@ void Eval::save(){
 
 	string dirname = "runObservables";
     struct stat st;
-    	if(stat(dirname.c_str(),&st) != 0){
-        // mkdir(dirname.c_str(),0755); // LINUX 
-        mkdir(dirname.c_str()); // WINDOWS
+    // 	if(stat(dirname.c_str(),&st) != 0){
+    //     // mkdir(dirname.c_str(),0755); // LINUX 
+    //     mkdir(dirname.c_str()); // WINDOWS
+    // }
+    #ifdef __linux__ 
+        if(lstat(dirname.c_str(),&st) != 0){
+        	mkdir(dirname.c_str(),0755);
+        }
+	#elif _WIN32
+        if(stat(dirname.c_str(),&st) != 0){
+        mkdir(dirname.c_str());
     }
+	#else
+    	#error Platform not supported
+	#endif
 
 	string filename = dirname + "/" + opt.runmode + "_Observables.dat";	
 

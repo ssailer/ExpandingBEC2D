@@ -250,7 +250,15 @@ inline void InitMain::setDirectory()
 		}
 	}else{
 		// mkdir(opt.workingdirectory.c_str(),0755); // LINUX
-		mkdir(opt.workingdirectory.c_str()); // WINDOWS
+		// mkdir(opt.workingdirectory.c_str()); // WINDOWS
+		
+	    #ifdef __linux__ 
+        	mkdir(opt.workingdirectory.c_str(),0755);
+		#elif _WIN32
+        	mkdir(opt.workingdirectory.c_str());
+		#else
+    		#error Platform not supported
+		#endif
 		cerr << "mkdir: " << "\"" << opt.workingdirectory << "\"" << endl;
 
 		if(chdir(opt.workingdirectory.c_str()) == 0){

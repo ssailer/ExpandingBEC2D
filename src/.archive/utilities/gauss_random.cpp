@@ -57,12 +57,25 @@ std::complex<double> GaussRandom::gauss_random(double mu, double sigma)
 
 void init_random()
 {
-	// srandom(time(NULL)); // LINUX
-	srand(time(NULL)); //WINDOWS
+	#ifdef __linux__ 
+		srandom(time(NULL));
+	#elif _WIN32
+		srand(time(NULL));
+	#else
+    	#error Platform not supported
+	#endif	
 }
 
 unsigned long int get_seed()
-{
-	// return (unsigned long int) random(); // LINUX
-	return (unsigned long int) rand(); // WINDOWS
+{	
+	#ifdef __linux__ 
+		return (unsigned long int) random(); // LINUX
+	#elif _WIN32
+		return (unsigned long int) rand(); // WINDOWS
+	#else
+		return 0;
+    	#error Platform not supported
+	#endif	
+	
+	
 }
