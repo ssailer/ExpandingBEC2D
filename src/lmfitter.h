@@ -2,6 +2,7 @@
 #define EXP2D_LMFITTER_H__
 
 #include <iostream>
+#include <sstream>
 // #include <sys/stat.h>
 // #include <complex>
 // #include <cmath>
@@ -21,6 +22,7 @@
 // #include <plot_with_mgl.h>
 // #include <EXP2D_tools.h>
 #include <matrixdata.h>
+#include <tools.h>
 // #include <EXP2D_observables.h>
 
 // #include <vector>

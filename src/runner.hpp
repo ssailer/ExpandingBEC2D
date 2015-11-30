@@ -264,6 +264,8 @@ void Runner<T>::runToTime(string runName)
 		auto initEval = std::make_shared<Eval>(pData,opt);
 		initEval->process();
 		initEval->save();
+		vector<int> edges;
+		bool should_i_resize = initEval->checkResizeCondition(edges);
 	
 		if(opt.initialRun == true){
 	
@@ -285,6 +287,8 @@ void Runner<T>::runToTime(string runName)
 			delete obsFile;
 		}
 
+		initEval.reset();
+
 		if(opt.runmode == "EXP"){
 			// hydroSolver solver(initEval);
 			// solver.integrate();
@@ -292,7 +296,7 @@ void Runner<T>::runToTime(string runName)
 	
 			vector<int> edges;
 			
-			if(initEval->checkResizeCondition(edges)){
+			if(should_i_resize){
 				pData->resizeBy(RESIZE);
 				algorithm->setVariables();
 				cout << "Resizing by " << RESIZE << endl;

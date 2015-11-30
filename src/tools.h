@@ -2,6 +2,7 @@
 #define EXP2D_TOOLS_H__
 
 #include <iostream>
+#include <sstream>
 #include <complex>
 #include <math.h>
 #include <.archive/utilities/gauss_random.h>
@@ -15,6 +16,7 @@
 
 using namespace std;
 using namespace Eigen;
+
 
 typedef struct Options {    
 
@@ -46,12 +48,13 @@ typedef struct Options {
     bool initialRun;
     bool isDimensionless;
 
-    Options () : N(100000), stateInformation(2), snapshots(100), vortexnumber(0), vortexspacing(50), potFactor(1), initialRun(true), isDimensionless(false), config("run.cfg") {}
+    Options () : N(100000), stateInformation(2), snapshots(100), vortexnumber(0), vortexspacing(50), potFactor(1), initialRun(true), isDimensionless(false), config("run.cfg"), workingdirectory("default") {}
     
 } Options;
 
 void toDimensionlessUnits(Options &opt);
 void toPhysicalUnits(Options &opt);
+void debug_out(ostringstream &str);
 
 
 class expException {

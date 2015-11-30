@@ -13,6 +13,15 @@ void toDimensionlessUnits(Options &opt){
         // opt.Ag = 2 * opt.min_x / opt.grid[1];
 
         opt.OmegaG = hbar / ( m * opt.Ag * opt.Ag);
+
+        cout << currentTime() << " Stabilitycheck in physical units: " << endl;
+        double h1 = opt.min_x * 2 / opt.grid[1];
+        cout << "\t grid spacing = " << h1 << endl;
+        cout << "\t coordinate maximum = " << opt.min_x << endl; 
+        double k1 = 2 * h1 * h1 / (M_PI * M_PI);
+        cout << "\t timestep < spectral resolution " << opt.RTE_step << " < " << k1 << " ";
+        if(opt.RTE_step < k1) cout << "Yes." << endl; else cout << "No." << endl;
+        cout << endl;
     
         opt.min_x /= opt.Ag;
         opt.min_y /= opt.Ag;
@@ -24,8 +33,21 @@ void toDimensionlessUnits(Options &opt){
         opt.dispersion_x *= 2.0 * M_PI / opt.OmegaG;
         opt.dispersion_y *= 2.0 * M_PI / opt.OmegaG;
         opt.isDimensionless = true;
+
+        cout << currentTime() << " Stabilitycheck in dimensionless units: " << endl;
+        double h = opt.min_x * 2 / opt.grid[1];
+        cout << "\t grid spacing = " << h << endl;
+        cout << "\t coordinate maximum = " << opt.min_x << endl; 
+        double k = 2 * h * h / (M_PI * M_PI);
+        cout << "\t timestep < spectral resolution " << opt.RTE_step << " < " << k << " ";
+        if(opt.RTE_step < k) cout << "Yes." << endl; else cout << "No." << endl;
+        cout << endl;
+
+        cout << currentTime() << " Set timestep to maximum appropriate value: " << k << endl << endl;
+        opt.RTE_step = k;
+
     } else {
-        cerr << " Trying to convert dimensionless Options to dimensionless Options. Check EXP2D_tools.h" << endl;
+        cerr << " Trying to convert dimensionless Options to dimensionless Options. Check tools.h" << endl;
     }
 
 }
@@ -43,7 +65,7 @@ void toPhysicalUnits(Options &opt){
         opt.dispersion_y /= 2.0 * M_PI / opt.OmegaG;
         opt.isDimensionless = false;
     } else {
-        cerr << " Trying to convert non-dimensionless Options to non-dimensionless Options. Check EXP2D_tools.h" << endl;
+        cerr << " Trying to convert non-dimensionless Options to non-dimensionless Options. Check tools.h" << endl;
     }
 }
 

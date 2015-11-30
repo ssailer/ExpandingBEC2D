@@ -22,7 +22,7 @@ Eval::Eval(shared_ptr<MatrixData> d,Options o) : data(d),  opt(o) {
 }
 
 Eval::~Eval() {
-	toDimensionlessUnits(opt);
+	// toDimensionlessUnits(opt);
 	data->convertToDimensionlessUnits();
 	// cout << "convertToDimensionlessUnits()" << endl;
 }
@@ -166,7 +166,7 @@ void Eval::save(){
 					  	  << std::setw(setwidth) << std::setprecision(setprec) << totalResult.n0
 			 << endl;
 	datafile.close();
-	cout << "\t Saved results to file." << endl;
+	cout << currentTime() << " Saved results to file." << endl;
 }
 
 
@@ -745,9 +745,18 @@ c_set Eval::generateContour(vector<double>& params_tf){
 	c_set tmp;
 	double t = 0;
 	double delta = 0.0001;
+
+	double tmp1 = - params_tf[2] * params_tf[1] * params_tf[1] * params_tf[3] * params_tf[3];
+    double tmp2 = (params_tf[1] * params_tf[1] - params_tf[3] * params_tf[3]);
+    // double at = atan2(tmp1,tmp2);
+    double at = atan(tmp1/tmp2);
+    // double at = atan(tmp1/tmp2);
+    // at *= ( 180 / M_PI ) / 2.0;
+    at /= 2.0;
+
 	while(t < 2 * M_PI){
-		int32_t x = data->meta.grid[0]/2 + params_tf[1]/data->meta.spacing[0] * cos(t) * cos(params_tf[2]) - params_tf[3]/data->meta.spacing[0] * sin(t) * sin(params_tf[2]);
-		int32_t y = data->meta.grid[1]/2 + params_tf[1]/data->meta.spacing[1] * cos(t) * sin(params_tf[2]) + params_tf[3]/data->meta.spacing[1] * sin(t) * cos(params_tf[2]);	
+		int32_t x = data->meta.grid[0]/2 + params_tf[1]/data->meta.spacing[0] * cos(t) * cos(at) - params_tf[3]/data->meta.spacing[0] * sin(t) * sin(at);
+		int32_t y = data->meta.grid[1]/2 + params_tf[1]/data->meta.spacing[1] * cos(t) * sin(at) + params_tf[3]/data->meta.spacing[1] * sin(t) * cos(at);	
 		Coordinate<int32_t> c = Coordinate<int32_t>(x,y,0,data->meta.grid[0],data->meta.grid[1],1);
 		pair<c_set::iterator,bool> test = tmp.insert(c);
 		if(test.second == false){
@@ -782,7 +791,7 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 
 
-	ellipse = fitEllipse(contour[sampleindex]);
+	
 	// c_set cEllipse = generateContour(ellipse);
 
 	// FROM ELLIPSE FIT 
@@ -802,6 +811,8 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 	// c_set cEllipse = 
 	contour[sampleindex] = generateContour(params_tf);
+	ellipse = fitEllipse(contour[sampleindex]);
+
 	densityCoordinates[sampleindex] = generate_density_coordinates(params_tf);
 	densityCounter[sampleindex] = densityCoordinates[sampleindex].size();
 

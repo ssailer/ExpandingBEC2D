@@ -252,7 +252,12 @@ double hydroSolver::rk4_2nd(double ti, double xi, double vi, double tf, double& 
 
 
 
-
+double hydroSolver::ode_mu(double x,const hydroParams& params)
+{
+  double result;
+  result = - x * (params.alpha_x + params.alpha_y);
+  return result;
+}
 
 double hydroSolver::ode_n0(double x,const hydroParams& params)
 {
@@ -297,47 +302,47 @@ double hydroSolver::ode_omega(double x,const hydroParams& params)
     return result;
 }
 
-double hydroSolver::ode_alpha(double x,const hydroParams& params)
-{
-    double result;
-    result = - x * (params.alpha_x + params.alpha_y) + 2.0 * params.n0 * /*omega_average **/ g * params.a;
-    return result;
-}
-
-double hydroSolver::ode_alpha_x(double x,const hydroParams& params)
-{
-    double result;
-    result = - x * x - params.alpha * params.alpha + params.omega * params.omega + 2.0 * params.n0 * /*omega_average **/ g / (params.sigma_x * params.sigma_x);
-    return result;
-}
-
-double hydroSolver::ode_alpha_y(double x,const hydroParams& params)
-{
-    double result;
-    result = - x * x - params.alpha * params.alpha + params.omega * params.omega + 2.0 * params.n0 * /*omega_average **/ g  / (params.sigma_y * params.sigma_y);
-    return result;
-}
-
 // double hydroSolver::ode_alpha(double x,const hydroParams& params)
 // {
 //     double result;
-//     result = - x * (params.alpha_x + params.alpha_y) + 2.0 * (2.0 * eval->opt.N / (M_PI * params.sigma_x * params.sigma_y)) * g * params.a;
+//     result = - x * (params.alpha_x + params.alpha_y) + 2.0 * params.n0 * /*omega_average **/ g * params.a;
 //     return result;
 // }
 
 // double hydroSolver::ode_alpha_x(double x,const hydroParams& params)
 // {
 //     double result;
-//     result = - x * x - params.alpha * params.alpha + params.omega + params.omega + 2.0 * (2.0 * eval->opt.N / (M_PI * params.sigma_x * params.sigma_y)) * g / (params.sigma_x * params.sigma_x);
+//     result = - x * x - params.alpha * params.alpha + params.omega * params.omega + 2.0 * params.n0 * /*omega_average **/ g / (params.sigma_x * params.sigma_x);
 //     return result;
 // }
 
 // double hydroSolver::ode_alpha_y(double x,const hydroParams& params)
 // {
 //     double result;
-//     result = - x * x - params.alpha * params.alpha + params.omega + params.omega + 2.0 * (2.0 * eval->opt.N / (M_PI * params.sigma_x * params.sigma_y)) * g  / (params.sigma_y * params.sigma_y);
+//     result = - x * x - params.alpha * params.alpha + params.omega * params.omega + 2.0 * params.n0 * /*omega_average **/ g  / (params.sigma_y * params.sigma_y);
 //     return result;
 // }
+
+double hydroSolver::ode_alpha(double x,const hydroParams& params)
+{
+    double result;
+    result = - x * (params.alpha_x + params.alpha_y) + params.mu * params.a / m;
+    return result;
+}
+
+double hydroSolver::ode_alpha_x(double x,const hydroParams& params)
+{
+    double result;
+    result = - x * x - params.alpha * params.alpha + params.omega * params.omega + 2.0 * params.mu / (m * params.sigma_x * params.sigma_x);
+    return result;
+}
+
+double hydroSolver::ode_alpha_y(double x,const hydroParams& params)
+{
+    double result;
+    result = - x * x - params.alpha * params.alpha + params.omega * params.omega + 2.0 * params.mu  / (m * params.sigma_y * params.sigma_y);
+    return result;
+}
 
 void hydroSolver::calc_phi(const hydroParams& params, double& result)
 {
@@ -348,7 +353,7 @@ void hydroSolver::calc_phi(const hydroParams& params, double& result)
     // else
     //     result = atan(tmp) * 180 / M_PI;
     // result /= 2.0;
-    double tmp1 = params.a * params.sigma_x * params.sigma_x * params.sigma_y * params.sigma_y;
+    double tmp1 = - params.a * params.sigma_x * params.sigma_x * params.sigma_y * params.sigma_y;
     double tmp2 = (params.sigma_x * params.sigma_x - params.sigma_y * params.sigma_y);
     // double at = atan2(tmp1,tmp2);
     double at = atan(tmp1/tmp2);
@@ -421,26 +426,39 @@ void hydroSolver::integrate()
 
     hydroParams varnew;
     hydroParams varold;
+    double zeta = 0.56;
+    double g_renorm = (1.0 - 2.0 *zeta / 3.0) / ((1 - zeta / 2.0) * (1 - zeta / 2.0));
+    double mu_renorm = (1.0 - log(sqrt(zeta))/(1 - zeta/2.0));
+
+    // g * g_renorm;
 
     varold.sigma_x = eval->totalResult.r_max;
     varold.sigma_y = eval->totalResult.r_min;
     varold.phi = eval->totalResult.r_max_phi;
     // varold.n0 = 2.0 * (eval->opt.N /*eval->totalResult.particle_count *// M_PI) / (varold.sigma_x * varold.sigma_y) * omega_average;
     varold.n0 = eval->totalResult.n0;
+    // varold.mu = g * eval->totalResult.n0 + mu_renorm * eval->opt.omega_w.real() * 2.0 * M_PI * hbar;
+    varold.mu = g * eval->totalResult.n0;
+    cout << "b term " << g * g_renorm * eval->totalResult.n0 << endl;
+    cout << "a term " << mu_renorm * eval->opt.omega_w.real() * 2.0 * M_PI * hbar << endl;
+    cout << "MU renormalized " << varold.mu << endl;
+    cout << "MU not renomrmalized " << g * eval->totalResult.n0 << endl;
 
     varold.alpha_x = 0.0;
     varold.alpha_y = 0.0;
     varold.a = 0.0;
 
     // varold.alpha = 0.0;
-    varold.alpha = 0.25 * hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
+    varold.alpha = 2.0 * M_PI * real(eval->opt.omega_w);
+    // varold.omega = 2.0 * M_PI * real(eval->opt.omega_w);
+    // varold.alpha = 0.5 * hbar * eval->opt.vortexnumber / (m * varold.sigma_x * varold.sigma_y);
     cout << "alpha " << varold.alpha << " " << 2.0 * M_PI * eval->opt.omega_w.real() << endl;
     // omega_average = sqrt(1.0 - varold.alpha / sqrt(M_PI * M_PI * eval->opt.omega_x.real() * eval->opt.omega_y.real()));
     // omega_average = sqrt(1.0  - eval->opt.vortexnumber * eval->opt.vortexnumber / (2.0 * eval->opt.g * varold.n0 * varold.sigma_x * varold.sigma_y ));
-    omega_average = 0.5 * sqrt(1.0 - /* hbar * hbar * eval->opt.vortexnumber * */ eval->opt.vortexnumber / sqrt( 2.0 * eval->opt.g * varold.n0 * varold.sigma_x * varold.sigma_y));
+    // omega_average = 0.5 * sqrt(1.0 - /* hbar * hbar * eval->opt.vortexnumber * */ eval->opt.vortexnumber / sqrt( 2.0 * eval->opt.g * varold.n0 * varold.sigma_x * varold.sigma_y));
     // cout << "factor " << m * m / hbar /hbar << endl;
-    cout << "Omega Average " << std::setprecision(20) << omega_average << endl;
-    // varold.alpha = 2.0 * M_PI * real(eval->opt.omega_w);
+    // cout << "Omega Average " << std::setprecision(20) << omega_average << endl;
+    
 
     // cerr << " alpha " << varold.alpha << " vs omega " << eval->opt.omega_w * 2.0 * M_PI << endl;
     
@@ -451,6 +469,8 @@ void hydroSolver::integrate()
     varold.ratio = varold.sigma_x / varold.sigma_y;
 
     // printParams(varold);
+
+    // g *= 1.2;
 
 
     string name = "runObservables/hydro.dat";
@@ -480,7 +500,7 @@ void hydroSolver::integrate()
          << setw(12) << varold.sigma_x << ","
          << setw(12) << varold.sigma_y << ","
          << setw(12) << varold.phi     << ","
-         << setw(12) << varold.n0      << ","
+         << setw(12) << varold.mu / g  << ","
          << setw(12) << varold.alpha_x << ","
          << setw(12) << varold.alpha_y << ","
          << setw(12) << varold.alpha   << ","
@@ -493,9 +513,10 @@ void hydroSolver::integrate()
     {   
         tf = ti + dt;
 
-        omega_average = 0.5 * sqrt(1.0 - /* hbar * hbar * eval->opt.vortexnumber * */ eval->opt.vortexnumber / sqrt( 2.0 * eval->opt.g * varold.n0 * varold.sigma_x * varold.sigma_y));
+        // omega_average = 0.5 * sqrt(1.0 - /* hbar * hbar * eval->opt.vortexnumber * */ eval->opt.vortexnumber / sqrt( 2.0 * eval->opt.g * varold.n0 * varold.sigma_x * varold.sigma_y));
 
-        rk4_1st(ti,varold.n0,tf,varold,varnew.n0,&hydroSolver::ode_n0);
+        // rk4_1st(ti,varold.n0,tf,varold,varnew.n0,&hydroSolver::ode_n0);
+        rk4_1st(ti,varold.mu,tf,varold,varnew.mu,&hydroSolver::ode_mu);
         rk4_1st(ti,varold.a,tf,varold,varnew.a,&hydroSolver::ode_a);
         rk4_1st(ti,varold.sigma_x,tf,varold,varnew.sigma_x,&hydroSolver::ode_sigma_x);
         rk4_1st(ti,varold.sigma_y,tf,varold,varnew.sigma_y,&hydroSolver::ode_sigma_y);
@@ -523,7 +544,7 @@ void hydroSolver::integrate()
              << setw(12) << majorAxis << ","
              << setw(12) << minorAxis << ","
              << setw(12) << eval->totalResult.r_max_phi + varold.phi     << ","
-             << setw(12) << varold.n0      << ","
+             << setw(12) << varold.mu / g  << ","
              << setw(12) << varold.alpha_x << ","
              << setw(12) << varold.alpha_y << ","
              << setw(12) << varold.alpha   << ","

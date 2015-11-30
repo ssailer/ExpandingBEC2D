@@ -365,7 +365,7 @@ vector<double> lmfitter::optimize()
 
         // plotQuerschnitte("_Anfang",x);
 
-        cerr << "\t Use Levenberg-Marquardt to fit densityprofile:" << endl;
+        // cerr << "\t Use Levenberg-Marquardt to fit densityprofile:" << endl;
         // Use the Levenberg-Marquardt method to determine the parameters which
         // minimize the sum of all squared residuals.
         solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-20,5e2)/*.be_verbose()*/, tf_residual, tf_residual_derivative, data_samples, x);
@@ -373,8 +373,9 @@ vector<double> lmfitter::optimize()
         // solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-7,5e2)/*.be_verbose()*/, residual, derivative(residual), data_samples, x);
 
         // Now x contains the solution.  If everything worked it will be equal to params.
-        cout << "\t initial parameters: " << trans(params)/* << endl*/;
-        cout << "\t inferred parameters: "<< trans(x)/* << endl*/;
+        cout << currentTime() << " Fit density with least squares Levenberg-Marquardt" << endl;
+        cout << "\t initial parameters: " << "\t" << trans(params);
+        cout << "\t fitted parameters: " << trans(x)/* << endl*/;
         // cerr << "solution error:      "<< dlib::length(x - params) << endl;
         // cerr << endl;
 
@@ -384,7 +385,7 @@ vector<double> lmfitter::optimize()
 
 
         // plotGauss(params,n,coordinate_axis);
-        plotPairAndGauss(data_samples,x,density.cols(),meta.coord[0]);
+        // plotPairAndGauss(data_samples,x,density.cols(),meta.coord[0]);
 
 
 

@@ -134,7 +134,7 @@ inline string InitMain::getStartingGridName(){
 
 inline void InitMain::setIteration(int i){
 	opt.omega_w = omega_w_vector[i];
-	setWorkingDirectory("default");
+	if(i != 0) setWorkingDirectory("default");
  	setDirectory();
 }
 
@@ -183,6 +183,7 @@ inline void InitMain::setVortexnumber(int number){
 inline MatrixData::MetaData InitMain::getMeta(){
 
 	Options tmpOptions = opt;
+
 	toDimensionlessUnits(tmpOptions);
 
 	meta.Ag = tmpOptions.Ag;
@@ -198,14 +199,6 @@ inline MatrixData::MetaData InitMain::getMeta(){
 	meta.steps = 0;
 	meta.isDimensionless = tmpOptions.isDimensionless;
 	meta.dataToArray();
-
-	cout << "DIMENSIONLESS UNITS: " << endl;
-	cout << "h = " << meta.initSpacing[0] << endl;
-	cout << "x_max = " << meta.initCoord[0] << endl; 
-	double k = 2 * meta.initSpacing[0] * meta.initSpacing[0] / (M_PI * M_PI);
-	cout << "Is delta T " << tmpOptions.RTE_step << " < k_threshold = " << k << " ";
-	if(tmpOptions.RTE_step < k) cout << "Yes." << endl; else cout << "No." << endl;
-	cout << endl;
 
 	return meta;
 }
@@ -236,6 +229,7 @@ inline void InitMain::printInitVar()
 
 inline void InitMain::setDirectory()
 {	
+	cout << "HERE RUNNAME " << opt.workingdirectory << endl;
 	if(opt.workingdirectory == "default"){
 		stringstream name;
 		name << std::fixed << std::setprecision(0) << (int)opt.N << "_" << opt.grid[1] << "x" << opt.grid[2] << "_" << std::setprecision(3) << opt.g << "_" << std::setprecision(1) << real(opt.omega_w /*/ (2.0 * M_PI / opt.OmegaG)*/);
@@ -287,6 +281,7 @@ inline int InitMain::readCli()
       ("dgl",po::value<string>(&dglString), "EXP ROT TRAP")
       ("algo",po::value<string>(&algorithmString)->default_value("SPLIT"), "SPLIT RK4")
       ("name,n",po::value<string>(&runName), "Name of the run.");
+
 
       // ("xgrid,x",po::value<int>(&opt.grid[1]),"Gridsize in x direction.")
       // ("ygrid,y",po::value<int>(&opt.grid[2]),"Gridsize in y direction.")
@@ -349,6 +344,7 @@ inline int InitMain::readCli()
       std::cerr << desc << std::endl; 
       return ERROR_IN_COMMAND_LINE; 
     } 
+
 
     return SUCCESS;
 
@@ -418,7 +414,7 @@ inline int InitMain::readConfig()
 	opt.dispersion_x		 = complex<double>(dispersion_x_realValue,0);
 	opt.dispersion_y 		 = complex<double>(dispersion_y_realValue,0);
 
-	
+
 
 
 	}

@@ -60,11 +60,11 @@ void Plotter::prepareData(){
 
 
 
-	// // ellipse cover for phase
+	// ellipse cover for phase
 
 	// vector<int> c_x;
 	// vector<int> c_y;
-	// 
+	
 	// for(int i = 0; i < eval->data->meta.grid[0]; i++ ){
 	// 	for(int j = 0; j < eval->data->meta.grid[1]; j++ ){
 	// 		int x = i ;

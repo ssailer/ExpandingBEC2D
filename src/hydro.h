@@ -37,6 +37,7 @@ using namespace std;
 
 typedef struct {
     double n0;
+    double mu;
     double a;
     double sigma_x;
     double sigma_y;
@@ -54,7 +55,8 @@ public:
     // g = eval->opt.g * (hbar * hbar / (m * m)) * (4.0) * eval->opt.N / M_PI;
     // double kappa = eval->opt.vortexnumber / 10.0;
     // g = sqrt(1 + kappa) * eval->opt.g * (hbar * hbar ) / (m * m );
-    g = eval->opt.g * (hbar * hbar ) / (m * m);
+    // g = eval->opt.g * (hbar * hbar ) / (m * m);
+    g = eval->opt.g * (hbar * hbar ) / (m );
 
     // g = eval->opt.g * (hbar * hbar / (m * m)) * (15.0/8.0) * eval->opt.N / M_PI;
   }
@@ -69,6 +71,7 @@ public:
   double ode_sigma_y(double x,const hydroParams& params);
   double ode_phi(double x,const hydroParams& params);
   double ode_n0(double x,const hydroParams& params);
+  double ode_mu(double x,const hydroParams& params);
   double ode_alpha_x(double x,const hydroParams& params);
   double ode_alpha_y(double x,const hydroParams& params);
   double ode_alpha(double x,const hydroParams& params);

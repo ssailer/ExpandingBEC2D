@@ -67,13 +67,13 @@ void SplitStep::setVariables(){
 	deltaK[0] = Kmax[0] / (w->meta.grid[0] / 2.0);
 	deltaK[1] = Kmax[1] / (w->meta.grid[1] / 2.0);
 
-	double Tprinted = ( Kmax[0] * Kmax[0] + Kmax[1] * Kmax[1] );
-	cout << "k squared = " << Tprinted << endl;
-	Tprinted *= - 0.5 * opt.RTE_step;
-	cout << "T = " << Tprinted << endl;
+	// double Tprinted = ( Kmax[0] * Kmax[0] + Kmax[1] * Kmax[1] );
+	// cout << "k squared = " << Tprinted << endl;
+	// Tprinted *= - 0.5 * opt.RTE_step;
+	// cout << "T = " << Tprinted << endl;
 
-	double Vprinted = - opt.g * abs2(w->wavefunction[0](w->meta.grid[0]/2,w->meta.grid[1]/2)) * opt.RTE_step;
-	cout << "V = " << Vprinted << endl;
+	// double Vprinted = - opt.g * abs2(w->wavefunction[0](w->meta.grid[0]/2,w->meta.grid[1]/2)) * opt.RTE_step;
+	// cout << "V = " << Vprinted << endl;
 
 
 	kspace.resize(2);
@@ -100,8 +100,8 @@ void SplitStep::setVariables(){
 	    }
 	}
 
-	cout << "Is Dimensionless " << w->meta.isDimensionless << endl;
-	plotDataToPngEigen("kprop"+to_string(w->meta.steps), kprop, opt);
+	// cout << "Is Dimensionless " << w->meta.isDimensionless << endl;
+	// plotDataToPngEigen("kprop"+to_string(w->meta.steps), kprop, opt);
 
 	#pragma omp parallel for
 	for(int x = 0; x < w->meta.grid[0]; x++){
