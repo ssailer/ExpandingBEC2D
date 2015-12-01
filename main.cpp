@@ -1,5 +1,5 @@
 /**************************************************************************
-Title: Simulating the Expansion of Turbulent Bose-Einstein Condensates (2D) 
+Title: Simulating the Expansion of Turbulent Bose-Einstein Condensates (2D)
 Author: Simon Sailer (This work is based on the work of Bartholomew Andrews who made this as his master thesis.)
 Last Update: 22/07/13
 **************************************************************************/
@@ -40,7 +40,7 @@ using namespace std;
 int evaluate(InitMain &initMain){
 	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
-	
+
 
 	MainControl dgl = initMain.getDgl();
 	string filename;
@@ -51,13 +51,13 @@ int evaluate(InitMain &initMain){
 		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl << endl;}
 	}
 	else if(dgl == EXP){
-		filename = "expdata.h5"; 
-		resultfilename = "expobs.h5"; 
+		filename = "expdata.h5";
+		resultfilename = "expobs.h5";
 		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl << endl;}
 	}
 	else if(dgl == TRAP){
-		filename = "trapdata.h5"; 
-		resultfilename = "trapobs.h5"; 
+		filename = "trapdata.h5";
+		resultfilename = "trapobs.h5";
 		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl << endl;}
 	}
 	else {
@@ -71,7 +71,7 @@ int evaluate(InitMain &initMain){
 	// Eval* initEval = new Eval(*data,opt);
 	// dataFile->getEval(timeList[size-1],*initEval,opt);
 	// double maxTime = initEval->data.meta.time;
-	// dataFile->getEval(timeList[0],*initEval,opt);	
+	// dataFile->getEval(timeList[0],*initEval,opt);
 	// cerr << endl << "hydro plotting" << endl;
 	// initEval->opt.vortexnumber = opt.vortexnumber;
 	// hydroSolver solver(initEval,maxTime);
@@ -94,12 +94,12 @@ int evaluate(InitMain &initMain){
 		opt.isDimensionless = true;
 		data->meta.Ag = opt.Ag;
 		data->meta.OmegaG = opt.OmegaG;
-		
-	
+
+
 		auto eval = std::make_shared<Eval>(data,opt);
 		eval->process();
 		#pragma omp ordered
-		{	
+		{
 			if(k == 0){
 				 eval->data->meta.time = 0.0;
 			}
@@ -120,7 +120,7 @@ int evaluate(InitMain &initMain){
 int resave(InitMain &initMain){
 	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
-	
+
 
 	MainControl dgl = initMain.getDgl();
 	string filename;
@@ -129,11 +129,11 @@ int resave(InitMain &initMain){
 		if(!remove("runObservables/ROT_Observables.dat")){ cerr << "deleted ROT_Observables.dat" << endl << endl;} else { cerr << "could not delete ROT_Observables.dat" << endl << endl;}
 	}
 	else if(dgl == EXP){
-		filename = "expdata.h5"; 
+		filename = "expdata.h5";
 		if(!remove("runObservables/EXP_Observables.dat")){ cerr << "deleted EXP_Observables.dat" << endl << endl;} else { cerr << "could not delete EXP_Observables.dat" << endl << endl;}
 	}
 	else if(dgl == TRAP){
-		filename = "trapdata.h5"; 
+		filename = "trapdata.h5";
 		if(!remove("runObservables/TRAP_Observables.dat")){ cerr << "deleted TRAP_Observables.dat" << endl << endl;} else { cerr << "could not delete TRAP_Observables.dat" << endl << endl;}
 	}
 	else {
@@ -147,7 +147,7 @@ int resave(InitMain &initMain){
 	// Eval* initEval = new Eval(*data,opt);
 	// dataFile->getEval(timeList[size-1],*initEval,opt);
 	// double maxTime = initEval->data.meta.time;
-	// dataFile->getEval(timeList[0],*initEval,opt);	
+	// dataFile->getEval(timeList[0],*initEval,opt);
 	// cerr << endl << "hydro plotting" << endl;
 	// initEval->opt.vortexnumber = opt.vortexnumber;
 	// hydroSolver solver(initEval,maxTime);
@@ -178,12 +178,12 @@ int resave(InitMain &initMain){
 			// }
 
 		// cerr << "saved step " << timeList[k] << endl;
-	
+
 		// Eval eval(*data,opt);
 		// // cerr << " processing ";
 		// eval.process();
 		// #pragma omp ordered
-		// {	
+		// {
 		// 	if(k == 0){
 		// 		 eval.data.meta.time = 0.0;
 		// 	}
@@ -207,7 +207,7 @@ int resave(InitMain &initMain){
 int plotting(InitMain &initMain){
 	// initMain.printInitVar();
 	Options opt = initMain.getOptions();
-	
+
 
 	MainControl dgl = initMain.getDgl();
 	string filename;
@@ -215,10 +215,10 @@ int plotting(InitMain &initMain){
 		filename = "rotdata.h5";
 	}
 	else if(dgl == EXP){
-		filename = "expdata.h5"; 
+		filename = "expdata.h5";
 	}
 	else if(dgl == TRAP){
-		filename = "trapdata.h5"; 
+		filename = "trapdata.h5";
 	}
 	else {
 		cout << " No valid runmode, choose ROT, EXP or TRAP!" << endl;
@@ -231,7 +231,7 @@ int plotting(InitMain &initMain){
 	// Eval* initEval = new Eval(*data,opt);
 	// dataFile->getEval(timeList[size-1],*initEval,opt);
 	// double maxTime = initEval->data.meta.time;
-	// dataFile->getEval(timeList[0],*initEval,opt);	
+	// dataFile->getEval(timeList[0],*initEval,opt);
 	// cerr << endl << "hydro plotting" << endl;
 	// initEval->opt.vortexnumber = opt.vortexnumber;
 	// hydroSolver solver(initEval,maxTime);
@@ -323,12 +323,12 @@ int simulation(InitMain &initMain){
 	auto data = make_shared<MatrixData>(initMain.getMeta());
 
 	if(start == RESUME){
-		// Options loadedOptions;		
+		// Options loadedOptions;
 		// Loading from existing HDF5
 		if(dgl == ROT) filename = "rotdata.h5";
 		if(dgl == EXP) filename = "expdata.h5";
 		if(dgl == TRAP) filename = "trapdata.h5";
-		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
+		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 		vector<int> timeList = dataFile->getTimeList();
 		dataFile->getLatestSnapshot("MatrixData",data,opt);
 		delete dataFile;
@@ -341,8 +341,8 @@ int simulation(InitMain &initMain){
 		// Loading from existing HDF5
 		if(dgl == ROT) filename = "rotdata.h5";
 		if(dgl == EXP) filename = "rotdata.h5";
-		if(dgl == TRAP) filename = "rotdata.h5";		
-		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);	
+		if(dgl == TRAP) filename = "rotdata.h5";
+		binaryFile* dataFile = new binaryFile(filename,binaryFile::in);
 		vector<int> timeList = dataFile->getTimeList();
 		dataFile->getLatestSnapshot("MatrixData",data,loadedOptions);
 		delete dataFile;
@@ -420,17 +420,17 @@ int simulation(InitMain &initMain){
 				cout << "No known runmode was recognized in main. Please revise." << endl;
 				break;
 		}
-	}  
+	}
 
 	chdir("..");
 	cerr << endl << "Ended application successfully, bye bye and thanks for the fish. :)" << endl;
 }
 
-int main( int argc, char** argv){	
+int main( int argc, char** argv){
 
 try{
 
-	InitMain initMain(argc,argv);	
+	InitMain initMain(argc,argv);
 
 	#if DEBUG_LOG
 		cout << "DEBUG_LOG actived, cout will be found in simulation.log" << endl;
@@ -464,25 +464,21 @@ try{
 }
 
 
-catch(const std::exception& e){ 
-  	std::cerr << "Unhandled Exception reached the top of main: " 
-    	      << e.what() << ", application will now exit" << std::endl; 
-	return ERROR_UNHANDLED_EXCEPTION; 
+catch(const std::exception& e){
+  	std::cerr << "Unhandled Exception reached the top of main: "
+    	      << e.what() << ", application will now exit" << std::endl;
+	return ERROR_UNHANDLED_EXCEPTION;
 }
 catch(expException& e){
 	e.printString();
 	std::cerr << " Terminating now." << endl;
 	return ERROR_UNHANDLED_EXCEPTION;
 }
-catch (const std::string& errorMessage){ 
-	std::cerr << errorMessage.c_str(); 
-	std::cerr << " Terminating now." << endl; 
-	return ERROR_UNHANDLED_EXCEPTION; 
-}
- 
-return SUCCESS; 	
+catch (const std::string& errorMessage){
+	std::cerr << errorMessage.c_str();
+	std::cerr << " Terminating now." << endl;
+	return ERROR_UNHANDLED_EXCEPTION;
 }
 
-
-
-
+return SUCCESS;
+}
