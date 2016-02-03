@@ -39,6 +39,7 @@ using namespace std;
 
 int evaluate(InitMain &initMain){
 	// initMain.printInitVar();
+
 	Options opt = initMain.getOptions();
 
 

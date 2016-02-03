@@ -4,6 +4,7 @@ void hydroSolver::integrate3()
 {
     PchangingValue = new double;
     PchangingValueQ = new double;
+
     // bool xxx = true;
     // cout << "g = " << g << endl;
     // cerr << eval->opt.vortexnumber << endl;
