@@ -38,7 +38,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -fopenmp -Ofast -funroll-lo
 add_executable(main ${SOURCESMAIN} $<TARGET_OBJECTS:EXP2DLIBRARY>)
 #add_executable(tester ${SOURCESTESTER} $<TARGET_OBJECTS:EXP2DLIBRARY>)
 
-target_link_libraries(main ${OTHER_LIBRARIES} -lmgl -lhdf5 -lconfig++ -lgsl -lgomp -lfftw3 -lboost_program_options-mt -lpthread -lm -Wnarrowing)
+target_link_libraries(main ${OTHER_LIBRARIES} -lmgl2 -lhdf5 -lconfig++ -lgsl -lgomp -lfftw3 -lboost_program_options -lpthread -lm -Wnarrowing)
 	#-L/usr/lib/root -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread  -lgslcblas -ldl -pthread -rdynamic  -lfftw3_thread
 	   
 
