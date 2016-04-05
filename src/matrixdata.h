@@ -7,7 +7,9 @@
 
 #include <iostream>
 #include <complex>
-#include <tools.h>
+
+#include "tools.h"
+
 #include <eigen3/Eigen/Dense>
 #include <eigen3/unsupported/Eigen/FFT>
 
@@ -20,18 +22,7 @@ class MatrixData {
     class MetaData {
         public:
         MetaData() : steps(0), time(0), coord(2), grid(2), spacing(2), initCoord(2), initSpacing(2), samplesize(0), array(14), isDimensionless(false), Ag(0), OmegaG(0) {}
-        // MetaData( const MetaData &m) : coord(2), grid(2), spacing(2) {
-        //     steps = m.steps;
-        //     time = m.time;
-        //     coord[0] = m.coord[0];
-        //     coord[1] = m.coord[1];
-        //     grid[0] = m.grid[0];
-        //     grid[1] = m.grid[1];
-        //     spacing[0] = m.grid[0];
-        //     spacing[1] = m.spacing[1];
-        //     samplesize = m.samplesize;
-        //     arrayToData();
-        // }
+
         inline double* data();
         inline int size();
         inline void print();
@@ -88,9 +79,6 @@ class MatrixData {
 
     MatrixData(MatrixData* m) : meta(m->meta), wavefunction(m->wavefunction), fft(&wavefunction,&meta) {}
 
-    // MatrixData(int size) : wavefunction(size), meta() {}
-    // MatrixData(int x, int y) {for(int i = 0; wavefunction.size(); i++){ wavefunction[i] = MatrixXcd::Zero(x,y);}}
-    // MatrixData(int size, int x, int y) : MatrixData(size), MatrixData(x,y) {}
     inline MatrixData(const MetaData &extMeta);
     inline MatrixData(const int &samplesize,const int &gridx, const int &gridy,const double &extTime, const int &extStep, const double &xsize, const double &ysize);
 
@@ -156,14 +144,10 @@ inline void MatrixData::checkedCopy(MatrixData* &e){
         }
         meta.spacing[0] = e->meta.spacing[0];
         meta.spacing[1] = e->meta.spacing[1];
-        // meta.initSpacing[0] = e->meta.initSpacing[0];
-        // meta.initSpacing[1] = e->meta.initSpacing[1];
         meta.time = e->meta.time;
         meta.steps = e->meta.steps;
         meta.coord[0] = e->meta.coord[0] * meta.grid[0] / e->meta.grid[0];
         meta.coord[1] = e->meta.coord[1] * meta.grid[1] / e->meta.grid[1];
-        // meta.initCoord[0] = e->meta.initCoord[0] * meta.grid[0] / e->meta.grid[0];
-        // meta.initCoord[1] = e->meta.initCoord[1] * meta.grid[1] / e->meta.grid[1];
         meta.dataToArray();
 
         cout << "Checked Copy Control e" << endl
@@ -190,18 +174,11 @@ inline void MatrixData::checkedCopy(MatrixData* &e){
 }
 
 inline void MatrixData::resizeBy(int edge){
-    // int edge = 400;
     int grid0 = meta.grid[0] + edge;
     int grid1 = meta.grid[1] + edge;
     double ratio0 = (double)grid0 / (double)meta.grid[0];
     double ratio1 = (double)grid0 / (double)meta.grid[1];
 
-
-    // for(int i = 0; i < wavefunction.size(); i++){
-    //     MatrixXcd tmp_wavefunction = MatrixXcd::Zero(grid0,grid1);
-    //     tmp_wavefunction.block(edge/2+1, edge/2+1, meta.grid[0],meta.grid[1]) = wavefunction[i];
-    //     wavefunction[i] = tmp_wavefunction;
-    // }
     MatrixXcd tmp_wavefunction = MatrixXcd::Zero(grid0,grid1);
     for(int i = 0; i < meta.grid[0]; i++){
         for(int j = 0; j < meta.grid[1]; j++){
@@ -361,8 +338,6 @@ inline MatrixData::MetaData MatrixData::getMeta(){
     return meta;
 }
 
-
-
 inline double * MatrixData::MetaData::data(){
     return array.data();
 }
@@ -408,9 +383,6 @@ inline void MatrixData::MetaData::arrayToData(){
 inline void MatrixData::FFT_internal::Forward(){
 
     for(int j = 0; j < wavefunction->size(); ++j){
-        // FFT<double> fft;
-        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        // MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta->grid[0],meta->grid[1]);
         
         for (int k = 0; k < wavefunction->at(j).rows(); k++) {
@@ -424,52 +396,36 @@ inline void MatrixData::FFT_internal::Forward(){
             eigenFFT->fwd(tmpOut, out.col(k));
             wavefunction->at(j).col(k) = tmpOut;
         }
-        // wavefunction[j] = out;
     }
 }
 
 inline void MatrixData::FFT_internal::Forward_X(){
 
     for(int j = 0; j < wavefunction->size(); ++j){
-
-        // MatrixXcd in = wavefunction[j];
-        // MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
-        
         #pragma omp parallel for
         for (int k = 0; k < wavefunction->at(j).rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(meta->grid[0]);
             eigenFFT->fwd(tmpOut, wavefunction->at(j).row(k));
             wavefunction->at(j).row(k) = tmpOut;
-        }
-        
-        // wavefunction[j] = out;
+        }        
     }
 }
 
 inline void MatrixData::FFT_internal::Forward_Y(){
 
     for(int j = 0; j < wavefunction->size(); ++j){
-        // FFT<double> fft;
-        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        // MatrixXcd in = wavefunction[j];
-        // MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
-        
         #pragma omp parallel for
         for (int k = 0; k < wavefunction->at(j).cols(); k++) {
             VectorXcd tmpOut = VectorXcd(meta->grid[1]);
             eigenFFT->fwd(tmpOut, wavefunction->at(j).col(k));
             wavefunction->at(j).col(k) = tmpOut;
         }
-        // wavefunction[j] = out;
     }
 }
 
 inline void MatrixData::FFT_internal::Backward(){
 
     for(int j = 0; j < wavefunction->size(); ++j){
-        // FFT<double> fft;
-        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        // MatrixXcd in = wavefunction[j];
         MatrixXcd out = MatrixXcd(meta->grid[0],meta->grid[1]);
         
         for (int k = 0; k < wavefunction->at(j).rows(); k++) {
@@ -490,37 +446,24 @@ inline void MatrixData::FFT_internal::Backward(){
 inline void MatrixData::FFT_internal::Backward_X(){
 
     for(int j = 0; j < wavefunction->size(); ++j){
-        // FFT<double> fft;
-        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        // MatrixXcd in = wavefunction[j];
-        // MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
-        
         #pragma omp parallel for
         for (int k = 0; k < wavefunction->at(j).rows(); k++) {
             RowVectorXcd tmpOut = RowVectorXcd(meta->grid[0]);
             eigenFFT->inv(tmpOut, wavefunction->at(j).row(k));
             wavefunction->at(j).row(k) = tmpOut;
         }
-
-        // wavefunction[j] = out;
     }
 }
 
 inline void MatrixData::FFT_internal::Backward_Y(){
 
     for(int j = 0; j < wavefunction->size(); ++j){
-        // FFT<double> fft;
-        // fft.SetFlag(Eigen::FFT<double>::Unscaled);
-        // MatrixXcd in = wavefunction[j];
-        // MatrixXcd out = MatrixXcd(meta.grid[0],meta.grid[1]);
-        
         #pragma omp parallel for
         for (int k = 0; k < wavefunction->at(j).cols(); k++) {
             VectorXcd tmpOut = VectorXcd(meta->grid[1]);
             eigenFFT->inv(tmpOut, wavefunction->at(j).col(k));
             wavefunction->at(j).col(k) = tmpOut;
         }
-        // wavefunction[j] = out;
     }
 }
 
@@ -528,9 +471,6 @@ inline void MatrixData::FFT_internal::Backward_Y(){
 
 inline void MatrixData::FFT_internal::Forward(MatrixXcd &DATA){
 
-    // for(int j = 0; j < wavefunction.size(); ++j){
-        // FFT<double> fft;
-        // MatrixXcd in = wavefunction[j];
         MatrixXcd out_temp = MatrixXcd(DATA.rows(),DATA.cols());
         
         for (int k = 0; k < DATA.rows(); k++) {
@@ -544,9 +484,7 @@ inline void MatrixData::FFT_internal::Forward(MatrixXcd &DATA){
             eigenFFT->fwd(tmpOut, out_temp.col(k));
             out_temp.col(k) = tmpOut;
         }
-        // wavefunction[j] = out;
         DATA = out_temp;
-    // }
 }
 
 inline void MatrixData::MetaData::print(){

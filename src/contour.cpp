@@ -1,4 +1,4 @@
-#include <contour.h>
+#include "contour.h"
 
 using namespace std;
 
@@ -136,10 +136,6 @@ c_set Contour::trackContour(MatrixXi &data){
 
 	c_set contour;
 	c_set wholeContour;
-	// c_set::iterator it;
-	// std::pair<c_set::iterator,bool> ret;
-
-	// double scalingFromRatio = (opt.omega_x.real() > opt.omega_y.real()) ? opt.omega_y.real()/opt.omega_x.real() : opt.omega_x.real()/opt.omega_y.real();
 
 	Coordinate<int32_t> s;
 	Coordinate<int32_t> p = Coordinate<int32_t>(0,meta.grid[1]/2,0,meta.grid[0],meta.grid[1],1);
@@ -155,15 +151,8 @@ c_set Contour::trackContour(MatrixXi &data){
 	int insert_counter = 1;
 	bool singlepoint = false;
 	bool stop = false;
-	// cout << "Test1: " << endl;
-	// string name2 = "Test1";
-	// string name3 = "Test2";
-	// plotdatatopng(name3,data,opt);
-	// plotContourSurround(name2,data,contour,opt);
 
 	do{ 
-		// cout << "\r" << flush;
-		// cout <<  p << " | " << s << " | " << insert_counter << " " << endl;
 		counter = 0;
 		while(counter < 8){
 			Coordinate<int32_t> c = nextClockwise(s,direction);
@@ -186,9 +175,6 @@ c_set Contour::trackContour(MatrixXi &data){
 		}
 
 		if(singlepoint == true){
-			// std::cout << "Found single point, continuing the search. " << p << endl;
-			// string name = "ERROR_3-SinglePoint_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
-			// plotContourSurround(name, data,contour,opt);
 
 			findMostRightP(contour,p);
 			s = p;
@@ -203,26 +189,13 @@ c_set Contour::trackContour(MatrixXi &data){
 				direction = 0;
 				insert_counter =1;
 			}
-
-
-			// s = p;
-			// p = p + v_right;			
-			// contour.clear();
-			// findInitialP(data,p,s/*,initial*/);
-			// contour.insert(p);
-			// direction = 0;
-			// insert_counter = 1;
-			// singlepoint = false;
 		}
 		
 		if(contour.size() >= 100){
 			
-			// int size_condition = (data.width()/2 - initial[0].x()) * 2 * M_PI * scalingFromRatio * 0.5; // Circumference of a circle going through p, 90%
 			if((initial[0] == p) && (initial[1] == s)){
-				// if(contour.size() > size_condition){				
 
 					wholeContour.insert(contour.begin(),contour.end());
-					// cout << "Contour saved to wholeContour." << endl;
 
 					findMostRightP(contour,p);
 					s = p;
@@ -236,22 +209,6 @@ c_set Contour::trackContour(MatrixXi &data){
 						direction = 0;
 						insert_counter =1;
 					}
-
-					// cout << "Found initial conditions with big enough contour. Size: " << contour.size() << endl;
-				// }
-				// cout << "Found initial conditions with too small contour. Size: " << contour.size() << endl;
-			// }else if((initial[0] == p) && (initial[1] == s)){
-			// 	// cout << "Found initial conditions with small contour. Size:" << contour.size() << " Searching new contour. "<< p << " with initial " << initial[0] << " | " << initial[1] << endl;
-			// 	// string name = "ERROR_2-ContourTooSmall_" + to_string(insert_counter) + "_" + to_string(p.x()) + "_" + to_string(p.y());
-			// 	// plotContourSurround(name, data,contour,opt);
-			// 	findMostRightP(contour,p);
-			// 	s = p;
-			// 	p = p + v_right;
-			// 	contour.clear();
-			// 	findInitialP(data,p,s/*,initial*/);
-			// 	contour.insert(p);
-			// 	direction = 0;
-			// 	insert_counter = 1;	
 			}
 		}
 
@@ -262,11 +219,6 @@ c_set Contour::trackContour(MatrixXi &data){
 
 		if(insert_counter >= (2 * contour.size() + 1)){
 
-			// cout << "Surrounded the contour two times. Size:" << contour.size() << " Coordinates: " << p << " with initial " << initial[0] << " | " << initial[1] << endl;
-			// string name = "ERROR_1-SurroundedTwoTimes_" + to_string(insert_counter) + "_"+ to_string(p.x()) + "_" + to_string(p.y());
-			// plotContourSurround(name, data,contour,opt);
-
-
 			findMostRightP(contour,p);
 			s = p;
 			p = p+v_right;
@@ -275,30 +227,11 @@ c_set Contour::trackContour(MatrixXi &data){
 			if(p.x() == meta.grid[0]-1){
 				stop = true;
 			} else {
-				// wholeContour.insert(contour.begin(),contour.end());
-				// cout << "After surrounding the contour two times. Size:" << contour.size() << " Coordinates: " << p << " with initial " << initial[0] << " | " << initial[1] << endl;
-				// cout << "found new coordinates." << endl;
 				contour.clear();
 				contour.insert(p);
 				direction = 0;
 				insert_counter =1;
 			}
-			
-
-			// throw std::string("Contour::trackContour error #1: Surrounded the contour two times.");
-
-
-
-
-
-			 
-			// findMostRightP(contour,p);
-			// s = p;
-			// p = p + v_right;
-			// contour.clear();
-			// findInitialP(data,p,s/*,initial*/);
-			// contour.insert(p);
-			// insert_counter = 1;			
 		}
 	if(insert_counter >= meta.grid[0] * meta.grid[1]){
 		stop = true;

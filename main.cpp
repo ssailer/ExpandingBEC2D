@@ -1,10 +1,4 @@
-/**************************************************************************
-Title: Simulating the Expansion of Turbulent Bose-Einstein Condensates (2D)
-Author: Simon Sailer (This work is based on the work of Bartholomew Andrews who made this as his master thesis.)
-Last Update: 22/07/13
-**************************************************************************/
 #define EIGEN_FFTW_DEFAULT
-
 
 #include <iostream>
 #include <unistd.h>
@@ -17,17 +11,17 @@ Last Update: 22/07/13
 #include <sys/stat.h>
 #include <dirent.h>
 
-#include <matrixdata.h>
-#include <main.h>
-#include <tools.h>
-#include <binaryfile.h>
-#include <rk4.hpp>
-#include <runner.hpp>
-#include <evaluation.h>
-#include <plot_with_mgl.h>
-#include <startgrids.h>
+#include "main.h"
 
-// #include <typeinfo>
+#include "matrixdata.h"
+#include "tools.h"
+#include "binaryfile.h"
+#include "rk4.h"
+#include "runner.h"
+#include "evaluation.h"
+#include "plot_with_mgl.h"
+#include "startgrids.h"
+
 
 #define SUCCESS 0
 #define ERROR_IN_COMMAND_LINE 1
@@ -320,7 +314,6 @@ int simulation(InitMain &initMain){
 
 	string filename;
 
-	// MatrixData* data = new MatrixData(initMain.getMeta());
 	auto data = make_shared<MatrixData>(initMain.getMeta());
 
 	if(start == RESUME){
@@ -472,12 +465,12 @@ catch(const std::exception& e){
 }
 catch(expException& e){
 	e.printString();
-	std::cerr << " Terminating now." << endl;
+	std::cerr << " Terminating." << endl;
 	return ERROR_UNHANDLED_EXCEPTION;
 }
 catch (const std::string& errorMessage){
 	std::cerr << errorMessage.c_str();
-	std::cerr << " Terminating now." << endl;
+	std::cerr << " Terminating." << endl;
 	return ERROR_UNHANDLED_EXCEPTION;
 }
 

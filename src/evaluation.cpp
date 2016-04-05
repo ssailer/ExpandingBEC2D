@@ -1,4 +1,4 @@
-#include <evaluation.h>
+#include "evaluation.h"
 
 #define OBSERVABLES_DATA_POINTS_SIZE data->meta.grid[0]*data->meta.grid[1]
 #define ANGULAR_AVERAGING_LENGTH 12
@@ -12,24 +12,15 @@ using namespace Eigen;
 
 Eval::Eval(shared_ptr<MatrixData> d,Options o) : data(d),  opt(o) {
 	data = d;
-	// opt = o;
-	// cout << opt.Ag << "  " << opt.OmegaG << endl;
-	// cout << data->meta.Ag << "  " << data->meta.OmegaG << endl;
 	toPhysicalUnits(opt);
 	data->convertToPhysicalUnits();
-	// cout << "convertToPhysicalUnits()" << endl;
-
 }
 
 Eval::~Eval() {
-	// toDimensionlessUnits(opt);
 	data->convertToDimensionlessUnits();
-	// cout << "convertToDimensionlessUnits()" << endl;
 }
 
 void Eval::process(){
-
-	// pres.resize(data->wavefunction.size());
 
 	vlist.resize(data->wavefunction.size());
 
@@ -37,7 +28,6 @@ void Eval::process(){
 
 	densityCounter.resize(data->wavefunction.size());
 
-	// densityLocationMap.resize(data->wavefunction.size());
 	densityCoordinates.resize(data->wavefunction.size());
 
 	phase = MatrixXd::Zero(data->meta.grid[0],data->meta.grid[1]);
@@ -50,13 +40,11 @@ void Eval::process(){
 	cout << currentTime() <<  " Step: " << data->meta.steps << " Time : " << data->meta.time << " s " << endl;		 
 
 
-	// getDensity();
 	for(int k = 0; k < data->wavefunction.size(); k++){
 		calc_fields(data->wavefunction[k],opt);
 		// contour[k] = tracker.trackContour(densityLocationMap[k]);
 		totalResult += calculator(data->wavefunction[k],k);
 		getVortices(data->wavefunction[k],densityCoordinates[k],vlist[k]);
-		// cout << "-getVortexDistance" ;
 	}	
 	totalResult /= data->wavefunction.size();
 
@@ -66,10 +54,6 @@ void Eval::save(){
 
 	string dirname = "runObservables";
     struct stat st;
-    // 	if(stat(dirname.c_str(),&st) != 0){
-    //     // mkdir(dirname.c_str(),0755); // LINUX 
-    //     mkdir(dirname.c_str()); // WINDOWS
-    // }
     #ifdef __linux__ 
         if(lstat(dirname.c_str(),&st) != 0){
         	mkdir(dirname.c_str(),0755);
@@ -114,37 +98,7 @@ void Eval::save(){
   		datafile.close();
   	}
 
-  	// Find n0 from fit, legacy code 
-
-  	// double last_largest_element = 0;
-   //  std::queue<double> largest_elements;
-   //  for(int i = 0; i < data->meta.grid[0]; ++i){
-   //  	for(int j = 0; j < data->meta.grid[1]; ++j){
-   //  		const double val = density(i,j);
-   //  		if(val > last_largest_element){
-   //  			largest_elements.push(val);
-   //  			last_largest_element = val;
-   //  		}
-   //  		if(largest_elements.size() > /*meta.grid[0]*meta.grid[1]*0.001*/ 10){
-   //  			largest_elements.pop();
-   //  		}
-   //  	}
-   //  }
-   //  double n0 = 0;
-   //  int le_size = largest_elements.size();
-   //  while(!largest_elements.empty()){
-   //  	n0 += largest_elements.front();
-   //  	largest_elements.pop();
-   //  }
-    // cout << "n0 from totalresult = " << totalResult.n0 << endl;
-    // cout << "n0 from calcu = " << n0 / le_size << endl;
-
-    // END find n0
-
-  	// double n0 = 2.0 * (totalResult.particle_count / M_PI) * (1 / (totalResult.r_max * totalResult.r_min)); 
-
   	ofstream datafile(filename.c_str(), std::ios_base::out | std::ios_base::app);
-	// datafile.open;
 	datafile << std::left << std::setw(setwidth) << std::setprecision(setprec) << data->meta.steps << ","
 					  	  << std::setw(setwidth) << std::setprecision(setprec) << data->meta.time << ","
 					  	  << std::setw(setwidth) << std::setprecision(setprec) << data->meta.coord[0] << ","
@@ -173,12 +127,8 @@ void Eval::save(){
 
 void Eval::getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,list<VortexData> &vlist){
 	
-	
-
 	vlist.clear();
 	findVortices(densityCoordinates,vlist);
-
-	// CHECK DENSITY AROUND VORTEX
 
 
 	// erase vortices to close together
@@ -256,10 +206,7 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 	Vector<int32_t> left = Vector<int32_t>(-1,0,0,data->meta.grid[0],data->meta.grid[1],1);
 	Vector<int32_t> rightdown = Vector<int32_t>(0.5, -0.5, 0,data->meta.grid[0],data->meta.grid[1],1);
 
-	// #pragma omp parallel for
 	for(int i = 0; i < densityCoordinates.size(); i++){
-	// for(vector<Coordinate<int32_t>>::const_iterator it = densityCoordinates.begin(); it != densityCoordinates.end(); ++it){
-
 		Coordinate<int32_t> c = densityCoordinates[i];
 
 		if(c.x() > 1 && c.x() < data->meta.grid[0]-1){
@@ -276,9 +223,6 @@ void Eval::findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<Vo
 			
 
 	}
-
-	// cout << "Vortexnumber before surround dens check: " << vlist.size() << endl;
-
 
 }
 
@@ -477,8 +421,6 @@ vector<double> Eval::fitTF()
 
 void Eval::getDensity(){
 
-	// smooth(density);
-
 	double maximum = 0;
 	for(int k = 0; k < data->wavefunction.size(); k++){
 		for(int i = 0; i < data->meta.grid[0]; i++){
@@ -606,12 +548,8 @@ Ellipse Eval::fitEllipse(c_set &c_data){
 	C1(1,1) = -1.0;
 	C1(2,0) = 0.5;
 
-	// cerr << endl << "C1 " << C1 << endl;
-
-
 	int i = 0;
 	for(c_set::iterator it = c_data.begin(); it != c_data.end(); ++it){
-	// for(int i = 0; i < numPoints; ++i){
 		int x = it->x();
 		int y = it->y();
 		D1(i,0) = x * x;
@@ -639,8 +577,6 @@ Ellipse Eval::fitEllipse(c_set &c_data){
 		if(condition.imag() == 0 && condition.real() < 0){
 			a1 = v.real();
 		}
-		// cerr << condition << endl;
-		// cerr << endl << "A1 = " << a1 << endl;
 	}
 
 	a2 = T * a1;
@@ -650,10 +586,6 @@ Ellipse Eval::fitEllipse(c_set &c_data){
 	f(3) = a2(0);
 	f(4) = a2(1);
 	f(5) = a2(2);
-
-	// if(f(0) < 0 && f(1) > 0 && f(2) < 0 && f(3) > 0 && f(4) > 0 && f(5) < 0 ){
-	// 	f = -f;
-	// }
 
 	Matrix<double,2,2> A;
 	A(0,0) = 2*f(0);
@@ -693,25 +625,10 @@ Ellipse Eval::fitEllipse(c_set &c_data){
     double y = /*fabs*/(f(1));
     double x = /*fabs*/(f(0) - f(2));
 
-    // double angle = atan2( y , x ) / 2 + M_PI/2;
     double angle = atan(y/x)/2.0;
-    // cerr << "                                 ";
-    // cerr << " cond = " << cond;
-    // cerr << " y = " << y << " x = " << x;
-    // cerr << " a = " << angle * 180/M_PI;
-    // if(angle < 0) {angle += (M_PI/2);}
-    // if(x > 0 && y > 0) {angle += (M_PI/2); cerr << " 90 >0";}
-    // cerr << " a = " << angle * 180/M_PI << endl;
-    // else if(angle >= (M_PI / 2)) {angle -= M_PI;  cerr << " -180 ";}
-    // cerr << " =  " << angle * 180/M_PI << endl;;
-  // inline double vortex(int b, int y, int a, int x) //Vortex with phase [0,2*pi)          
-  // {
-  //         if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
-  //     else{ return atan2(b-y,a-x); }        
-  // }
   	
   	Ellipse eFit;
-  // list(coef=f, center = center, major = max(semi.axes), minor = min(semi.axes), angle = unname(angle)) 
+
     eFit.coef = f;
     eFit.center.resize(2);
     eFit.center[0] = center[0];
@@ -789,27 +706,10 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	double h_x = data->meta.spacing[0];
 	double h_y = data->meta.spacing[1];
 
-
-
-	
-	// c_set cEllipse = generateContour(ellipse);
-
-	// FROM ELLIPSE FIT 
-	// obs.r_max = ellipse.major * h_x;
-	// obs.r_min = ellipse.minor * h_y;
-
-	// obs.r_max_phi = ellipse.angle * 180/M_PI;
-	// obs.r_min_phi = ellipse.angle * 180/M_PI + 90;
-
-	// obs.aspectRatio = obs.r_max / obs.r_min;
-
-	// END ELLIPSE FIT
-
 	// FROM THOMAS FERMI FIT
 
 	vector<double> params_tf = fitTF();
 
-	// c_set cEllipse = 
 	contour[sampleindex] = generateContour(params_tf);
 	ellipse = fitEllipse(contour[sampleindex]);
 
@@ -833,9 +733,6 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 
 
 	// END TF FIT
-
-	// contour[sampleindex] = cEllipse;
-
 
 	vector<contourData> cData;
 	for(c_set::iterator it =  contour[sampleindex].begin(); it !=  contour[sampleindex].end(); ++it){
@@ -877,31 +774,6 @@ void Eval::aspectRatio(Observables &obs, int &sampleindex){
 	obs.Rx = cRadius[0];
 	obs.Ry = cRadius[90];
 
-	// // moving median of radii
-	// vector<double> tRadius(360);
-	// for(int i = 0; i < 360; i++){
-	// 	int size = 9;
-	// 	int middle = (size-1)/2;
-	// 	vector<double> median(size);
-	// 	for(int j = 0; j < size; j++){
-	// 		int k = i + j - middle;
-	// 		if(k < 0) k += 360;
-	// 		if(k >= 360) k -= 360;
-	// 		median[j] = cRadius[k];
-	// 	}
-	// 	std::sort(median.begin(),median.end());
-	// 	tRadius[i] = median[middle];
-	// }
-	// cRadius = tRadius;
-
-	// vector<double>::iterator maxRadius = std::max_element(cRadius.begin(), cRadius.end());
-	// obs.r_max = *maxRadius;
-	// obs.r_max_phi = std::distance(cRadius.begin(), maxRadius);
-
-	// vector<double>::iterator minRadius = std::min_element(cRadius.begin(), cRadius.end());
-	// obs.r_min = *minRadius;
-	// obs.r_min_phi = std::distance(cRadius.begin(), minRadius);
-
 	vector<double> tmp_ratio(360);
 	for(int i = 0; i < 360; i++){
 		int j = (i+90 < 360) ? i+90 : i-270;
@@ -937,16 +809,14 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 	
 
 	// == Angular Density
-	// vector<double> angularDensity;
 	vector<double> phi;
-	vector<double> polarDensity; // first entry is 
+	vector<double> polarDensity;
 	vector<double> radius;
 	vector<Coordinate<int32_t>> cartesianCoordinates;
 
 	ArrayXd divisor2(obs.number.size());
 
 	double r_index_factor = (obs.radialDensity.size() -1) / sqrt(data->meta.coord[0] * data->meta.coord[0] + data->meta.coord[1] * data->meta.coord[1]);
-	// cout << "INDEX_FACTOR " << r_index_factor << endl;
 	for(int i = 0; i < data->meta.grid[0]; i++){
 	    for(int j = 0; j < data->meta.grid[1]; j++){
 				int x_shift = i - data->meta.grid[0]/2;
@@ -963,10 +833,6 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 				cartesianCoordinates.push_back(tmpCoord);
 
 				int index = r_index_factor * r_tmp;
-				// cout << " radius " << r_tmp << " / " << data->meta.coord[0] << " index " << index << " / " << obs.radialDensity.size() << endl;
-				// if(index >= obs.number.size()){
-				// 	cout << "index " << index << " r_tmp " << r_tmp << " " << data->meta.spacing[0] << " " << endl;
-				// }
 				divisor2(index) += 1.0;
 				obs.r(index) += r_tmp;
 				obs.radialDensity(index) += dens_tmp;
@@ -1026,14 +892,6 @@ Observables Eval::calculator(MatrixXcd DATA,int sampleindex){
 		}
 	}
 
-
-	// DEFINITION OF KLENGTH FROM THE INTERNET! |||| ==>>     2*pi*i/(Nx*dx)
-	// double kmax[2];
-
-	// for(int i = 0; i < 2; i++){
-	// 	kmax[i] = *max_element(kspace[i].begin(), kspace[i].end());
-	// }
-	
 	double kwidth2[2];
 
 	for(int i = 0; i < 2; i++)
@@ -1070,31 +928,17 @@ bool Eval::checkResizeCondition(vector<int> &edges){
 
 	edges.resize(4);
 
-	// vector<double> x_tmp(densityCoordinates[0].size());
-	// vector<double> y_tmp(densityCoordinates[0].size());
 	int upperVal = data->meta.grid[0]*0.80;
 	int lowerVal = data->meta.grid[0]*0.20;
 
 
 	for(int i = 0; i < densityCoordinates[0].size(); i++){
-		// x_tmp[i] = densityCoordinates[0][i].x();
-		// y_tmp[i] = densityCoordinates[0][i].y();
 		if(densityCoordinates[0][i].x() > upperVal || densityCoordinates[0][i].x() < lowerVal)
 			return true;
 		if(densityCoordinates[0][i].y() > upperVal || densityCoordinates[0][i].y() < lowerVal)
 			return true;
 	}
 	return false;
-	// auto x_minmax = std::minmax_element (x_tmp.begin(),x_tmp.end());
-	// auto y_minmax = std::minmax_element (y_tmp.begin(),y_tmp.end());
-
-	// edges[0] = (int)*x_minmax.first;
-	// edges[1] = (int)*y_minmax.first;
-
-	// edges[2] = (int)*x_minmax.second - (int)*x_minmax.first;
-	// edges[3] = (int)*y_minmax.second - (int)*y_minmax.first;
-
-	// return (edges[2] >= (data->meta.grid[0] * EDGE_RANGE_CHECK) || edges[3] >= (data->meta.grid[1] * EDGE_RANGE_CHECK));
 }		
 
 void Eval::checkNextAngles(vector<double> &r, int &i){

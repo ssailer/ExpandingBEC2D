@@ -1,4 +1,4 @@
-#include <plotter.hpp>
+#include "plotter.h"
 
 #include <typeinfo>
 
@@ -7,8 +7,6 @@
 #define FONT_SIZE 2.0
 
 Plotter::Plotter(shared_ptr<Eval> e,Options &o) : eval(e), opt(o) {
-	// eval = e;
-	// opt = o;
 
 	prepareData();
 
@@ -19,11 +17,7 @@ Plotter::Plotter(shared_ptr<Eval> e,Options &o) : eval(e), opt(o) {
 
 	dirname = "runPlots";
     struct stat st;
-    // if(stat(dirname.c_str(),&st) != 0){
-    //     // mkdir(dirname.c_str(),0755); // LINUX
-    //     mkdir(dirname.c_str()); // WINDOWS
 
-    // }
     #ifdef __linux__ 
         if(lstat(dirname.c_str(),&st) != 0){
         	mkdir(dirname.c_str(),0755);

@@ -1,4 +1,4 @@
-#include <rk4.hpp>
+#include "rk4.h"
 
 RungeKutta::RungeKutta(/*MatrixData* &d,*/ Options &extOpt) : /*w(d),*/ opt(extOpt),
 											laplacian_coefficient_x(3),

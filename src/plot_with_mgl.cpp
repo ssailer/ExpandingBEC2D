@@ -1,4 +1,4 @@
-#include <plot_with_mgl.h>
+#include "plot_with_mgl.h"
 
 #define COLOURBAR_MAX_VALUE 10000
 #define IMAGE_SIZE 2500

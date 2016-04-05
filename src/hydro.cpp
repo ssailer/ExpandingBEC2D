@@ -5,16 +5,11 @@ void hydroSolver::integrate3()
     PchangingValue = new double;
     PchangingValueQ = new double;
 
-    // bool xxx = true;
-    // cout << "g = " << g << endl;
-    // cerr << eval->opt.vortexnumber << endl;
     double Nv = eval->opt.vortexnumber;
 
-    // int Nv = 0;
     double r[2] = {eval->totalResult.Rx,eval->totalResult.Ry};
     double v[2] = {0.0,0.0};
 
-    // double Nv = ( eval->opt.omega_w.real() * 2.0 * M_PI ) / ( hbar / ( m * r[0] * r[1]));
     cerr << "VortexNumber: " << Nv << endl;
 
     double xi, vi, tf, xf, vf, dt;

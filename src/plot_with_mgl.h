@@ -6,24 +6,17 @@
 #include <eigen3/Eigen/Dense>
 #include <mgl2/mgl.h>
 #include <math.h>
-// #include <complexgrid.h>
-// #include <realgrid.h>
-// #include <bh3binaryfile.h>
 
 #include <vector>
 #include <unordered_set>
 #include <omp.h>
 #include <cstring>
 
-
-#include <coordinate.h>
-#include <tools.h>
-#include <observables.h>
+#include "coordinate.h"
+#include "tools.h"
+#include "observables.h"
 
 #include <dlib/optimization.h>
-
-
-
 
 #define dual std::complex<double>
 

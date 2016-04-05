@@ -16,10 +16,10 @@
 #include <cstring>
 
 
-#include <coordinate.h>
-#include <tools.h>
-#include <observables.h>
-#include <evaluation.h>
+#include "coordinate.h"
+#include "tools.h"
+#include "observables.h"
+#include "evaluation.h"
 
 using namespace std;
 

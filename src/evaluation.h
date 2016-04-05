@@ -15,17 +15,19 @@
 #include <omp.h>
 #include <string>
 #include <sstream>
+#include <gsl/gsl_sf_zeta.h>
 
-#include <coordinate.h>
-#include <contour.h>
-#include <plot_with_mgl.h>
-#include <tools.h>
-#include <matrixdata.h>
-#include <observables.h>
-#include <lmfitter.h>
+#include "coordinate.h"
+#include "contour.h"
+#include "plot_with_mgl.h"
+#include "tools.h"
+#include "matrixdata.h"
+#include "observables.h"
+#include "lmfitter.h"
+
 #include <eigen3/Eigen/Dense>
 
-#include <gsl/gsl_sf_zeta.h>
+
 
 using namespace std;
 using namespace Eigen;
@@ -35,26 +37,15 @@ using namespace Eigen;
 class Eval{
 public:
 	Eval(shared_ptr<MatrixData> d,Options o);
-	// Eval();
 	~Eval();
 
-	// wrapperfunctions 
-	// void saveData(vector<MatrixXcd> &wavefctVec,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes as a vector of matrices (from statistics RTE)
-	// void saveData(MatrixXcd &wavefct,Options &external_opt,int external_snapshot_time,string external_runname); // If data comes only as a Matrix (from ITP)
-	// void saveData2DSlice(vector<ComplexGrid> &wavefctVec, Options & external_opt, int external_snapshot_time, string external_runname, int sliceNumber); // if data comes as a vector of ComplexGrids, just eval a sclice of the 3D data.
-	// void saveDataFromEval(Options &external_opt,int &external_snapshot_time,string &external_runname,vector<Eval> &extEval);
-	void process(); // calculate the observables
+	void process();
 	void save();
-	// void evaluateDataITP();
-	// void plot(); // plot Results
 	bool checkResizeCondition();
 	int getVortexNumber();
 	bool checkResizeCondition(vector<int> &edges);
 
-
-	// Observables.h
 	Observables totalResult;
-	// vector<PathResults> pres;
 	vector<list<VortexData>> vlist;
 	vector<c_set> contour;
 	vector<MatrixXi> densityLocationMap;
@@ -82,20 +73,11 @@ private:
 		double phi;
 		double r;
 	} contourData;
-
 	
-	// data savefiles
-
-	// RealGrid phase, zeros;
 	MatrixXd phase;
 	MatrixXd density;
 
-	// vector<ComplexGrid> PsiVec;
-	
 	int snapshot_time;
-
-	// vector<RealGrid> densityLocationMap;
-	
 
 	vector<vector<Coordinate<int32_t>>> densityCoordinates;
 	vector<double> x_dist,y_dist,x_dist_grad,y_dist_grad;
@@ -104,12 +86,9 @@ private:
 	void CombinedEval();
 	void CombinedSpectrum();
 
-	// doing functinos
 	Observables calculator(MatrixXcd DATA,int sampleindex);
-	// Observables calculatorITP(ComplexGrid data,int sampleindex);
 	void aspectRatio(Observables &obs, int &sampleindex);
 	void getVortices(MatrixXcd &DATA, vector<Coordinate<int32_t>> &densityCoordinates,list<VortexData> &vlist);
-	// void getDensity(ComplexGrid &data, RealGrid &densityLocationMap, vector<Coordinate<int32_t>> &densityCoordinates,int &densityCounter);
 	void getDensity();
 
 	void smooth(MatrixXd &dens);
@@ -135,10 +114,7 @@ private:
 	void findVortices(vector<Coordinate<int32_t>> &densityCoordinates, list<VortexData> &vlist);
 
 	inline double norm(Coordinate<double> &a, Coordinate<double> &b, double &h_x, double &h_y);
-	// inline void pairDistanceHistogram(list<Vo &pres, double &distance, double &coordDistance);
-	// void getVortexDistance(PathResults &pres);
 	void calc_fields(MatrixXcd &DATA, Options &opt);
-	// void checkEdges();
 
 	// Contour Tracking Algorithm
 

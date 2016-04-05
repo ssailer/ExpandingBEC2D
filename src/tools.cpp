@@ -1,7 +1,7 @@
 #define EIGEN_VECTORIZE
 #define EIGEN_NO_DEBUG
 
-#include <tools.h>
+#include "tools.h"
 
 void toDimensionlessUnits(Options &opt){
     if(!opt.isDimensionless){

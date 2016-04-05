@@ -1,18 +1,9 @@
 #ifndef EXP2D_STARTGRIDS_H__
 #define EXP2D_STARTGRIDS_H__
 
-#include <matrixdata.h>
-#include <tools.h>
-// #include <complexgrid.h>
-#include <plot_with_mgl.h>
-
-// int mypow2(int x, int y); // Computes x^y
-
-// inline double vortex(int b, int y, int a, int x) //Vortex with phase [0,2*pi)          
-// {
-//         if(atan2(b-y,a-x)<0){ return 2*M_PI+atan2(b-y,a-x); } //atan2 is defined from [-pi,pi) so it needs to be changed to [0,2*pi)
-//     else{ return atan2(b-y,a-x); }        
-// }
+#include "matrixdata.h"
+#include "tools.h"
+#include "plot_with_mgl.h"
 
 void setGridToDoubleGaussian(MatrixData* &data, Options opt)
 {

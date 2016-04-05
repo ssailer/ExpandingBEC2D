@@ -2,10 +2,6 @@ project(main)
 cmake_minimum_required(VERSION 2.8.4)
 
 include_directories( ${CMAKE_SOURCE_DIR}/src
-					 #${CMAKE_SOURCE_DIR}/utilities
-					 #${CMAKE_SOURCE_DIR}/startgrids
-					 #${CMAKE_SOURCE_DIR}/propagators
-					 #${CMAKE_SOURCE_DIR}/observables
 					 /usr/include/eigen3					 
 					 #/home/nhrjr/libraries/libconfig-1.5/lib
 					 				 
@@ -21,8 +17,7 @@ set(EXP2DSOURCES     ${CMAKE_SOURCE_DIR}/src/rk4.cpp
 					 ${CMAKE_SOURCE_DIR}/src/plotter.cpp
 					 ${CMAKE_SOURCE_DIR}/src/hydro.cpp
 					 ${CMAKE_SOURCE_DIR}/src/lmfitter.cpp
-
-					 ${CMAKE_SOURCE_DIR}/src/.archive/utilities/gauss_random.cpp
+					 ${CMAKE_SOURCE_DIR}/src/gauss_random.cpp
 
 					 ## DEPRECATED SOURCEFILES
 					 )
@@ -33,7 +28,7 @@ set(SOURCESMAIN main.cpp ) #${EXP2DSOURCES})
 
 #set(SOURCESTESTER tester.cpp ) #${EXP2DSOURCES})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -fopenmp -Ofast -funroll-loops -march=native -pthread -m64 -g")# -g   -ftree-vectorizer-verbose=1")  
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14 -fopenmp -Ofast -funroll-loops -march=native -pthread -m64 -g")# -g   -ftree-vectorizer-verbose=1")  
 
 add_executable(main ${SOURCESMAIN} $<TARGET_OBJECTS:EXP2DLIBRARY>)
 #add_executable(tester ${SOURCESTESTER} $<TARGET_OBJECTS:EXP2DLIBRARY>)

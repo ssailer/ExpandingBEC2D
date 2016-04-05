@@ -1,22 +1,3 @@
-/*
- Solver for second order Ordinary Differential Equations
-
- x"(t) = f(t,x,x')    equation
- x(ti) = xi           initial value 1
- x'(ti)= vi           initial value 2
-
- the second order ODE is solved as a set of two first order ODEs
- x'(t) = f1(t,x)
- x"(t) = f2(t,x,x')
-
- Methods (select one by a key)
- key = 0; simple Euler
- key = 1; modified Euler (predictor-corrector)
- key = 2; 4-th order Runge-Kutta
-
- Alex Godunov: Last revision March 2007
-*/
-
 #ifndef HYDRO_H__
 #define HYDRO_H__
 
@@ -26,12 +7,12 @@
 #include <cmath>
 #include <string>
 #include <cstdlib>
-#include <tools.h>
-#include <matrixdata.h>
+
 #include <python2.7/Python.h>
-#include <evaluation.h>
-// #include "gnuplot-iostream.h"
-// #include <../exp_utilities/plot_with_mgl.h>
+
+#include "tools.h"
+#include "matrixdata.h"
+#include "evaluation.h"
 
 using namespace std;
 

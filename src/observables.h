@@ -8,7 +8,9 @@
 #include <vector>
 #include <omp.h>
 #include <string>
-#include <tools.h>
+
+#include "tools.h"
+
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
@@ -44,10 +46,6 @@ class Observables {
 typedef struct {
     int32_t n;
     Coordinate<double> c;
-    // vector<Vector<double>> velocity;
-    // list<Coordinate<int32_t>> points;
-    // int32_t num_points;
-    // double pair_distance;
     double surroundDens;
     double zeroDensity;
 } VortexData;
@@ -59,12 +57,6 @@ struct Ellipse {
 	double minor;
 	double angle;
 };
-
-// struct PathResults {
-//     list<VortexData> vlist;
-//     vector<double> histogram;
-//     vector<double> distance;
-// };
 
 inline Observables::Observables() :
         number(),

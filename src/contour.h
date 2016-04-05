@@ -5,11 +5,11 @@
 #include <vector>
 #include <unordered_set>
 
-// #include <realgrid.h>
-#include <coordinate.h>
-#include <tools.h>
-#include <plot_with_mgl.h>
-#include <matrixdata.h>
+#include "coordinate.h"
+#include "tools.h"
+#include "plot_with_mgl.h"
+#include "matrixdata.h"
+
 #include <eigen3/Eigen/Dense>
 
 
@@ -22,7 +22,6 @@ public:
 	Contour(MatrixData::MetaData &external_meta);
 	c_set trackContour(MatrixXi &data);
 private:
-	// Options opt;
 	MatrixData::MetaData meta;
 	Vector<int32_t> v_left,v_right, v_up, v_down;
 	inline void findMostRightP(c_set &contour, Coordinate<int32_t> &p);

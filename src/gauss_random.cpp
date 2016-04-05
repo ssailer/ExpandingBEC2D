@@ -1,9 +1,10 @@
+// #include <cstdlib>
+// #include <ctime>
+// #include <cmath>
+// #include <gsl/gsl_rng.h>
+// #include <iostream>
+
 #include "gauss_random.h"
-#include <cstdlib>
-#include <ctime>
-#include <cmath>
-#include <gsl/gsl_rng.h>
-#include <iostream>
 
 GaussRandom::GaussRandom()
 {

@@ -4,20 +4,19 @@
 #include <iostream>
 #include <complex>
 #include <math.h>
-// #include <complexgrid.h>
-// #include <bh3binaryfile.h>
 #include <vector>
 #include <omp.h>
 #include <string>
 #include <iomanip>
-// #include <.archive/utilities/gauss_random.h>
-#include <tools.h>
-#include <evaluation.h>
-#include <binaryfile.h>
-#include <constants.h>
-#include <plot_with_mgl.h>
-#include <matrixdata.h>
+
 #include <eigen3/Eigen/Dense>
+
+#include "tools.h"
+#include "evaluation.h"
+#include "binaryfile.h"
+#include "constants.h"
+#include "plot_with_mgl.h"
+#include "matrixdata.h"
 
 using namespace std;
 using namespace Eigen;
@@ -30,27 +29,15 @@ class SplitStep
     void setVariables();
     virtual void timeStep(double delta_t) = 0;
 
-
-    // SplitStep(vector<ComplexGrid> &d,const MatrixData::MetaData &extMeta, const Options &externaloptions, int &extSLICE_NUMBER);
-
-
     void setOptions(const Options &externaloptions);
     void RunSetup();
     
-    // Propagatoren
-
+    // Propagator
     void splitToTime(string runName);
-    // void rteFromDataToTime(string runname, vector<int> snapshot_times, string h5name);    
-   
-    // StoragePointer for the wavefunction
-    // MatrixData* pData;
-    // vector<ComplexGrid> wavefctVec;
 
     int samplesize;
 
     // Plotting and progress functions 
-    
-    // void cli_plot(string name,int counter_state, int counter_max, double start,bool plot);
     void cli(string name,int &slowestthread, vector<int> threadinfo, vector<int> stateOfLoops, int counter_max, double start);
     void plot(const string name);
     
@@ -68,22 +55,14 @@ class SplitStep
 
     MatrixData::MetaData meta;
 
-    // inline void RTE_compute_k_pot(MatrixXcd &k,MatrixXcd &wavefctcp,int &t);
-    inline double rotatingPotential(int &i, int &j, int &t);
-   
-
     // Variables
     complex<double> h_x, h_y,h_z;
 
     int SLICE_NUMBER;
-    
-    
+        
     // some used constants
-    
     double pi;
     complex<double> t_RTE;
-
-    // little helper functions for stuff
 };
 
 class SplitRot : public SplitStep {
@@ -115,8 +94,5 @@ public:
     SplitITP(Options &o) : SplitStep(o) {}
     virtual void timeStep(double delta_t);
 };
-
-
-
 
 #endif // EXP2D_SPLITSTEP_H__

@@ -5,7 +5,7 @@
 #include <sstream>
 #include <complex>
 #include <math.h>
-#include <.archive/utilities/gauss_random.h>
+
 #include <vector>
 #include <string>
 #include <iomanip>
@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <eigen3/Eigen/Dense>
+
+#include "gauss_random.h"
 
 using namespace std;
 using namespace Eigen;
@@ -25,7 +27,6 @@ typedef struct Options {
     complex<double> omega_x,omega_y,omega_w; // Frequency of the harmonic trap
     complex<double> dispersion_x, dispersion_y; // dispersion relation for the expanding frame
     double min_x,min_y; // Coordinate boundaries    
-    // complex<double> t_abs; //Absolute time // remove from opt! put into the function, don't need it here
     complex<double> exp_factor; //Expansion factor
     double g; // coupling constant
     double ITP_step, RTE_step; // stepsize for the timeiteration
@@ -84,8 +85,6 @@ inline const std::string currentDate() {
     struct tm  tstruct;
     char       buf[80];
     tstruct = *localtime(&now);
-    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
-    // for more information about date/time format
     strftime(buf, sizeof(buf), "%Y-%m-%d", &tstruct);
 
     return buf;
@@ -96,8 +95,6 @@ inline const std::string currentTime() {
     struct tm  tstruct;
     char       buf[80];
     tstruct = *localtime(&now);
-    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
-    // for more information about date/time format
     strftime(buf, sizeof(buf), "%X", &tstruct);
 
     return buf;

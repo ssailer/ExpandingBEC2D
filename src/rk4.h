@@ -6,9 +6,10 @@
 #include <omp.h>
 #include <memory>
 
-#include <tools.h>
-#include <matrixdata.h>
-#include <constants.h>
+#include "tools.h"
+#include "matrixdata.h"
+#include "constants.h"
+
 #include <eigen3/Eigen/Dense>
 
 using namespace std;
