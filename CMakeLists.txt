@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8.4)
 
 include_directories( ${CMAKE_SOURCE_DIR}/src
 					 /usr/include/eigen3					 
-					 #/home/nhrjr/libraries/libconfig-1.5/lib
 					 				 
 					 )
 
